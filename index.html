@@ -3,127 +3,123 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>OTG AI Website Builder</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  font-family:Arial,sans-serif;
+* {
+  box-sizing: border-box;
 }
 
-body{
-  background:#f5f7fb;
-  color:#111;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  color: #111;
 }
 
-header{
-  background:linear-gradient(135deg,#07551f,#0a7a2d);
-  color:white;
-  padding:35px 20px;
-  text-align:center;
+header {
+  background: #111827;
+  color: white;
+  padding: 18px;
+  text-align: center;
 }
 
-header h1{
-  font-size:32px;
+header h1 {
+  margin: 0 0 6px;
+  font-size: 24px;
 }
 
-header p{
-  margin-top:10px;
-  opacity:.9;
+header p {
+  margin: 0;
+  opacity: .8;
 }
 
-.container{
-  max-width:900px;
-  margin:35px auto;
-  padding:20px;
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 15px;
 }
 
-.card{
-  background:white;
-  padding:25px;
-  border-radius:20px;
-  box-shadow:0 5px 25px rgba(0,0,0,.08);
+.ai-box {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
 }
 
-h2{
-  margin-bottom:10px;
+.ai-box h2 {
+  margin-top: 0;
 }
 
-textarea{
-  width:100%;
-  min-height:150px;
-  margin-top:15px;
-  padding:15px;
-  border:1px solid #ddd;
-  border-radius:12px;
-  font-size:16px;
-  resize:vertical;
+textarea {
+  width: 100%;
+  min-height: 180px;
+  background: #111827;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-family: monospace;
+  font-size: 14px;
+  resize: vertical;
 }
 
-button{
-  width:100%;
-  margin-top:15px;
-  padding:16px;
-  border:none;
-  border-radius:10px;
-  background:#07551f;
-  color:white;
-  font-size:17px;
-  font-weight:bold;
-  cursor:pointer;
+.ai-input {
+  background: white;
+  color: #111;
+  border: 1px solid #ddd;
+  min-height: 100px;
+  margin-bottom: 10px;
 }
 
-button:hover{
-  background:#0a6b29;
+button {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
-#result{
-  display:none;
-  margin-top:30px;
-  padding:20px;
-  border-radius:15px;
-  background:#f1f5f2;
-  border:1px solid #dce8df;
+button:hover {
+  opacity: .9;
 }
 
-.preview{
-  margin-top:15px;
-  padding:30px;
-  background:white;
-  border-radius:15px;
-  text-align:center;
+.editor {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
 }
 
-.preview h1{
-  color:#07551f;
-  margin-bottom:10px;
+.editor h3 {
+  margin-top: 0;
 }
 
-.preview p{
-  margin:10px 0;
-  line-height:1.6;
+.preview {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
 }
 
-.section{
-  margin-top:25px;
-  padding:20px;
-  background:#f8faf8;
-  border-radius:12px;
-  text-align:left;
+iframe {
+  width: 100%;
+  height: 450px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
 }
 
-.section h3{
-  color:#07551f;
-  margin-bottom:8px;
-}
-
-footer{
-  text-align:center;
-  padding:30px;
-  color:#777;
+@media (min-width: 768px) {
+  .editors {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
 }
 </style>
 </head>
@@ -131,99 +127,122 @@ footer{
 <body>
 
 <header>
-  <h1>OTG AI Website Builder</h1>
-  <p>Turn your idea into a beautiful website</p>
+  <h1>🚀 OTG AI Website Builder</h1>
+  <p>Build websites with HTML, CSS, JavaScript and AI</p>
 </header>
 
 <div class="container">
 
-  <div class="card">
+  <div class="ai-box">
+    <h2>🤖 AI Website Assistant</h2>
+    <p>Tell OTG AI what you want to build or change.</p>
 
-    <h2>🚀 Create Your Website</h2>
+    <textarea
+      id="aiPrompt"
+      class="ai-input"
+      placeholder="Example: Create a modern fashion website for Prince Fashion with Home, About, Products and Contact sections."
+    ></textarea>
 
-    <p>
-      Describe the website you want to create.
-    </p>
+    <button onclick="askAI()">✨ Ask OTG AI</button>
 
-    <textarea id="prompt"
-      placeholder="Example: Create a website for my fashion business called Prince Fashion. I sell men's and women's clothing."></textarea>
+    <p id="aiStatus"></p>
+  </div>
 
-    <button onclick="generateWebsite()">
-      ✨ Generate My Website
-    </button>
+  <div class="editors">
 
-    <div id="result">
+    <div class="editor">
+      <h3>📄 HTML</h3>
+      <textarea id="htmlCode">
+<h1>Welcome to OTG Website Builder</h1>
+<p>Start building your website here.</p>
+      </textarea>
+    </div>
 
-      <h2>🌐 Website Preview</h2>
+    <div class="editor">
+      <h3>🎨 CSS</h3>
+      <textarea id="cssCode">
+body {
+  font-family: Arial, sans-serif;
+  padding: 30px;
+}
 
-      <div class="preview">
+h1 {
+  color: green;
+}
+      </textarea>
+    </div>
 
-        <h1 id="websiteTitle">Your Website</h1>
-
-        <p id="websiteDescription">
-          Your website will appear here.
-        </p>
-
-        <div class="section">
-          <h3>About Us</h3>
-          <p id="aboutText">
-            Your business information will appear here.
-          </p>
-        </div>
-
-        <div class="section">
-          <h3>Our Services</h3>
-          <p id="servicesText">
-            Your services will appear here.
-          </p>
-        </div>
-
-        <button>
-          📞 Contact Us
-        </button>
-
-      </div>
-
+    <div class="editor">
+      <h3>⚙️ JavaScript</h3>
+      <textarea id="jsCode">
+console.log("OTG Website Builder is ready!");
+      </textarea>
     </div>
 
   </div>
 
-</div>
+  <div class="preview">
+    <h2>👁️ Live Preview</h2>
 
-<footer>
-  © 2026 OTG AI Website Builder
-</footer>
+    <iframe id="preview"></iframe>
+
+    <br><br>
+
+    <button onclick="updatePreview()">🔄 Update Preview</button>
+  </div>
+
+</div>
 
 <script>
 
-function generateWebsite(){
+function updatePreview() {
 
-  const prompt = document.getElementById("prompt").value.trim();
+  const html = document.getElementById("htmlCode").value;
+  const css = document.getElementById("cssCode").value;
+  const js = document.getElementById("jsCode").value;
 
-  if(prompt === ""){
-    alert("Please describe the website you want to create.");
+  const preview = document.getElementById("preview");
+
+  const documentContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        ${css}
+      </style>
+    </head>
+
+    <body>
+
+      ${html}
+
+      <script>
+        ${js}
+      <\/script>
+
+    </body>
+    </html>
+  `;
+
+  preview.srcdoc = documentContent;
+}
+
+function askAI() {
+
+  const prompt = document.getElementById("aiPrompt").value;
+  const status = document.getElementById("aiStatus");
+
+  if (!prompt.trim()) {
+    status.innerText = "Please describe what you want the AI to build.";
     return;
   }
 
-  document.getElementById("result").style.display = "block";
-
-  document.getElementById("websiteTitle").innerText =
-    "Your New Website";
-
-  document.getElementById("websiteDescription").innerText =
-    prompt;
-
-  document.getElementById("aboutText").innerText =
-    "Welcome to our business. This website was created from your idea.";
-
-  document.getElementById("servicesText").innerText =
-    "Our products and services will be displayed here.";
-
-  document.getElementById("result").scrollIntoView({
-    behavior:"smooth"
-  });
+  status.innerText =
+    "🤖 AI Assistant will be connected here next...";
 
 }
+
+updatePreview();
 
 </script>
 
