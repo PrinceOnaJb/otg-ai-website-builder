@@ -1,250 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OTG AI Website Builder</title>
-
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-  color: #111;
-}
-
-header {
-  background: #111827;
-  color: white;
-  padding: 18px;
-  text-align: center;
-}
-
-header h1 {
-  margin: 0 0 6px;
-  font-size: 24px;
-}
-
-header p {
-  margin: 0;
-  opacity: .8;
-}
-
-.container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 15px;
-}
-
-.ai-box {
-  background: white;
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.08);
-}
-
-.ai-box h2 {
-  margin-top: 0;
-}
-
-textarea {
-  width: 100%;
-  min-height: 180px;
-  background: #111827;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 12px;
-  font-family: monospace;
-  font-size: 14px;
-  resize: vertical;
-}
-
-.ai-input {
-  background: white;
-  color: #111;
-  border: 1px solid #ddd;
-  min-height: 100px;
-  margin-bottom: 10px;
-}
-
-button {
-  background: #16a34a;
-  color: white;
-  border: none;
-  padding: 12px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-button:hover {
-  opacity: .9;
-}
-
-.editor {
-  background: white;
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.08);
-}
-
-.editor h3 {
-  margin-top: 0;
-}
-
-.preview {
-  background: white;
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.08);
-}
-
-iframe {
-  width: 100%;
-  height: 450px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: white;
-}
-
-@media (min-width: 768px) {
-  .editors {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  <h1>🚀 OTG AI Website Builder</h1>
-  <p>Build websites with HTML, CSS, JavaScript and AI</p>
-</header>
-
-<div class="container">
-
-  <div class="ai-box">
-    <h2>🤖 AI Website Assistant</h2>
-    <p>Tell OTG AI what you want to build or change.</p>
-
-    <textarea
-      id="aiPrompt"
-      class="ai-input"
-      placeholder="Example: Create a modern fashion website for Prince Fashion with Home, About, Products and Contact sections."
-    ></textarea>
-
-    <button onclick="askAI()">✨ Ask OTG AI</button>
-
-    <p id="aiStatus"></p>
-  </div>
-
-  <div class="editors">
-
-    <div class="editor">
-      <h3>📄 HTML</h3>
-      <textarea id="htmlCode">
-<h1>Welcome to OTG Website Builder</h1>
-<p>Start building your website here.</p>
-      </textarea>
-    </div>
-
-    <div class="editor">
-      <h3>🎨 CSS</h3>
-      <textarea id="cssCode">
-body {
-  font-family: Arial, sans-serif;
-  padding: 30px;
-}
-
-h1 {
-  color: green;
-}
-      </textarea>
-    </div>
-
-    <div class="editor">
-      <h3>⚙️ JavaScript</h3>
-      <textarea id="jsCode">
-console.log("OTG Website Builder is ready!");
-      </textarea>
-    </div>
-
-  </div>
-
-  <div class="preview">
-    <h2>👁️ Live Preview</h2>
-
-    <iframe id="preview"></iframe>
-
-    <br><br>
-
-    <button onclick="updatePreview()">🔄 Update Preview</button>
-  </div>
-
-</div>
-
-<script>
-
-function updatePreview() {
-
-  const html = document.getElementById("htmlCode").value;
-  const css = document.getElementById("cssCode").value;
-  const js = document.getElementById("jsCode").value;
-
-  const preview = document.getElementById("preview");
-
-  const documentContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        ${css}
-      </style>
-    </head>
-
-    <body>
-
-      ${html}
-
-      <script>
-        ${js}
-      <\/script>
-
-    </body>
-    </html>
-  `;
-
-  preview.srcdoc = documentContent;
-}
-
-function askAI() {
-
-  const prompt = document.getElementById("aiPrompt").value;
-  const status = document.getElementById("aiStatus");
+async function askAI() {
+  const prompt = document.getElementById("prompt").value;
+  const html = document.getElementById("html").value;
+  const css = document.getElementById("css").value;
+  const js = document.getElementById("js").value;
 
   if (!prompt.trim()) {
-    status.innerText = "Please describe what you want the AI to build.";
+    alert("Please describe what you want to build.");
     return;
   }
 
-  status.innerText =
-    "🤖 AI Assistant will be connected here next...";
+  try {
+    const response = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        prompt,
+        html,
+        css,
+        js
+      })
+    });
 
-}
+    const data = await response.json();
 
-updatePreview();
+    if (!response.ok) {
+      throw new Error(data.error || "AI request failed");
+    }
 
-</script>
+    document.getElementById("html").value = data.html || "";
+    document.getElementById("css").value = data.css || "";
+    document.getElementById("js").value = data.js || "";
 
+    updatePreview();
+
+    alert("Your website has been generated successfully!");
+  } catch (error) {
+    alert("Error: " + error.message);
+  }
+}</script>
 </body>
 </html>
