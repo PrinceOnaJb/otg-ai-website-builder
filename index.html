@@ -20,18 +20,18 @@ body{
 }
 
 header{
-  background:#07551f;
+  background:linear-gradient(135deg,#07551f,#0a7a2d);
   color:white;
-  padding:20px;
+  padding:35px 20px;
   text-align:center;
 }
 
 header h1{
-  font-size:28px;
+  font-size:32px;
 }
 
 header p{
-  margin-top:7px;
+  margin-top:10px;
   opacity:.9;
 }
 
@@ -44,7 +44,7 @@ header p{
 .card{
   background:white;
   padding:25px;
-  border-radius:18px;
+  border-radius:20px;
   box-shadow:0 5px 25px rgba(0,0,0,.08);
 }
 
@@ -54,7 +54,7 @@ h2{
 
 textarea{
   width:100%;
-  min-height:130px;
+  min-height:150px;
   margin-top:15px;
   padding:15px;
   border:1px solid #ddd;
@@ -66,7 +66,7 @@ textarea{
 button{
   width:100%;
   margin-top:15px;
-  padding:15px;
+  padding:16px;
   border:none;
   border-radius:10px;
   background:#07551f;
@@ -82,7 +82,7 @@ button:hover{
 
 #result{
   display:none;
-  margin-top:25px;
+  margin-top:30px;
   padding:20px;
   border-radius:15px;
   background:#f1f5f2;
@@ -91,9 +91,33 @@ button:hover{
 
 .preview{
   margin-top:15px;
-  padding:25px;
+  padding:30px;
   background:white;
+  border-radius:15px;
+  text-align:center;
+}
+
+.preview h1{
+  color:#07551f;
+  margin-bottom:10px;
+}
+
+.preview p{
+  margin:10px 0;
+  line-height:1.6;
+}
+
+.section{
+  margin-top:25px;
+  padding:20px;
+  background:#f8faf8;
   border-radius:12px;
+  text-align:left;
+}
+
+.section h3{
+  color:#07551f;
+  margin-bottom:8px;
 }
 
 footer{
@@ -108,7 +132,7 @@ footer{
 
 <header>
   <h1>OTG AI Website Builder</h1>
-  <p>Build your website with the power of AI</p>
+  <p>Turn your idea into a beautiful website</p>
 </header>
 
 <div class="container">
@@ -118,7 +142,7 @@ footer{
     <h2>🚀 Create Your Website</h2>
 
     <p>
-      Tell us what kind of website you want to create.
+      Describe the website you want to create.
     </p>
 
     <textarea id="prompt"
@@ -130,7 +154,7 @@ footer{
 
     <div id="result">
 
-      <h2>Your Website Preview</h2>
+      <h2>🌐 Website Preview</h2>
 
       <div class="preview">
 
@@ -140,8 +164,22 @@ footer{
           Your website will appear here.
         </p>
 
+        <div class="section">
+          <h3>About Us</h3>
+          <p id="aboutText">
+            Your business information will appear here.
+          </p>
+        </div>
+
+        <div class="section">
+          <h3>Our Services</h3>
+          <p id="servicesText">
+            Your services will appear here.
+          </p>
+        </div>
+
         <button>
-          Contact Us
+          📞 Contact Us
         </button>
 
       </div>
@@ -160,9 +198,9 @@ footer{
 
 function generateWebsite(){
 
-  const prompt = document.getElementById("prompt").value;
+  const prompt = document.getElementById("prompt").value.trim();
 
-  if(prompt.trim() === ""){
+  if(prompt === ""){
     alert("Please describe the website you want to create.");
     return;
   }
@@ -173,7 +211,17 @@ function generateWebsite(){
     "Your New Website";
 
   document.getElementById("websiteDescription").innerText =
-    "Website created from your idea: " + prompt;
+    prompt;
+
+  document.getElementById("aboutText").innerText =
+    "Welcome to our business. This website was created from your idea.";
+
+  document.getElementById("servicesText").innerText =
+    "Our products and services will be displayed here.";
+
+  document.getElementById("result").scrollIntoView({
+    behavior:"smooth"
+  });
 
 }
 
