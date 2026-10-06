@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>OTG AI Website Builder</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  background:#f5f7fb;
+  color:#111;
+}
+
+header{
+  background:#07551f;
+  color:white;
+  padding:20px;
+  text-align:center;
+}
+
+header h1{
+  font-size:28px;
+}
+
+header p{
+  margin-top:7px;
+  opacity:.9;
+}
+
+.container{
+  max-width:900px;
+  margin:35px auto;
+  padding:20px;
+}
+
+.card{
+  background:white;
+  padding:25px;
+  border-radius:18px;
+  box-shadow:0 5px 25px rgba(0,0,0,.08);
+}
+
+h2{
+  margin-bottom:10px;
+}
+
+textarea{
+  width:100%;
+  min-height:130px;
+  margin-top:15px;
+  padding:15px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  font-size:16px;
+  resize:vertical;
+}
+
+button{
+  width:100%;
+  margin-top:15px;
+  padding:15px;
+  border:none;
+  border-radius:10px;
+  background:#07551f;
+  color:white;
+  font-size:17px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#0a6b29;
+}
+
+#result{
+  display:none;
+  margin-top:25px;
+  padding:20px;
+  border-radius:15px;
+  background:#f1f5f2;
+  border:1px solid #dce8df;
+}
+
+.preview{
+  margin-top:15px;
+  padding:25px;
+  background:white;
+  border-radius:12px;
+}
+
+footer{
+  text-align:center;
+  padding:30px;
+  color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>OTG AI Website Builder</h1>
+  <p>Build your website with the power of AI</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+
+    <h2>🚀 Create Your Website</h2>
+
+    <p>
+      Tell us what kind of website you want to create.
+    </p>
+
+    <textarea id="prompt"
+      placeholder="Example: Create a website for my fashion business called Prince Fashion. I sell men's and women's clothing."></textarea>
+
+    <button onclick="generateWebsite()">
+      ✨ Generate My Website
+    </button>
+
+    <div id="result">
+
+      <h2>Your Website Preview</h2>
+
+      <div class="preview">
+
+        <h1 id="websiteTitle">Your Website</h1>
+
+        <p id="websiteDescription">
+          Your website will appear here.
+        </p>
+
+        <button>
+          Contact Us
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  © 2026 OTG AI Website Builder
+</footer>
+
+<script>
+
+function generateWebsite(){
+
+  const prompt = document.getElementById("prompt").value;
+
+  if(prompt.trim() === ""){
+    alert("Please describe the website you want to create.");
+    return;
+  }
+
+  document.getElementById("result").style.display = "block";
+
+  document.getElementById("websiteTitle").innerText =
+    "Your New Website";
+
+  document.getElementById("websiteDescription").innerText =
+    "Website created from your idea: " + prompt;
+
+}
+
+</script>
+
+</body>
+</html>
