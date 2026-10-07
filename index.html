@@ -1,2009 +1,2545 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#f5c400">
-<meta name="description" content="OTG AI Website Builder">
-<link rel="manifest" href="/manifest.json">
-<title>OTG AI Website Builder</title>
-
-<style>
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:#f5f6f8;
-  color:#111827
-}
-
-button{
-  cursor:pointer;
-  border:0
-}
-
-.hidden{display:none!important}
-
-header{
-  background:#111827;
-  color:white;
-  padding:18px;
-  text-align:center
-}
-
-header h1{margin:0}
-header p{margin:6px 0 0;color:#f5c400}
-
-nav{
-  background:white;
-  display:flex;
-  justify-content:center;
-  gap:8px;
-  flex-wrap:wrap;
-  padding:12px;
-  box-shadow:0 2px 10px #0001
-}
-
-nav button{
-  background:#f1f3f5;
-  color:#111827;
-  padding:10px 15px;
-  border-radius:8px;
-  font-weight:bold
-}
-
-section.card{
-  max-width:1100px;
-  margin:20px auto;
-  padding:22px;
-  background:white;
-  border-radius:18px;
-  box-shadow:0 5px 25px #0000000d
-}
-
-input,textarea{
-  width:100%;
-  padding:13px;
-  border:1px solid #d8dce2;
-  border-radius:9px;
-  margin:7px 0 14px;
-  font-size:15px
-}
-
-textarea{min-height:140px}
-
-.primary{background:#111827;color:white}
-.gold{background:#f5c400;color:#111827}
-.blue{background:#1769e0;color:white}
-
-button.action{
-  padding:12px 17px;
-  border-radius:9px;
-  font-weight:bold
-}
-
-.actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap
-}
-
-.small{
-  color:#6b7280;
-  font-size:13px
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:18px
-}
-
-.template{
-  padding:22px;
-  border:1px solid #e5e7eb;
-  border-radius:15px;
-  background:white
-}
-
-iframe{
-  width:100%;
-  height:720px;
-  border:1px solid #ddd;
-  border-radius:15px;
-  background:white
-}
-
-/* FASHION STORE */
-
-.fashion-store{
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:#fff;
-  color:#111827
-}
-
-.fashion-store *{box-sizing:border-box}
-
-.store-nav{
-  position:sticky;
-  top:0;
-  z-index:100;
-  background:#111827;
-  color:white;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:15px 6%;
-  box-shadow:0 3px 15px #0004
-}
-
-.store-logo{
-  font-size:22px;
-  font-weight:900
-}
-
-.store-logo span{color:#f5c400}
-
-.store-nav-links{
-  display:flex;
-  gap:20px
-}
-
-.store-nav-links a{
-  color:white;
-  text-decoration:none;
-  font-size:14px
-}
-
-/* CART BUTTON */
-
-.cart-button{
-  background:#f5c400;
-  color:#111827;
-  border-radius:10px;
-  padding:10px 14px;
-  font-weight:bold;
-  white-space:nowrap
-}
-
-/* HERO */
-
-.fashion-hero{
-  min-height:570px;
-  display:flex;
-  align-items:center;
-  padding:60px 7%;
-  background:
-    radial-gradient(circle at 80% 30%,#f5c40055,transparent 30%),
-    linear-gradient(135deg,#fff 0%,#fff9dc 50%,#eaf2ff 100%)
-}
-
-.hero-content{max-width:650px}
-
-.hero-badge{
-  display:inline-block;
-  background:#111827;
-  color:#f5c400;
-  padding:8px 13px;
-  border-radius:30px;
-  font-size:12px;
-  font-weight:bold;
-  letter-spacing:1px
-}
-
-.hero-content h1{
-  font-size:clamp(45px,8vw,82px);
-  line-height:.95;
-  margin:20px 0;
-  color:#111827
-}
-
-.hero-content h1 span{color:#1769e0}
-
-.hero-content p{
-  font-size:18px;
-  line-height:1.7;
-  max-width:550px;
-  color:#4b5563
-}
-
-.hero-buttons{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:28px
-}
-
-.hero-btn{
-  padding:14px 22px;
-  border-radius:10px;
-  font-weight:bold
-}
-
-.hero-btn-main{
-  background:#f5c400;
-  color:#111827
-}
-
-.hero-btn-second{
-  background:#1769e0;
-  color:white
-}
-
-/* SECTION */
-
-.store-section{padding:70px 7%}
-
-.section-title{
-  text-align:center;
-  margin-bottom:35px
-}
-
-.section-title span{color:#1769e0}
-
-.section-title h2{
-  font-size:36px;
-  margin:8px 0
-}
-
-.section-title p{color:#6b7280}
-
-/* FILTER */
-
-.filters{
-  display:flex;
-  justify-content:center;
-  gap:9px;
-  flex-wrap:wrap;
-  margin-bottom:30px
-}
-
-.filter-btn{
-  padding:10px 16px;
-  border-radius:25px;
-  background:#eef0f3;
-  color:#111827;
-  font-weight:bold
-}
-
-.filter-btn.active{background:#f5c400}
-
-/* SEARCH */
-
-.search-box{
-  max-width:500px;
-  margin:0 auto 30px
-}
-
-.search-box input{
-  margin:0;
-  border-radius:30px;
-  padding:15px 20px
-}
-
-/* PRODUCTS */
-
-.product-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-  gap:24px
-}
-
-.product-card{
-  background:white;
-  border-radius:18px;
-  overflow:hidden;
-  box-shadow:0 8px 30px #00000012;
-  transition:.25s;
-  border:1px solid #edf0f3
-}
-
-.product-card:hover{
-  transform:translateY(-5px);
-  box-shadow:0 14px 35px #0000001c
-}
-
-.product-image{
-  height:240px;
-  background:linear-gradient(135deg,#fff5b8,#e9f1ff);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:55px;
-  position:relative
-}
-
-.product-tag{
-  position:absolute;
-  top:12px;
-  left:12px;
-  background:#1769e0;
-  color:white;
-  padding:6px 9px;
-  border-radius:20px;
-  font-size:11px;
-  font-weight:bold
-}
-
-.product-info{padding:18px}
-
-.product-info h3{margin:0 0 7px}
-
-.product-info p{
-  color:#6b7280;
-  font-size:13px
-}
-
-.price{
-  color:#1769e0;
-  font-size:20px;
-  font-weight:900;
-  margin:12px 0
-}
-
-.product-actions{
-  display:flex;
-  gap:8px
-}
-
-.add-cart{
-  flex:1;
-  padding:11px;
-  border-radius:9px;
-  background:#111827;
-  color:white;
-  font-weight:bold
-}
-
-.buy-now{
-  padding:11px;
-  border-radius:9px;
-  background:#f5c400;
-  color:#111827;
-  font-weight:bold
-}
-
-/* FEATURES */
-
-.features{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:18px
-}
-
-.feature{
-  padding:25px;
-  border-radius:15px;
-  background:#f8f9fb;
-  text-align:center
-}
-
-.feature-icon{font-size:32px}
-
-/* CART */
-
-.cart-panel{
-  position:fixed;
-  right:0;
-  top:0;
-  height:100vh;
-  width:min(420px,100%);
-  background:white;
-  z-index:1000;
-  box-shadow:-8px 0 30px #0003;
-  padding:22px;
-  transform:translateX(100%);
-  transition:.3s;
-  overflow:auto
-}
-
-.cart-panel.open{transform:translateX(0)}
-
-.cart-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center
-}
-
-.close-cart{
-  background:#eee;
-  padding:9px 12px;
-  border-radius:8px
-}
-
-.cart-item{
-  padding:15px 0;
-  border-bottom:1px solid #eee
-}
-
-.cart-item-top{
-  display:flex;
-  justify-content:space-between;
-  gap:10px
-}
-
-.quantity{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-top:10px
-}
-
-.quantity button{
-  width:30px;
-  height:30px;
-  border-radius:7px;
-  background:#eef0f3
-}
-
-.cart-total{
-  font-size:24px;
-  font-weight:900;
-  margin:25px 0
-}
-
-.checkout{
-  width:100%;
-  padding:15px;
-  border-radius:10px;
-  background:#1769e0;
-  color:white;
-  font-weight:bold
-}
-
-/* FOOTER */
-
-.store-footer{
-  background:#111827;
-  color:white;
-  padding:50px 7%
-}
-
-.store-footer h2{color:#f5c400}
-
-.store-footer p{color:#cbd5e1}
-
-.footer-bottom{
-  border-top:1px solid #ffffff22;
-  margin-top:30px;
-  padding-top:20px;
-  color:#94a3b8
-}
-
-/* MOBILE */
-
-@media(max-width:700px){
-
-  .store-nav{padding:13px 4%}
-
-  .store-nav-links{display:none}
-
-  .fashion-hero{
-    min-height:520px;
-    padding:45px 6%
-  }
-
-  .hero-content h1{font-size:50px}
-
-  .hero-content p{font-size:16px}
-
-  .store-section{padding:50px 5%}
-
-  .section-title h2{font-size:29px}
-
-  .product-grid{
-    grid-template-columns:repeat(2,1fr);
-    gap:12px
-  }
-
-  .product-image{
-    height:170px;
-    font-size:40px
-  }
-
-  .product-info{padding:13px}
-
-  .product-info h3{font-size:15px}
-
-  .price{font-size:16px}
-
-  .product-actions{flex-direction:column}
-
-  .add-cart,.buy-now{width:100%}
-}
-
-@media(max-width:420px){
-
-  .product-grid{grid-template-columns:1fr}
-
-  .hero-content h1{font-size:44px}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>OTG AI Website Builder</title>
+  <meta
+    name="description"
+    content="Build beautiful websites with AI using your phone."
+  />
+
+  <link rel="manifest" href="/manifest.json" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f8;
+      color: #111827;
+      min-height: 100vh;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .topbar {
+      background: #111827;
+      color: white;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .brand {
+      font-weight: 800;
+      font-size: 20px;
+    }
+
+    .brand span {
+      color: #facc15;
+    }
+
+    .user-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .container {
+      width: min(1200px, 94%);
+      margin: 20px auto 50px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #111827, #1d4ed8);
+      color: white;
+      padding: 35px 25px;
+      border-radius: 22px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 7vw, 52px);
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      max-width: 720px;
+      line-height: 1.6;
+      color: #dbeafe;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.07);
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      margin-bottom: 8px;
+    }
+
+    .muted {
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .field {
+      margin-top: 14px;
+    }
+
+    .field label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 7px;
+      font-size: 14px;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 12px;
+      background: white;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 700;
+      transition: .2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .success {
+      background: #16a34a;
+      color: white;
+    }
+
+    .dark {
+      background: #111827;
+      color: white;
+    }
+
+    .yellow {
+      background: #facc15;
+      color: #111827;
+    }
+
+    .danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    .light {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin-bottom: 15px;
+    }
+
+    .tab {
+      border: none;
+      padding: 10px 15px;
+      border-radius: 10px;
+      background: #e5e7eb;
+      white-space: nowrap;
+      font-weight: 700;
+    }
+
+    .tab.active {
+      background: #2563eb;
+      color: white;
+    }
+
+    .editor-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .code-box textarea {
+      min-height: 400px;
+      font-family: monospace;
+      font-size: 13px;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+
+    .preview {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      background: white;
+    }
+
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 15px;
+    }
+
+    .template {
+      border: 1px solid #e5e7eb;
+      border-radius: 15px;
+      padding: 18px;
+      background: #fff;
+    }
+
+    .template h3 {
+      margin-bottom: 8px;
+    }
+
+    .template p {
+      color: #64748b;
+      font-size: 13px;
+      min-height: 45px;
+      margin-bottom: 12px;
+    }
+
+    .product-row {
+      display: grid;
+      grid-template-columns: 1.3fr .8fr .8fr 1.3fr 70px 45px;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .product-row input {
+      padding: 9px;
+    }
+
+    .product-row button {
+      border: none;
+      border-radius: 8px;
+      padding: 9px;
+    }
+
+    .auth-box {
+      max-width: 500px;
+      margin: 50px auto;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .status {
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .status.info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .status.success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .project-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 13px;
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .small {
+      font-size: 12px;
+    }
+
+    @media (max-width: 800px) {
+      .grid,
+      .editor-grid,
+      .template-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .product-row {
+        grid-template-columns: 1fr 1fr;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 12px;
+      }
+
+      .preview {
+        height: 500px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-<h1>OTG AI Website Builder</h1>
-<p>Build beautiful websites with AI</p>
-</header>
-
-<nav>
-<button onclick="showSection('home')">Home</button>
-<button onclick="showSection('builder')">Builder</button>
-<button onclick="showSection('templates')">Templates</button>
-<button onclick="showSection('install')">Install App</button>
-</nav>
-
-<section id="home" class="card">
-
-<h2>Build Your Website With AI</h2>
-
-<p>Create a professional website from your phone using AI.</p>
-
-<div id="authBox">
-
-<h3>Student Login</h3>
-
-<input id="email" type="email" placeholder="Email">
-
-<input id="password" type="password" placeholder="Password">
-
-<div class="actions">
-
-<button class="action primary" onclick="signIn()">Login</button>
-
-<button class="action" onclick="signUp()">Create Account</button>
-
-</div>
-
-<p id="authMessage" class="small"></p>
-
-</div>
-
-<div id="loggedIn" class="hidden">
-
-<p>✅ You are logged in.</p>
-
-<button class="action primary" onclick="showSection('builder')">
-Open Builder
-</button>
-
-<button class="action" onclick="signOut()">Logout</button>
-
-</div>
-
-</section>
-
-<section id="builder" class="card hidden">
-
-<h2>AI Website Builder</h2>
-
-<label>Describe the website you want</label>
-
-<textarea id="prompt"
-placeholder="Example: Create a premium fashion website for my clothing business."></textarea>
-
-<label>WhatsApp Contact Number</label>
-
-<input
-id="whatsappNumber"
-placeholder="Example: 2348012345678">
-
-<div class="actions">
-
-<button class="action primary"
-onclick="generateWebsite()">
-✨ Generate Website
-</button>
-
-<button class="action"
-onclick="showSection('templates')">
-Use Template
-</button>
-
-</div>
-
-<p id="aiStatus" class="small"></p>
-
-<h3>Live Preview</h3>
-
-<iframe id="preview"></iframe>
-
-<div class="actions">
-
-<button class="action gold"
-onclick="publishWebsite()">
-🚀 Publish Website
-</button>
-
-</div>
-
-<p id="publishResult"></p>
-
-</section>
-
-<section id="templates" class="card hidden">
-
-<h2>Website Templates</h2>
-
-<div class="grid">
-
-<div class="template">
-
-<h3>Fashion Store</h3>
-
-<p>Premium clothing store with cart and WhatsApp checkout.</p>
-
-<button class="action primary"
-onclick="useFashionTemplate()">
-Use Template
-</button>
-
-</div>
-
-<div class="template">
-
-<h3>Business</h3>
-
-<p>Professional business website.</p>
-
-<button class="action primary"
-onclick="useBusinessTemplate()">
-Use Template
-</button>
-
-</div>
-
-<div class="template">
-
-<h3>Portfolio</h3>
-
-<p>Personal portfolio website.</p>
-
-<button class="action primary"
-onclick="usePortfolioTemplate()">
-Use Template
-</button>
-
-</div>
-
-</div>
-
-</section>
-
-<section id="install" class="card hidden">
-
-<h2>Install OTG AI Website Builder</h2>
-
-<p>Add OTG AI Website Builder to your phone's home screen.</p>
-
-<p class="small">
-In Chrome, tap the three dots ⋮ and choose
-<b>Add to Home screen</b> or <b>Install app</b>.
-</p>
-
-</section>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <header class="topbar">
+    <div class="brand">OTG <span>AI</span> Website Builder</div>
+
+    <div class="user-area">
+      <span id="userEmail" class="small"></span>
+      <button id="loginBtn" class="btn yellow" onclick="showAuth()">Login / Sign Up</button>
+      <button id="logoutBtn" class="btn light hidden" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- LANDING / AUTH -->
+    <section id="authSection" class="card auth-box hidden">
+      <h2 id="authTitle">Create your OTG account</h2>
+      <p class="muted">
+        Sign up to build, save and publish your own websites.
+      </p>
+
+      <div class="field">
+        <label>Email</label>
+        <input id="authEmail" type="email" placeholder="you@example.com">
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input id="authPassword" type="password" placeholder="Minimum 6 characters">
+      </div>
+
+      <div class="row" style="margin-top:15px;">
+        <button class="btn primary" onclick="signUp()">Create Account</button>
+        <button class="btn dark" onclick="signIn()">Login</button>
+      </div>
+
+      <div id="authMessage"></div>
+    </section>
+
+    <section id="builderSection">
+
+      <section class="hero">
+        <h1>Build your website with AI.</h1>
+        <p>
+          Describe what you want and OTG AI will create the website for you.
+          Edit it, preview it, save it and publish it.
+        </p>
+      </section>
+
+      <!-- AI -->
+      <section class="card">
+        <h2>🚀 Create Your Website</h2>
+        <p class="muted">
+          Tell the AI what you want to build.
+        </p>
+
+        <div class="field">
+          <textarea
+            id="aiPrompt"
+            placeholder="Example: Create a professional website for my restaurant called Taste Haven. We sell Nigerian and continental food. Add a menu, prices, location, WhatsApp ordering and a beautiful mobile design."
+          ></textarea>
+        </div>
+
+        <div class="row" style="margin-top:12px;">
+          <button class="btn primary" onclick="generateWithAI()">
+            ✨ Generate Website
+          </button>
+
+          <button class="btn light" onclick="clearBuilder()">
+            Clear
+          </button>
+        </div>
+
+        <div id="aiStatus"></div>
+      </section>
+
+      <!-- TEMPLATES -->
+      <section class="card">
+        <h2>Website Templates</h2>
+        <p class="muted">
+          Start quickly with a template, then customize everything.
+        </p>
+
+        <div class="template-grid">
+
+          <div class="template">
+            <h3>👗 Fashion Store</h3>
+            <p>
+              Clothing, products, cart and WhatsApp ordering.
+            </p>
+            <button class="btn primary" onclick="loadFashionTemplate()">
+              Use Template
+            </button>
+          </div>
+
+          <div class="template">
+            <h3>🍔 Restaurant</h3>
+            <p>
+              Menu, food products, prices and contact section.
+            </p>
+            <button class="btn primary" onclick="loadRestaurantTemplate()">
+              Use Template
+            </button>
+          </div>
+
+          <div class="template">
+            <h3>💼 Portfolio</h3>
+            <p>
+              Personal portfolio for designers, developers and creatives.
+            </p>
+            <button class="btn primary" onclick="loadPortfolioTemplate()">
+              Use Template
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- STORE MANAGER -->
+      <section id="storeManager" class="card hidden">
+
+        <h2>🛍️ Manage Your Products</h2>
+
+        <p class="muted">
+          Change your products and prices here. <b>No coding required.</b>
+        </p>
+
+        <div class="grid">
+
+          <div class="field">
+            <label>Business / Store Name</label>
+            <input id="storeName" value="Prince Fashion">
+          </div>
+
+          <div class="field">
+            <label>Tagline</label>
+            <input id="storeTagline" value="Style for everyone">
+          </div>
+
+          <div class="field">
+            <label>WhatsApp Number</label>
+            <input id="storeWhatsapp" placeholder="2348012345678">
+          </div>
+
+        </div>
+
+        <div style="margin-top:20px;">
+          <h3>Products</h3>
+          <p class="muted small">
+            Name | Price | Category | Description | Emoji/Image
+          </p>
+        </div>
+
+        <div id="productsEditor" style="margin-top:12px;"></div>
+
+        <div class="row" style="margin-top:15px;">
+          <button class="btn success" onclick="addProduct()">
+            + Add Product
+          </button>
+
+          <button class="btn primary" onclick="updateStorePreview()">
+            🔄 Update Preview
+          </button>
+        </div>
+
+      </section>
+
+      <!-- EDITOR -->
+      <section class="card">
+
+        <div class="tabs">
+          <button class="tab active" onclick="showEditor('html', this)">HTML</button>
+          <button class="tab" onclick="showEditor('css', this)">CSS</button>
+          <button class="tab" onclick="showEditor('js', this)">JavaScript</button>
+          <button class="tab" onclick="showEditor('preview', this)">Live Preview</button>
+        </div>
+
+        <div id="htmlEditor" class="code-box">
+          <textarea id="htmlCode" spellcheck="false"></textarea>
+        </div>
+
+        <div id="cssEditor" class="code-box hidden">
+          <textarea id="cssCode" spellcheck="false"></textarea>
+        </div>
+
+        <div id="jsEditor" class="code-box hidden">
+          <textarea id="jsCode" spellcheck="false"></textarea>
+        </div>
+
+        <div id="previewEditor" class="hidden">
+          <iframe id="previewFrame" class="preview"></iframe>
+        </div>
+
+        <div class="row" style="margin-top:15px;">
+          <button class="btn primary" onclick="updatePreview()">
+            ▶ Update Preview
+          </button>
+
+          <button class="btn success" onclick="saveProject()">
+            💾 Save Project
+          </button>
+
+          <button class="btn yellow" onclick="publishWebsite()">
+            🌍 Publish Website
+          </button>
+        </div>
+
+        <div id="saveStatus"></div>
+
+      </section>
+
+      <!-- PROJECTS -->
+      <section class="card">
+        <h2>📁 My Projects</h2>
+        <p class="muted">
+          Your saved websites appear here.
+        </p>
+
+        <div id="projectsList">
+          <p class="muted">Login to see your projects.</p>
+        </div>
+      </section>
+
+    </section>
+
+  </main>
 
 <script>
 
-const SUPABASE_URL =
-"https://actwvvokfdemobgsfctx.supabase.co";
+  /* ============================================================
+     SUPABASE
+  ============================================================ */
 
-const SUPABASE_KEY =
-"sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
+  const SUPABASE_URL =
+    "https://actwvvokfdemobgsfctx.supabase.co";
 
-const supabaseClient =
-window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
+  const SUPABASE_KEY =
+    "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
 
-let currentHTML="";
-let currentCSS="";
-let currentJS="";
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
 
-function showSection(id){
 
-document.querySelectorAll("section")
-.forEach(s=>s.classList.add("hidden"));
+  /* ============================================================
+     GLOBAL STATE
+  ============================================================ */
 
-document.getElementById(id)
-.classList.remove("hidden");
+  let currentUser = null;
+  let currentProjectId = null;
+  let currentProjectSlug = null;
 
-}
+  let currentHTML = "";
+  let currentCSS = "";
+  let currentJS = "";
 
-async function signUp(){
+  let storeProducts = [];
 
-const email=document
-.getElementById("email").value.trim();
 
-const password=document
-.getElementById("password").value;
+  /* ============================================================
+     STARTUP
+  ============================================================ */
 
-if(!email||!password){
+  document.addEventListener("DOMContentLoaded", async () => {
 
-alert("Enter your email and password.");
+    await checkUser();
 
-return;
-}
+    loadPublicWebsite();
 
-const {error}=await supabaseClient.auth.signUp({
-email,
-password
-});
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
 
-document.getElementById("authMessage")
-.textContent=
-error
-? error.message
-: "Account created. Check your email to confirm your account.";
+  });
 
-}
 
-async function signIn(){
+  /* ============================================================
+     AUTH
+  ============================================================ */
 
-const email=document
-.getElementById("email").value.trim();
+  async function checkUser() {
 
-const password=document
-.getElementById("password").value;
+    const {
+      data: { session }
+    } = await supabaseClient.auth.getSession();
 
-const {error}=
-await supabaseClient.auth.signInWithPassword({
-email,
-password
-});
+    if (session) {
+      currentUser = session.user;
+      showLoggedIn();
+      await loadProjects();
+    } else {
+      showLoggedOut();
+    }
 
-if(error){
+  }
 
-document.getElementById("authMessage")
-.textContent=error.message;
 
-return;
-}
+  function showLoggedIn() {
 
-updateAuthUI();
+    document.getElementById("userEmail").textContent =
+      currentUser.email;
 
-}
+    document.getElementById("loginBtn")
+      .classList.add("hidden");
 
-async function signOut(){
+    document.getElementById("logoutBtn")
+      .classList.remove("hidden");
 
-await supabaseClient.auth.signOut();
+    document.getElementById("authSection")
+      .classList.add("hidden");
 
-updateAuthUI();
+  }
 
-showSection("home");
 
-}
+  function showLoggedOut() {
 
-async function updateAuthUI(){
+    currentUser = null;
 
-const {data}=
-await supabaseClient.auth.getSession();
+    document.getElementById("userEmail").textContent = "";
 
-if(data.session){
+    document.getElementById("loginBtn")
+      .classList.remove("hidden");
 
-document.getElementById("authBox")
-.classList.add("hidden");
+    document.getElementById("logoutBtn")
+      .classList.add("hidden");
 
-document.getElementById("loggedIn")
-.classList.remove("hidden");
+  }
 
-}else{
 
-document.getElementById("authBox")
-.classList.remove("hidden");
+  function showAuth() {
 
-document.getElementById("loggedIn")
-.classList.add("hidden");
+    document.getElementById("authSection")
+      .classList.remove("hidden");
 
-}
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
 
-}
+  }
 
-async function generateWebsite(){
 
-const prompt=
-document.getElementById("prompt")
-.value.trim();
+  async function signUp() {
 
-if(!prompt){
+    const email =
+      document.getElementById("authEmail").value.trim();
 
-alert("Describe the website you want.");
+    const password =
+      document.getElementById("authPassword").value;
 
-return;
-}
+    if (!email || !password) {
+      authMessage("Enter your email and password.", "error");
+      return;
+    }
 
-document.getElementById("aiStatus")
-.textContent="Generating website...";
+    const { error } =
+      await supabaseClient.auth.signUp({
+        email,
+        password
+      });
 
-try{
+    if (error) {
+      authMessage(error.message, "error");
+      return;
+    }
 
-const response=
-await fetch("/api/generate.js",{
+    authMessage(
+      "Account created. Check your email if confirmation is required.",
+      "success"
+    );
 
-method:"POST",
+  }
 
-headers:{
-"Content-Type":"application/json"
-},
 
-body:JSON.stringify({
+  async function signIn() {
 
-prompt,
-html:currentHTML,
-css:currentCSS,
-js:currentJS
+    const email =
+      document.getElementById("authEmail").value.trim();
 
-})
+    const password =
+      document.getElementById("authPassword").value;
 
-});
+    if (!email || !password) {
+      authMessage("Enter your email and password.", "error");
+      return;
+    }
 
-const data=await response.json();
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
 
-if(!response.ok){
+    if (error) {
+      authMessage(error.message, "error");
+      return;
+    }
 
-throw new Error(
-data.error||"AI generation failed."
-);
+    currentUser = data.user;
 
-}
+    showLoggedIn();
 
-currentHTML=data.html||"";
-currentCSS=data.css||"";
-currentJS=data.js||"";
+    await loadProjects();
 
-renderPreview();
+  }
 
-document.getElementById("aiStatus")
-.textContent=
-"✅ Website generated successfully.";
 
-}catch(error){
+  async function logout() {
 
-document.getElementById("aiStatus")
-.textContent=
-"❌ "+error.message;
+    await supabaseClient.auth.signOut();
 
-}
+    currentUser = null;
+    currentProjectId = null;
 
-}
+    showLoggedOut();
 
-function renderPreview(){
+  }
 
-const whatsapp=
-document.getElementById("whatsappNumber")
-.value
-.replace(/[^0-9]/g,"");
 
-const doc=`
+  function authMessage(message, type) {
 
+    document.getElementById("authMessage").innerHTML =
+      `<div class="status ${type}">${escapeHTML(message)}</div>`;
+
+  }
+
+
+  /* ============================================================
+     AI
+  ============================================================ */
+
+  async function generateWithAI() {
+
+    const prompt =
+      document.getElementById("aiPrompt").value.trim();
+
+    if (!prompt) {
+      showAIStatus(
+        "Tell me what website you want to build first.",
+        "error"
+      );
+      return;
+    }
+
+    const button =
+      document.querySelector(
+        'button[onclick="generateWithAI()"]'
+      );
+
+    button.disabled = true;
+    button.textContent = "⏳ Building...";
+
+    showAIStatus(
+      "OTG AI is building your website...",
+      "info"
+    );
+
+    try {
+
+      const response = await fetch(
+        "/api/generate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prompt,
+            html: currentHTML,
+            css: currentCSS,
+            js: currentJS
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "AI generation failed."
+        );
+      }
+
+      currentHTML = data.html || "";
+      currentCSS = data.css || "";
+      currentJS = data.js || "";
+
+      syncEditors();
+
+      updatePreview();
+
+      showAIStatus(
+        "Website generated successfully.",
+        "success"
+      );
+
+    } catch (error) {
+
+      showAIStatus(
+        error.message,
+        "error"
+      );
+
+    }
+
+    button.disabled = false;
+    button.textContent = "✨ Generate Website";
+
+  }
+
+
+  function showAIStatus(message, type) {
+
+    document.getElementById("aiStatus").innerHTML =
+      `<div class="status ${type}">${escapeHTML(message)}</div>`;
+
+  }
+
+
+  /* ============================================================
+     EDITORS
+  ============================================================ */
+
+  function syncEditors() {
+
+    document.getElementById("htmlCode").value =
+      currentHTML;
+
+    document.getElementById("cssCode").value =
+      currentCSS;
+
+    document.getElementById("jsCode").value =
+      currentJS;
+
+  }
+
+
+  function readEditors() {
+
+    currentHTML =
+      document.getElementById("htmlCode").value;
+
+    currentCSS =
+      document.getElementById("cssCode").value;
+
+    currentJS =
+      document.getElementById("jsCode").value;
+
+  }
+
+
+  function showEditor(type, button) {
+
+    document.querySelectorAll(".tab")
+      .forEach(tab => tab.classList.remove("active"));
+
+    if (button) {
+      button.classList.add("active");
+    }
+
+    document.getElementById("htmlEditor")
+      .classList.add("hidden");
+
+    document.getElementById("cssEditor")
+      .classList.add("hidden");
+
+    document.getElementById("jsEditor")
+      .classList.add("hidden");
+
+    document.getElementById("previewEditor")
+      .classList.add("hidden");
+
+    if (type === "html") {
+      document.getElementById("htmlEditor")
+        .classList.remove("hidden");
+    }
+
+    if (type === "css") {
+      document.getElementById("cssEditor")
+        .classList.remove("hidden");
+    }
+
+    if (type === "js") {
+      document.getElementById("jsEditor")
+        .classList.remove("hidden");
+    }
+
+    if (type === "preview") {
+      document.getElementById("previewEditor")
+        .classList.remove("hidden");
+
+      updatePreview();
+    }
+
+  }
+
+
+  function updatePreview() {
+
+    readEditors();
+
+    const documentHTML = `
 <!DOCTYPE html>
-
 <html>
-
 <head>
-
-<meta name="viewport"
-content="width=device-width,initial-scale=1">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 ${currentCSS}
 </style>
-
 </head>
-
 <body>
 
 ${currentHTML}
 
 <script>
-
-window.OTG_WHATSAPP="${whatsapp}";
-
 ${currentJS}
-
 <\/script>
 
 </body>
-
 </html>
-
 `;
 
-document.getElementById("preview")
-.srcdoc=doc;
+    document.getElementById("previewFrame").srcdoc =
+      documentHTML;
 
-}
+  }
 
-/* FASHION TEMPLATE */
 
-function useFashionTemplate(){
+  /* ============================================================
+     PRODUCT MANAGER
+  ============================================================ */
 
-currentHTML=`
+  function defaultProducts() {
 
-<div class="fashion-store">
+    return [
+      {
+        name: "Classic Shirt",
+        price: 25000,
+        category: "Men",
+        description: "Premium classic shirt.",
+        icon: "👕",
+        image: ""
+      },
+      {
+        name: "Elegant Dress",
+        price: 45000,
+        category: "Women",
+        description: "Beautiful elegant dress.",
+        icon: "👗",
+        image: ""
+      },
+      {
+        name: "Premium Outfit",
+        price: 55000,
+        category: "New Arrivals",
+        description: "Premium fashion outfit.",
+        icon: "✨",
+        image: ""
+      }
+    ];
 
-<header class="store-nav">
+  }
 
-<div class="store-logo">
-Prince <span>Fashion</span>
-</div>
 
-<div class="store-nav-links">
+  function renderProductEditor() {
 
-<a href="#home">Home</a>
-<a href="#collection">Shop</a>
-<a href="#about">About</a>
-<a href="#contact">Contact</a>
+    const container =
+      document.getElementById("productsEditor");
 
-</div>
+    container.innerHTML = "";
 
-<button class="cart-button"
-onclick="openCart()">
+    storeProducts.forEach((product, index) => {
 
-🛒 Cart <span id="cartCount">₦0</span>
+      const row =
+        document.createElement("div");
 
-</button>
+      row.className = "product-row";
 
+      row.innerHTML = `
+        <input
+          data-index="${index}"
+          data-field="name"
+          value="${escapeAttribute(product.name)}"
+          placeholder="Product name"
+        >
+
+        <input
+          data-index="${index}"
+          data-field="price"
+          type="number"
+          value="${Number(product.price) || 0}"
+          placeholder="Price"
+        >
+
+        <input
+          data-index="${index}"
+          data-field="category"
+          value="${escapeAttribute(product.category)}"
+          placeholder="Category"
+        >
+
+        <input
+          data-index="${index}"
+          data-field="description"
+          value="${escapeAttribute(product.description)}"
+          placeholder="Description"
+        >
+
+        <input
+          data-index="${index}"
+          data-field="icon"
+          value="${escapeAttribute(product.icon || "🛍️")}"
+          placeholder="Emoji"
+        >
+
+        <button
+          class="danger"
+          onclick="removeProduct(${index})"
+        >
+          ×
+        </button>
+      `;
+
+      container.appendChild(row);
+
+    });
+
+  }
+
+
+  function readProductEditor() {
+
+    document
+      .querySelectorAll("#productsEditor [data-field]")
+      .forEach(input => {
+
+        const index =
+          Number(input.dataset.index);
+
+        const field =
+          input.dataset.field;
+
+        storeProducts[index][field] =
+          input.value;
+
+      });
+
+    storeProducts.forEach(product => {
+
+      product.price =
+        Number(product.price) || 0;
+
+    });
+
+  }
+
+
+  function addProduct() {
+
+    readProductEditor();
+
+    storeProducts.push({
+      name: "New Product",
+      price: 10000,
+      category: "Products",
+      description: "Product description",
+      icon: "🛍️",
+      image: ""
+    });
+
+    renderProductEditor();
+
+  }
+
+
+  function removeProduct(index) {
+
+    readProductEditor();
+
+    if (storeProducts.length <= 1) {
+      alert("You need at least one product.");
+      return;
+    }
+
+    storeProducts.splice(index, 1);
+
+    renderProductEditor();
+
+  }
+
+
+  function updateStorePreview() {
+
+    readProductEditor();
+
+    buildFashionStore();
+
+    syncEditors();
+
+    updatePreview();
+
+  }
+
+
+  /* ============================================================
+     FASHION STORE TEMPLATE
+  ============================================================ */
+
+  function loadFashionTemplate() {
+
+    storeProducts =
+      defaultProducts();
+
+    document.getElementById("storeManager")
+      .classList.remove("hidden");
+
+    renderProductEditor();
+
+    buildFashionStore();
+
+    syncEditors();
+
+    updatePreview();
+
+    document.getElementById("aiPrompt").value =
+      "Create a professional fashion store.";
+
+  }
+
+
+  function buildFashionStore() {
+
+    const name =
+      document.getElementById("storeName").value ||
+      "My Store";
+
+    const tagline =
+      document.getElementById("storeTagline").value ||
+      "Quality products for everyone";
+
+    const whatsapp =
+      document.getElementById("storeWhatsapp").value ||
+      "";
+
+    const productsJSON =
+      JSON.stringify(storeProducts);
+
+    currentHTML = `
+<header class="shop-header">
+  <div>
+    <h1>${escapeHTML(name)}</h1>
+    <p>${escapeHTML(tagline)}</p>
+  </div>
+
+  <button id="cartButton">
+    🛒 Cart <span id="cartCount">0</span>
+  </button>
 </header>
 
-<section class="fashion-hero" id="home">
+<section class="shop-hero">
+  <div>
+    <h2>Welcome to ${escapeHTML(name)}</h2>
+    <p>${escapeHTML(tagline)}</p>
 
-<div class="hero-content">
-
-<div class="hero-badge">
-NEW COLLECTION 2026
-</div>
-
-<h1>
-Style That
-<span>Speaks.</span>
-</h1>
-
-<p>
-Discover premium men's and women's fashion
-designed for people who want to look confident,
-elegant and unforgettable.
-</p>
-
-<div class="hero-buttons">
-
-<button
-class="hero-btn hero-btn-main"
-onclick="scrollToCollection()">
-Shop Collection
-</button>
-
-<button
-class="hero-btn hero-btn-second"
-onclick="contactWhatsApp()">
-Chat on WhatsApp
-</button>
-
-</div>
-
-</div>
-
+    <a href="#products">
+      <button>Shop Now</button>
+    </a>
+  </div>
 </section>
 
-<section class="store-section" id="collection">
-
-<div class="section-title">
-
-<p>CURATED FOR YOU</p>
-
-<h2>
-Our <span>Collection</span>
-</h2>
-
-<p>Find your perfect style.</p>
-
-</div>
-
-<div class="search-box">
-
-<input
-id="productSearch"
-placeholder="🔍 Search products..."
-oninput="searchProducts">
-
-</div>
-
-<div class="filters">
-
-<button class="filter-btn active"
-onclick="filterProducts('all',this)">
-All
-</button>
-
-<button class="filter-btn"
-onclick="filterProducts('men',this)">
-Men
-</button>
-
-<button class="filter-btn"
-onclick="filterProducts('women',this)">
-Women
-</button>
-
-<button class="filter-btn"
-onclick="filterProducts('new',this)">
-New Arrivals
-</button>
-
-</div>
-
-<div class="product-grid" id="productGrid">
-
-<div class="product-card"
-data-category="men"
-data-name="Classic Shirt">
-
-<div class="product-image">
-
-<span class="product-tag">MEN</span>
-👔
-
-</div>
-
-<div class="product-info">
-
-<h3>Classic Shirt</h3>
-
-<p>Premium everyday shirt.</p>
-
-<div class="price">₦25,000</div>
-
-<div class="product-actions">
-
-<button class="add-cart"
-onclick="addToCart('Classic Shirt',25000,'👔')">
-Add to Cart
-</button>
-
-<button class="buy-now"
-onclick="buyNow('Classic Shirt',25000)">
-Buy
-</button>
-
-</div>
-
-</div>
-</div>
-
-<div class="product-card"
-data-category="men"
-data-name="Premium Senator">
-
-<div class="product-image">
-
-<span class="product-tag">MEN</span>
-🥻
-
-</div>
-
-<div class="product-info">
-
-<h3>Premium Senator</h3>
-
-<p>Elegant traditional outfit.</p>
-
-<div class="price">₦65,000</div>
-
-<div class="product-actions">
-
-<button class="add-cart"
-onclick="addToCart('Premium Senator',65000,'🥻')">
-Add to Cart
-</button>
-
-<button class="buy-now"
-onclick="buyNow('Premium Senator',65000)">
-Buy
-</button>
-
-</div>
-
-</div>
-</div>
-
-<div class="product-card"
-data-category="men"
-data-name="Casual T-Shirt">
-
-<div class="product-image">
-
-<span class="product-tag">MEN</span>
-👕
-
-</div>
-
-<div class="product-info">
-
-<h3>Casual T-Shirt</h3>
-
-<p>Comfortable casual style.</p>
-
-<div class="price">₦18,000</div>
-
-<div class="product-actions">
-
-<button class="add-cart"
-onclick="addToCart('Casual T-Shirt',18000,'👕')">
-Add to Cart
-</button>
-
-<button class="buy-now"
-onclick="buyNow('Casual T-Shirt',18000)">
-Buy
-</button>
-
-</div>
-
-</div>
-</div>
-
-<div class="product-card"
-data-category="women"
-data-name="Elegant Dress">
-
-<div class="product-image">
-
-<span class="product-tag">WOMEN</span>
-👗
-
-</div>
-
-<div class="product-info">
-
-<h3>Elegant Dress</h3>
-
-<p>Elegant modern fashion.</p>
-
-<div class="price">₦45,000</div>
-
-<div class="product-actions">
-
-<button class="add-cart"
-onclick="addToCart('Elegant Dress',45000,'👗')">
-Add to Cart
-</button>
-
-<button class="buy-now"
-onclick="buyNow('Elegant Dress',45000)">
-Buy
-</button>
-
-</div>
-
-</div>
-</div>
-
-<div class="product-card"
-data-category="women"
-data-name="Luxury Gown">
-
-<div class="product-image">
-
-<span class="product-tag">WOMEN</span>
-👘
-
-</div>
-
-<div class="product-info">
-
-<h3>Luxury Gown</h3>
-
-<p>Luxury occasion wear.</p>
-
-<div class="price">₦75,000</div>
-
-<div class="product-actions">
-
-<button class="add-cart"
-onclick="addToCart('Luxury Gown',75000,'👘')">
-Add to Cart
-</button>
-
-<button class="buy-now"
-onclick="buyNow('Luxury Gown',75000)">
-Buy
-</button>
-
-</div>
-
-</div>
-</div>
-
-<div class="product-card"
-data-category="women"
-data-name="Stylish Top">
-
-<div class="product-image">
-
-<span class="product-tag">WOMEN</span>
-👚
-
-</div>
-
-<div class="product-info">
-
-<h3>Stylish Top</h3>
-
-<p>Simple and beautiful.</p>
-
-<div class="price">₦22,000</div>
-
-<div class="product-actions">
-
-<button class="add-cart"
-onclick="addToCart('Stylish Top',22000,'👚')">
-Add to Cart
-</button>
-
-<button class="buy-now"
-onclick="buyNow('Stylish Top',22000)">
-Buy
-</button>
-
-</div>
-
-</div>
-</div>
-
-<div class="product-card"
-data-category="new"
-data-name="New Collection">
-
-<div class="product-image">
-
-<span class="product-tag">NEW</span>
-✨
-
-</div>
-
-<div class="product-info">
-
-<h3>New Collection</h3>
-
-<p>Fresh from our collection.</p>
-
-<div class="price">₦35,000</div>
-
-<div class="product-actions">
-
-<button class="add-cart"
-onclick="addToCart('New Collection',35000,'✨')">
-Add to Cart
-</button>
-
-<button class="buy-now"
-onclick="buyNow('New Collection',35000)">
-Buy
-</button>
-
-</div>
-
-</div>
-</div>
-
-<div class="product-card"
-data-category="new"
-data-name="Premium Outfit">
-
-<div class="product-image">
-
-<span class="product-tag">NEW</span>
-💎
-
-</div>
-
-<div class="product-info">
-
-<h3>Premium Outfit</h3>
-
-<p>Premium fashion statement.</p>
-
-<div class="price">₦55,000</div>
-
-<div class="product-actions">
-
-<button class="add-cart"
-onclick="addToCart('Premium Outfit',55000,'💎')">
-Add to Cart
-</button>
-
-<button class="buy-now"
-onclick="buyNow('Premium Outfit',55000)">
-Buy
-</button>
-
-</div>
-
-</div>
-</div>
-
-<div class="product-card"
-data-category="new"
-data-name="Weekend Style">
-
-<div class="product-image">
-
-<span class="product-tag">NEW</span>
-🔥
-
-</div>
-
-<div class="product-info">
-
-<h3>Weekend Style</h3>
-
-<p>Perfect relaxed weekend look.</p>
-
-<div class="price">₦30,000</div>
-
-<div class="product-actions">
-
-<button class="add-cart"
-onclick="addToCart('Weekend Style',30000,'🔥')">
-Add to Cart
-</button>
-
-<button class="buy-now"
-onclick="buyNow('Weekend Style',30000)">
-Buy
-</button>
-
-</div>
-
-</div>
-</div>
-
-</div>
-
+<section class="shop-controls">
+  <input
+    id="productSearch"
+    placeholder="Search products..."
+  >
+
+  <select id="categoryFilter">
+    <option value="all">All Categories</option>
+  </select>
 </section>
 
-<section class="store-section" id="about">
-
-<div class="section-title">
-
-<p>WHY CHOOSE US</p>
-
-<h2>
-Fashion Made <span>Simple</span>
-</h2>
-
-</div>
-
-<div class="features">
-
-<div class="feature">
-<div class="feature-icon">✨</div>
-<h3>Premium Quality</h3>
-<p>Carefully selected fashion pieces.</p>
-</div>
-
-<div class="feature">
-<div class="feature-icon">🚚</div>
-<h3>Easy Delivery</h3>
-<p>Convenient delivery options.</p>
-</div>
-
-<div class="feature">
-<div class="feature-icon">💬</div>
-<h3>Easy Ordering</h3>
-<p>Order directly through WhatsApp.</p>
-</div>
-
-<div class="feature">
-<div class="feature-icon">💎</div>
-<h3>Great Style</h3>
-<p>Look good and feel confident.</p>
-</div>
-
-</div>
-
+<section id="products" class="products-section">
+  <h2>Our Products</h2>
+  <div id="productGrid" class="product-grid"></div>
 </section>
 
-<footer class="store-footer" id="contact">
+<aside id="cartDrawer" class="cart-drawer">
+  <div class="cart-head">
+    <h2>Your Cart</h2>
+    <button id="closeCart">×</button>
+  </div>
 
-<h2>Prince Fashion</h2>
+  <div id="cartItems"></div>
 
-<p>
-Style for everyone.
-Premium fashion for every occasion.
-</p>
+  <div class="cart-total">
+    <strong>Total</strong>
+    <strong id="cartTotal">₦0</strong>
+  </div>
 
-<button
-class="hero-btn hero-btn-main"
-onclick="contactWhatsApp()">
-Chat With Us on WhatsApp
-</button>
+  <button id="whatsappCheckout">
+    Order on WhatsApp
+  </button>
+</aside>
 
-<div class="footer-bottom">
-© 2026 Prince Fashion. All rights reserved.
-</div>
+<div id="cartOverlay" class="cart-overlay"></div>
 
+<footer class="shop-footer">
+  <h3>${escapeHTML(name)}</h3>
+  <p>${escapeHTML(tagline)}</p>
+  <p>Powered by OTG AI Website Builder</p>
 </footer>
-
-<div class="cart-panel" id="cartPanel">
-
-<div class="cart-header">
-
-<h2>Your Cart</h2>
-
-<button
-class="close-cart"
-onclick="closeCart()">
-✕
-</button>
-
-</div>
-
-<div id="cartItems">
-<p>Your cart is empty.</p>
-</div>
-
-<div class="cart-total" id="cartTotal">
-Total: ₦0
-</div>
-
-<button
-class="checkout"
-onclick="checkoutCart()">
-Order Cart on WhatsApp
-</button>
-
-</div>
-
-</div>
 `;
 
-currentCSS="";
-currentJS=`
+    currentCSS = `
+* {
+  box-sizing: border-box;
+}
 
-let cart=[];
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f8fafc;
+  color: #111827;
+}
 
-function getWhatsAppNumber(){
+.shop-header {
+  background: #111827;
+  color: white;
+  padding: 18px 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
 
-return (window.OTG_WHATSAPP||"")
-.replace(/[^0-9]/g,"");
+.shop-header h1 {
+  margin: 0;
+  color: #facc15;
+}
+
+.shop-header p {
+  margin: 4px 0 0;
+  color: #cbd5e1;
+}
+
+.shop-header button {
+  background: #facc15;
+  border: 0;
+  padding: 11px 16px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.shop-hero {
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  padding: 50px 7%;
+  color: white;
+  background:
+    linear-gradient(
+      120deg,
+      rgba(15,23,42,.95),
+      rgba(29,78,216,.85)
+    );
+}
+
+.shop-hero h2 {
+  font-size: clamp(35px, 8vw, 65px);
+  margin-bottom: 12px;
+}
+
+.shop-hero p {
+  font-size: 18px;
+  max-width: 600px;
+  color: #dbeafe;
+}
+
+.shop-hero button {
+  background: #facc15;
+  border: 0;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+.shop-controls {
+  width: min(1100px, 90%);
+  margin: 25px auto;
+  display: flex;
+  gap: 12px;
+}
+
+.shop-controls input,
+.shop-controls select {
+  padding: 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  flex: 1;
+}
+
+.products-section {
+  width: min(1100px, 90%);
+  margin: 30px auto 70px;
+}
+
+.products-section h2 {
+  font-size: 32px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.product-card {
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0,0,0,.08);
+}
+
+.product-image {
+  height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:
+    linear-gradient(135deg, #dbeafe, #fef3c7);
+  font-size: 65px;
+}
+
+.product-body {
+  padding: 17px;
+}
+
+.product-body h3 {
+  margin: 0 0 7px;
+}
+
+.product-body p {
+  color: #64748b;
+  font-size: 14px;
+  min-height: 40px;
+}
+
+.price {
+  color: #1d4ed8;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.product-body button {
+  width: 100%;
+  border: 0;
+  background: #111827;
+  color: white;
+  padding: 11px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: min(400px, 92%);
+  height: 100vh;
+  background: white;
+  z-index: 100;
+  box-shadow: -10px 0 35px rgba(0,0,0,.2);
+  padding: 20px;
+  transition: .3s;
+  overflow-y: auto;
+}
+
+.cart-drawer.open {
+  right: 0;
+}
+
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 90;
+  display: none;
+}
+
+.cart-overlay.open {
+  display: block;
+}
+
+.cart-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-head button {
+  border: 0;
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 25px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.cart-item {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 15px 0;
+}
+
+.cart-item-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.qty-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.qty-controls button {
+  border: 0;
+  background: #e5e7eb;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+}
+
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0;
+  font-size: 20px;
+}
+
+#whatsappCheckout {
+  width: 100%;
+  border: 0;
+  background: #16a34a;
+  color: white;
+  padding: 14px;
+  border-radius: 11px;
+  font-weight: bold;
+}
+
+.shop-footer {
+  background: #111827;
+  color: white;
+  text-align: center;
+  padding: 35px 20px;
+}
+
+.shop-footer p {
+  color: #94a3b8;
+}
+
+@media(max-width:600px) {
+  .shop-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .shop-controls {
+    flex-direction: column;
+  }
+}
+`;
+
+    currentJS = `
+const products = ${productsJSON};
+
+const whatsappNumber = "${escapeJS(whatsapp)}";
+
+let cart = [];
+
+const productGrid =
+  document.getElementById("productGrid");
+
+const categoryFilter =
+  document.getElementById("categoryFilter");
+
+const searchInput =
+  document.getElementById("productSearch");
+
+const cartDrawer =
+  document.getElementById("cartDrawer");
+
+const cartOverlay =
+  document.getElementById("cartOverlay");
+
+function money(value) {
+  return "₦" +
+    Number(value).toLocaleString();
+}
+
+function renderProducts() {
+
+  const search =
+    searchInput.value.toLowerCase();
+
+  const category =
+    categoryFilter.value;
+
+  const filtered =
+    products.filter(product => {
+
+      const matchesSearch =
+        product.name
+          .toLowerCase()
+          .includes(search);
+
+      const matchesCategory =
+        category === "all" ||
+        product.category === category;
+
+      return matchesSearch &&
+             matchesCategory;
+
+    });
+
+  productGrid.innerHTML =
+    filtered.map((product, index) => {
+
+      return \`
+        <div class="product-card">
+
+          <div class="product-image">
+            \${product.icon || "🛍️"}
+          </div>
+
+          <div class="product-body">
+
+            <small>
+              \${product.category}
+            </small>
+
+            <h3>
+              \${product.name}
+            </h3>
+
+            <p>
+              \${product.description || ""}
+            </p>
+
+            <div class="price">
+              \${money(product.price)}
+            </div>
+
+            <button
+              onclick="addToCart('\${product.name.replace(/'/g, "\\\\'")}')"
+            >
+              Add to Cart
+            </button>
+
+          </div>
+        </div>
+      \`;
+
+    }).join("");
 
 }
 
-function scrollToCollection(){
+function loadCategories() {
 
-document.getElementById("collection")
-.scrollIntoView({behavior:"smooth"});
+  const categories =
+    [...new Set(
+      products.map(product => product.category)
+    )];
 
-}
+  categories.forEach(category => {
 
-function openCart(){
+    const option =
+      document.createElement("option");
 
-document.getElementById("cartPanel")
-.classList.add("open");
+    option.value = category;
+    option.textContent = category;
 
-}
+    categoryFilter.appendChild(option);
 
-function closeCart(){
-
-document.getElementById("cartPanel")
-.classList.remove("open");
-
-}
-
-function addToCart(name,price,icon){
-
-const existing=
-cart.find(item=>item.name===name);
-
-if(existing){
-
-existing.quantity++;
-
-}else{
-
-cart.push({
-name:name,
-price:price,
-icon:icon,
-quantity:1
-});
+  });
 
 }
 
-updateCart();
+function addToCart(name) {
 
-openCart();
+  const product =
+    products.find(
+      item => item.name === name
+    );
 
-}
+  if (!product) return;
 
-function removeFromCart(name){
+  const existing =
+    cart.find(
+      item => item.name === name
+    );
 
-cart=
-cart.filter(item=>item.name!==name);
+  if (existing) {
+    existing.quantity++;
+  } else {
+    cart.push({
+      ...product,
+      quantity: 1
+    });
+  }
 
-updateCart();
+  renderCart();
 
-}
-
-function changeQuantity(name,amount){
-
-const item=
-cart.find(item=>item.name===name);
-
-if(!item)return;
-
-item.quantity+=amount;
-
-if(item.quantity<=0){
-
-removeFromCart(name);
-return;
+  openCart();
 
 }
 
-updateCart();
+function changeQuantity(name, amount) {
+
+  const item =
+    cart.find(
+      product => product.name === name
+    );
+
+  if (!item) return;
+
+  item.quantity += amount;
+
+  if (item.quantity <= 0) {
+    cart =
+      cart.filter(
+        product => product.name !== name
+      );
+  }
+
+  renderCart();
 
 }
 
-function updateCart(){
+function renderCart() {
 
-/*
-  CART TOTAL AMOUNT
-  This is what appears beside the Cart button.
-*/
+  const cartItems =
+    document.getElementById("cartItems");
 
-const totalAmount=
-cart.reduce(
-(total,item)=>
-total+(item.price*item.quantity),
-0
-);
+  const cartCount =
+    document.getElementById("cartCount");
 
-document.getElementById("cartCount")
-.textContent=
-"₦"+totalAmount.toLocaleString();
+  const cartTotal =
+    document.getElementById("cartTotal");
 
-const container=
-document.getElementById("cartItems");
+  const totalItems =
+    cart.reduce(
+      (sum, item) =>
+        sum + item.quantity,
+      0
+    );
 
-if(cart.length===0){
+  const total =
+    cart.reduce(
+      (sum, item) =>
+        sum + item.price * item.quantity,
+      0
+    );
 
-container.innerHTML=
-"<p>Your cart is empty.</p>";
+  cartCount.textContent =
+    totalItems;
 
-document.getElementById("cartTotal")
-.textContent="Total: ₦0";
+  cartTotal.textContent =
+    money(total);
 
-return;
+  if (!cart.length) {
 
-}
+    cartItems.innerHTML =
+      "<p>Your cart is empty.</p>";
 
-let total=0;
+    return;
 
-container.innerHTML=
-cart.map(item=>{
+  }
 
-total+=item.price*item.quantity;
+  cartItems.innerHTML =
+    cart.map(item => \`
 
-return \`
+      <div class="cart-item">
 
-<div class="cart-item">
+        <div class="cart-item-top">
+          <strong>\${item.name}</strong>
+          <span>
+            \${money(item.price * item.quantity)}
+          </span>
+        </div>
 
-<div class="cart-item-top">
+        <div class="qty-controls">
 
-<div>
+          <button
+            onclick="changeQuantity(
+              '\${item.name.replace(/'/g, "\\\\'")}',
+              -1
+            )"
+          >
+            −
+          </button>
 
-<strong>
-\${item.icon} \${item.name}
-</strong>
+          <strong>
+            \${item.quantity}
+          </strong>
 
-<div>
-₦\${item.price.toLocaleString()}
-</div>
+          <button
+            onclick="changeQuantity(
+              '\${item.name.replace(/'/g, "\\\\'")}',
+              1
+            )"
+          >
+            +
+          </button>
 
-</div>
+        </div>
 
-<button
-onclick="removeFromCart('\${item.name}')">
-✕
-</button>
+      </div>
 
-</div>
-
-<div class="quantity">
-
-<button
-onclick="changeQuantity('\${item.name}',-1)">
-−
-</button>
-
-<span>\${item.quantity}</span>
-
-<button
-onclick="changeQuantity('\${item.name}',1)">
-+
-</button>
-
-</div>
-
-</div>
-
-\`;
-
-}).join("");
-
-document.getElementById("cartTotal")
-.textContent=
-"Total: ₦"+total.toLocaleString();
+    \`).join("");
 
 }
 
-function buyNow(name,price){
+function openCart() {
 
-addToCart(name,price,"🛍️");
-
-checkoutCart();
-
-}
-
-function checkoutCart(){
-
-const number=getWhatsAppNumber();
-
-if(!number){
-
-alert(
-"Please enter the WhatsApp number for this website in the builder."
-);
-
-return;
+  cartDrawer.classList.add("open");
+  cartOverlay.classList.add("open");
 
 }
 
-if(cart.length===0){
+function closeCart() {
 
-alert("Your cart is empty.");
-
-return;
-
-}
-
-let total=0;
-
-let message=
-"Hello Prince Fashion!%0A%0AI would like to order:%0A";
-
-cart.forEach(item=>{
-
-total+=item.price*item.quantity;
-
-message+=
-"- "+
-item.name+
-" x"+
-item.quantity+
-" — ₦"+
-(item.price*item.quantity).toLocaleString()+
-"%0A";
-
-});
-
-message+=
-"%0ATotal: ₦"+
-total.toLocaleString()+
-"%0A%0AThank you.";
-
-window.open(
-"https://wa.me/"+
-number+
-"?text="+message,
-"_blank"
-);
+  cartDrawer.classList.remove("open");
+  cartOverlay.classList.remove("open");
 
 }
 
-function contactWhatsApp(){
+function checkoutWhatsApp() {
 
-const number=getWhatsAppNumber();
+  if (!cart.length) {
 
-if(!number){
+    alert("Your cart is empty.");
 
-alert(
-"Please enter the WhatsApp number for this website in the builder."
-);
+    return;
 
-return;
+  }
+
+  const total =
+    cart.reduce(
+      (sum, item) =>
+        sum + item.price * item.quantity,
+      0
+    );
+
+  let message =
+    "Hello! I would like to place an order.%0A%0A";
+
+  cart.forEach(item => {
+
+    message +=
+      encodeURIComponent(
+        item.name +
+        " x" +
+        item.quantity +
+        " - " +
+        money(item.price * item.quantity)
+      ) + "%0A";
+
+  });
+
+  message +=
+    "%0ATotal: " +
+    encodeURIComponent(money(total));
+
+  const number =
+    whatsappNumber.replace(/[^0-9]/g, "");
+
+  if (!number) {
+
+    alert(
+      "The business WhatsApp number has not been added yet."
+    );
+
+    return;
+
+  }
+
+  window.open(
+    "https://wa.me/" +
+    number +
+    "?text=" +
+    message,
+    "_blank"
+  );
 
 }
-
-window.open(
-"https://wa.me/"+
-number+
-"?text="+
-encodeURIComponent(
-"Hello Prince Fashion! I would like to make an enquiry."
-),
-"_blank"
-);
-
-}
-
-function filterProducts(category,button){
 
 document
-.querySelectorAll(".filter-btn")
-.forEach(btn=>
-btn.classList.remove("active")
-);
-
-button.classList.add("active");
-
-document
-.querySelectorAll(".product-card")
-.forEach(card=>{
-
-if(
-category==="all" ||
-card.dataset.category===category
-){
-
-card.style.display="block";
-
-}else{
-
-card.style.display="none";
-
-}
-
-});
-
-}
-
-function searchProducts(){
-
-const search=
-document.getElementById("productSearch")
-.value
-.toLowerCase();
+  .getElementById("cartButton")
+  .addEventListener(
+    "click",
+    openCart
+  );
 
 document
-.querySelectorAll(".product-card")
-.forEach(card=>{
+  .getElementById("closeCart")
+  .addEventListener(
+    "click",
+    closeCart
+  );
 
-const name=
-card.dataset.name.toLowerCase();
+document
+  .getElementById("cartOverlay")
+  .addEventListener(
+    "click",
+    closeCart
+  );
 
-card.style.display=
-name.includes(search)
-?"block"
-:"none";
+document
+  .getElementById("whatsappCheckout")
+  .addEventListener(
+    "click",
+    checkoutWhatsApp
+  );
 
-});
-
-}
-
-updateCart();
-
-`;
-
-showSection("builder");
-renderPreview();
-
-}
-
-function useBusinessTemplate(){
-
-currentHTML=`
-
-<div style="
-padding:70px 20px;
-text-align:center;
-font-family:Arial;
-">
-
-<h1>My Business</h1>
-
-<p>
-Welcome to our professional business website.
-</p>
-
-<button style="
-padding:14px 20px;
-background:#1769e0;
-color:white;
-border:0;
-border-radius:8px;
-">
-Contact Us
-</button>
-
-</div>
-
-`;
-
-currentCSS="";
-currentJS="";
-
-showSection("builder");
-renderPreview();
-
-}
-
-function usePortfolioTemplate(){
-
-currentHTML=`
-
-<div style="
-padding:70px 20px;
-text-align:center;
-font-family:Arial;
-">
-
-<h1>My Portfolio</h1>
-
-<p>
-Welcome to my creative portfolio.
-</p>
-
-<h2>My Work</h2>
-
-<p>
-Design • Branding • Creative Projects
-</p>
-
-</div>
-
-`;
-
-currentCSS="";
-currentJS="";
-
-showSection("builder");
-renderPreview();
-
-}
-
-async function publishWebsite(){
-
-const {data,error}=
-await supabaseClient.auth.getUser();
-
-if(error||!data.user){
-
-alert("Please login first.");
-return;
-
-}
-
-if(!currentHTML){
-
-alert("Create or select a website first.");
-return;
-
-}
-
-let title="My Website";
-
-if(
-document.getElementById("prompt")
-.value.trim()
-){
-
-title=
-document.getElementById("prompt")
-.value
-.trim()
-.substring(0,60);
-
-}
-
-const slug=
-title
-.toLowerCase()
-.replace(/[^a-z0-9]+/g,"-")
-.replace(/^-|-$/g,"")
-+
-"-"+
-Math.random()
-.toString(36)
-.substring(2,7);
-
-const {error:insertError}=
-await supabaseClient
-.from("projects")
-.insert({
-
-user_id:data.user.id,
-title:title,
-html:currentHTML,
-css:currentCSS,
-js:currentJS,
-slug:slug,
-is_published:true
-
-});
-
-if(insertError){
-
-alert(insertError.message);
-return;
-
-}
-
-const url=
-window.location.origin+
-"/?site="+slug;
-
-document.getElementById("publishResult")
-.innerHTML=
-"✅ Published!<br><br>"+
-"<a href='"+url+"' target='_blank'>"+
-url+
-"</a>";
-
-}
-
-async function loadPublishedSite(){
-
-const params=
-new URLSearchParams(
-window.location.search
+searchInput.addEventListener(
+  "input",
+  renderProducts
 );
 
-const slug=params.get("site");
+categoryFilter.addEventListener(
+  "change",
+  renderProducts
+);
 
-if(!slug)return;
+loadCategories();
 
-const {data,error}=
-await supabaseClient
-.from("projects")
-.select("html,css,js,title")
-.eq("slug",slug)
-.eq("is_published",true)
-.single();
+renderProducts();
 
-if(error||!data)return;
+renderCart();
+`;
 
-document.body.innerHTML=
-data.html+
-"<style>"+
-data.css+
-"</style>";
+  }
 
-const script=
-document.createElement("script");
 
-script.textContent=
-data.js||"";
+  /* ============================================================
+     RESTAURANT TEMPLATE
+  ============================================================ */
 
-document.body.appendChild(script);
+  function loadRestaurantTemplate() {
 
+    currentHTML = `
+<div class="restaurant">
+  <h1>Taste Haven</h1>
+  <p>Delicious meals made with love.</p>
+
+  <h2>Our Menu</h2>
+
+  <div class="menu">
+    <div>
+      <h3>Jollof Rice</h3>
+      <p>₦5,000</p>
+    </div>
+
+    <div>
+      <h3>Fried Rice & Chicken</h3>
+      <p>₦6,500</p>
+    </div>
+
+    <div>
+      <h3>Special Platter</h3>
+      <p>₦12,000</p>
+    </div>
+  </div>
+
+  <button onclick="orderFood()">
+    Order on WhatsApp
+  </button>
+</div>
+`;
+
+    currentCSS = `
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #fff7ed;
 }
 
-supabaseClient.auth
-.onAuthStateChange(()=>{
-updateAuthUI();
-});
-
-updateAuthUI();
-
-if(
-new URLSearchParams(
-window.location.search
-).has("site")
-){
-
-loadPublishedSite();
-
+.restaurant {
+  max-width: 900px;
+  margin: auto;
+  padding: 60px 20px;
+  text-align: center;
 }
+
+.restaurant h1 {
+  font-size: 50px;
+  color: #ea580c;
+}
+
+.menu {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(200px,1fr));
+  gap: 15px;
+  margin: 30px 0;
+}
+
+.menu div {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,.08);
+}
+
+button {
+  background: #ea580c;
+  color: white;
+  border: 0;
+  padding: 14px 22px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+`;
+
+    currentJS = `
+function orderFood() {
+  alert("You can connect this button to WhatsApp.");
+}
+`;
+
+    syncEditors();
+    updatePreview();
+
+  }
+
+
+  /* ============================================================
+     PORTFOLIO TEMPLATE
+  ============================================================ */
+
+  function loadPortfolioTemplate() {
+
+    currentHTML = `
+<section class="portfolio">
+  <h1>My Creative Portfolio</h1>
+
+  <p>
+    I create beautiful digital experiences.
+  </p>
+
+  <div class="portfolio-grid">
+    <div>
+      <h2>About Me</h2>
+      <p>
+        Welcome to my portfolio. This is where
+        I showcase my work and skills.
+      </p>
+    </div>
+
+    <div>
+      <h2>My Services</h2>
+      <p>Graphic Design</p>
+      <p>Web Design</p>
+      <p>Branding</p>
+    </div>
+  </div>
+</section>
+`;
+
+    currentCSS = `
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+}
+
+.portfolio {
+  max-width: 900px;
+  margin: auto;
+  padding: 70px 20px;
+}
+
+.portfolio h1 {
+  font-size: 55px;
+  color: #facc15;
+}
+
+.portfolio-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+  gap: 20px;
+}
+
+.portfolio-grid div {
+  background: #1e293b;
+  padding: 25px;
+  border-radius: 18px;
+}
+`;
+
+    currentJS = "";
+
+    syncEditors();
+    updatePreview();
+
+  }
+
+
+  /* ============================================================
+     SAVE PROJECT
+  ============================================================ */
+
+  async function saveProject() {
+
+    if (!currentUser) {
+
+      alert(
+        "Please sign up or login before saving your project."
+      );
+
+      showAuth();
+
+      return;
+
+    }
+
+    readEditors();
+
+    const title =
+      prompt(
+        "Give your website a name:",
+        "My Website"
+      );
+
+    if (!title) return;
+
+    const projectData = {
+      user_id: currentUser.id,
+      title,
+      html: currentHTML,
+      css: currentCSS,
+      js: currentJS
+    };
+
+    let result;
+
+    if (currentProjectId) {
+
+      result =
+        await supabaseClient
+          .from("projects")
+          .update(projectData)
+          .eq("id", currentProjectId)
+          .select()
+          .single();
+
+    } else {
+
+      result =
+        await supabaseClient
+          .from("projects")
+          .insert(projectData)
+          .select()
+          .single();
+
+    }
+
+    if (result.error) {
+
+      showSaveStatus(
+        result.error.message,
+        "error"
+      );
+
+      return;
+
+    }
+
+    currentProjectId =
+      result.data.id;
+
+    currentProjectSlug =
+      result.data.slug;
+
+    showSaveStatus(
+      "Project saved successfully.",
+      "success"
+    );
+
+    await loadProjects();
+
+  }
+
+
+  /* ============================================================
+     LOAD PROJECTS
+  ============================================================ */
+
+  async function loadProjects() {
+
+    if (!currentUser) return;
+
+    const { data, error } =
+      await supabaseClient
+        .from("projects")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .order("updated_at", {
+          ascending: false
+        });
+
+    const container =
+      document.getElementById("projectsList");
+
+    if (error) {
+
+      container.innerHTML =
+        `<div class="status error">
+          ${escapeHTML(error.message)}
+        </div>`;
+
+      return;
+
+    }
+
+    if (!data.length) {
+
+      container.innerHTML =
+        `<p class="muted">
+          You haven't saved any projects yet.
+        </p>`;
+
+      return;
+
+    }
+
+    container.innerHTML =
+      data.map(project => `
+
+        <div class="project-item">
+
+          <div>
+            <strong>
+              ${escapeHTML(project.title)}
+            </strong>
+
+            <div class="small muted">
+              ${project.is_published
+                ? "🌍 Published"
+                : "📝 Draft"}
+            </div>
+          </div>
+
+          <div class="row">
+
+            <button
+              class="btn primary"
+              onclick="openProject('${project.id}')"
+            >
+              Open
+            </button>
+
+            ${
+              project.is_published &&
+              project.slug
+              ?
+              `<button
+                class="btn success"
+                onclick="openPublished('${escapeJS(project.slug)}')"
+              >
+                View
+              </button>`
+              :
+              ""
+            }
+
+          </div>
+
+        </div>
+
+      `).join("");
+
+  }
+
+
+  async function openProject(id) {
+
+    const { data, error } =
+      await supabaseClient
+        .from("projects")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+    if (error) {
+
+      alert(error.message);
+      return;
+
+    }
+
+    currentProjectId =
+      data.id;
+
+    currentProjectSlug =
+      data.slug;
+
+    currentHTML =
+      data.html || "";
+
+    currentCSS =
+      data.css || "";
+
+    currentJS =
+      data.js || "";
+
+    syncEditors();
+
+    updatePreview();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+  }
+
+
+  /* ============================================================
+     PUBLISH
+  ============================================================ */
+
+  async function publishWebsite() {
+
+    if (!currentUser) {
+
+      alert(
+        "Please login before publishing your website."
+      );
+
+      showAuth();
+
+      return;
+
+    }
+
+    readEditors();
+
+    let project;
+
+    if (currentProjectId) {
+
+      const { data, error } =
+        await supabaseClient
+          .from("projects")
+          .update({
+            html: currentHTML,
+            css: currentCSS,
+            js: currentJS,
+            is_published: true
+          })
+          .eq("id", currentProjectId)
+          .select()
+          .single();
+
+      if (error) {
+
+        alert(error.message);
+        return;
+
+      }
+
+      project = data;
+
+    } else {
+
+      const title =
+        prompt(
+          "Website name:",
+          "My Website"
+        ) || "My Website";
+
+      const { data, error } =
+        await supabaseClient
+          .from("projects")
+          .insert({
+            user_id: currentUser.id,
+            title,
+            html: currentHTML,
+            css: currentCSS,
+            js: currentJS,
+            is_published: true
+          })
+          .select()
+          .single();
+
+      if (error) {
+
+        alert(error.message);
+        return;
+
+      }
+
+      project = data;
+
+    }
+
+    currentProjectId =
+      project.id;
+
+    currentProjectSlug =
+      project.slug;
+
+    const url =
+      window.location.origin +
+      "/?site=" +
+      project.slug;
+
+    showSaveStatus(
+      `
+      <b>Website published!</b><br>
+      <a href="${url}" target="_blank">
+        ${url}
+      </a>
+      `,
+      "success",
+      true
+    );
+
+    await loadProjects();
+
+  }
+
+
+  function openPublished(slug) {
+
+    window.open(
+      window.location.origin +
+      "/?site=" +
+      slug,
+      "_blank"
+    );
+
+  }
+
+
+  /* ============================================================
+     PUBLIC WEBSITE RENDERER
+  ============================================================ */
+
+  async function loadPublicWebsite() {
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const slug =
+      params.get("site");
+
+    if (!slug) return;
+
+    const { data, error } =
+      await supabaseClient
+        .from("projects")
+        .select("html,css,js,title")
+        .eq("slug", slug)
+        .eq("is_published", true)
+        .single();
+
+    if (error || !data) {
+
+      document.body.innerHTML = `
+        <div style="
+          font-family:Arial;
+          text-align:center;
+          padding:60px 20px;
+        ">
+          <h1>Website not found</h1>
+          <p>This published website does not exist.</p>
+        </div>
+      `;
+
+      return;
+
+    }
+
+    document.body.innerHTML = `
+      <style>${data.css}</style>
+      ${data.html}
+      <script>
+        ${data.js}
+      <\/script>
+    `;
+
+  }
+
+
+  /* ============================================================
+     CLEAR
+  ============================================================ */
+
+  function clearBuilder() {
+
+    if (
+      !confirm(
+        "Clear the current website?"
+      )
+    ) return;
+
+    currentHTML = "";
+    currentCSS = "";
+    currentJS = "";
+
+    currentProjectId = null;
+    currentProjectSlug = null;
+
+    syncEditors();
+
+    updatePreview();
+
+  }
+
+
+  /* ============================================================
+     STATUS
+  ============================================================ */
+
+  function showSaveStatus(
+    message,
+    type,
+    allowHTML = false
+  ) {
+
+    document.getElementById("saveStatus")
+      .innerHTML =
+      `<div class="status ${type}">
+        ${allowHTML ? message : escapeHTML(message)}
+      </div>`;
+
+  }
+
+
+  /* ============================================================
+     SECURITY / HELPERS
+  ============================================================ */
+
+  function escapeHTML(value) {
+
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+  }
+
+
+  function escapeAttribute(value) {
+
+    return escapeHTML(value);
+
+  }
+
+
+  function escapeJS(value) {
+
+    return String(value || "")
+      .replace(/\\/g, "\\\\")
+      .replace(/"/g, '\\"')
+      .replace(/\n/g, "\\n")
+      .replace(/\r/g, "\\r");
+
+  }
 
 </script>
 
