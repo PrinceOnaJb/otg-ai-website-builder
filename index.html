@@ -5,16 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>OTG AI Website Builder</title>
+
   <meta
     name="description"
     content="Build beautiful websites with AI using your phone."
   />
+
+  <meta name="theme-color" content="#111827" />
 
   <link rel="manifest" href="/manifest.json" />
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -39,10 +43,14 @@
       cursor: pointer;
     }
 
+    /* ============================================================
+       TOP BAR
+    ============================================================ */
+
     .topbar {
       background: #111827;
       color: white;
-      padding: 14px 18px;
+      padding: 12px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -50,15 +58,53 @@
       position: sticky;
       top: 0;
       z-index: 1000;
+      flex-wrap: wrap;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .otg-logo {
+      font-weight: 900;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: -3px;
+      color: #facc15;
+      text-shadow:
+        2px 2px 0 #2563eb,
+        4px 4px 0 rgba(255,255,255,.08);
     }
 
     .brand {
       font-weight: 800;
-      font-size: 20px;
+      font-size: 19px;
     }
 
     .brand span {
       color: #facc15;
+    }
+
+    .main-nav {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-left: auto;
+    }
+
+    .main-nav button {
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.08);
+      color: white;
+      padding: 9px 13px;
+      border-radius: 9px;
+      font-weight: 700;
+    }
+
+    .main-nav button:hover {
+      background: #2563eb;
     }
 
     .user-area {
@@ -68,6 +114,10 @@
       flex-wrap: wrap;
       justify-content: flex-end;
     }
+
+    /* ============================================================
+       GENERAL
+    ============================================================ */
 
     .container {
       width: min(1200px, 94%);
@@ -168,6 +218,12 @@
       transform: translateY(-1px);
     }
 
+    .btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .primary {
       background: #2563eb;
       color: white;
@@ -197,6 +253,23 @@
       background: #e5e7eb;
       color: #111827;
     }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ============================================================
+       AUTH
+    ============================================================ */
+
+    .auth-box {
+      max-width: 500px;
+      margin: 50px auto;
+    }
+
+    /* ============================================================
+       TABS / EDITOR
+    ============================================================ */
 
     .tabs {
       display: flex;
@@ -241,6 +314,10 @@
       background: white;
     }
 
+    /* ============================================================
+       TEMPLATES
+    ============================================================ */
+
     .template-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -266,9 +343,14 @@
       margin-bottom: 12px;
     }
 
+    /* ============================================================
+       PRODUCT MANAGER
+    ============================================================ */
+
     .product-row {
       display: grid;
-      grid-template-columns: 1.3fr .8fr .8fr 1.3fr 70px 45px;
+      grid-template-columns:
+        1.3fr .8fr .8fr 1.3fr 70px 45px;
       gap: 8px;
       margin-bottom: 8px;
       align-items: center;
@@ -284,14 +366,9 @@
       padding: 9px;
     }
 
-    .auth-box {
-      max-width: 500px;
-      margin: 50px auto;
-    }
-
-    .hidden {
-      display: none !important;
-    }
+    /* ============================================================
+       STATUS
+    ============================================================ */
 
     .status {
       padding: 10px 12px;
@@ -315,6 +392,10 @@
       color: #991b1b;
     }
 
+    /* ============================================================
+       PROJECTS
+    ============================================================ */
+
     .project-item {
       border: 1px solid #e5e7eb;
       border-radius: 12px;
@@ -330,7 +411,179 @@
       font-size: 12px;
     }
 
+    /* ============================================================
+       ABOUT OTG
+    ============================================================ */
+
+    .about-section {
+      margin-bottom: 25px;
+    }
+
+    .about-hero {
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(250,204,21,.18),
+          transparent 35%
+        ),
+        linear-gradient(135deg,#111827,#1d4ed8);
+
+      color: white;
+      border-radius: 22px;
+      padding: 45px 25px;
+      margin-bottom: 20px;
+    }
+
+    .about-hero h1 {
+      font-size: clamp(32px,7vw,58px);
+      margin-bottom: 12px;
+    }
+
+    .about-hero p {
+      max-width: 750px;
+      line-height: 1.7;
+      color: #dbeafe;
+    }
+
+    .founder-card {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 25px;
+      align-items: center;
+    }
+
+    .founder-badge {
+      min-height: 260px;
+      border-radius: 20px;
+      background:
+        linear-gradient(
+          135deg,
+          #111827,
+          #2563eb
+        );
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 25px;
+    }
+
+    .founder-badge .founder-logo {
+      font-size: 72px;
+      font-weight: 900;
+      letter-spacing: -7px;
+      color: #facc15;
+
+      text-shadow:
+        4px 4px 0 rgba(255,255,255,.12),
+        8px 8px 0 rgba(0,0,0,.15);
+    }
+
+    .founder-content h2 {
+      font-size: 32px;
+      margin-bottom: 5px;
+    }
+
+    .founder-title {
+      color: #2563eb;
+      font-weight: 800;
+      margin-bottom: 15px;
+    }
+
+    .founder-content p {
+      color: #475569;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
+    .expertise-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(3, minmax(0,1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .expertise-item {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      padding: 18px;
+      border-radius: 14px;
+    }
+
+    .expertise-item h3 {
+      margin-bottom: 7px;
+    }
+
+    .expertise-item p {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .quote-box {
+      margin-top: 20px;
+      padding: 22px;
+      border-left: 5px solid #facc15;
+      background: #fffbeb;
+      border-radius: 12px;
+      color: #713f12;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .about-actions {
+      margin-top: 20px;
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+
+    .platform-footer {
+      text-align: center;
+      color: #64748b;
+      padding: 30px 15px 10px;
+      font-size: 13px;
+    }
+
+    .platform-footer strong {
+      color: #111827;
+    }
+
+    /* ============================================================
+       MOBILE
+    ============================================================ */
+
     @media (max-width: 800px) {
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .brand-wrap {
+        width: 100%;
+      }
+
+      .brand {
+        font-size: 16px;
+      }
+
+      .main-nav {
+        width: 100%;
+        order: 3;
+        margin-left: 0;
+      }
+
+      .main-nav button {
+        flex: 1;
+      }
+
+      .user-area {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
       .grid,
       .editor-grid,
       .template-grid {
@@ -348,239 +601,873 @@
         height: 500px;
       }
 
-      .topbar {
-        align-items: flex-start;
+      .founder-card {
+        grid-template-columns: 1fr;
       }
+
+      .expertise-grid {
+        grid-template-columns: 1fr;
+      }
+
     }
+
   </style>
 </head>
 
 <body>
 
+  <!-- ============================================================
+       TOP BAR
+  ============================================================ -->
+
   <header class="topbar">
-    <div class="brand">OTG <span>AI</span> Website Builder</div>
+
+    <div class="brand-wrap">
+
+      <div class="otg-logo">
+        OTG
+      </div>
+
+      <div class="brand">
+        <span>OTG</span> AI Website Builder
+      </div>
+
+    </div>
+
+
+    <nav class="main-nav">
+
+      <button onclick="showBuilder()">
+        Builder
+      </button>
+
+      <button onclick="showAbout()">
+        About OTG
+      </button>
+
+    </nav>
+
 
     <div class="user-area">
-      <span id="userEmail" class="small"></span>
-      <button id="loginBtn" class="btn yellow" onclick="showAuth()">Login / Sign Up</button>
-      <button id="logoutBtn" class="btn light hidden" onclick="logout()">Logout</button>
+
+      <span
+        id="userEmail"
+        class="small"
+      ></span>
+
+      <button
+        id="loginBtn"
+        class="btn yellow"
+        onclick="showAuth()"
+      >
+        Login / Sign Up
+      </button>
+
+      <button
+        id="logoutBtn"
+        class="btn light hidden"
+        onclick="logout()"
+      >
+        Logout
+      </button>
+
     </div>
+
   </header>
+
 
   <main class="container">
 
-    <!-- LANDING / AUTH -->
-    <section id="authSection" class="card auth-box hidden">
-      <h2 id="authTitle">Create your OTG account</h2>
+
+    <!-- ==========================================================
+         AUTH
+    =========================================================== -->
+
+    <section
+      id="authSection"
+      class="card auth-box hidden"
+    >
+
+      <h2 id="authTitle">
+        Create your OTG account
+      </h2>
+
       <p class="muted">
         Sign up to build, save and publish your own websites.
       </p>
 
-      <div class="field">
-        <label>Email</label>
-        <input id="authEmail" type="email" placeholder="you@example.com">
-      </div>
 
       <div class="field">
-        <label>Password</label>
-        <input id="authPassword" type="password" placeholder="Minimum 6 characters">
+
+        <label>
+          Email
+        </label>
+
+        <input
+          id="authEmail"
+          type="email"
+          placeholder="you@example.com"
+        >
+
       </div>
 
-      <div class="row" style="margin-top:15px;">
-        <button class="btn primary" onclick="signUp()">Create Account</button>
-        <button class="btn dark" onclick="signIn()">Login</button>
+
+      <div class="field">
+
+        <label>
+          Password
+        </label>
+
+        <input
+          id="authPassword"
+          type="password"
+          placeholder="Minimum 6 characters"
+        >
+
       </div>
+
+
+      <div
+        class="row"
+        style="margin-top:15px;"
+      >
+
+        <button
+          class="btn primary"
+          onclick="signUp()"
+        >
+          Create Account
+        </button>
+
+        <button
+          class="btn dark"
+          onclick="signIn()"
+        >
+          Login
+        </button>
+
+      </div>
+
 
       <div id="authMessage"></div>
+
     </section>
+
+
+    <!-- ==========================================================
+         ABOUT OTG
+    =========================================================== -->
+
+    <section
+      id="aboutSection"
+      class="about-section hidden"
+    >
+
+      <div class="about-hero">
+
+        <h1>
+          About OTG
+        </h1>
+
+        <p>
+          OTG AI Website Builder is a creative platform designed to
+          help students, designers, entrepreneurs and creators turn
+          their ideas into beautiful websites using AI and practical
+          digital skills.
+        </p>
+
+      </div>
+
+
+      <!-- FOUNDER -->
+
+      <div class="card">
+
+        <div class="founder-card">
+
+          <div class="founder-badge">
+
+            <div class="founder-logo">
+              OTG
+            </div>
+
+          </div>
+
+
+          <div class="founder-content">
+
+            <h2>
+              Prince OnaJb
+            </h2>
+
+            <div class="founder-title">
+              CEO & Founder, OTG Graphic Academy
+            </div>
+
+
+            <p>
+              Prince OnaJb is a graphic designer, creative educator
+              and digital creator passionate about helping people turn
+              ordinary ideas into professional visual and digital
+              experiences.
+            </p>
+
+
+            <p>
+              Through OTG Graphic Academy, he teaches students
+              practical creative skills while encouraging them to
+              adapt to modern technology, AI and the changing digital
+              world.
+            </p>
+
+
+            <div class="quote-box">
+              “I turn ordinary ideas into visual reality.”
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- WHAT I DO -->
+
+      <div class="card">
+
+        <h2>
+          What I Do
+        </h2>
+
+        <p class="muted">
+          Creative and digital services built around practical skills,
+          technology and visual communication.
+        </p>
+
+
+        <div class="expertise-grid">
+
+
+          <div class="expertise-item">
+
+            <h3>
+              🎨 Graphic Design
+            </h3>
+
+            <p>
+              Professional visual designs, flyers, branding and
+              creative communication.
+            </p>
+
+          </div>
+
+
+          <div class="expertise-item">
+
+            <h3>
+              💻 Website Creation
+            </h3>
+
+            <p>
+              Building modern websites and digital experiences for
+              brands and businesses.
+            </p>
+
+          </div>
+
+
+          <div class="expertise-item">
+
+            <h3>
+              🤖 AI & Creative Technology
+            </h3>
+
+            <p>
+              Helping creatives understand and use modern AI tools
+              effectively.
+            </p>
+
+          </div>
+
+
+          <div class="expertise-item">
+
+            <h3>
+              🎓 Training & Mentorship
+            </h3>
+
+            <p>
+              Practical training designed to help students develop
+              useful creative skills.
+            </p>
+
+          </div>
+
+
+          <div class="expertise-item">
+
+            <h3>
+              🏆 Branding
+            </h3>
+
+            <p>
+              Creating strong visual identities that help businesses
+              stand out.
+            </p>
+
+          </div>
+
+
+          <div class="expertise-item">
+
+            <h3>
+              🚀 Digital Creativity
+            </h3>
+
+            <p>
+              Turning ideas into practical digital products and
+              creative solutions.
+            </p>
+
+          </div>
+
+
+        </div>
+
+      </div>
+
+
+      <!-- OTG ACADEMY -->
+
+      <div class="card">
+
+        <h2>
+          OTG Graphic Academy
+        </h2>
+
+        <p>
+          OTG Graphic Academy is focused on helping students build
+          practical creative skills they can use in the real world.
+        </p>
+
+        <p style="margin-top:10px;">
+          Students are encouraged to learn, practice, create
+          portfolios, work with clients and understand how technology
+          can support—not replace—their creativity.
+        </p>
+
+
+        <div class="about-actions">
+
+          <button
+            class="btn primary"
+            onclick="showBuilder()"
+          >
+            🚀 Start Building
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- STUDENTS -->
+
+      <div class="card">
+
+        <h2>
+          For OTG Students
+        </h2>
+
+        <p>
+          This platform is part of the bigger OTG vision: giving
+          creatives practical tools to learn, experiment, build
+          projects and turn their skills into opportunities.
+        </p>
+
+        <p style="margin-top:10px;">
+          Create your website, save your projects, publish your work
+          and continue improving your digital skills.
+        </p>
+
+      </div>
+
+
+      <!-- CONNECT -->
+
+      <div class="card">
+
+        <h2>
+          Connect With OTG
+        </h2>
+
+        <p class="muted">
+          Follow the OTG journey and discover more creative work,
+          training and digital projects.
+        </p>
+
+      </div>
+
+
+    </section>
+
+
+    <!-- ==========================================================
+         BUILDER
+    =========================================================== -->
 
     <section id="builderSection">
 
+
+      <!-- HERO -->
+
       <section class="hero">
-        <h1>Build your website with AI.</h1>
+
+        <h1>
+          Build your website with AI.
+        </h1>
+
         <p>
-          Describe what you want and OTG AI will create the website for you.
-          Edit it, preview it, save it and publish it.
+          Describe what you want and OTG AI will create the website
+          for you. Edit it, preview it, save it and publish it.
         </p>
+
       </section>
 
-      <!-- AI -->
+
+      <!-- ========================================================
+           AI
+      ========================================================= -->
+
       <section class="card">
-        <h2>🚀 Create Your Website</h2>
+
+        <h2>
+          🚀 Create Your Website
+        </h2>
+
         <p class="muted">
           Tell the AI what you want to build.
         </p>
 
+
         <div class="field">
+
           <textarea
             id="aiPrompt"
             placeholder="Example: Create a professional website for my restaurant called Taste Haven. We sell Nigerian and continental food. Add a menu, prices, location, WhatsApp ordering and a beautiful mobile design."
           ></textarea>
+
         </div>
 
-        <div class="row" style="margin-top:12px;">
-          <button class="btn primary" onclick="generateWithAI()">
+
+        <div
+          class="row"
+          style="margin-top:12px;"
+        >
+
+          <button
+            class="btn primary"
+            onclick="generateWithAI()"
+          >
             ✨ Generate Website
           </button>
 
-          <button class="btn light" onclick="clearBuilder()">
+
+          <button
+            class="btn light"
+            onclick="clearBuilder()"
+          >
             Clear
           </button>
+
         </div>
 
+
         <div id="aiStatus"></div>
+
       </section>
 
-      <!-- TEMPLATES -->
+
+      <!-- ========================================================
+           TEMPLATES
+      ========================================================= -->
+
       <section class="card">
-        <h2>Website Templates</h2>
+
+        <h2>
+          Website Templates
+        </h2>
+
         <p class="muted">
           Start quickly with a template, then customize everything.
         </p>
 
+
         <div class="template-grid">
 
+
           <div class="template">
-            <h3>👗 Fashion Store</h3>
+
+            <h3>
+              👗 Fashion Store
+            </h3>
+
             <p>
               Clothing, products, cart and WhatsApp ordering.
             </p>
-            <button class="btn primary" onclick="loadFashionTemplate()">
+
+            <button
+              class="btn primary"
+              onclick="loadFashionTemplate()"
+            >
               Use Template
             </button>
+
           </div>
 
+
           <div class="template">
-            <h3>🍔 Restaurant</h3>
+
+            <h3>
+              🍔 Restaurant
+            </h3>
+
             <p>
               Menu, food products, prices and contact section.
             </p>
-            <button class="btn primary" onclick="loadRestaurantTemplate()">
+
+            <button
+              class="btn primary"
+              onclick="loadRestaurantTemplate()"
+            >
               Use Template
             </button>
+
           </div>
+
 
           <div class="template">
-            <h3>💼 Portfolio</h3>
+
+            <h3>
+              💼 Portfolio
+            </h3>
+
             <p>
-              Personal portfolio for designers, developers and creatives.
+              Personal portfolio for designers, developers and
+              creatives.
             </p>
-            <button class="btn primary" onclick="loadPortfolioTemplate()">
+
+            <button
+              class="btn primary"
+              onclick="loadPortfolioTemplate()"
+            >
               Use Template
             </button>
+
           </div>
 
+
         </div>
+
       </section>
 
-      <!-- STORE MANAGER -->
-      <section id="storeManager" class="card hidden">
 
-        <h2>🛍️ Manage Your Products</h2>
+      <!-- ========================================================
+           STORE MANAGER
+      ========================================================= -->
+
+      <section
+        id="storeManager"
+        class="card hidden"
+      >
+
+        <h2>
+          🛍️ Manage Your Products
+        </h2>
 
         <p class="muted">
-          Change your products and prices here. <b>No coding required.</b>
+          Change your products and prices here.
+          <b>No coding required.</b>
         </p>
+
 
         <div class="grid">
 
-          <div class="field">
-            <label>Business / Store Name</label>
-            <input id="storeName" value="Prince Fashion">
-          </div>
 
           <div class="field">
-            <label>Tagline</label>
-            <input id="storeTagline" value="Style for everyone">
+
+            <label>
+              Business / Store Name
+            </label>
+
+            <input
+              id="storeName"
+              value="Prince Fashion"
+            >
+
           </div>
 
+
           <div class="field">
-            <label>WhatsApp Number</label>
-            <input id="storeWhatsapp" placeholder="2348012345678">
+
+            <label>
+              Tagline
+            </label>
+
+            <input
+              id="storeTagline"
+              value="Style for everyone"
+            >
+
           </div>
+
+
+          <div class="field">
+
+            <label>
+              WhatsApp Number
+            </label>
+
+            <input
+              id="storeWhatsapp"
+              placeholder="2348012345678"
+            >
+
+          </div>
+
 
         </div>
+
 
         <div style="margin-top:20px;">
-          <h3>Products</h3>
+
+          <h3>
+            Products
+          </h3>
+
           <p class="muted small">
-            Name | Price | Category | Description | Emoji/Image
+            Name | Price | Category | Description | Emoji
           </p>
+
         </div>
 
-        <div id="productsEditor" style="margin-top:12px;"></div>
 
-        <div class="row" style="margin-top:15px;">
-          <button class="btn success" onclick="addProduct()">
+        <div
+          id="productsEditor"
+          style="margin-top:12px;"
+        ></div>
+
+
+        <div
+          class="row"
+          style="margin-top:15px;"
+        >
+
+          <button
+            class="btn success"
+            onclick="addProduct()"
+          >
             + Add Product
           </button>
 
-          <button class="btn primary" onclick="updateStorePreview()">
+
+          <button
+            class="btn primary"
+            onclick="updateStorePreview()"
+          >
             🔄 Update Preview
           </button>
+
         </div>
 
       </section>
 
-      <!-- EDITOR -->
+
+      <!-- ========================================================
+           EDITOR
+      ========================================================= -->
+
       <section class="card">
 
+
         <div class="tabs">
-          <button class="tab active" onclick="showEditor('html', this)">HTML</button>
-          <button class="tab" onclick="showEditor('css', this)">CSS</button>
-          <button class="tab" onclick="showEditor('js', this)">JavaScript</button>
-          <button class="tab" onclick="showEditor('preview', this)">Live Preview</button>
+
+          <button
+            class="tab active"
+            onclick="showEditor('html', this)"
+          >
+            HTML
+          </button>
+
+
+          <button
+            class="tab"
+            onclick="showEditor('css', this)"
+          >
+            CSS
+          </button>
+
+
+          <button
+            class="tab"
+            onclick="showEditor('js', this)"
+          >
+            JavaScript
+          </button>
+
+
+          <button
+            class="tab"
+            onclick="showEditor('preview', this)"
+          >
+            Live Preview
+          </button>
+
         </div>
 
-        <div id="htmlEditor" class="code-box">
-          <textarea id="htmlCode" spellcheck="false"></textarea>
+
+        <div
+          id="htmlEditor"
+          class="code-box"
+        >
+
+          <textarea
+            id="htmlCode"
+            spellcheck="false"
+          ></textarea>
+
         </div>
 
-        <div id="cssEditor" class="code-box hidden">
-          <textarea id="cssCode" spellcheck="false"></textarea>
+
+        <div
+          id="cssEditor"
+          class="code-box hidden"
+        >
+
+          <textarea
+            id="cssCode"
+            spellcheck="false"
+          ></textarea>
+
         </div>
 
-        <div id="jsEditor" class="code-box hidden">
-          <textarea id="jsCode" spellcheck="false"></textarea>
+
+        <div
+          id="jsEditor"
+          class="code-box hidden"
+        >
+
+          <textarea
+            id="jsCode"
+            spellcheck="false"
+          ></textarea>
+
         </div>
 
-        <div id="previewEditor" class="hidden">
-          <iframe id="previewFrame" class="preview"></iframe>
+
+        <div
+          id="previewEditor"
+          class="hidden"
+        >
+
+          <iframe
+            id="previewFrame"
+            class="preview"
+          ></iframe>
+
         </div>
 
-        <div class="row" style="margin-top:15px;">
-          <button class="btn primary" onclick="updatePreview()">
+
+        <div
+          class="row"
+          style="margin-top:15px;"
+        >
+
+          <button
+            class="btn primary"
+            onclick="updatePreview()"
+          >
             ▶ Update Preview
           </button>
 
-          <button class="btn success" onclick="saveProject()">
+
+          <button
+            class="btn success"
+            onclick="saveProject()"
+          >
             💾 Save Project
           </button>
 
-          <button class="btn yellow" onclick="publishWebsite()">
+
+          <button
+            class="btn yellow"
+            onclick="publishWebsite()"
+          >
             🌍 Publish Website
           </button>
+
         </div>
+
 
         <div id="saveStatus"></div>
 
       </section>
 
-      <!-- PROJECTS -->
+
+      <!-- ========================================================
+           PROJECTS
+      ========================================================= -->
+
       <section class="card">
-        <h2>📁 My Projects</h2>
+
+        <h2>
+          📁 My Projects
+        </h2>
+
         <p class="muted">
           Your saved websites appear here.
         </p>
 
+
         <div id="projectsList">
-          <p class="muted">Login to see your projects.</p>
+
+          <p class="muted">
+            Login to see your projects.
+          </p>
+
         </div>
+
       </section>
+
 
     </section>
 
+
+    <!-- ==========================================================
+         FOOTER
+    =========================================================== -->
+
+    <footer class="platform-footer">
+
+      <strong>
+        OTG AI Website Builder
+      </strong>
+
+      <br>
+
+      Built by Prince OnaJb —
+      CEO & Founder, OTG Graphic Academy
+
+      <br><br>
+
+      Empowering creatives to turn ideas into digital reality.
+
+    </footer>
+
+
   </main>
+
 
 <script>
 
@@ -594,6 +1481,7 @@
   const SUPABASE_KEY =
     "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
 
+
   const supabaseClient =
     window.supabase.createClient(
       SUPABASE_URL,
@@ -606,11 +1494,15 @@
   ============================================================ */
 
   let currentUser = null;
+
   let currentProjectId = null;
+
   let currentProjectSlug = null;
 
   let currentHTML = "";
+
   let currentCSS = "";
+
   let currentJS = "";
 
   let storeProducts = [];
@@ -620,17 +1512,25 @@
      STARTUP
   ============================================================ */
 
-  document.addEventListener("DOMContentLoaded", async () => {
+  document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
 
-    await checkUser();
+      await checkUser();
 
-    loadPublicWebsite();
+      loadPublicWebsite();
 
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(() => {});
+
+      if ("serviceWorker" in navigator) {
+
+        navigator.serviceWorker
+          .register("/sw.js")
+          .catch(() => {});
+
+      }
+
     }
-
-  });
+  );
 
 
   /* ============================================================
@@ -641,14 +1541,23 @@
 
     const {
       data: { session }
-    } = await supabaseClient.auth.getSession();
+    } =
+      await supabaseClient.auth.getSession();
+
 
     if (session) {
-      currentUser = session.user;
+
+      currentUser =
+        session.user;
+
       showLoggedIn();
+
       await loadProjects();
+
     } else {
+
       showLoggedOut();
+
     }
 
   }
@@ -656,16 +1565,24 @@
 
   function showLoggedIn() {
 
-    document.getElementById("userEmail").textContent =
+    document
+      .getElementById("userEmail")
+      .textContent =
       currentUser.email;
 
-    document.getElementById("loginBtn")
+
+    document
+      .getElementById("loginBtn")
       .classList.add("hidden");
 
-    document.getElementById("logoutBtn")
+
+    document
+      .getElementById("logoutBtn")
       .classList.remove("hidden");
 
-    document.getElementById("authSection")
+
+    document
+      .getElementById("authSection")
       .classList.add("hidden");
 
   }
@@ -675,12 +1592,19 @@
 
     currentUser = null;
 
-    document.getElementById("userEmail").textContent = "";
 
-    document.getElementById("loginBtn")
+    document
+      .getElementById("userEmail")
+      .textContent = "";
+
+
+    document
+      .getElementById("loginBtn")
       .classList.remove("hidden");
 
-    document.getElementById("logoutBtn")
+
+    document
+      .getElementById("logoutBtn")
       .classList.add("hidden");
 
   }
@@ -688,8 +1612,10 @@
 
   function showAuth() {
 
-    document.getElementById("authSection")
+    document
+      .getElementById("authSection")
       .classList.remove("hidden");
+
 
     window.scrollTo({
       top: 0,
@@ -702,15 +1628,29 @@
   async function signUp() {
 
     const email =
-      document.getElementById("authEmail").value.trim();
+      document
+        .getElementById("authEmail")
+        .value
+        .trim();
+
 
     const password =
-      document.getElementById("authPassword").value;
+      document
+        .getElementById("authPassword")
+        .value;
+
 
     if (!email || !password) {
-      authMessage("Enter your email and password.", "error");
+
+      authMessage(
+        "Enter your email and password.",
+        "error"
+      );
+
       return;
+
     }
+
 
     const { error } =
       await supabaseClient.auth.signUp({
@@ -718,10 +1658,18 @@
         password
       });
 
+
     if (error) {
-      authMessage(error.message, "error");
+
+      authMessage(
+        error.message,
+        "error"
+      );
+
       return;
+
     }
+
 
     authMessage(
       "Account created. Check your email if confirmation is required.",
@@ -734,30 +1682,58 @@
   async function signIn() {
 
     const email =
-      document.getElementById("authEmail").value.trim();
+      document
+        .getElementById("authEmail")
+        .value
+        .trim();
+
 
     const password =
-      document.getElementById("authPassword").value;
+      document
+        .getElementById("authPassword")
+        .value;
+
 
     if (!email || !password) {
-      authMessage("Enter your email and password.", "error");
+
+      authMessage(
+        "Enter your email and password.",
+        "error"
+      );
+
       return;
+
     }
 
-    const { data, error } =
+
+    const {
+      data,
+      error
+    } =
       await supabaseClient.auth.signInWithPassword({
         email,
         password
       });
 
+
     if (error) {
-      authMessage(error.message, "error");
+
+      authMessage(
+        error.message,
+        "error"
+      );
+
       return;
+
     }
 
-    currentUser = data.user;
+
+    currentUser =
+      data.user;
+
 
     showLoggedIn();
+
 
     await loadProjects();
 
@@ -768,18 +1744,74 @@
 
     await supabaseClient.auth.signOut();
 
+
     currentUser = null;
+
     currentProjectId = null;
+
+    currentProjectSlug = null;
+
 
     showLoggedOut();
 
   }
 
 
-  function authMessage(message, type) {
+  function authMessage(
+    message,
+    type
+  ) {
 
-    document.getElementById("authMessage").innerHTML =
-      `<div class="status ${type}">${escapeHTML(message)}</div>`;
+    document
+      .getElementById("authMessage")
+      .innerHTML =
+      `<div class="status ${type}">
+        ${escapeHTML(message)}
+      </div>`;
+
+  }
+
+
+  /* ============================================================
+     OTG NAVIGATION
+  ============================================================ */
+
+  function showAbout() {
+
+    document
+      .getElementById("builderSection")
+      .classList.add("hidden");
+
+
+    document
+      .getElementById("aboutSection")
+      .classList.remove("hidden");
+
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+  }
+
+
+  function showBuilder() {
+
+    document
+      .getElementById("aboutSection")
+      .classList.add("hidden");
+
+
+    document
+      .getElementById("builderSection")
+      .classList.remove("hidden");
+
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
 
   }
 
@@ -791,67 +1823,101 @@
   async function generateWithAI() {
 
     const prompt =
-      document.getElementById("aiPrompt").value.trim();
+      document
+        .getElementById("aiPrompt")
+        .value
+        .trim();
+
 
     if (!prompt) {
+
       showAIStatus(
         "Tell me what website you want to build first.",
         "error"
       );
+
       return;
+
     }
+
 
     const button =
       document.querySelector(
         'button[onclick="generateWithAI()"]'
       );
 
+
     button.disabled = true;
-    button.textContent = "⏳ Building...";
+
+    button.textContent =
+      "⏳ Building...";
+
 
     showAIStatus(
       "OTG AI is building your website...",
       "info"
     );
 
+
     try {
 
-      const response = await fetch(
-        "/api/generate",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            prompt,
-            html: currentHTML,
-            css: currentCSS,
-            js: currentJS
-          })
-        }
-      );
+      const response =
+        await fetch(
+          "/api/generate",
+          {
+            method: "POST",
 
-      const data = await response.json();
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              prompt,
+              html: currentHTML,
+              css: currentCSS,
+              js: currentJS
+            })
+          }
+        );
+
+
+      const data =
+        await response.json();
+
 
       if (!response.ok) {
+
         throw new Error(
-          data.error || "AI generation failed."
+          data.error ||
+          "AI generation failed."
         );
+
       }
 
-      currentHTML = data.html || "";
-      currentCSS = data.css || "";
-      currentJS = data.js || "";
+
+      currentHTML =
+        data.html || "";
+
+
+      currentCSS =
+        data.css || "";
+
+
+      currentJS =
+        data.js || "";
+
 
       syncEditors();
 
       updatePreview();
 
+
       showAIStatus(
         "Website generated successfully.",
         "success"
       );
+
 
     } catch (error) {
 
@@ -862,16 +1928,26 @@
 
     }
 
+
     button.disabled = false;
-    button.textContent = "✨ Generate Website";
+
+    button.textContent =
+      "✨ Generate Website";
 
   }
 
 
-  function showAIStatus(message, type) {
+  function showAIStatus(
+    message,
+    type
+  ) {
 
-    document.getElementById("aiStatus").innerHTML =
-      `<div class="status ${type}">${escapeHTML(message)}</div>`;
+    document
+      .getElementById("aiStatus")
+      .innerHTML =
+      `<div class="status ${type}">
+        ${escapeHTML(message)}
+      </div>`;
 
   }
 
@@ -882,13 +1958,21 @@
 
   function syncEditors() {
 
-    document.getElementById("htmlCode").value =
+    document
+      .getElementById("htmlCode")
+      .value =
       currentHTML;
 
-    document.getElementById("cssCode").value =
+
+    document
+      .getElementById("cssCode")
+      .value =
       currentCSS;
 
-    document.getElementById("jsCode").value =
+
+    document
+      .getElementById("jsCode")
+      .value =
       currentJS;
 
   }
@@ -897,58 +1981,101 @@
   function readEditors() {
 
     currentHTML =
-      document.getElementById("htmlCode").value;
+      document
+        .getElementById("htmlCode")
+        .value;
+
 
     currentCSS =
-      document.getElementById("cssCode").value;
+      document
+        .getElementById("cssCode")
+        .value;
+
 
     currentJS =
-      document.getElementById("jsCode").value;
+      document
+        .getElementById("jsCode")
+        .value;
 
   }
 
 
-  function showEditor(type, button) {
+  function showEditor(
+    type,
+    button
+  ) {
 
-    document.querySelectorAll(".tab")
-      .forEach(tab => tab.classList.remove("active"));
+    document
+      .querySelectorAll(".tab")
+      .forEach(
+        tab =>
+          tab.classList.remove("active")
+      );
+
 
     if (button) {
+
       button.classList.add("active");
+
     }
 
-    document.getElementById("htmlEditor")
+
+    document
+      .getElementById("htmlEditor")
       .classList.add("hidden");
 
-    document.getElementById("cssEditor")
+
+    document
+      .getElementById("cssEditor")
       .classList.add("hidden");
 
-    document.getElementById("jsEditor")
+
+    document
+      .getElementById("jsEditor")
       .classList.add("hidden");
 
-    document.getElementById("previewEditor")
+
+    document
+      .getElementById("previewEditor")
       .classList.add("hidden");
+
 
     if (type === "html") {
-      document.getElementById("htmlEditor")
+
+      document
+        .getElementById("htmlEditor")
         .classList.remove("hidden");
+
     }
+
 
     if (type === "css") {
-      document.getElementById("cssEditor")
+
+      document
+        .getElementById("cssEditor")
         .classList.remove("hidden");
+
     }
+
 
     if (type === "js") {
-      document.getElementById("jsEditor")
+
+      document
+        .getElementById("jsEditor")
         .classList.remove("hidden");
+
     }
 
+
     if (type === "preview") {
-      document.getElementById("previewEditor")
+
+      document
+        .getElementById("previewEditor")
         .classList.remove("hidden");
 
+
       updatePreview();
+
     }
 
   }
@@ -958,15 +2085,24 @@
 
     readEditors();
 
+
     const documentHTML = `
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
 <style>
 ${currentCSS}
 </style>
+
 </head>
+
 <body>
 
 ${currentHTML}
@@ -976,10 +2112,14 @@ ${currentJS}
 <\/script>
 
 </body>
+
 </html>
 `;
 
-    document.getElementById("previewFrame").srcdoc =
+
+    document
+      .getElementById("previewFrame")
+      .srcdoc =
       documentHTML;
 
   }
@@ -992,30 +2132,37 @@ ${currentJS}
   function defaultProducts() {
 
     return [
+
       {
         name: "Classic Shirt",
         price: 25000,
         category: "Men",
-        description: "Premium classic shirt.",
+        description:
+          "Premium classic shirt.",
         icon: "👕",
         image: ""
       },
+
       {
         name: "Elegant Dress",
         price: 45000,
         category: "Women",
-        description: "Beautiful elegant dress.",
+        description:
+          "Beautiful elegant dress.",
         icon: "👗",
         image: ""
       },
+
       {
         name: "Premium Outfit",
         price: 55000,
         category: "New Arrivals",
-        description: "Premium fashion outfit.",
+        description:
+          "Premium fashion outfit.",
         icon: "✨",
         image: ""
       }
+
     ];
 
   }
@@ -1024,65 +2171,82 @@ ${currentJS}
   function renderProductEditor() {
 
     const container =
-      document.getElementById("productsEditor");
+      document.getElementById(
+        "productsEditor"
+      );
+
 
     container.innerHTML = "";
 
-    storeProducts.forEach((product, index) => {
 
-      const row =
-        document.createElement("div");
+    storeProducts.forEach(
+      (product, index) => {
 
-      row.className = "product-row";
+        const row =
+          document.createElement("div");
 
-      row.innerHTML = `
-        <input
-          data-index="${index}"
-          data-field="name"
-          value="${escapeAttribute(product.name)}"
-          placeholder="Product name"
-        >
 
-        <input
-          data-index="${index}"
-          data-field="price"
-          type="number"
-          value="${Number(product.price) || 0}"
-          placeholder="Price"
-        >
+        row.className =
+          "product-row";
 
-        <input
-          data-index="${index}"
-          data-field="category"
-          value="${escapeAttribute(product.category)}"
-          placeholder="Category"
-        >
 
-        <input
-          data-index="${index}"
-          data-field="description"
-          value="${escapeAttribute(product.description)}"
-          placeholder="Description"
-        >
+        row.innerHTML = `
 
-        <input
-          data-index="${index}"
-          data-field="icon"
-          value="${escapeAttribute(product.icon || "🛍️")}"
-          placeholder="Emoji"
-        >
+<input
+  data-index="${index}"
+  data-field="name"
+  value="${escapeAttribute(product.name)}"
+  placeholder="Product name"
+>
 
-        <button
-          class="danger"
-          onclick="removeProduct(${index})"
-        >
-          ×
-        </button>
-      `;
 
-      container.appendChild(row);
+<input
+  data-index="${index}"
+  data-field="price"
+  type="number"
+  value="${Number(product.price) || 0}"
+  placeholder="Price"
+>
 
-    });
+
+<input
+  data-index="${index}"
+  data-field="category"
+  value="${escapeAttribute(product.category)}"
+  placeholder="Category"
+>
+
+
+<input
+  data-index="${index}"
+  data-field="description"
+  value="${escapeAttribute(product.description)}"
+  placeholder="Description"
+>
+
+
+<input
+  data-index="${index}"
+  data-field="icon"
+  value="${escapeAttribute(product.icon || "🛍️")}"
+  placeholder="Emoji"
+>
+
+
+<button
+  class="danger"
+  onclick="removeProduct(${index})"
+>
+  ×
+</button>
+
+`;
+
+
+        container.appendChild(row);
+
+      }
+    );
 
   }
 
@@ -1090,26 +2254,33 @@ ${currentJS}
   function readProductEditor() {
 
     document
-      .querySelectorAll("#productsEditor [data-field]")
+      .querySelectorAll(
+        "#productsEditor [data-field]"
+      )
       .forEach(input => {
 
         const index =
           Number(input.dataset.index);
 
+
         const field =
           input.dataset.field;
+
 
         storeProducts[index][field] =
           input.value;
 
       });
 
-    storeProducts.forEach(product => {
 
-      product.price =
-        Number(product.price) || 0;
+    storeProducts.forEach(
+      product => {
 
-    });
+        product.price =
+          Number(product.price) || 0;
+
+      }
+    );
 
   }
 
@@ -1118,14 +2289,24 @@ ${currentJS}
 
     readProductEditor();
 
+
     storeProducts.push({
+
       name: "New Product",
+
       price: 10000,
+
       category: "Products",
-      description: "Product description",
+
+      description:
+        "Product description",
+
       icon: "🛍️",
+
       image: ""
+
     });
+
 
     renderProductEditor();
 
@@ -1136,12 +2317,25 @@ ${currentJS}
 
     readProductEditor();
 
-    if (storeProducts.length <= 1) {
-      alert("You need at least one product.");
+
+    if (
+      storeProducts.length <= 1
+    ) {
+
+      alert(
+        "You need at least one product."
+      );
+
       return;
+
     }
 
-    storeProducts.splice(index, 1);
+
+    storeProducts.splice(
+      index,
+      1
+    );
+
 
     renderProductEditor();
 
@@ -1162,7 +2356,7 @@ ${currentJS}
 
 
   /* ============================================================
-     FASHION STORE TEMPLATE
+     FASHION STORE
   ============================================================ */
 
   function loadFashionTemplate() {
@@ -1170,10 +2364,14 @@ ${currentJS}
     storeProducts =
       defaultProducts();
 
-    document.getElementById("storeManager")
+
+    document
+      .getElementById("storeManager")
       .classList.remove("hidden");
 
+
     renderProductEditor();
+
 
     buildFashionStore();
 
@@ -1181,7 +2379,10 @@ ${currentJS}
 
     updatePreview();
 
-    document.getElementById("aiPrompt").value =
+
+    document
+      .getElementById("aiPrompt")
+      .value =
       "Create a professional fashion store.";
 
   }
@@ -1190,90 +2391,191 @@ ${currentJS}
   function buildFashionStore() {
 
     const name =
-      document.getElementById("storeName").value ||
+      document
+        .getElementById("storeName")
+        .value ||
       "My Store";
 
+
     const tagline =
-      document.getElementById("storeTagline").value ||
+      document
+        .getElementById("storeTagline")
+        .value ||
       "Quality products for everyone";
 
+
     const whatsapp =
-      document.getElementById("storeWhatsapp").value ||
+      document
+        .getElementById("storeWhatsapp")
+        .value ||
       "";
 
+
     const productsJSON =
-      JSON.stringify(storeProducts);
+      JSON.stringify(
+        storeProducts
+      );
+
 
     currentHTML = `
+
 <header class="shop-header">
+
   <div>
-    <h1>${escapeHTML(name)}</h1>
-    <p>${escapeHTML(tagline)}</p>
+
+    <h1>
+      ${escapeHTML(name)}
+    </h1>
+
+    <p>
+      ${escapeHTML(tagline)}
+    </p>
+
   </div>
+
 
   <button id="cartButton">
-    🛒 Cart <span id="cartCount">0</span>
+    🛒 Cart
+    <span id="cartCount">0</span>
   </button>
+
 </header>
 
+
 <section class="shop-hero">
+
   <div>
-    <h2>Welcome to ${escapeHTML(name)}</h2>
-    <p>${escapeHTML(tagline)}</p>
+
+    <h2>
+      Welcome to ${escapeHTML(name)}
+    </h2>
+
+    <p>
+      ${escapeHTML(tagline)}
+    </p>
+
 
     <a href="#products">
-      <button>Shop Now</button>
+
+      <button>
+        Shop Now
+      </button>
+
     </a>
+
   </div>
+
 </section>
 
+
 <section class="shop-controls">
+
   <input
     id="productSearch"
     placeholder="Search products..."
   >
 
+
   <select id="categoryFilter">
-    <option value="all">All Categories</option>
+
+    <option value="all">
+      All Categories
+    </option>
+
   </select>
+
 </section>
 
-<section id="products" class="products-section">
-  <h2>Our Products</h2>
-  <div id="productGrid" class="product-grid"></div>
+
+<section
+  id="products"
+  class="products-section"
+>
+
+  <h2>
+    Our Products
+  </h2>
+
+  <div
+    id="productGrid"
+    class="product-grid"
+  ></div>
+
 </section>
 
-<aside id="cartDrawer" class="cart-drawer">
+
+<aside
+  id="cartDrawer"
+  class="cart-drawer"
+>
+
   <div class="cart-head">
-    <h2>Your Cart</h2>
-    <button id="closeCart">×</button>
+
+    <h2>
+      Your Cart
+    </h2>
+
+    <button id="closeCart">
+      ×
+    </button>
+
   </div>
+
 
   <div id="cartItems"></div>
 
+
   <div class="cart-total">
-    <strong>Total</strong>
-    <strong id="cartTotal">₦0</strong>
+
+    <strong>
+      Total
+    </strong>
+
+    <strong id="cartTotal">
+      ₦0
+    </strong>
+
   </div>
+
 
   <button id="whatsappCheckout">
     Order on WhatsApp
   </button>
+
 </aside>
 
-<div id="cartOverlay" class="cart-overlay"></div>
+
+<div
+  id="cartOverlay"
+  class="cart-overlay"
+></div>
+
 
 <footer class="shop-footer">
-  <h3>${escapeHTML(name)}</h3>
-  <p>${escapeHTML(tagline)}</p>
-  <p>Powered by OTG AI Website Builder</p>
+
+  <h3>
+    ${escapeHTML(name)}
+  </h3>
+
+  <p>
+    ${escapeHTML(tagline)}
+  </p>
+
+  <p>
+    Powered by OTG AI Website Builder
+  </p>
+
 </footer>
+
 `;
 
+
     currentCSS = `
+
 * {
   box-sizing: border-box;
 }
+
 
 body {
   margin: 0;
@@ -1281,6 +2583,7 @@ body {
   background: #f8fafc;
   color: #111827;
 }
+
 
 .shop-header {
   background: #111827;
@@ -1292,15 +2595,18 @@ body {
   gap: 15px;
 }
 
+
 .shop-header h1 {
   margin: 0;
   color: #facc15;
 }
 
+
 .shop-header p {
   margin: 4px 0 0;
   color: #cbd5e1;
 }
+
 
 .shop-header button {
   background: #facc15;
@@ -1310,12 +2616,14 @@ body {
   font-weight: bold;
 }
 
+
 .shop-hero {
   min-height: 420px;
   display: flex;
   align-items: center;
   padding: 50px 7%;
   color: white;
+
   background:
     linear-gradient(
       120deg,
@@ -1324,16 +2632,21 @@ body {
     );
 }
 
+
 .shop-hero h2 {
-  font-size: clamp(35px, 8vw, 65px);
+  font-size:
+    clamp(35px, 8vw, 65px);
+
   margin-bottom: 12px;
 }
+
 
 .shop-hero p {
   font-size: 18px;
   max-width: 600px;
   color: #dbeafe;
 }
+
 
 .shop-hero button {
   background: #facc15;
@@ -1344,12 +2657,14 @@ body {
   margin-top: 15px;
 }
 
+
 .shop-controls {
   width: min(1100px, 90%);
   margin: 25px auto;
   display: flex;
   gap: 12px;
 }
+
 
 .shop-controls input,
 .shop-controls select {
@@ -1359,14 +2674,17 @@ body {
   flex: 1;
 }
 
+
 .products-section {
   width: min(1100px, 90%);
   margin: 30px auto 70px;
 }
 
+
 .products-section h2 {
   font-size: 32px;
 }
+
 
 .product-grid {
   display: grid;
@@ -1376,30 +2694,42 @@ body {
   margin-top: 20px;
 }
 
+
 .product-card {
   background: white;
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 8px 25px rgba(0,0,0,.08);
+  box-shadow:
+    0 8px 25px rgba(0,0,0,.08);
 }
+
 
 .product-image {
   height: 180px;
   display: flex;
   justify-content: center;
   align-items: center;
+
   background:
-    linear-gradient(135deg, #dbeafe, #fef3c7);
+    linear-gradient(
+      135deg,
+      #dbeafe,
+      #fef3c7
+    );
+
   font-size: 65px;
 }
+
 
 .product-body {
   padding: 17px;
 }
 
+
 .product-body h3 {
   margin: 0 0 7px;
 }
+
 
 .product-body p {
   color: #64748b;
@@ -1407,11 +2737,13 @@ body {
   min-height: 40px;
 }
 
+
 .price {
   color: #1d4ed8;
   font-size: 20px;
   font-weight: 800;
 }
+
 
 .product-body button {
   width: 100%;
@@ -1423,6 +2755,7 @@ body {
   margin-top: 10px;
 }
 
+
 .cart-drawer {
   position: fixed;
   top: 0;
@@ -1431,15 +2764,20 @@ body {
   height: 100vh;
   background: white;
   z-index: 100;
-  box-shadow: -10px 0 35px rgba(0,0,0,.2);
+  box-shadow:
+    -10px 0 35px rgba(0,0,0,.2);
+
   padding: 20px;
+
   transition: .3s;
   overflow-y: auto;
 }
 
+
 .cart-drawer.open {
   right: 0;
 }
+
 
 .cart-overlay {
   position: fixed;
@@ -1449,15 +2787,18 @@ body {
   display: none;
 }
 
+
 .cart-overlay.open {
   display: block;
 }
+
 
 .cart-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 
 .cart-head button {
   border: 0;
@@ -1469,10 +2810,13 @@ body {
   border-radius: 10px;
 }
 
+
 .cart-item {
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom:
+    1px solid #e5e7eb;
   padding: 15px 0;
 }
+
 
 .cart-item-top {
   display: flex;
@@ -1480,12 +2824,14 @@ body {
   gap: 10px;
 }
 
+
 .qty-controls {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-top: 8px;
 }
+
 
 .qty-controls button {
   border: 0;
@@ -1495,12 +2841,14 @@ body {
   border-radius: 7px;
 }
 
+
 .cart-total {
   display: flex;
   justify-content: space-between;
   padding: 20px 0;
   font-size: 20px;
 }
+
 
 #whatsappCheckout {
   width: 100%;
@@ -1512,6 +2860,7 @@ body {
   font-weight: bold;
 }
 
+
 .shop-footer {
   background: #111827;
   color: white;
@@ -1519,11 +2868,14 @@ body {
   padding: 35px 20px;
 }
 
+
 .shop-footer p {
   color: #94a3b8;
 }
 
+
 @media(max-width:600px) {
+
   .shop-header {
     flex-direction: column;
     align-items: flex-start;
@@ -1532,146 +2884,227 @@ body {
   .shop-controls {
     flex-direction: column;
   }
+
 }
+
 `;
 
-    currentJS = `
-const products = ${productsJSON};
 
-const whatsappNumber = "${escapeJS(whatsapp)}";
+    currentJS = `
+
+const products =
+  ${productsJSON};
+
+
+const whatsappNumber =
+  "${escapeJS(whatsapp)}";
+
 
 let cart = [];
 
+
 const productGrid =
-  document.getElementById("productGrid");
+  document.getElementById(
+    "productGrid"
+  );
+
 
 const categoryFilter =
-  document.getElementById("categoryFilter");
+  document.getElementById(
+    "categoryFilter"
+  );
+
 
 const searchInput =
-  document.getElementById("productSearch");
+  document.getElementById(
+    "productSearch"
+  );
+
 
 const cartDrawer =
-  document.getElementById("cartDrawer");
+  document.getElementById(
+    "cartDrawer"
+  );
+
 
 const cartOverlay =
-  document.getElementById("cartOverlay");
+  document.getElementById(
+    "cartOverlay"
+  );
+
 
 function money(value) {
+
   return "₦" +
     Number(value).toLocaleString();
+
 }
+
 
 function renderProducts() {
 
   const search =
-    searchInput.value.toLowerCase();
+    searchInput.value
+      .toLowerCase();
+
 
   const category =
     categoryFilter.value;
 
+
   const filtered =
-    products.filter(product => {
+    products.filter(
+      product => {
 
-      const matchesSearch =
-        product.name
-          .toLowerCase()
-          .includes(search);
+        const matchesSearch =
+          product.name
+            .toLowerCase()
+            .includes(search);
 
-      const matchesCategory =
-        category === "all" ||
-        product.category === category;
 
-      return matchesSearch &&
-             matchesCategory;
+        const matchesCategory =
+          category === "all" ||
+          product.category === category;
 
-    });
+
+        return (
+          matchesSearch &&
+          matchesCategory
+        );
+
+      }
+    );
+
 
   productGrid.innerHTML =
-    filtered.map((product, index) => {
+    filtered.map(
+      product => {
 
-      return \`
-        <div class="product-card">
+        const safeName =
+          product.name
+            .replace(/\\\\/g, "\\\\\\\\")
+            .replace(/'/g, "\\\\'");
 
-          <div class="product-image">
-            \${product.icon || "🛍️"}
-          </div>
 
-          <div class="product-body">
+        return \`
 
-            <small>
-              \${product.category}
-            </small>
+<div class="product-card">
 
-            <h3>
-              \${product.name}
-            </h3>
+  <div class="product-image">
+    \${product.icon || "🛍️"}
+  </div>
 
-            <p>
-              \${product.description || ""}
-            </p>
 
-            <div class="price">
-              \${money(product.price)}
-            </div>
+  <div class="product-body">
 
-            <button
-              onclick="addToCart('\${product.name.replace(/'/g, "\\\\'")}')"
-            >
-              Add to Cart
-            </button>
+    <small>
+      \${product.category}
+    </small>
 
-          </div>
-        </div>
-      \`;
 
-    }).join("");
+    <h3>
+      \${product.name}
+    </h3>
+
+
+    <p>
+      \${product.description || ""}
+    </p>
+
+
+    <div class="price">
+      \${money(product.price)}
+    </div>
+
+
+    <button
+      onclick="addToCart('\${safeName}')"
+    >
+      Add to Cart
+    </button>
+
+  </div>
+
+</div>
+
+\`;
+
+      }
+    ).join("");
 
 }
+
 
 function loadCategories() {
 
   const categories =
     [...new Set(
-      products.map(product => product.category)
+      products.map(
+        product =>
+          product.category
+      )
     )];
 
-  categories.forEach(category => {
 
-    const option =
-      document.createElement("option");
+  categories.forEach(
+    category => {
 
-    option.value = category;
-    option.textContent = category;
+      const option =
+        document.createElement(
+          "option"
+        );
 
-    categoryFilter.appendChild(option);
 
-  });
+      option.value =
+        category;
+
+
+      option.textContent =
+        category;
+
+
+      categoryFilter.appendChild(
+        option
+      );
+
+    }
+  );
 
 }
+
 
 function addToCart(name) {
 
   const product =
     products.find(
-      item => item.name === name
+      item =>
+        item.name === name
     );
+
 
   if (!product) return;
 
+
   const existing =
     cart.find(
-      item => item.name === name
+      item =>
+        item.name === name
     );
 
+
   if (existing) {
+
     existing.quantity++;
+
   } else {
+
     cart.push({
       ...product,
       quantity: 1
     });
+
   }
+
 
   renderCart();
 
@@ -1679,38 +3112,60 @@ function addToCart(name) {
 
 }
 
-function changeQuantity(name, amount) {
+
+function changeQuantity(
+  name,
+  amount
+) {
 
   const item =
     cart.find(
-      product => product.name === name
+      product =>
+        product.name === name
     );
+
 
   if (!item) return;
 
+
   item.quantity += amount;
 
+
   if (item.quantity <= 0) {
+
     cart =
       cart.filter(
-        product => product.name !== name
+        product =>
+          product.name !== name
       );
+
   }
+
 
   renderCart();
 
 }
 
+
 function renderCart() {
 
   const cartItems =
-    document.getElementById("cartItems");
+    document.getElementById(
+      "cartItems"
+    );
+
 
   const cartCount =
-    document.getElementById("cartCount");
+    document.getElementById(
+      "cartCount"
+    );
+
 
   const cartTotal =
-    document.getElementById("cartTotal");
+    document.getElementById(
+      "cartTotal"
+    );
+
 
   const totalItems =
     cart.reduce(
@@ -1719,18 +3174,24 @@ function renderCart() {
       0
     );
 
+
   const total =
     cart.reduce(
       (sum, item) =>
-        sum + item.price * item.quantity,
+        sum +
+        item.price *
+        item.quantity,
       0
     );
+
 
   cartCount.textContent =
     totalItems;
 
+
   cartTotal.textContent =
     money(total);
+
 
   if (!cart.length) {
 
@@ -1741,103 +3202,164 @@ function renderCart() {
 
   }
 
+
   cartItems.innerHTML =
-    cart.map(item => \`
+    cart.map(
+      item => {
 
-      <div class="cart-item">
+        const safeName =
+          item.name
+            .replace(/\\\\/g, "\\\\\\\\")
+            .replace(/'/g, "\\\\'");
 
-        <div class="cart-item-top">
-          <strong>\${item.name}</strong>
-          <span>
-            \${money(item.price * item.quantity)}
-          </span>
-        </div>
 
-        <div class="qty-controls">
+        return \`
 
-          <button
-            onclick="changeQuantity(
-              '\${item.name.replace(/'/g, "\\\\'")}',
-              -1
-            )"
-          >
-            −
-          </button>
+<div class="cart-item">
 
-          <strong>
-            \${item.quantity}
-          </strong>
+  <div class="cart-item-top">
 
-          <button
-            onclick="changeQuantity(
-              '\${item.name.replace(/'/g, "\\\\'")}',
-              1
-            )"
-          >
-            +
-          </button>
+    <strong>
+      \${item.name}
+    </strong>
 
-        </div>
+    <span>
+      \${money(
+        item.price *
+        item.quantity
+      )}
+    </span>
 
-      </div>
+  </div>
 
-    \`).join("");
+
+  <div class="qty-controls">
+
+    <button
+      onclick="changeQuantity(
+        '\${safeName}',
+        -1
+      )"
+    >
+      −
+    </button>
+
+
+    <strong>
+      \${item.quantity}
+    </strong>
+
+
+    <button
+      onclick="changeQuantity(
+        '\${safeName}',
+        1
+      )"
+    >
+      +
+    </button>
+
+  </div>
+
+</div>
+
+\`;
+
+      }
+    ).join("");
 
 }
+
 
 function openCart() {
 
-  cartDrawer.classList.add("open");
-  cartOverlay.classList.add("open");
+  cartDrawer
+    .classList
+    .add("open");
+
+
+  cartOverlay
+    .classList
+    .add("open");
 
 }
+
 
 function closeCart() {
 
-  cartDrawer.classList.remove("open");
-  cartOverlay.classList.remove("open");
+  cartDrawer
+    .classList
+    .remove("open");
+
+
+  cartOverlay
+    .classList
+    .remove("open");
 
 }
+
 
 function checkoutWhatsApp() {
 
   if (!cart.length) {
 
-    alert("Your cart is empty.");
+    alert(
+      "Your cart is empty."
+    );
 
     return;
 
   }
 
+
   const total =
     cart.reduce(
       (sum, item) =>
-        sum + item.price * item.quantity,
+        sum +
+        item.price *
+        item.quantity,
       0
     );
+
 
   let message =
     "Hello! I would like to place an order.%0A%0A";
 
-  cart.forEach(item => {
 
-    message +=
-      encodeURIComponent(
-        item.name +
-        " x" +
-        item.quantity +
-        " - " +
-        money(item.price * item.quantity)
-      ) + "%0A";
+  cart.forEach(
+    item => {
 
-  });
+      message +=
+        encodeURIComponent(
+          item.name +
+          " x" +
+          item.quantity +
+          " - " +
+          money(
+            item.price *
+            item.quantity
+          )
+        ) +
+        "%0A";
+
+    }
+  );
+
 
   message +=
     "%0ATotal: " +
-    encodeURIComponent(money(total));
+    encodeURIComponent(
+      money(total)
+    );
+
 
   const number =
-    whatsappNumber.replace(/[^0-9]/g, "");
+    whatsappNumber
+      .replace(
+        /[^0-9]/g,
+        ""
+      );
+
 
   if (!number) {
 
@@ -1849,6 +3371,7 @@ function checkoutWhatsApp() {
 
   }
 
+
   window.open(
     "https://wa.me/" +
     number +
@@ -1859,49 +3382,65 @@ function checkoutWhatsApp() {
 
 }
 
+
 document
-  .getElementById("cartButton")
+  .getElementById(
+    "cartButton"
+  )
   .addEventListener(
     "click",
     openCart
   );
 
+
 document
-  .getElementById("closeCart")
+  .getElementById(
+    "closeCart"
+  )
   .addEventListener(
     "click",
     closeCart
   );
 
+
 document
-  .getElementById("cartOverlay")
+  .getElementById(
+    "cartOverlay"
+  )
   .addEventListener(
     "click",
     closeCart
   );
 
+
 document
-  .getElementById("whatsappCheckout")
+  .getElementById(
+    "whatsappCheckout"
+  )
   .addEventListener(
     "click",
     checkoutWhatsApp
   );
+
 
 searchInput.addEventListener(
   "input",
   renderProducts
 );
 
+
 categoryFilter.addEventListener(
   "change",
   renderProducts
 );
+
 
 loadCategories();
 
 renderProducts();
 
 renderCart();
+
 `;
 
   }
@@ -1914,41 +3453,83 @@ renderCart();
   function loadRestaurantTemplate() {
 
     currentHTML = `
-<div class="restaurant">
-  <h1>Taste Haven</h1>
-  <p>Delicious meals made with love.</p>
 
-  <h2>Our Menu</h2>
+<div class="restaurant">
+
+  <h1>
+    Taste Haven
+  </h1>
+
+  <p>
+    Delicious meals made with love.
+  </p>
+
+
+  <h2>
+    Our Menu
+  </h2>
+
 
   <div class="menu">
-    <div>
-      <h3>Jollof Rice</h3>
-      <p>₦5,000</p>
-    </div>
 
     <div>
-      <h3>Fried Rice & Chicken</h3>
-      <p>₦6,500</p>
+
+      <h3>
+        Jollof Rice
+      </h3>
+
+      <p>
+        ₦5,000
+      </p>
+
     </div>
 
+
     <div>
-      <h3>Special Platter</h3>
-      <p>₦12,000</p>
+
+      <h3>
+        Fried Rice & Chicken
+      </h3>
+
+      <p>
+        ₦6,500
+      </p>
+
     </div>
+
+
+    <div>
+
+      <h3>
+        Special Platter
+      </h3>
+
+      <p>
+        ₦12,000
+      </p>
+
+    </div>
+
   </div>
+
 
   <button onclick="orderFood()">
     Order on WhatsApp
   </button>
+
 </div>
+
 `;
 
+
     currentCSS = `
+
 body {
   margin: 0;
   font-family: Arial;
   background: #fff7ed;
 }
+
 
 .restaurant {
   max-width: 900px;
@@ -1957,25 +3538,38 @@ body {
   text-align: center;
 }
 
+
 .restaurant h1 {
   font-size: 50px;
   color: #ea580c;
 }
 
+
 .menu {
   display: grid;
+
   grid-template-columns:
-    repeat(auto-fit, minmax(200px,1fr));
+    repeat(
+      auto-fit,
+      minmax(200px,1fr)
+    );
+
   gap: 15px;
+
   margin: 30px 0;
 }
+
 
 .menu div {
   background: white;
   padding: 25px;
   border-radius: 15px;
-  box-shadow: 0 5px 20px rgba(0,0,0,.08);
+
+  box-shadow:
+    0 5px 20px
+    rgba(0,0,0,.08);
 }
+
 
 button {
   background: #ea580c;
@@ -1985,15 +3579,25 @@ button {
   border-radius: 10px;
   font-weight: bold;
 }
+
 `;
+
 
     currentJS = `
+
 function orderFood() {
-  alert("You can connect this button to WhatsApp.");
+
+  alert(
+    "You can connect this button to WhatsApp."
+  );
+
 }
+
 `;
 
+
     syncEditors();
+
     updatePreview();
 
   }
@@ -2006,33 +3610,67 @@ function orderFood() {
   function loadPortfolioTemplate() {
 
     currentHTML = `
+
 <section class="portfolio">
-  <h1>My Creative Portfolio</h1>
+
+  <h1>
+    My Creative Portfolio
+  </h1>
+
 
   <p>
     I create beautiful digital experiences.
   </p>
 
+
   <div class="portfolio-grid">
-    <div>
-      <h2>About Me</h2>
-      <p>
-        Welcome to my portfolio. This is where
-        I showcase my work and skills.
-      </p>
-    </div>
+
 
     <div>
-      <h2>My Services</h2>
-      <p>Graphic Design</p>
-      <p>Web Design</p>
-      <p>Branding</p>
+
+      <h2>
+        About Me
+      </h2>
+
+      <p>
+        Welcome to my portfolio.
+        This is where I showcase my
+        work and skills.
+      </p>
+
     </div>
+
+
+    <div>
+
+      <h2>
+        My Services
+      </h2>
+
+      <p>
+        Graphic Design
+      </p>
+
+      <p>
+        Web Design
+      </p>
+
+      <p>
+        Branding
+      </p>
+
+    </div>
+
+
   </div>
+
 </section>
+
 `;
 
+
     currentCSS = `
+
 body {
   margin: 0;
   font-family: Arial;
@@ -2040,34 +3678,47 @@ body {
   color: white;
 }
 
+
 .portfolio {
   max-width: 900px;
   margin: auto;
   padding: 70px 20px;
 }
 
+
 .portfolio h1 {
   font-size: 55px;
   color: #facc15;
 }
 
+
 .portfolio-grid {
   display: grid;
+
   grid-template-columns:
-    repeat(auto-fit,minmax(250px,1fr));
+    repeat(
+      auto-fit,
+      minmax(250px,1fr)
+    );
+
   gap: 20px;
 }
+
 
 .portfolio-grid div {
   background: #1e293b;
   padding: 25px;
   border-radius: 18px;
 }
+
 `;
+
 
     currentJS = "";
 
+
     syncEditors();
+
     updatePreview();
 
   }
@@ -2085,13 +3736,16 @@ body {
         "Please sign up or login before saving your project."
       );
 
+
       showAuth();
 
       return;
 
     }
 
+
     readEditors();
+
 
     const title =
       prompt(
@@ -2099,17 +3753,31 @@ body {
         "My Website"
       );
 
+
     if (!title) return;
 
+
     const projectData = {
-      user_id: currentUser.id,
+
+      user_id:
+        currentUser.id,
+
       title,
-      html: currentHTML,
-      css: currentCSS,
-      js: currentJS
+
+      html:
+        currentHTML,
+
+      css:
+        currentCSS,
+
+      js:
+        currentJS
+
     };
 
+
     let result;
+
 
     if (currentProjectId) {
 
@@ -2117,9 +3785,13 @@ body {
         await supabaseClient
           .from("projects")
           .update(projectData)
-          .eq("id", currentProjectId)
+          .eq(
+            "id",
+            currentProjectId
+          )
           .select()
           .single();
+
 
     } else {
 
@@ -2132,6 +3804,7 @@ body {
 
     }
 
+
     if (result.error) {
 
       showSaveStatus(
@@ -2143,16 +3816,20 @@ body {
 
     }
 
+
     currentProjectId =
       result.data.id;
 
+
     currentProjectSlug =
       result.data.slug;
+
 
     showSaveStatus(
       "Project saved successfully.",
       "success"
     );
+
 
     await loadProjects();
 
@@ -2167,28 +3844,45 @@ body {
 
     if (!currentUser) return;
 
-    const { data, error } =
+
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("projects")
         .select("*")
-        .eq("user_id", currentUser.id)
-        .order("updated_at", {
-          ascending: false
-        });
+        .eq(
+          "user_id",
+          currentUser.id
+        )
+        .order(
+          "updated_at",
+          {
+            ascending: false
+          }
+        );
+
 
     const container =
-      document.getElementById("projectsList");
+      document.getElementById(
+        "projectsList"
+      );
+
 
     if (error) {
 
       container.innerHTML =
         `<div class="status error">
-          ${escapeHTML(error.message)}
+          ${escapeHTML(
+            error.message
+          )}
         </div>`;
 
       return;
 
     }
+
 
     if (!data.length) {
 
@@ -2201,89 +3895,130 @@ body {
 
     }
 
+
     container.innerHTML =
-      data.map(project => `
+      data.map(
+        project => `
 
-        <div class="project-item">
+<div class="project-item">
 
-          <div>
-            <strong>
-              ${escapeHTML(project.title)}
-            </strong>
+  <div>
 
-            <div class="small muted">
-              ${project.is_published
-                ? "🌍 Published"
-                : "📝 Draft"}
-            </div>
-          </div>
+    <strong>
+      ${escapeHTML(
+        project.title
+      )}
+    </strong>
 
-          <div class="row">
 
-            <button
-              class="btn primary"
-              onclick="openProject('${project.id}')"
-            >
-              Open
-            </button>
+    <div class="small muted">
 
-            ${
-              project.is_published &&
-              project.slug
-              ?
-              `<button
-                class="btn success"
-                onclick="openPublished('${escapeJS(project.slug)}')"
-              >
-                View
-              </button>`
-              :
-              ""
-            }
+      ${
+        project.is_published
+          ? "🌍 Published"
+          : "📝 Draft"
+      }
 
-          </div>
+    </div>
 
-        </div>
+  </div>
 
-      `).join("");
+
+  <div class="row">
+
+    <button
+      class="btn primary"
+      onclick="openProject('${project.id}')"
+    >
+      Open
+    </button>
+
+
+    ${
+      project.is_published &&
+      project.slug
+
+        ?
+
+`<button
+  class="btn success"
+  onclick="openPublished(
+    '${escapeJS(project.slug)}'
+  )"
+>
+  View
+</button>`
+
+        :
+
+""
+
+    }
+
+  </div>
+
+</div>
+
+`
+      ).join("");
 
   }
 
 
   async function openProject(id) {
 
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("projects")
         .select("*")
-        .eq("id", id)
+        .eq(
+          "id",
+          id
+        )
         .single();
+
 
     if (error) {
 
-      alert(error.message);
+      alert(
+        error.message
+      );
+
       return;
 
     }
 
+
     currentProjectId =
       data.id;
+
 
     currentProjectSlug =
       data.slug;
 
+
     currentHTML =
       data.html || "";
+
 
     currentCSS =
       data.css || "";
 
+
     currentJS =
       data.js || "";
+
 
     syncEditors();
 
     updatePreview();
+
+
+    showBuilder();
+
 
     window.scrollTo({
       top: 0,
@@ -2305,39 +4040,65 @@ body {
         "Please login before publishing your website."
       );
 
+
       showAuth();
 
       return;
 
     }
 
+
     readEditors();
+
 
     let project;
 
+
     if (currentProjectId) {
 
-      const { data, error } =
+      const {
+        data,
+        error
+      } =
         await supabaseClient
           .from("projects")
           .update({
-            html: currentHTML,
-            css: currentCSS,
-            js: currentJS,
-            is_published: true
+
+            html:
+              currentHTML,
+
+            css:
+              currentCSS,
+
+            js:
+              currentJS,
+
+            is_published:
+              true
+
           })
-          .eq("id", currentProjectId)
+          .eq(
+            "id",
+            currentProjectId
+          )
           .select()
           .single();
 
+
       if (error) {
 
-        alert(error.message);
+        alert(
+          error.message
+        );
+
         return;
 
       }
 
-      project = data;
+
+      project =
+        data;
+
 
     } else {
 
@@ -2345,54 +4106,94 @@ body {
         prompt(
           "Website name:",
           "My Website"
-        ) || "My Website";
+        ) ||
+        "My Website";
 
-      const { data, error } =
+
+      const {
+        data,
+        error
+      } =
         await supabaseClient
           .from("projects")
           .insert({
-            user_id: currentUser.id,
+
+            user_id:
+              currentUser.id,
+
             title,
-            html: currentHTML,
-            css: currentCSS,
-            js: currentJS,
-            is_published: true
+
+            html:
+              currentHTML,
+
+            css:
+              currentCSS,
+
+            js:
+              currentJS,
+
+            is_published:
+              true
+
           })
           .select()
           .single();
 
+
       if (error) {
 
-        alert(error.message);
+        alert(
+          error.message
+        );
+
         return;
 
       }
 
-      project = data;
+
+      project =
+        data;
 
     }
+
 
     currentProjectId =
       project.id;
 
+
     currentProjectSlug =
       project.slug;
+
 
     const url =
       window.location.origin +
       "/?site=" +
       project.slug;
 
+
     showSaveStatus(
+
       `
-      <b>Website published!</b><br>
-      <a href="${url}" target="_blank">
+      <b>
+        Website published!
+      </b>
+
+      <br>
+
+      <a
+        href="${url}"
+        target="_blank"
+      >
         ${url}
       </a>
       `,
+
       "success",
+
       true
+
     );
+
 
     await loadProjects();
 
@@ -2402,10 +4203,13 @@ body {
   function openPublished(slug) {
 
     window.open(
+
       window.location.origin +
       "/?site=" +
       slug,
+
       "_blank"
+
     );
 
   }
@@ -2422,43 +4226,74 @@ body {
         window.location.search
       );
 
+
     const slug =
       params.get("site");
 
+
     if (!slug) return;
 
-    const { data, error } =
+
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("projects")
-        .select("html,css,js,title")
-        .eq("slug", slug)
-        .eq("is_published", true)
+        .select(
+          "html,css,js,title"
+        )
+        .eq(
+          "slug",
+          slug
+        )
+        .eq(
+          "is_published",
+          true
+        )
         .single();
+
 
     if (error || !data) {
 
       document.body.innerHTML = `
-        <div style="
-          font-family:Arial;
-          text-align:center;
-          padding:60px 20px;
-        ">
-          <h1>Website not found</h1>
-          <p>This published website does not exist.</p>
-        </div>
-      `;
+
+<div style="
+  font-family:Arial;
+  text-align:center;
+  padding:60px 20px;
+">
+
+  <h1>
+    Website not found
+  </h1>
+
+  <p>
+    This published website does not exist.
+  </p>
+
+</div>
+
+`;
 
       return;
 
     }
 
+
     document.body.innerHTML = `
-      <style>${data.css}</style>
-      ${data.html}
-      <script>
-        ${data.js}
-      <\/script>
-    `;
+
+<style>
+${data.css}
+</style>
+
+${data.html}
+
+<script>
+${data.js}
+<\/script>
+
+`;
 
   }
 
@@ -2475,12 +4310,18 @@ body {
       )
     ) return;
 
+
     currentHTML = "";
+
     currentCSS = "";
+
     currentJS = "";
 
+
     currentProjectId = null;
+
     currentProjectSlug = null;
+
 
     syncEditors();
 
@@ -2499,10 +4340,18 @@ body {
     allowHTML = false
   ) {
 
-    document.getElementById("saveStatus")
+    document
+      .getElementById(
+        "saveStatus"
+      )
       .innerHTML =
+
       `<div class="status ${type}">
-        ${allowHTML ? message : escapeHTML(message)}
+        ${
+          allowHTML
+            ? message
+            : escapeHTML(message)
+        }
       </div>`;
 
   }
@@ -2514,30 +4363,72 @@ body {
 
   function escapeHTML(value) {
 
-    return String(value || "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+    return String(
+      value || ""
+    )
+
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+
+      .replace(
+        /</g,
+        "&lt;"
+      )
+
+      .replace(
+        />/g,
+        "&gt;"
+      )
+
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+
+      .replace(
+        /'/g,
+        "&#039;"
+      );
 
   }
 
 
   function escapeAttribute(value) {
 
-    return escapeHTML(value);
+    return escapeHTML(
+      value
+    );
 
   }
 
 
   function escapeJS(value) {
 
-    return String(value || "")
-      .replace(/\\/g, "\\\\")
-      .replace(/"/g, '\\"')
-      .replace(/\n/g, "\\n")
-      .replace(/\r/g, "\\r");
+    return String(
+      value || ""
+    )
+
+      .replace(
+        /\\/g,
+        "\\\\"
+      )
+
+      .replace(
+        /"/g,
+        '\\"'
+      )
+
+      .replace(
+        /\n/g,
+        "\\n"
+      )
+
+      .replace(
+        /\r/g,
+        "\\r"
+      );
 
   }
 
