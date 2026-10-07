@@ -2,8 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#111111">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="theme-color"
+    content="#111111">
+
+  <meta
+    name="description"
+    content="OTG AI Website Builder - Build beautiful websites with AI using your phone.">
+
   <link rel="manifest" href="/manifest.json">
 
   <title>OTG AI Website Builder</title>
@@ -17,21 +28,21 @@
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       background: #f4f6f8;
-      color: #222;
+      color: #111;
     }
 
     header {
       background: #111;
       color: white;
+      padding: 20px;
       text-align: center;
-      padding: 28px 15px;
     }
 
     header h1 {
-      margin: 0 0 8px;
-      font-size: 30px;
+      margin: 0 0 6px;
+      font-size: 25px;
     }
 
     header p {
@@ -40,189 +51,223 @@
     }
 
     .container {
-      width: 94%;
-      max-width: 1200px;
+      width: 95%;
+      max-width: 1100px;
       margin: 20px auto;
     }
 
-    .box,
-    .editor,
-    .preview-box {
+    .box {
       background: white;
       border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 3px 14px rgba(0,0,0,.08);
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.08);
     }
 
     h2 {
       margin-top: 0;
+      font-size: 20px;
+    }
+
+    input,
+    textarea,
+    button {
+      width: 100%;
+      font-family: inherit;
     }
 
     input,
     textarea {
-      width: 100%;
-      border: 1px solid #ccc;
+      border: 1px solid #ddd;
       border-radius: 9px;
       padding: 12px;
+      margin: 7px 0;
       font-size: 15px;
-      font-family: Arial, sans-serif;
-    }
-
-    input:focus,
-    textarea:focus {
-      outline: none;
-      border-color: #111;
     }
 
     textarea {
+      min-height: 180px;
       resize: vertical;
-    }
-
-    #prompt {
-      min-height: 120px;
-    }
-
-    button {
-      border: none;
-      background: #111;
-      color: white;
-      padding: 12px 18px;
-      border-radius: 9px;
-      cursor: pointer;
-      font-size: 15px;
-      margin: 5px 5px 5px 0;
-    }
-
-    .green {
-      background: #087f3f;
-    }
-
-    .blue {
-      background: #1565c0;
-    }
-
-    .red {
-      background: #c62828;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .auth-grid,
-    .editors,
-    .templates {
-      display: grid;
-      gap: 15px;
-    }
-
-    .auth-grid {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .editors {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .templates {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .template {
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 15px;
-      background: #fafafa;
-    }
-
-    .template button {
-      width: 100%;
-    }
-
-    .editor textarea {
-      height: 300px;
       font-family: monospace;
     }
 
-    .preview-box iframe {
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 13px;
+      margin: 6px 0;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    button:hover {
+      opacity: .9;
+    }
+
+    .green {
+      background: #0a8f45;
+      color: white;
+    }
+
+    .blue {
+      background: #1769e0;
+      color: white;
+    }
+
+    .black {
+      background: #111;
+      color: white;
+    }
+
+    .orange {
+      background: #f28c28;
+      color: white;
+    }
+
+    .red {
+      background: #d62828;
+      color: white;
+    }
+
+    .gray {
+      background: #e9ecef;
+      color: #111;
+    }
+
+    .account-status {
+      background: #eef7ff;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .usage {
+      background: #f1f8f3;
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .template-card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 12px;
+      background: #fafafa;
+    }
+
+    .template-card button {
+      margin-bottom: 0;
+    }
+
+    .editor-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .editor-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    iframe {
       width: 100%;
-      height: 600px;
-      border: 1px solid #ccc;
+      min-height: 500px;
+      border: 1px solid #ddd;
       border-radius: 10px;
       background: white;
     }
 
-    .usage,
-    .account {
+    #projectsList {
+      margin-top: 15px;
+    }
+
+    .project-item {
+      border: 1px solid #ddd;
+      border-radius: 10px;
       padding: 12px;
-      border-radius: 9px;
-      margin: 12px 0;
+      margin-bottom: 10px;
+      background: #fafafa;
     }
 
-    .usage {
-      background: #f1f1f1;
-      font-weight: bold;
+    .project-item strong {
+      display: block;
+      margin-bottom: 8px;
     }
 
-    .account {
-      background: #eef7ff;
+    .project-buttons {
+      display: flex;
+      gap: 7px;
+    }
+
+    .project-buttons button {
+      margin: 0;
     }
 
     .status {
-      margin-top: 12px;
-      font-weight: bold;
-    }
-
-    .small {
-      font-size: 13px;
-      color: #666;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      background: #f3f3f3;
+      font-size: 14px;
     }
 
     footer {
       text-align: center;
       padding: 30px 15px;
       color: #666;
+      font-size: 13px;
+    }
+
+    #publicSite {
+      display: none;
+      min-height: 100vh;
+      background: white;
+    }
+
+    #publicSite iframe {
+      display: block;
+      width: 100%;
+      height: 100vh;
+      min-height: 100vh;
+      border: 0;
+      border-radius: 0;
+    }
+
+    #publicLoading {
+      text-align: center;
+      padding: 50px 20px;
+      font-size: 18px;
     }
 
     @media (max-width: 800px) {
-      header h1 {
-        font-size: 24px;
-      }
-
-      .container {
-        width: 96%;
-      }
-
-      .box,
-      .editor,
-      .preview-box {
-        padding: 15px;
-      }
-
-      .auth-grid,
-      .editors,
-      .templates {
+      .editor-grid {
         grid-template-columns: 1fr;
       }
 
-      .editor textarea {
-        height: 230px;
+      .template-grid {
+        grid-template-columns: 1fr;
       }
 
-      .preview-box iframe {
-        height: 500px;
+      .container {
+        width: 94%;
       }
 
-      button {
-        width: 100%;
-        margin: 5px 0;
+      header h1 {
+        font-size: 22px;
       }
 
-      input,
       textarea {
-        font-size: 16px;
+        min-height: 220px;
       }
     }
   </style>
@@ -230,23 +275,277 @@
 
 <body>
 
-<header>
-  <h1>🚀 OTG AI Website Builder</h1>
-  <p>Create beautiful websites with AI — right from your phone.</p>
-</header>
+  <!-- PUBLIC WEBSITE VIEW -->
+  <div id="publicSite">
+    <div id="publicLoading">
+      Loading website...
+    </div>
+  </div>
 
-<div class="container">
+  <!-- BUILDER -->
+  <div id="builder">
 
-  <!-- ================================
-       SUPABASE CONNECTION
-       🔴 PASTE YOUR KEY HERE
-  ================================= -->
+    <header>
+      <h1>🚀 OTG AI Website Builder</h1>
+      <p>Turn your idea into a beautiful website</p>
+    </header>
+
+    <div class="container">
+
+      <!-- ACCOUNT -->
+      <div class="box">
+        <h2>👤 Student Account</h2>
+
+        <div
+          id="accountStatus"
+          class="account-status">
+          Checking account...
+        </div>
+
+        <input
+          id="email"
+          type="email"
+          placeholder="Your email">
+
+        <input
+          id="password"
+          type="password"
+          placeholder="Password">
+
+        <button
+          class="blue"
+          onclick="signUp()">
+          📝 Create Account
+        </button>
+
+        <button
+          class="black"
+          onclick="login()">
+          🔐 Log In
+        </button>
+
+        <button
+          class="gray"
+          onclick="logout()">
+          🚪 Log Out
+        </button>
+
+        <div id="authStatus" class="status"></div>
+      </div>
+
+
+      <!-- AI ASSISTANT -->
+      <div class="box">
+        <h2>🤖 AI Website Assistant</h2>
+
+        <p>
+          Describe the website you want to create or the changes
+          you want to make.
+        </p>
+
+        <textarea
+          id="aiPrompt"
+          placeholder="Example: Create a modern fashion website for Prince Fashion. I sell men's and women's clothing. Add a WhatsApp contact button."></textarea>
+
+        <button
+          class="green"
+          onclick="generateWebsite()">
+          ✨ Generate Website
+        </button>
+
+        <div
+          id="usage"
+          class="usage">
+          Checking today's AI usage...
+        </div>
+
+        <div
+          id="status"
+          class="status">
+        </div>
+      </div>
+
+
+      <!-- WHATSAPP -->
+      <div class="box">
+        <h2>📱 WhatsApp Contact</h2>
+
+        <input
+          id="whatsapp"
+          placeholder="WhatsApp number e.g. 2348012345678">
+
+        <button
+          class="green"
+          onclick="addWhatsApp()">
+          📲 Add WhatsApp Button
+        </button>
+      </div>
+
+
+      <!-- TEMPLATES -->
+      <div class="box">
+        <h2>🎨 Templates</h2>
+
+        <div class="template-grid">
+
+          <div class="template-card">
+            <strong>👗 Fashion</strong>
+            <p>Fashion business website.</p>
+
+            <button
+              class="black"
+              onclick="loadTemplate('fashion')">
+              Use Template
+            </button>
+          </div>
+
+          <div class="template-card">
+            <strong>💼 Business</strong>
+            <p>Professional business website.</p>
+
+            <button
+              class="black"
+              onclick="loadTemplate('business')">
+              Use Template
+            </button>
+          </div>
+
+          <div class="template-card">
+            <strong>👤 Portfolio</strong>
+            <p>Personal designer portfolio.</p>
+
+            <button
+              class="black"
+              onclick="loadTemplate('portfolio')">
+              Use Template
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- SAVE PROJECT -->
+      <div class="box">
+        <h2>💾 Save & Publish</h2>
+
+        <input
+          id="projectTitle"
+          placeholder="Project name, e.g. Prince Fashion">
+
+        <button
+          class="green"
+          onclick="saveProject()">
+          💾 Save My Website
+        </button>
+
+        <button
+          class="blue"
+          onclick="loadProjects()">
+          📂 My Saved Projects
+        </button>
+
+        <button
+          class="orange"
+          onclick="publishProject()">
+          🚀 Publish Website
+        </button>
+
+        <div id="projectsList"></div>
+      </div>
+
+
+      <!-- EDITORS -->
+      <div class="box">
+        <h2>🛠️ Website Editor</h2>
+
+        <div class="editor-grid">
+
+          <div>
+            <div class="editor-title">
+              HTML
+            </div>
+
+            <textarea
+              id="html"
+              oninput="updatePreview()"
+              placeholder="Write your HTML here..."></textarea>
+          </div>
+
+          <div>
+            <div class="editor-title">
+              CSS
+            </div>
+
+            <textarea
+              id="css"
+              oninput="updatePreview()"
+              placeholder="Write your CSS here..."></textarea>
+          </div>
+
+          <div>
+            <div class="editor-title">
+              JavaScript
+            </div>
+
+            <textarea
+              id="js"
+              oninput="updatePreview()"
+              placeholder="Write your JavaScript here..."></textarea>
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- LIVE PREVIEW -->
+      <div class="box">
+        <h2>👀 Live Preview</h2>
+
+        <iframe
+          id="preview"
+          title="Website Preview">
+        </iframe>
+      </div>
+
+
+      <!-- INSTALL -->
+      <div class="box">
+        <h2>📲 Install OTG Builder</h2>
+
+        <p>
+          You can install OTG AI Website Builder on your phone
+          and use it like an app.
+        </p>
+
+        <button
+          id="installBtn"
+          class="black"
+          style="display:none"
+          onclick="installApp()">
+          📲 Install App
+        </button>
+      </div>
+
+    </div>
+
+    <footer>
+      © 2026 OTG AI Website Builder<br>
+      Built for OTG Graphic Academy students.
+    </footer>
+
+  </div>
+
 
   <script>
+
+    /* =========================
+       SUPABASE
+    ========================= */
+
     const SUPABASE_URL =
       "https://actwvvokfdemobgsfctx.supabase.co";
 
-    // 🔴🔴🔴 PASTE YOUR SUPABASE PUBLISHABLE KEY HERE 🔴🔴🔴
     const SUPABASE_PUBLISHABLE_KEY =
       "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
 
@@ -255,1223 +554,1420 @@
         SUPABASE_URL,
         SUPABASE_PUBLISHABLE_KEY
       );
-  </script>
 
 
-  <!-- ACCOUNT -->
+    /* =========================
+       ACCOUNT
+    ========================= */
 
-  <div class="box">
+    async function updateAccountStatus() {
 
-    <h2>👤 Student Account</h2>
+      const {
+        data: { user }
+      } =
+        await supabaseClient.auth.getUser();
 
-    <div id="loggedOut">
+      const box =
+        document.getElementById("accountStatus");
 
-      <div class="auth-grid">
+      if (user) {
 
-        <div>
-          <h3>Create Account</h3>
+        box.innerHTML =
+          "✅ Logged in as <strong>" +
+          user.email +
+          "</strong>";
 
-          <input
-            type="email"
-            id="signupEmail"
-            placeholder="Email address">
+      } else {
 
-          <br><br>
+        box.innerHTML =
+          "🔐 You are not logged in.";
 
-          <input
-            type="password"
-            id="signupPassword"
-            placeholder="Password">
-
-          <button
-            class="green"
-            onclick="signUp()">
-            Create Account
-          </button>
-        </div>
-
-
-        <div>
-          <h3>Login</h3>
-
-          <input
-            type="email"
-            id="loginEmail"
-            placeholder="Email address">
-
-          <br><br>
-
-          <input
-            type="password"
-            id="loginPassword"
-            placeholder="Password">
-
-          <button
-            class="blue"
-            onclick="login()">
-            Login
-          </button>
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div id="loggedIn" class="hidden">
-
-      <div class="account">
-        ✅ Logged in as:
-        <strong id="userEmail"></strong>
-      </div>
-
-      <button
-        class="red"
-        onclick="logout()">
-        🚪 Logout
-      </button>
-
-    </div>
-
-    <div
-      id="authStatus"
-      class="status">
-    </div>
-
-  </div>
-
-
-  <!-- AI -->
-
-  <div class="box">
-
-    <h2>🤖 AI Website Assistant</h2>
-
-    <p class="small">
-      Describe the website you want to create or improve.
-    </p>
-
-    <textarea
-      id="prompt"
-      placeholder="Example: Create a beautiful fashion website for Prince Fashion...">
-    </textarea>
-
-    <br><br>
-
-    <input
-      type="tel"
-      id="whatsapp"
-      placeholder="WhatsApp number e.g. 08012345678">
-
-    <div
-      class="usage"
-      id="usage">
-    </div>
-
-    <button onclick="askAI()">
-      ✨ Ask OTG AI
-    </button>
-
-    <button
-      id="installButton"
-      class="green hidden"
-      onclick="installApp()">
-      📲 Install OTG Builder
-    </button>
-
-    <div
-      id="status"
-      class="status">
-    </div>
-
-  </div>
-
-
-  <!-- SAVE PROJECT -->
-
-  <div class="box">
-
-    <h2>💾 Save Project</h2>
-
-    <input
-      id="projectTitle"
-      placeholder="Project name, e.g. Prince Fashion">
-
-    <button
-      class="green"
-      onclick="saveProject()">
-      💾 Save My Website
-    </button>
-
-    <button
-      class="blue"
-      onclick="loadProjects()">
-      📂 My Saved Projects
-    </button>
-
-    <div id="projectsList"></div>
-
-  </div>
-
-
-  <!-- TEMPLATES -->
-
-  <div class="box">
-
-    <h2>🎨 Website Templates</h2>
-
-    <div class="templates">
-
-      <div class="template">
-        <h3>👗 Fashion</h3>
-        <p>Perfect for clothing businesses.</p>
-
-        <button onclick="loadTemplate('fashion')">
-          Use Template
-        </button>
-      </div>
-
-
-      <div class="template">
-        <h3>💼 Business</h3>
-        <p>A clean professional website.</p>
-
-        <button onclick="loadTemplate('business')">
-          Use Template
-        </button>
-      </div>
-
-
-      <div class="template">
-        <h3>🎨 Portfolio</h3>
-        <p>Perfect for designers and creatives.</p>
-
-        <button onclick="loadTemplate('portfolio')">
-          Use Template
-        </button>
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- EDITORS -->
-
-  <div class="editors">
-
-    <div class="editor">
-
-      <h3>📄 HTML Editor</h3>
-
-      <textarea
-        id="html"
-        placeholder="Write your HTML here...">
-      </textarea>
-
-    </div>
-
-
-    <div class="editor">
-
-      <h3>🎨 CSS Editor</h3>
-
-      <textarea
-        id="css"
-        placeholder="Write your CSS here...">
-      </textarea>
-
-    </div>
-
-
-    <div class="editor">
-
-      <h3>⚙️ JavaScript Editor</h3>
-
-      <textarea
-        id="js"
-        placeholder="Write your JavaScript here...">
-      </textarea>
-
-    </div>
-
-  </div>
-
-
-  <!-- PREVIEW -->
-
-  <div class="preview-box">
-
-    <h2>👁️ Live Preview</h2>
-
-    <button onclick="updatePreview()">
-      🔄 Update Preview
-    </button>
-
-    <iframe id="preview"></iframe>
-
-  </div>
-
-</div>
-
-
-<footer>
-  <p>© 2026 OTG AI Website Builder</p>
-  <p>Built for OTG students 🚀</p>
-</footer>
-
-
-<script>
-
-  /* ==========================
-     AUTHENTICATION
-  ========================== */
-
-  async function signUp() {
-
-    const email =
-      document.getElementById("signupEmail")
-        .value.trim();
-
-    const password =
-      document.getElementById("signupPassword")
-        .value;
-
-    const status =
-      document.getElementById("authStatus");
-
-    if (!email || !password) {
-      status.textContent =
-        "Please enter your email and password.";
-      return;
-    }
-
-    if (password.length < 6) {
-      status.textContent =
-        "Password must be at least 6 characters.";
-      return;
-    }
-
-    status.textContent =
-      "Creating your account...";
-
-    const { error } =
-      await supabaseClient.auth.signUp({
-        email,
-        password
-      });
-
-    if (error) {
-      status.textContent =
-        "❌ " + error.message;
-      return;
-    }
-
-    status.textContent =
-      "✅ Account created. Check your email if confirmation is required.";
-  }
-
-
-  async function login() {
-
-    const email =
-      document.getElementById("loginEmail")
-        .value.trim();
-
-    const password =
-      document.getElementById("loginPassword")
-        .value;
-
-    const status =
-      document.getElementById("authStatus");
-
-    if (!email || !password) {
-      status.textContent =
-        "Please enter your email and password.";
-      return;
-    }
-
-    status.textContent =
-      "Logging in...";
-
-    const { error } =
-      await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
-
-    if (error) {
-      status.textContent =
-        "❌ " + error.message;
-      return;
-    }
-
-    status.textContent =
-      "✅ Login successful.";
-
-    updateAuthUI();
-  }
-
-
-  async function logout() {
-
-    await supabaseClient.auth.signOut();
-
-    updateAuthUI();
-
-    document.getElementById("authStatus")
-      .textContent =
-      "You have been logged out.";
-  }
-
-
-  async function updateAuthUI() {
-
-    const {
-      data: { user }
-    } =
-      await supabaseClient.auth.getUser();
-
-    const loggedOut =
-      document.getElementById("loggedOut");
-
-    const loggedIn =
-      document.getElementById("loggedIn");
-
-    if (user) {
-
-      loggedOut.classList.add("hidden");
-
-      loggedIn.classList.remove("hidden");
-
-      document.getElementById("userEmail")
-        .textContent =
-        user.email || "";
-
-    } else {
-
-      loggedOut.classList.remove("hidden");
-
-      loggedIn.classList.add("hidden");
-
-      document.getElementById("userEmail")
-        .textContent = "";
-    }
-  }
-
-
-  updateAuthUI();
-
-
-  /* ==========================
-     DAILY AI LIMIT
-  ========================== */
-
-  const DAILY_LIMIT = 5;
-
-
-  function getUsageKey() {
-
-    const today =
-      new Date()
-        .toISOString()
-        .split("T")[0];
-
-    return "otg_ai_usage_" + today;
-  }
-
-
-  function getUsage() {
-
-    return parseInt(
-      localStorage.getItem(getUsageKey()) || "0",
-      10
-    );
-  }
-
-
-  function updateUsageDisplay() {
-
-    const used = getUsage();
-
-    const remaining =
-      Math.max(
-        DAILY_LIMIT - used,
-        0
-      );
-
-    document.getElementById("usage")
-      .textContent =
-      "🤖 Free AI generations remaining today: " +
-      remaining +
-      " / " +
-      DAILY_LIMIT;
-  }
-
-
-  function increaseUsage() {
-
-    const key = getUsageKey();
-
-    const used = getUsage();
-
-    localStorage.setItem(
-      key,
-      used + 1
-    );
-
-    updateUsageDisplay();
-  }
-
-
-  updateUsageDisplay();
-
-
-  /* ==========================
-     LIVE PREVIEW
-  ========================== */
-
-  function updatePreview() {
-
-    const html =
-      document.getElementById("html").value;
-
-    const css =
-      document.getElementById("css").value;
-
-    const js =
-      document.getElementById("js").value;
-
-    document.getElementById("preview")
-      .srcdoc = `
-
-        <!DOCTYPE html>
-
-        <html>
-
-        <head>
-
-          <meta
-            charset="UTF-8">
-
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0">
-
-          <style>
-
-            ${css}
-
-          </style>
-
-        </head>
-
-        <body>
-
-          ${html}
-
-          <script>
-
-            ${js}
-
-          <\/script>
-
-        </body>
-
-        </html>
-
-      `;
-  }
-
-
-  /* ==========================
-     AI GENERATOR
-  ========================== */
-
-  async function askAI() {
-
-    const prompt =
-      document.getElementById("prompt")
-        .value.trim();
-
-    const whatsapp =
-      document.getElementById("whatsapp")
-        .value.trim();
-
-    const currentHTML =
-      document.getElementById("html").value;
-
-    const currentCSS =
-      document.getElementById("css").value;
-
-    const currentJS =
-      document.getElementById("js").value;
-
-    const status =
-      document.getElementById("status");
-
-
-    if (!prompt) {
-
-      status.textContent =
-        "Please describe the website you want to build.";
-
-      return;
+      }
     }
 
 
-    if (getUsage() >= DAILY_LIMIT) {
+    async function signUp() {
 
-      status.textContent =
-        "⚠️ You have used all 5 free AI generations for today.";
+      const email =
+        document.getElementById("email")
+          .value.trim();
 
-      return;
-    }
+      const password =
+        document.getElementById("password")
+          .value;
 
+      if (!email || !password) {
 
-    status.textContent =
-      "🤖 OTG AI is generating your website...";
+        document.getElementById("authStatus")
+          .textContent =
+          "Please enter your email and password.";
 
-
-    const whatsappInstruction =
-      whatsapp
-        ? `
-
-Website owner's WhatsApp number:
-
-${whatsapp}
-
-If a WhatsApp button is requested, use this number.
-
-If the number begins with 0,
-convert it to Nigerian international
-format using 234.
-
-Do not invent or change the number.
-
-`
-        : `
-
-No WhatsApp number was provided.
-
-Do not invent a WhatsApp number.
-
-`;
-
-
-    const fullPrompt = `
-
-${prompt}
-
-${whatsappInstruction}
-
-Create or modify the website using
-the current HTML, CSS and JavaScript.
-
-Make it responsive and mobile-friendly.
-
-`;
-
-
-    try {
-
-      const response =
-        await fetch(
-          "/api/generate",
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body: JSON.stringify({
-              prompt: fullPrompt,
-              html: currentHTML,
-              css: currentCSS,
-              js: currentJS
-            })
-          }
-        );
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.error ||
-          "Something went wrong."
-        );
+        return;
       }
 
+      const { error } =
+        await supabaseClient.auth.signUp({
+          email,
+          password
+        });
+
+      if (error) {
+
+        document.getElementById("authStatus")
+          .textContent =
+          "❌ " + error.message;
+
+        return;
+      }
+
+      document.getElementById("authStatus")
+        .textContent =
+        "✅ Account created. Check your email if confirmation is required.";
+
+    }
+
+
+    async function login() {
+
+      const email =
+        document.getElementById("email")
+          .value.trim();
+
+      const password =
+        document.getElementById("password")
+          .value;
+
+      if (!email || !password) {
+
+        document.getElementById("authStatus")
+          .textContent =
+          "Please enter your email and password.";
+
+        return;
+      }
+
+      const { error } =
+        await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+      if (error) {
+
+        document.getElementById("authStatus")
+          .textContent =
+          "❌ " + error.message;
+
+        return;
+      }
+
+      document.getElementById("authStatus")
+        .textContent =
+        "✅ Login successful.";
+
+      updateAccountStatus();
+      loadProjects();
+    }
+
+
+    async function logout() {
+
+      await supabaseClient.auth.signOut();
+
+      document.getElementById("authStatus")
+        .textContent =
+        "✅ Logged out.";
+
+      updateAccountStatus();
+
+      document.getElementById("projectsList")
+        .innerHTML = "";
+    }
+
+
+    supabaseClient.auth.onAuthStateChange(
+      function () {
+        updateAccountStatus();
+        updateUsage();
+      }
+    );
+
+
+    /* =========================
+       AI USAGE
+    ========================= */
+
+    function getTodayKey() {
+
+      const date =
+        new Date()
+          .toISOString()
+          .slice(0, 10);
+
+      return "otg_ai_usage_" + date;
+    }
+
+
+    function getUsage() {
+
+      return Number(
+        localStorage.getItem(
+          getTodayKey()
+        ) || 0
+      );
+
+    }
+
+
+    function updateUsage() {
+
+      const count =
+        getUsage();
+
+      document.getElementById("usage")
+        .textContent =
+        "🤖 AI generations today: " +
+        count +
+        " / 5";
+
+    }
+
+
+    function increaseUsage() {
+
+      const count =
+        getUsage() + 1;
+
+      localStorage.setItem(
+        getTodayKey(),
+        count
+      );
+
+      updateUsage();
+
+    }
+
+
+    /* =========================
+       AI GENERATION
+    ========================= */
+
+    async function generateWebsite() {
+
+      const prompt =
+        document.getElementById("aiPrompt")
+          .value.trim();
+
+      if (!prompt) {
+
+        document.getElementById("status")
+          .textContent =
+          "Please describe the website you want.";
+
+        return;
+      }
+
+      if (getUsage() >= 5) {
+
+        document.getElementById("status")
+          .textContent =
+          "⛔ You have used your 5 free AI generations for today.";
+
+        return;
+      }
+
+      document.getElementById("status")
+        .textContent =
+        "🤖 AI is building your website...";
+
+      try {
+
+        const response =
+          await fetch(
+            "/api/generate",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+
+                prompt,
+
+                html:
+                  document.getElementById("html")
+                    .value,
+
+                css:
+                  document.getElementById("css")
+                    .value,
+
+                js:
+                  document.getElementById("js")
+                    .value
+
+              })
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (!response.ok) {
+
+          throw new Error(
+            data.error ||
+            "AI generation failed."
+          );
+
+        }
+
+        document.getElementById("html")
+          .value =
+          data.html || "";
+
+        document.getElementById("css")
+          .value =
+          data.css || "";
+
+        document.getElementById("js")
+          .value =
+          data.js || "";
+
+        increaseUsage();
+
+        updatePreview();
+
+        document.getElementById("status")
+          .textContent =
+          "✅ Website generated successfully.";
+
+      } catch (error) {
+
+        document.getElementById("status")
+          .textContent =
+          "❌ " + error.message;
+
+      }
+    }
+
+
+    /* =========================
+       WHATSAPP
+    ========================= */
+
+    function addWhatsApp() {
+
+      const number =
+        document.getElementById("whatsapp")
+          .value.trim();
+
+      if (!number) {
+
+        alert(
+          "Please enter your WhatsApp number."
+        );
+
+        return;
+      }
+
+      let html =
+        document.getElementById("html")
+          .value;
+
+      const button =
+        `
+<a
+  href="https://wa.me/${number}"
+  target="_blank"
+  style="
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    background:#25D366;
+    color:white;
+    padding:14px 20px;
+    border-radius:50px;
+    text-decoration:none;
+    font-family:Arial;
+    font-weight:bold;
+    z-index:9999;
+  ">
+  💬 WhatsApp
+</a>
+`;
+
+      if (
+        html.includes("</body>")
+      ) {
+
+        html =
+          html.replace(
+            "</body>",
+            button + "</body>"
+          );
+
+      } else {
+
+        html += button;
+
+      }
+
+      document.getElementById("html")
+        .value = html;
+
+      updatePreview();
+
+      document.getElementById("status")
+        .textContent =
+        "✅ WhatsApp button added.";
+
+    }
+
+
+    /* =========================
+       LIVE PREVIEW
+    ========================= */
+
+    function updatePreview() {
+
+      const html =
+        document.getElementById("html")
+          .value;
+
+      const css =
+        document.getElementById("css")
+          .value;
+
+      const js =
+        document.getElementById("js")
+          .value;
+
+      const preview =
+        document.getElementById("preview");
+
+      const documentContent =
+        `
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+${css}
+</style>
+</head>
+<body>
+
+${html}
+
+<script>
+${js}
+<\/script>
+
+</body>
+</html>
+`;
+
+      preview.srcdoc =
+        documentContent;
+    }
+
+
+    /* =========================
+       SAVE PROJECT
+    ========================= */
+
+    async function saveProject() {
+
+      const {
+        data: { user }
+      } =
+        await supabaseClient.auth.getUser();
+
+      if (!user) {
+
+        document.getElementById("status")
+          .textContent =
+          "🔐 Please create an account or log in before saving.";
+
+        return;
+      }
+
+      const title =
+        document.getElementById("projectTitle")
+          .value.trim() ||
+        "My Website";
+
+      const html =
+        document.getElementById("html")
+          .value;
+
+      const css =
+        document.getElementById("css")
+          .value;
+
+      const js =
+        document.getElementById("js")
+          .value;
+
+      document.getElementById("status")
+        .textContent =
+        "💾 Saving your website...";
+
+      const { error } =
+        await supabaseClient
+          .from("projects")
+          .insert({
+            user_id: user.id,
+            title,
+            html,
+            css,
+            js
+          });
+
+      if (error) {
+
+        document.getElementById("status")
+          .textContent =
+          "❌ " + error.message;
+
+        return;
+      }
+
+      document.getElementById("status")
+        .textContent =
+        "✅ Website saved successfully.";
+
+      loadProjects();
+    }
+
+
+    /* =========================
+       LOAD PROJECTS
+    ========================= */
+
+    async function loadProjects() {
+
+      const {
+        data: { user }
+      } =
+        await supabaseClient.auth.getUser();
+
+      if (!user) {
+
+        document.getElementById("projectsList")
+          .innerHTML =
+          "<p>🔐 Log in to see your saved projects.</p>";
+
+        return;
+      }
+
+      const { data, error } =
+        await supabaseClient
+          .from("projects")
+          .select("*")
+          .order(
+            "created_at",
+            { ascending: false }
+          );
+
+      if (error) {
+
+        document.getElementById("projectsList")
+          .innerHTML =
+          "❌ " + error.message;
+
+        return;
+      }
+
+      const list =
+        document.getElementById(
+          "projectsList"
+        );
+
+      if (!data || data.length === 0) {
+
+        list.innerHTML =
+          "<p>You have no saved projects yet.</p>";
+
+        return;
+      }
+
+      list.innerHTML =
+        data.map(project => {
+
+          return `
+            <div class="project-item">
+
+              <strong>
+                ${escapeHtml(project.title)}
+              </strong>
+
+              <small>
+                ${project.is_published ? "🌍 Published" : "🔒 Private"}
+              </small>
+
+              <div class="project-buttons">
+
+                <button
+                  class="blue"
+                  onclick="openProject('${project.id}')">
+                  Open
+                </button>
+
+                ${
+                  project.is_published && project.slug
+                  ?
+                  `
+                  <button
+                    class="green"
+                    onclick="copyPublishedLink('${escapeJs(project.slug)}')">
+                    🔗 Copy Link
+                  </button>
+                  `
+                  :
+                  ""
+                }
+
+              </div>
+
+            </div>
+          `;
+
+        }).join("");
+
+    }
+
+
+    /* =========================
+       OPEN PROJECT
+    ========================= */
+
+    async function openProject(id) {
+
+      const {
+        data: { user }
+      } =
+        await supabaseClient.auth.getUser();
+
+      if (!user) {
+
+        alert("Please log in first.");
+
+        return;
+      }
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("projects")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+      if (error) {
+
+        alert(
+          "Could not open project: " +
+          error.message
+        );
+
+        return;
+      }
+
+      document.getElementById("projectTitle")
+        .value =
+        data.title || "";
 
       document.getElementById("html")
         .value =
         data.html || "";
 
-
       document.getElementById("css")
         .value =
         data.css || "";
-
 
       document.getElementById("js")
         .value =
         data.js || "";
 
+      updatePreview();
 
-      increaseUsage();
+      document.getElementById("status")
+        .textContent =
+        "✅ Project opened.";
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }
+
+
+    /* =========================
+       PUBLISH PROJECT
+    ========================= */
+
+    async function publishProject() {
+
+      const {
+        data: { user }
+      } =
+        await supabaseClient.auth.getUser();
+
+      if (!user) {
+
+        alert(
+          "Please create an account or log in first."
+        );
+
+        return;
+      }
+
+      const title =
+        document.getElementById("projectTitle")
+          .value.trim() ||
+        "My Website";
+
+      const html =
+        document.getElementById("html")
+          .value;
+
+      const css =
+        document.getElementById("css")
+          .value;
+
+      const js =
+        document.getElementById("js")
+          .value;
+
+      if (!html.trim()) {
+
+        alert(
+          "Please create a website before publishing."
+        );
+
+        return;
+      }
+
+      const slug =
+        title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+        +
+        "-"
+        +
+        Math.random()
+          .toString(36)
+          .substring(2, 7);
+
+      document.getElementById("status")
+        .textContent =
+        "🚀 Publishing your website...";
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("projects")
+          .insert({
+            user_id: user.id,
+            title,
+            html,
+            css,
+            js,
+            slug,
+            is_published: true
+          })
+          .select()
+          .single();
+
+      if (error) {
+
+        document.getElementById("status")
+          .textContent =
+          "❌ Publish failed: " +
+          error.message;
+
+        return;
+      }
+
+      const link =
+        window.location.origin +
+        "/?site=" +
+        encodeURIComponent(
+          data.slug
+        );
+
+      document.getElementById("status")
+        .textContent =
+        "✅ Website published successfully!";
+
+      await copyText(link);
+
+      alert(
+        "🎉 Website published successfully!\n\n" +
+        link +
+        "\n\nThe link has been copied."
+      );
+
+      loadProjects();
+
+    }
+
+
+    /* =========================
+       COPY PUBLISHED LINK
+    ========================= */
+
+    async function copyPublishedLink(slug) {
+
+      const link =
+        window.location.origin +
+        "/?site=" +
+        encodeURIComponent(slug);
+
+      await copyText(link);
+
+      alert(
+        "🔗 Published website link copied!\n\n" +
+        link
+      );
+
+    }
+
+
+    async function copyText(text) {
+
+      try {
+
+        if (
+          navigator.clipboard &&
+          window.isSecureContext
+        ) {
+
+          await navigator.clipboard
+            .writeText(text);
+
+          return;
+        }
+
+        const textarea =
+          document.createElement("textarea");
+
+        textarea.value = text;
+
+        document.body.appendChild(
+          textarea
+        );
+
+        textarea.select();
+
+        document.execCommand(
+          "copy"
+        );
+
+        textarea.remove();
+
+      } catch (error) {
+
+        console.log(
+          "Copy failed",
+          error
+        );
+
+      }
+
+    }
+
+
+    /* =========================
+       PUBLIC WEBSITE
+    ========================= */
+
+    async function loadPublishedSite() {
+
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+      const slug =
+        params.get("site");
+
+      if (!slug) {
+
+        return;
+
+      }
+
+      document.getElementById("builder")
+        .style.display =
+        "none";
+
+      const publicSite =
+        document.getElementById(
+          "publicSite"
+        );
+
+      publicSite.style.display =
+        "block";
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient
+            .from("projects")
+            .select(
+              "title, html, css, js"
+            )
+            .eq(
+              "slug",
+              slug
+            )
+            .eq(
+              "is_published",
+              true
+            )
+            .single();
+
+        if (error || !data) {
+
+          publicSite.innerHTML =
+            `
+              <div style="
+                min-height:100vh;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                text-align:center;
+                padding:30px;
+                font-family:Arial;
+              ">
+                <div>
+                  <h1>Website not found</h1>
+                  <p>
+                    This published website may have been removed
+                    or the link may be incorrect.
+                  </p>
+                </div>
+              </div>
+            `;
+
+          return;
+        }
+
+        document.title =
+          data.title ||
+          "Published Website";
+
+        const frame =
+          document.createElement(
+            "iframe"
+          );
+
+        frame.setAttribute(
+          "title",
+          data.title || "Website"
+        );
+
+        frame.style.width =
+          "100%";
+
+        frame.style.height =
+          "100vh";
+
+        frame.style.minHeight =
+          "100vh";
+
+        frame.style.border =
+          "0";
+
+        const safeHtml =
+          data.html || "";
+
+        const safeCss =
+          data.css || "";
+
+        const safeJs =
+          data.js || "";
+
+        frame.srcdoc =
+          `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<style>
+${safeCss}
+</style>
+
+</head>
+
+<body>
+
+${safeHtml}
+
+<script>
+${safeJs}
+<\/script>
+
+</body>
+</html>
+`;
+
+        publicSite.innerHTML = "";
+
+        publicSite.appendChild(
+          frame
+        );
+
+      } catch (error) {
+
+        publicSite.innerHTML =
+          `
+          <div style="
+            padding:40px;
+            text-align:center;
+            font-family:Arial;
+          ">
+            <h1>Unable to load website</h1>
+            <p>${escapeHtml(error.message)}</p>
+          </div>
+          `;
+
+      }
+
+    }
+
+
+    /* =========================
+       TEMPLATES
+    ========================= */
+
+    function loadTemplate(type) {
+
+      let html = "";
+      let css = "";
+      let js = "";
+
+      if (type === "fashion") {
+
+        html =
+`
+<div class="hero">
+  <h1>Prince Fashion</h1>
+  <p>Style for Everyone</p>
+  <button onclick="shopNow()">Shop Now</button>
+</div>
+
+<section>
+  <h2>Our Collection</h2>
+
+  <div class="products">
+
+    <div class="product">
+      <h3>Men's Wear</h3>
+      <p>Premium clothing for men.</p>
+    </div>
+
+    <div class="product">
+      <h3>Women's Wear</h3>
+      <p>Beautiful styles for women.</p>
+    </div>
+
+  </div>
+</section>
+`;
+
+        css =
+`
+body {
+  margin:0;
+  font-family:Arial;
+  background:#f7f7f7;
+  color:#222;
+}
+
+.hero {
+  padding:80px 20px;
+  text-align:center;
+  background:#111;
+  color:white;
+}
+
+.hero h1 {
+  font-size:48px;
+  margin:0 0 10px;
+}
+
+.hero button {
+  background:#25D366;
+  color:white;
+  border:0;
+  padding:14px 25px;
+  border-radius:30px;
+  cursor:pointer;
+}
+
+section {
+  padding:40px 20px;
+  max-width:900px;
+  margin:auto;
+}
+
+.products {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.product {
+  background:white;
+  padding:25px;
+  border-radius:15px;
+  box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+@media(max-width:600px) {
+  .products {
+    grid-template-columns:1fr;
+  }
+}
+`;
+
+        js =
+`
+function shopNow() {
+  alert("Welcome to Prince Fashion!");
+}
+`;
+
+      }
+
+
+      if (type === "business") {
+
+        html =
+`
+<header>
+  <h1>My Business</h1>
+  <p>Professional solutions for your needs.</p>
+</header>
+
+<section>
+  <h2>Our Services</h2>
+
+  <div class="services">
+
+    <div class="card">
+      <h3>Service One</h3>
+      <p>Quality service for our customers.</p>
+    </div>
+
+    <div class="card">
+      <h3>Service Two</h3>
+      <p>Professional and reliable solutions.</p>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  Contact us today.
+</footer>
+`;
+
+        css =
+`
+body {
+  margin:0;
+  font-family:Arial;
+  color:#222;
+  background:#f5f7fa;
+}
+
+header {
+  background:#0b5ed7;
+  color:white;
+  text-align:center;
+  padding:70px 20px;
+}
+
+section {
+  max-width:900px;
+  margin:auto;
+  padding:40px 20px;
+}
+
+.services {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.card {
+  background:white;
+  padding:25px;
+  border-radius:12px;
+  box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+footer {
+  text-align:center;
+  padding:30px;
+}
+
+@media(max-width:600px) {
+  .services {
+    grid-template-columns:1fr;
+  }
+}
+`;
+
+        js = "";
+
+      }
+
+
+      if (type === "portfolio") {
+
+        html =
+`
+<div class="hero">
+  <h1>My Portfolio</h1>
+  <p>Graphic Designer & Creative Professional</p>
+</div>
+
+<section>
+  <h2>About Me</h2>
+  <p>
+    Welcome to my portfolio. I turn ordinary ideas
+    into visual reality.
+  </p>
+
+  <h2>My Work</h2>
+
+  <div class="works">
+
+    <div class="work">
+      Design Project 1
+    </div>
+
+    <div class="work">
+      Design Project 2
+    </div>
+
+    <div class="work">
+      Design Project 3
+    </div>
+
+  </div>
+</section>
+`;
+
+        css =
+`
+body {
+  margin:0;
+  font-family:Arial;
+  background:#111;
+  color:white;
+}
+
+.hero {
+  padding:80px 20px;
+  text-align:center;
+  background:#222;
+}
+
+.hero h1 {
+  font-size:45px;
+}
+
+section {
+  max-width:900px;
+  margin:auto;
+  padding:40px 20px;
+}
+
+.works {
+  display:grid;
+  grid-template-columns:
+    repeat(3, 1fr);
+  gap:15px;
+}
+
+.work {
+  min-height:180px;
+  background:#333;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+@media(max-width:700px) {
+  .works {
+    grid-template-columns:1fr;
+  }
+}
+`;
+
+        js = "";
+
+      }
+
+
+      document.getElementById("html")
+        .value = html;
+
+      document.getElementById("css")
+        .value = css;
+
+      document.getElementById("js")
+        .value = js;
 
       updatePreview();
 
-
-      status.textContent =
-        "✅ Your website has been generated successfully.";
-
-    } catch (error) {
-
-      status.textContent =
-        "❌ Error: " +
-        error.message;
-    }
-  }
-
-
-  /* ==========================
-     SAVE PROJECT
-  ========================== */
-
-  async function saveProject() {
-
-    const {
-      data: { user }
-    } =
-      await supabaseClient.auth.getUser();
-
-
-    if (!user) {
-
       document.getElementById("status")
         .textContent =
-        "🔐 Please create an account or log in before saving.";
+        "✅ Template loaded.";
 
-      return;
     }
 
 
-    const title =
-      document.getElementById("projectTitle")
-        .value.trim() ||
-      "My Website";
+    /* =========================
+       SECURITY HELPERS
+    ========================= */
 
+    function escapeHtml(value) {
 
-    const html =
-      document.getElementById("html").value;
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
-    const css =
-      document.getElementById("css").value;
-
-    const js =
-      document.getElementById("js").value;
-
-
-    document.getElementById("status")
-      .textContent =
-      "💾 Saving your website...";
-
-
-    const { error } =
-      await supabaseClient
-        .from("projects")
-        .insert({
-          user_id: user.id,
-          title,
-          html,
-          css,
-          js
-        });
-
-
-    if (error) {
-
-      document.getElementById("status")
-        .textContent =
-        "❌ " + error.message;
-
-      return;
     }
 
 
-    document.getElementById("status")
-      .textContent =
-      "✅ Website saved successfully.";
+    function escapeJs(value) {
 
-    loadProjects();
-  }
+      return String(value)
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'");
 
-
-  /* ==========================
-     LOAD PROJECTS
-  ========================== */
-
-  async function loadProjects() {
-
-    const {
-      data: { user }
-    } =
-      await supabaseClient.auth.getUser();
-
-
-    const list =
-      document.getElementById("projectsList");
-
-
-    if (!user) {
-
-      list.innerHTML =
-        "<p>🔐 Please log in to see your saved projects.</p>";
-
-      return;
     }
 
 
-    const { data, error } =
-      await supabaseClient
-        .from("projects")
-        .select("*")
-        .order(
-          "updated_at",
-          { ascending: false }
-        );
-
-
-    if (error) {
-
-      list.innerHTML =
-        "<p>❌ " +
-        error.message +
-        "</p>";
-
-      return;
-    }
-
-
-    if (!data.length) {
-
-      list.innerHTML =
-        "<p>You don't have any saved projects yet.</p>";
-
-      return;
-    }
-
-
-    list.innerHTML = "";
-
-
-    data.forEach(project => {
-
-      const item =
-        document.createElement("div");
-
-      item.style.padding = "12px";
-      item.style.marginTop = "10px";
-      item.style.border =
-        "1px solid #ddd";
-      item.style.borderRadius =
-        "9px";
-
-
-      const title =
-        document.createElement("strong");
-
-      title.textContent =
-        project.title;
-
-
-      const button =
-        document.createElement("button");
-
-      button.className = "blue";
-      button.textContent = "Open";
-
-      button.onclick =
-        () => openProject(project.id);
-
-
-      item.appendChild(title);
-      item.appendChild(
-        document.createElement("br")
-      );
-      item.appendChild(button);
-
-      list.appendChild(item);
-    });
-  }
-
-
-  async function openProject(id) {
-
-    const { data, error } =
-      await supabaseClient
-        .from("projects")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-
-    if (error) {
-
-      document.getElementById("status")
-        .textContent =
-        "❌ " + error.message;
-
-      return;
-    }
-
-
-    document.getElementById("projectTitle")
-      .value =
-      data.title || "";
-
-
-    document.getElementById("html")
-      .value =
-      data.html || "";
-
-
-    document.getElementById("css")
-      .value =
-      data.css || "";
-
-
-    document.getElementById("js")
-      .value =
-      data.js || "";
-
-
-    updatePreview();
-
-
-    document.getElementById("status")
-      .textContent =
-      "✅ Project opened.";
-  }
-
-
-  /* ==========================
-     TEMPLATES
-  ========================== */
-
-  function loadTemplate(type) {
-
-    let html = "";
-    let css = "";
-    let js = "";
-
-
-    if (type === "fashion") {
-
-      html = `
-        <div class="fashion">
-          <h1>Prince Fashion</h1>
-          <p>Style that speaks for you.</p>
-
-          <button onclick="alert('Welcome to Prince Fashion!')">
-            Shop Now
-          </button>
-        </div>
-      `;
-
-
-      css = `
-        body {
-          margin: 0;
-          font-family: Arial, sans-serif;
-          background: #111;
-          color: white;
-        }
-
-        .fashion {
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
-          padding: 30px;
-        }
-
-        h1 {
-          font-size: 48px;
-        }
-
-        button {
-          background: white;
-          color: #111;
-          border: none;
-          padding: 14px 25px;
-          border-radius: 8px;
-        }
-      `;
-    }
-
-
-    if (type === "business") {
-
-      html = `
-        <div class="business">
-          <h1>My Business</h1>
-          <p>Welcome to our official website.</p>
-
-          <button onclick="showMessage()">
-            Contact Us
-          </button>
-        </div>
-      `;
-
-
-      css = `
-        body {
-          margin: 0;
-          font-family: Arial, sans-serif;
-          background: #f5f5f5;
-        }
-
-        .business {
-          max-width: 800px;
-          margin: 100px auto;
-          padding: 40px;
-          background: white;
-          text-align: center;
-          border-radius: 15px;
-        }
-
-        button {
-          background: #111;
-          color: white;
-          border: none;
-          padding: 14px 25px;
-          border-radius: 8px;
-        }
-      `;
-
-
-      js = `
-        function showMessage() {
-          alert("Thank you for contacting us!");
-        }
-      `;
-    }
-
-
-    if (type === "portfolio") {
-
-      html = `
-        <div class="portfolio">
-          <h1>My Creative Portfolio</h1>
-          <p>Graphic Designer • Creative • Entrepreneur</p>
-
-          <button onclick="showPortfolio()">
-            View My Work
-          </button>
-
-          <div id="work"></div>
-        </div>
-      `;
-
-
-      css = `
-        body {
-          margin: 0;
-          font-family: Arial, sans-serif;
-          background: #111;
-          color: white;
-        }
-
-        .portfolio {
-          text-align: center;
-          padding: 80px 20px;
-        }
-
-        button {
-          background: white;
-          color: #111;
-          border: none;
-          padding: 14px 25px;
-          border-radius: 8px;
-        }
-
-        #work {
-          margin-top: 30px;
-        }
-      `;
-
-
-      js = `
-        function showPortfolio() {
-          document.getElementById("work").innerHTML =
-            "<h2>My Designs</h2><p>More creative work coming soon.</p>";
-        }
-      `;
-    }
-
-
-    document.getElementById("html")
-      .value = html;
-
-    document.getElementById("css")
-      .value = css;
-
-    document.getElementById("js")
-      .value = js;
-
-
-    updatePreview();
-
-
-    document.getElementById("status")
-      .textContent =
-      "✅ Template loaded. You can customize it with OTG AI.";
-  }
-
-
-  /* ==========================
-     PWA INSTALL
-  ========================== */
-
-  let deferredPrompt = null;
-
-
-  window.addEventListener(
-    "beforeinstallprompt",
-    event => {
-
-      event.preventDefault();
-
-      deferredPrompt = event;
-
-      document
-        .getElementById("installButton")
-        .classList.remove("hidden");
-    }
-  );
-
-
-  async function installApp() {
-
-    if (!deferredPrompt) {
-
-      document.getElementById("status")
-        .textContent =
-        "📱 Your browser does not currently offer installation.";
-
-      return;
-    }
-
-
-    deferredPrompt.prompt();
-
-    const result =
-      await deferredPrompt.userChoice;
-
-
-    if (result.outcome === "accepted") {
-
-      document.getElementById("status")
-        .textContent =
-        "✅ OTG AI Builder installed successfully.";
-    }
-
-
-    deferredPrompt = null;
-
-
-    document.getElementById("installButton")
-      .classList.add("hidden");
-  }
-
-
-  /* ==========================
-     SERVICE WORKER
-  ========================== */
-
-  if ("serviceWorker" in navigator) {
+    /* =========================
+       PWA INSTALL
+    ========================= */
+
+    let deferredPrompt = null;
 
     window.addEventListener(
-      "load",
-      () => {
+      "beforeinstallprompt",
+      function(event) {
 
-        navigator.serviceWorker
-          .register("/sw.js")
-          .catch(error => {
+        event.preventDefault();
 
-            console.log(
-              "Service worker error:",
-              error
-            );
-          });
+        deferredPrompt =
+          event;
+
+        document.getElementById(
+          "installBtn"
+        ).style.display =
+          "block";
 
       }
     );
-  }
 
-</script>
-<script>
-async function publishProject() {
-  const { data: { user } } = await supabaseClient.auth.getUser();
 
-  if (!user) {
-    alert("Please log in first.");
-    return;
-  }
+    async function installApp() {
 
-  const title =
-    document.getElementById("projectTitle").value.trim() || "My Website";
+      if (!deferredPrompt) {
 
-  const html = document.getElementById("html").value;
-  const css = document.getElementById("css").value;
-  const js = document.getElementById("js").value;
+        alert(
+          "If the install button is not available, open your browser menu and choose 'Add to Home screen'."
+        );
 
-  const slug =
-    title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "") +
-    "-" +
-    Math.random().toString(36).substring(2, 7);
+        return;
+      }
 
-  const { data, error } = await supabaseClient
-    .from("projects")
-    .insert({
-      user_id: user.id,
-      title,
-      html,
-      css,
-      js,
-      slug,
-      is_published: true
-    })
-    .select()
-    .single();
+      deferredPrompt.prompt();
 
-  if (error) {
-    alert("Publish failed: " + error.message);
-    return;
-  }
+      await deferredPrompt.userChoice;
 
-  const link =
-    window.location.origin + "/?site=" + encodeURIComponent(data.slug);
+      deferredPrompt = null;
 
-  alert("Website published successfully!\n\n" + link);
+      document.getElementById(
+        "installBtn"
+      ).style.display =
+        "none";
 
-  if (navigator.clipboard) {
-    await navigator.clipboard.writeText(link);
-  }
-}
-</script>
+    }
+
+
+    /* =========================
+       SERVICE WORKER
+    ========================= */
+
+    if (
+      "serviceWorker" in navigator
+    ) {
+
+      window.addEventListener(
+        "load",
+        function() {
+
+          navigator.serviceWorker
+            .register("/sw.js")
+            .catch(function(error) {
+
+              console.log(
+                "Service worker error:",
+                error
+              );
+
+            });
+
+        }
+      );
+
+    }
+
+
+    /* =========================
+       STARTUP
+    ========================= */
+
+    updateAccountStatus();
+
+    updateUsage();
+
+    updatePreview();
+
+    loadPublishedSite();
+
+  </script>
+
 </body>
-</html>
+  </html>
