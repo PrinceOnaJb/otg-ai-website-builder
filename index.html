@@ -4,45 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#f5c400">
+<meta name="description" content="OTG AI Website Builder">
 <link rel="manifest" href="/manifest.json">
 <title>OTG AI Website Builder</title>
 
 <style>
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
   margin:0;
   font-family:Arial,Helvetica,sans-serif;
   background:#f5f6f8;
-  color:#111827;
+  color:#111827
 }
 
 button{
   cursor:pointer;
-  border:0;
+  border:0
 }
 
-.hidden{
-  display:none!important;
-}
+.hidden{display:none!important}
 
 header{
   background:#111827;
   color:white;
   padding:18px;
-  text-align:center;
+  text-align:center
 }
 
-header h1{
-  margin:0;
-}
-
-header p{
-  margin:6px 0 0;
-  color:#f5c400;
-}
+header h1{margin:0}
+header p{margin:6px 0 0;color:#f5c400}
 
 nav{
   background:white;
@@ -51,7 +42,7 @@ nav{
   gap:8px;
   flex-wrap:wrap;
   padding:12px;
-  box-shadow:0 2px 10px #0001;
+  box-shadow:0 2px 10px #0001
 }
 
 nav button{
@@ -59,7 +50,7 @@ nav button{
   color:#111827;
   padding:10px 15px;
   border-radius:8px;
-  font-weight:bold;
+  font-weight:bold
 }
 
 section.card{
@@ -68,92 +59,72 @@ section.card{
   padding:22px;
   background:white;
   border-radius:18px;
-  box-shadow:0 5px 25px #0000000d;
+  box-shadow:0 5px 25px #0000000d
 }
 
-input,
-textarea{
+input,textarea{
   width:100%;
   padding:13px;
   border:1px solid #d8dce2;
   border-radius:9px;
   margin:7px 0 14px;
-  font-size:15px;
+  font-size:15px
 }
 
-textarea{
-  min-height:140px;
-}
+textarea{min-height:140px}
 
-.primary{
-  background:#111827;
-  color:white;
-}
-
-.gold{
-  background:#f5c400;
-  color:#111827;
-}
-
-.blue{
-  background:#1769e0;
-  color:white;
-}
+.primary{background:#111827;color:white}
+.gold{background:#f5c400;color:#111827}
+.blue{background:#1769e0;color:white}
 
 button.action{
   padding:12px 17px;
   border-radius:9px;
-  font-weight:bold;
+  font-weight:bold
 }
 
 .actions{
   display:flex;
   gap:10px;
-  flex-wrap:wrap;
+  flex-wrap:wrap
 }
 
 .small{
   color:#6b7280;
-  font-size:13px;
+  font-size:13px
 }
-
-/* TEMPLATE CARDS */
 
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:18px;
+  gap:18px
 }
 
 .template{
   padding:22px;
   border:1px solid #e5e7eb;
   border-radius:15px;
-  background:white;
+  background:white
 }
-
-/* PREVIEW */
 
 iframe{
   width:100%;
   height:720px;
   border:1px solid #ddd;
   border-radius:15px;
-  background:white;
+  background:white
 }
 
-/* FASHION TEMPLATE */
+/* FASHION STORE */
 
 .fashion-store{
   margin:0;
   font-family:Arial,Helvetica,sans-serif;
   background:#fff;
-  color:#111827;
+  color:#111827
 }
 
-.fashion-store *{
-  box-sizing:border-box;
-}
+.fashion-store *{box-sizing:border-box}
 
 .store-nav{
   position:sticky;
@@ -165,51 +136,36 @@ iframe{
   justify-content:space-between;
   align-items:center;
   padding:15px 6%;
-  box-shadow:0 3px 15px #0004;
+  box-shadow:0 3px 15px #0004
 }
 
 .store-logo{
   font-size:22px;
-  font-weight:900;
+  font-weight:900
 }
 
-.store-logo span{
-  color:#f5c400;
-}
+.store-logo span{color:#f5c400}
 
 .store-nav-links{
   display:flex;
-  gap:20px;
+  gap:20px
 }
 
 .store-nav-links a{
   color:white;
   text-decoration:none;
-  font-size:14px;
+  font-size:14px
 }
 
+/* CART BUTTON */
+
 .cart-button{
-  position:relative;
   background:#f5c400;
   color:#111827;
   border-radius:10px;
   padding:10px 14px;
   font-weight:bold;
-}
-
-.cart-count{
-  position:absolute;
-  top:-7px;
-  right:-7px;
-  width:22px;
-  height:22px;
-  border-radius:50%;
-  background:#1769e0;
-  color:white;
-  font-size:12px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  white-space:nowrap
 }
 
 /* HERO */
@@ -221,12 +177,10 @@ iframe{
   padding:60px 7%;
   background:
     radial-gradient(circle at 80% 30%,#f5c40055,transparent 30%),
-    linear-gradient(135deg,#fff 0%,#fff9dc 50%,#eaf2ff 100%);
+    linear-gradient(135deg,#fff 0%,#fff9dc 50%,#eaf2ff 100%)
 }
 
-.hero-content{
-  max-width:650px;
-}
+.hero-content{max-width:650px}
 
 .hero-badge{
   display:inline-block;
@@ -236,73 +190,65 @@ iframe{
   border-radius:30px;
   font-size:12px;
   font-weight:bold;
-  letter-spacing:1px;
+  letter-spacing:1px
 }
 
 .hero-content h1{
   font-size:clamp(45px,8vw,82px);
   line-height:.95;
   margin:20px 0;
-  color:#111827;
+  color:#111827
 }
 
-.hero-content h1 span{
-  color:#1769e0;
-}
+.hero-content h1 span{color:#1769e0}
 
 .hero-content p{
   font-size:18px;
   line-height:1.7;
   max-width:550px;
-  color:#4b5563;
+  color:#4b5563
 }
 
 .hero-buttons{
   display:flex;
   gap:12px;
   flex-wrap:wrap;
-  margin-top:28px;
+  margin-top:28px
 }
 
 .hero-btn{
   padding:14px 22px;
   border-radius:10px;
-  font-weight:bold;
+  font-weight:bold
 }
 
 .hero-btn-main{
   background:#f5c400;
-  color:#111827;
+  color:#111827
 }
 
 .hero-btn-second{
   background:#1769e0;
-  color:white;
+  color:white
 }
 
 /* SECTION */
 
-.store-section{
-  padding:70px 7%;
-}
+.store-section{padding:70px 7%}
 
 .section-title{
   text-align:center;
-  margin-bottom:35px;
+  margin-bottom:35px
 }
 
-.section-title span{
-  color:#1769e0;
-}
+.section-title span{color:#1769e0}
 
 .section-title h2{
   font-size:36px;
-  margin:8px 0;
+  margin:8px 0
 }
 
-.section-title p{
-  color:#6b7280;
-}
+.section-title p{color:#6b7280}
 
 /* FILTER */
 
@@ -311,7 +257,7 @@ iframe{
   justify-content:center;
   gap:9px;
   flex-wrap:wrap;
-  margin-bottom:30px;
+  margin-bottom:30px
 }
 
 .filter-btn{
@@ -319,25 +265,22 @@ iframe{
   border-radius:25px;
   background:#eef0f3;
   color:#111827;
-  font-weight:bold;
+  font-weight:bold
 }
 
-.filter-btn.active{
-  background:#f5c400;
-}
+.filter-btn.active{background:#f5c400}
 
 /* SEARCH */
 
 .search-box{
   max-width:500px;
-  margin:0 auto 30px;
-  position:relative;
+  margin:0 auto 30px
 }
 
 .search-box input{
   margin:0;
   border-radius:30px;
-  padding:15px 20px;
+  padding:15px 20px
 }
 
 /* PRODUCTS */
@@ -345,7 +288,7 @@ iframe{
 .product-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-  gap:24px;
+  gap:24px
 }
 
 .product-card{
@@ -354,12 +297,12 @@ iframe{
   overflow:hidden;
   box-shadow:0 8px 30px #00000012;
   transition:.25s;
-  border:1px solid #edf0f3;
+  border:1px solid #edf0f3
 }
 
 .product-card:hover{
   transform:translateY(-5px);
-  box-shadow:0 14px 35px #0000001c;
+  box-shadow:0 14px 35px #0000001c
 }
 
 .product-image{
@@ -369,7 +312,7 @@ iframe{
   align-items:center;
   justify-content:center;
   font-size:55px;
-  position:relative;
+  position:relative
 }
 
 .product-tag{
@@ -381,32 +324,28 @@ iframe{
   padding:6px 9px;
   border-radius:20px;
   font-size:11px;
-  font-weight:bold;
+  font-weight:bold
 }
 
-.product-info{
-  padding:18px;
-}
+.product-info{padding:18px}
 
-.product-info h3{
-  margin:0 0 7px;
-}
+.product-info h3{margin:0 0 7px}
 
 .product-info p{
   color:#6b7280;
-  font-size:13px;
+  font-size:13px
 }
 
 .price{
   color:#1769e0;
   font-size:20px;
   font-weight:900;
-  margin:12px 0;
+  margin:12px 0
 }
 
 .product-actions{
   display:flex;
-  gap:8px;
+  gap:8px
 }
 
 .add-cart{
@@ -415,7 +354,7 @@ iframe{
   border-radius:9px;
   background:#111827;
   color:white;
-  font-weight:bold;
+  font-weight:bold
 }
 
 .buy-now{
@@ -423,7 +362,7 @@ iframe{
   border-radius:9px;
   background:#f5c400;
   color:#111827;
-  font-weight:bold;
+  font-weight:bold
 }
 
 /* FEATURES */
@@ -431,19 +370,17 @@ iframe{
 .features{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:18px;
+  gap:18px
 }
 
 .feature{
   padding:25px;
   border-radius:15px;
   background:#f8f9fb;
-  text-align:center;
+  text-align:center
 }
 
-.feature-icon{
-  font-size:32px;
-}
+.feature-icon{font-size:32px}
 
 /* CART */
 
@@ -459,54 +396,52 @@ iframe{
   padding:22px;
   transform:translateX(100%);
   transition:.3s;
-  overflow:auto;
+  overflow:auto
 }
 
-.cart-panel.open{
-  transform:translateX(0);
-}
+.cart-panel.open{transform:translateX(0)}
 
 .cart-header{
   display:flex;
   justify-content:space-between;
-  align-items:center;
+  align-items:center
 }
 
 .close-cart{
   background:#eee;
   padding:9px 12px;
-  border-radius:8px;
+  border-radius:8px
 }
 
 .cart-item{
   padding:15px 0;
-  border-bottom:1px solid #eee;
+  border-bottom:1px solid #eee
 }
 
 .cart-item-top{
   display:flex;
   justify-content:space-between;
-  gap:10px;
+  gap:10px
 }
 
 .quantity{
   display:flex;
   align-items:center;
   gap:10px;
-  margin-top:10px;
+  margin-top:10px
 }
 
 .quantity button{
   width:30px;
   height:30px;
   border-radius:7px;
-  background:#eef0f3;
+  background:#eef0f3
 }
 
 .cart-total{
   font-size:24px;
   font-weight:900;
-  margin:25px 0;
+  margin:25px 0
 }
 
 .checkout{
@@ -515,7 +450,7 @@ iframe{
   border-radius:10px;
   background:#1769e0;
   color:white;
-  font-weight:bold;
+  font-weight:bold
 }
 
 /* FOOTER */
@@ -523,98 +458,67 @@ iframe{
 .store-footer{
   background:#111827;
   color:white;
-  padding:50px 7%;
+  padding:50px 7%
 }
 
-.store-footer h2{
-  color:#f5c400;
-}
+.store-footer h2{color:#f5c400}
 
-.store-footer p{
-  color:#cbd5e1;
-}
+.store-footer p{color:#cbd5e1}
 
 .footer-bottom{
   border-top:1px solid #ffffff22;
   margin-top:30px;
   padding-top:20px;
-  color:#94a3b8;
+  color:#94a3b8
 }
 
 /* MOBILE */
 
 @media(max-width:700px){
 
-  .store-nav{
-    padding:13px 4%;
-  }
+  .store-nav{padding:13px 4%}
 
-  .store-nav-links{
-    display:none;
-  }
+  .store-nav-links{display:none}
 
   .fashion-hero{
     min-height:520px;
-    padding:45px 6%;
+    padding:45px 6%
   }
 
-  .hero-content h1{
-    font-size:50px;
-  }
+  .hero-content h1{font-size:50px}
 
-  .hero-content p{
-    font-size:16px;
-  }
+  .hero-content p{font-size:16px}
 
-  .store-section{
-    padding:50px 5%;
-  }
+  .store-section{padding:50px 5%}
 
-  .section-title h2{
-    font-size:29px;
-  }
+  .section-title h2{font-size:29px}
 
   .product-grid{
     grid-template-columns:repeat(2,1fr);
-    gap:12px;
+    gap:12px
   }
 
   .product-image{
     height:170px;
-    font-size:40px;
+    font-size:40px
   }
 
-  .product-info{
-    padding:13px;
-  }
+  .product-info{padding:13px}
 
-  .product-info h3{
-    font-size:15px;
-  }
+  .product-info h3{font-size:15px}
 
-  .price{
-    font-size:16px;
-  }
+  .price{font-size:16px}
 
-  .product-actions{
-    flex-direction:column;
-  }
+  .product-actions{flex-direction:column}
 
-  .add-cart,
-  .buy-now{
-    width:100%;
-  }
+  .add-cart,.buy-now{width:100%}
 }
 
 @media(max-width:420px){
 
-  .product-grid{
-    grid-template-columns:1fr;
-  }
+  .product-grid{grid-template-columns:1fr}
 
-  .hero-content h1{
-    font-size:44px;
-  }
+  .hero-content h1{font-size:44px}
 }
 </style>
 </head>
@@ -932,11 +836,8 @@ headers:{
 body:JSON.stringify({
 
 prompt,
-
 html:currentHTML,
-
 css:currentCSS,
-
 js:currentJS
 
 })
@@ -954,9 +855,7 @@ data.error||"AI generation failed."
 }
 
 currentHTML=data.html||"";
-
 currentCSS=data.css||"";
-
 currentJS=data.js||"";
 
 renderPreview();
@@ -1022,9 +921,7 @@ document.getElementById("preview")
 
 }
 
-/* =========================
-   PREMIUM FASHION TEMPLATE
-========================= */
+/* FASHION TEMPLATE */
 
 function useFashionTemplate(){
 
@@ -1041,11 +938,8 @@ Prince <span>Fashion</span>
 <div class="store-nav-links">
 
 <a href="#home">Home</a>
-
 <a href="#collection">Shop</a>
-
 <a href="#about">About</a>
-
 <a href="#contact">Contact</a>
 
 </div>
@@ -1053,18 +947,13 @@ Prince <span>Fashion</span>
 <button class="cart-button"
 onclick="openCart()">
 
-🛒 Cart
-
-<span class="cart-count"
-id="cartCount">0</span>
+🛒 Cart <span id="cartCount">₦0</span>
 
 </button>
 
 </header>
 
-<section
-class="fashion-hero"
-id="home">
+<section class="fashion-hero" id="home">
 
 <div class="hero-content">
 
@@ -1103,9 +992,7 @@ Chat on WhatsApp
 
 </section>
 
-<section
-class="store-section"
-id="collection">
+<section class="store-section" id="collection">
 
 <div class="section-title">
 
@@ -1115,9 +1002,7 @@ id="collection">
 Our <span>Collection</span>
 </h2>
 
-<p>
-Find your perfect style.
-</p>
+<p>Find your perfect style.</p>
 
 </div>
 
@@ -1126,40 +1011,35 @@ Find your perfect style.
 <input
 id="productSearch"
 placeholder="🔍 Search products..."
-oninput="searchProducts()">
+oninput="searchProducts">
 
 </div>
 
 <div class="filters">
 
-<button
-class="filter-btn active"
+<button class="filter-btn active"
 onclick="filterProducts('all',this)">
 All
 </button>
 
-<button
-class="filter-btn"
+<button class="filter-btn"
 onclick="filterProducts('men',this)">
 Men
 </button>
 
-<button
-class="filter-btn"
+<button class="filter-btn"
 onclick="filterProducts('women',this)">
 Women
 </button>
 
-<button
-class="filter-btn"
+<button class="filter-btn"
 onclick="filterProducts('new',this)">
 New Arrivals
 </button>
 
 </div>
 
-<div class="product-grid"
-id="productGrid">
+<div class="product-grid" id="productGrid">
 
 <div class="product-card"
 data-category="men"
@@ -1168,7 +1048,6 @@ data-name="Classic Shirt">
 <div class="product-image">
 
 <span class="product-tag">MEN</span>
-
 👔
 
 </div>
@@ -1179,20 +1058,16 @@ data-name="Classic Shirt">
 
 <p>Premium everyday shirt.</p>
 
-<div class="price">
-₦25,000
-</div>
+<div class="price">₦25,000</div>
 
 <div class="product-actions">
 
-<button
-class="add-cart"
+<button class="add-cart"
 onclick="addToCart('Classic Shirt',25000,'👔')">
 Add to Cart
 </button>
 
-<button
-class="buy-now"
+<button class="buy-now"
 onclick="buyNow('Classic Shirt',25000)">
 Buy
 </button>
@@ -1200,7 +1075,6 @@ Buy
 </div>
 
 </div>
-
 </div>
 
 <div class="product-card"
@@ -1210,7 +1084,6 @@ data-name="Premium Senator">
 <div class="product-image">
 
 <span class="product-tag">MEN</span>
-
 🥻
 
 </div>
@@ -1221,20 +1094,16 @@ data-name="Premium Senator">
 
 <p>Elegant traditional outfit.</p>
 
-<div class="price">
-₦65,000
-</div>
+<div class="price">₦65,000</div>
 
 <div class="product-actions">
 
-<button
-class="add-cart"
+<button class="add-cart"
 onclick="addToCart('Premium Senator',65000,'🥻')">
 Add to Cart
 </button>
 
-<button
-class="buy-now"
+<button class="buy-now"
 onclick="buyNow('Premium Senator',65000)">
 Buy
 </button>
@@ -1242,7 +1111,6 @@ Buy
 </div>
 
 </div>
-
 </div>
 
 <div class="product-card"
@@ -1252,8 +1120,8 @@ data-name="Casual T-Shirt">
 <div class="product-image">
 
 <span class="product-tag">MEN</span>
-
 👕
+
 </div>
 
 <div class="product-info">
@@ -1262,20 +1130,16 @@ data-name="Casual T-Shirt">
 
 <p>Comfortable casual style.</p>
 
-<div class="price">
-₦18,000
-</div>
+<div class="price">₦18,000</div>
 
 <div class="product-actions">
 
-<button
-class="add-cart"
+<button class="add-cart"
 onclick="addToCart('Casual T-Shirt',18000,'👕')">
 Add to Cart
 </button>
 
-<button
-class="buy-now"
+<button class="buy-now"
 onclick="buyNow('Casual T-Shirt',18000)">
 Buy
 </button>
@@ -1283,7 +1147,6 @@ Buy
 </div>
 
 </div>
-
 </div>
 
 <div class="product-card"
@@ -1293,7 +1156,6 @@ data-name="Elegant Dress">
 <div class="product-image">
 
 <span class="product-tag">WOMEN</span>
-
 👗
 
 </div>
@@ -1304,20 +1166,16 @@ data-name="Elegant Dress">
 
 <p>Elegant modern fashion.</p>
 
-<div class="price">
-₦45,000
-</div>
+<div class="price">₦45,000</div>
 
 <div class="product-actions">
 
-<button
-class="add-cart"
+<button class="add-cart"
 onclick="addToCart('Elegant Dress',45000,'👗')">
 Add to Cart
 </button>
 
-<button
-class="buy-now"
+<button class="buy-now"
 onclick="buyNow('Elegant Dress',45000)">
 Buy
 </button>
@@ -1325,7 +1183,6 @@ Buy
 </div>
 
 </div>
-
 </div>
 
 <div class="product-card"
@@ -1335,7 +1192,6 @@ data-name="Luxury Gown">
 <div class="product-image">
 
 <span class="product-tag">WOMEN</span>
-
 👘
 
 </div>
@@ -1346,20 +1202,16 @@ data-name="Luxury Gown">
 
 <p>Luxury occasion wear.</p>
 
-<div class="price">
-₦75,000
-</div>
+<div class="price">₦75,000</div>
 
 <div class="product-actions">
 
-<button
-class="add-cart"
+<button class="add-cart"
 onclick="addToCart('Luxury Gown',75000,'👘')">
 Add to Cart
 </button>
 
-<button
-class="buy-now"
+<button class="buy-now"
 onclick="buyNow('Luxury Gown',75000)">
 Buy
 </button>
@@ -1367,7 +1219,6 @@ Buy
 </div>
 
 </div>
-
 </div>
 
 <div class="product-card"
@@ -1377,7 +1228,6 @@ data-name="Stylish Top">
 <div class="product-image">
 
 <span class="product-tag">WOMEN</span>
-
 👚
 
 </div>
@@ -1388,20 +1238,16 @@ data-name="Stylish Top">
 
 <p>Simple and beautiful.</p>
 
-<div class="price">
-₦22,000
-</div>
+<div class="price">₦22,000</div>
 
 <div class="product-actions">
 
-<button
-class="add-cart"
+<button class="add-cart"
 onclick="addToCart('Stylish Top',22000,'👚')">
 Add to Cart
 </button>
 
-<button
-class="buy-now"
+<button class="buy-now"
 onclick="buyNow('Stylish Top',22000)">
 Buy
 </button>
@@ -1409,7 +1255,6 @@ Buy
 </div>
 
 </div>
-
 </div>
 
 <div class="product-card"
@@ -1419,7 +1264,6 @@ data-name="New Collection">
 <div class="product-image">
 
 <span class="product-tag">NEW</span>
-
 ✨
 
 </div>
@@ -1430,20 +1274,16 @@ data-name="New Collection">
 
 <p>Fresh from our collection.</p>
 
-<div class="price">
-₦35,000
-</div>
+<div class="price">₦35,000</div>
 
 <div class="product-actions">
 
-<button
-class="add-cart"
+<button class="add-cart"
 onclick="addToCart('New Collection',35000,'✨')">
 Add to Cart
 </button>
 
-<button
-class="buy-now"
+<button class="buy-now"
 onclick="buyNow('New Collection',35000)">
 Buy
 </button>
@@ -1451,7 +1291,6 @@ Buy
 </div>
 
 </div>
-
 </div>
 
 <div class="product-card"
@@ -1461,7 +1300,6 @@ data-name="Premium Outfit">
 <div class="product-image">
 
 <span class="product-tag">NEW</span>
-
 💎
 
 </div>
@@ -1472,20 +1310,16 @@ data-name="Premium Outfit">
 
 <p>Premium fashion statement.</p>
 
-<div class="price">
-₦55,000
-</div>
+<div class="price">₦55,000</div>
 
 <div class="product-actions">
 
-<button
-class="add-cart"
+<button class="add-cart"
 onclick="addToCart('Premium Outfit',55000,'💎')">
 Add to Cart
 </button>
 
-<button
-class="buy-now"
+<button class="buy-now"
 onclick="buyNow('Premium Outfit',55000)">
 Buy
 </button>
@@ -1493,7 +1327,6 @@ Buy
 </div>
 
 </div>
-
 </div>
 
 <div class="product-card"
@@ -1503,7 +1336,6 @@ data-name="Weekend Style">
 <div class="product-image">
 
 <span class="product-tag">NEW</span>
-
 🔥
 
 </div>
@@ -1514,20 +1346,16 @@ data-name="Weekend Style">
 
 <p>Perfect relaxed weekend look.</p>
 
-<div class="price">
-₦30,000
-</div>
+<div class="price">₦30,000</div>
 
 <div class="product-actions">
 
-<button
-class="add-cart"
+<button class="add-cart"
 onclick="addToCart('Weekend Style',30000,'🔥')">
 Add to Cart
 </button>
 
-<button
-class="buy-now"
+<button class="buy-now"
 onclick="buyNow('Weekend Style',30000)">
 Buy
 </button>
@@ -1535,16 +1363,13 @@ Buy
 </div>
 
 </div>
-
 </div>
 
 </div>
 
 </section>
 
-<section
-class="store-section"
-id="about">
+<section class="store-section" id="about">
 
 <div class="section-title">
 
@@ -1559,68 +1384,34 @@ Fashion Made <span>Simple</span>
 <div class="features">
 
 <div class="feature">
-
-<div class="feature-icon">
-✨
-</div>
-
+<div class="feature-icon">✨</div>
 <h3>Premium Quality</h3>
-
-<p>
-Carefully selected fashion pieces.
-</p>
-
+<p>Carefully selected fashion pieces.</p>
 </div>
 
 <div class="feature">
-
-<div class="feature-icon">
-🚚
-</div>
-
+<div class="feature-icon">🚚</div>
 <h3>Easy Delivery</h3>
-
-<p>
-Convenient delivery options.
-</p>
-
+<p>Convenient delivery options.</p>
 </div>
 
 <div class="feature">
-
-<div class="feature-icon">
-💬
-</div>
-
+<div class="feature-icon">💬</div>
 <h3>Easy Ordering</h3>
-
-<p>
-Order directly through WhatsApp.
-</p>
-
+<p>Order directly through WhatsApp.</p>
 </div>
 
 <div class="feature">
-
-<div class="feature-icon">
-💎
-</div>
-
+<div class="feature-icon">💎</div>
 <h3>Great Style</h3>
-
-<p>
-Look good and feel confident.
-</p>
-
+<p>Look good and feel confident.</p>
 </div>
 
 </div>
 
 </section>
 
-<footer
-class="store-footer"
-id="contact">
+<footer class="store-footer" id="contact">
 
 <h2>Prince Fashion</h2>
 
@@ -1636,17 +1427,12 @@ Chat With Us on WhatsApp
 </button>
 
 <div class="footer-bottom">
-
-© 2026 Prince Fashion.
-All rights reserved.
-
+© 2026 Prince Fashion. All rights reserved.
 </div>
 
 </footer>
 
-<div
-class="cart-panel"
-id="cartPanel">
+<div class="cart-panel" id="cartPanel">
 
 <div class="cart-header">
 
@@ -1661,14 +1447,10 @@ onclick="closeCart()">
 </div>
 
 <div id="cartItems">
-
 <p>Your cart is empty.</p>
-
 </div>
 
-<div
-class="cart-total"
-id="cartTotal">
+<div class="cart-total" id="cartTotal">
 Total: ₦0
 </div>
 
@@ -1684,7 +1466,6 @@ Order Cart on WhatsApp
 `;
 
 currentCSS="";
-
 currentJS=`
 
 let cart=[];
@@ -1698,26 +1479,21 @@ return (window.OTG_WHATSAPP||"")
 
 function scrollToCollection(){
 
-document
-.getElementById("collection")
-.scrollIntoView({
-behavior:"smooth"
-});
+document.getElementById("collection")
+.scrollIntoView({behavior:"smooth"});
 
 }
 
 function openCart(){
 
-document
-.getElementById("cartPanel")
+document.getElementById("cartPanel")
 .classList.add("open");
 
 }
 
 function closeCart(){
 
-document
-.getElementById("cartPanel")
+document.getElementById("cartPanel")
 .classList.remove("open");
 
 }
@@ -1734,9 +1510,9 @@ existing.quantity++;
 }else{
 
 cart.push({
-name,
-price,
-icon,
+name:name,
+price:price,
+icon:icon,
 quantity:1
 });
 
@@ -1769,7 +1545,6 @@ item.quantity+=amount;
 if(item.quantity<=0){
 
 removeFromCart(name);
-
 return;
 
 }
@@ -1780,14 +1555,21 @@ updateCart();
 
 function updateCart(){
 
-const count=
+/*
+  CART TOTAL AMOUNT
+  This is what appears beside the Cart button.
+*/
+
+const totalAmount=
 cart.reduce(
-(total,item)=>total+item.quantity,
+(total,item)=>
+total+(item.price*item.quantity),
 0
 );
 
 document.getElementById("cartCount")
-.textContent=count;
+.textContent=
+"₦"+totalAmount.toLocaleString();
 
 const container=
 document.getElementById("cartItems");
@@ -1843,9 +1625,7 @@ onclick="changeQuantity('\${item.name}',-1)">
 −
 </button>
 
-<span>
-\${item.quantity}
-</span>
+<span>\${item.quantity}</span>
 
 <button
 onclick="changeQuantity('\${item.name}',1)">
@@ -1990,8 +1770,7 @@ card.style.display="none";
 function searchProducts(){
 
 const search=
-document
-.getElementById("productSearch")
+document.getElementById("productSearch")
 .value
 .toLowerCase();
 
@@ -2016,14 +1795,9 @@ updateCart();
 `;
 
 showSection("builder");
-
 renderPreview();
 
 }
-
-/* =========================
-   SIMPLE BUSINESS TEMPLATE
-========================= */
 
 function useBusinessTemplate(){
 
@@ -2056,18 +1830,12 @@ Contact Us
 `;
 
 currentCSS="";
-
 currentJS="";
 
 showSection("builder");
-
 renderPreview();
 
 }
-
-/* =========================
-   PORTFOLIO TEMPLATE
-========================= */
 
 function usePortfolioTemplate(){
 
@@ -2096,18 +1864,12 @@ Design • Branding • Creative Projects
 `;
 
 currentCSS="";
-
 currentJS="";
 
 showSection("builder");
-
 renderPreview();
 
 }
-
-/* =========================
-   PUBLISH
-========================= */
 
 async function publishWebsite(){
 
@@ -2117,7 +1879,6 @@ await supabaseClient.auth.getUser();
 if(error||!data.user){
 
 alert("Please login first.");
-
 return;
 
 }
@@ -2125,7 +1886,6 @@ return;
 if(!currentHTML){
 
 alert("Create or select a website first.");
-
 return;
 
 }
@@ -2162,17 +1922,11 @@ await supabaseClient
 .insert({
 
 user_id:data.user.id,
-
-title,
-
+title:title,
 html:currentHTML,
-
 css:currentCSS,
-
 js:currentJS,
-
-slug,
-
+slug:slug,
 is_published:true
 
 });
@@ -2180,7 +1934,6 @@ is_published:true
 if(insertError){
 
 alert(insertError.message);
-
 return;
 
 }
@@ -2197,10 +1950,6 @@ url+
 "</a>";
 
 }
-
-/* =========================
-   PUBLISHED SITE
-========================= */
 
 async function loadPublishedSite(){
 
