@@ -1,0 +1,11 @@
+{
+  "name": "OTG AI Website Builder",
+  "short_name": "OTG Builder",
+  "description": "Build beautiful websites with AI using your phone.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f6f8",
+  "theme_color": "#111111",
+  "orientation": "portrait",
+  "icons": []
+}
