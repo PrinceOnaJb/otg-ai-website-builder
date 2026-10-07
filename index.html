@@ -1420,6 +1420,58 @@ Make it responsive and mobile-friendly.
   }
 
 </script>
+<script>
+async function publishProject() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
 
+  if (!user) {
+    alert("Please log in first.");
+    return;
+  }
+
+  const title =
+    document.getElementById("projectTitle").value.trim() || "My Website";
+
+  const html = document.getElementById("html").value;
+  const css = document.getElementById("css").value;
+  const js = document.getElementById("js").value;
+
+  const slug =
+    title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") +
+    "-" +
+    Math.random().toString(36).substring(2, 7);
+
+  const { data, error } = await supabaseClient
+    .from("projects")
+    .insert({
+      user_id: user.id,
+      title,
+      html,
+      css,
+      js,
+      slug,
+      is_published: true
+    })
+    .select()
+    .single();
+
+  if (error) {
+    alert("Publish failed: " + error.message);
+    return;
+  }
+
+  const link =
+    window.location.origin + "/?site=" + encodeURIComponent(data.slug);
+
+  alert("Website published successfully!\n\n" + link);
+
+  if (navigator.clipboard) {
+    await navigator.clipboard.writeText(link);
+  }
+}
+</script>
 </body>
 </html>
