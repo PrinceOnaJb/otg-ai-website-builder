@@ -1,1558 +1,2181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#111111" />
-  <meta name="description" content="OTG AI Website Builder - Build beautiful websites with AI." />
-  <link rel="manifest" href="/manifest.json" />
-  <title>OTG AI Website Builder</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f5f7fa;
-      color: #111827;
-      line-height: 1.5;
-    }
-
-    button,
-    input,
-    textarea,
-    select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background: #111;
-      color: white;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-      box-shadow: 0 2px 15px rgba(0,0,0,.15);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 800;
-    }
-
-    .logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg,#00d4ff,#7c3aed,#ff2d95);
-      color: white;
-      font-size: 18px;
-      font-weight: 900;
-      box-shadow: 0 5px 20px rgba(124,58,237,.35);
-    }
-
-    .nav {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .nav button {
-      border: 0;
-      background: transparent;
-      color: #ddd;
-      padding: 9px 11px;
-      border-radius: 8px;
-    }
-
-    .nav button:hover {
-      background: #222;
-      color: white;
-    }
-
-    .container {
-      width: min(1200px, 94%);
-      margin: auto;
-    }
-
-    .hero {
-      padding: 55px 0 35px;
-      text-align: center;
-    }
-
-    .hero-badge {
-      display: inline-block;
-      padding: 7px 13px;
-      border-radius: 30px;
-      background: #e9e7ff;
-      color: #5b21b6;
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 14px;
-    }
-
-    .hero h1 {
-      font-size: clamp(34px,6vw,68px);
-      line-height: 1.02;
-      margin-bottom: 18px;
-    }
-
-    .gradient-text {
-      background: linear-gradient(90deg,#7c3aed,#ec4899,#06b6d4);
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    .hero p {
-      max-width: 700px;
-      margin: auto;
-      color: #64748b;
-      font-size: 17px;
-    }
-
-    .workflow {
-      display: grid;
-      grid-template-columns: repeat(7,1fr);
-      gap: 8px;
-      margin: 25px 0 35px;
-    }
-
-    .step {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 12px 6px;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 700;
-      color: #64748b;
-    }
-
-    .step.active {
-      background: #111;
-      color: white;
-    }
-
-    .section {
-      margin: 45px 0;
-    }
-
-    .section-title {
-      margin-bottom: 20px;
-    }
-
-    .section-title h2 {
-      font-size: 28px;
-      margin-bottom: 5px;
-    }
-
-    .section-title p {
-      color: #64748b;
-    }
-
-    .dashboard {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 15px;
-    }
-
-    .stat {
-      background: white;
-      padding: 20px;
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 28px;
-      margin-top: 5px;
-    }
-
-    .stat span {
-      color: #64748b;
-      font-size: 13px;
-    }
-
-    .ai-box {
-      background: #111827;
-      color: white;
-      border-radius: 20px;
-      padding: 24px;
-    }
-
-    .ai-box h2 {
-      margin-bottom: 8px;
-    }
-
-    .ai-box p {
-      color: #cbd5e1;
-      margin-bottom: 18px;
-    }
-
-    textarea,
-    input,
-    select {
-      width: 100%;
-      border: 1px solid #d1d5db;
-      background: white;
-      border-radius: 10px;
-      padding: 13px;
-      outline: none;
-    }
-
-    textarea:focus,
-    input:focus,
-    select:focus {
-      border-color: #7c3aed;
-      box-shadow: 0 0 0 3px rgba(124,58,237,.1);
-    }
-
-    .ai-box textarea {
-      min-height: 120px;
-      margin-bottom: 12px;
-      color: #111;
-    }
-
-    .btn {
-      border: 0;
-      padding: 11px 17px;
-      border-radius: 10px;
-      font-weight: 700;
-      background: #111;
-      color: white;
-    }
-
-    .btn:hover {
-      opacity: .9;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg,#7c3aed,#ec4899);
-    }
-
-    .btn-success {
-      background: #059669;
-    }
-
-    .btn-danger {
-      background: #dc2626;
-    }
-
-    .btn-light {
-      background: #f1f5f9;
-      color: #111827;
-    }
-
-    .btn-whatsapp {
-      background: #25d366;
-      color: white;
-    }
-
-    .template-toolbar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-
-    .template-toolbar input {
-      flex: 1;
-      min-width: 220px;
-    }
-
-    .template-grid {
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 18px;
-    }
-
-    .template-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 18px;
-      overflow: hidden;
-      transition: .2s;
-    }
-
-    .template-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 15px 35px rgba(0,0,0,.08);
-    }
-
-    .template-preview {
-      height: 145px;
-      display: grid;
-      place-items: center;
-      color: white;
-      font-size: 24px;
-      font-weight: 900;
-    }
-
-    .template-content {
-      padding: 17px;
-    }
-
-    .template-content h3 {
-      margin-bottom: 5px;
-    }
-
-    .template-content p {
-      color: #64748b;
-      font-size: 13px;
-      min-height: 42px;
-      margin-bottom: 13px;
-    }
-
-    .template-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .category {
-      font-size: 11px;
-      font-weight: 700;
-      background: #f1f5f9;
-      padding: 5px 8px;
-      border-radius: 20px;
-    }
-
-    .quick-actions {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 12px;
-    }
-
-    .quick-action {
-      background: white;
-      border: 1px solid #e5e7eb;
-      padding: 18px;
-      border-radius: 15px;
-      text-align: left;
-      font-weight: 700;
-    }
-
-    .quick-action span {
-      display: block;
-      color: #64748b;
-      font-size: 12px;
-      font-weight: 400;
-      margin-top: 4px;
-    }
-
-    .editor-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-
-    .editor-panel,
-    .preview-panel {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
-      padding: 16px;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 7px;
-      margin-bottom: 10px;
-    }
-
-    .tab {
-      border: 0;
-      background: #f1f5f9;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 12px;
-    }
-
-    .tab.active {
-      background: #111;
-      color: white;
-    }
-
-    .code-area {
-      min-height: 450px;
-      font-family: monospace;
-      font-size: 13px;
-      resize: vertical;
-      background: #0f172a;
-      color: #e2e8f0;
-      border-color: #0f172a;
-    }
-
-    .preview-frame {
-      width: 100%;
-      min-height: 450px;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      background: white;
-    }
-
-    .editor-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
-    .projects-toolbar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 18px;
-    }
-
-    .projects-toolbar input {
-      flex: 1;
-      min-width: 220px;
-    }
-
-    .project-grid {
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 15px;
-    }
-
-    .project-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
-      padding: 17px;
-    }
-
-    .project-card h3 {
-      margin-bottom: 6px;
-    }
-
-    .project-card p {
-      color: #64748b;
-      font-size: 12px;
-      margin-bottom: 13px;
-    }
-
-    .project-status {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 20px;
-      font-size: 10px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    .published {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .draft {
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-    .project-actions {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .project-actions button {
-      padding: 7px 9px;
-      font-size: 11px;
-    }
-
-    .about {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 20px;
-      padding: 30px;
-    }
-
-    .about h2 {
-      margin-bottom: 15px;
-    }
-
-    .about p {
-      color: #475569;
-      margin-bottom: 13px;
-    }
-
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 12px;
-      margin-top: 20px;
-    }
-
-    .service {
-      background: #f8fafc;
-      padding: 18px;
-      border-radius: 13px;
-    }
-
-    .service h3 {
-      margin-bottom: 5px;
-    }
-
-    .service p {
-      font-size: 13px;
-      margin: 0;
-    }
-
-    footer {
-      background: #111;
-      color: white;
-      padding: 35px 0;
-      margin-top: 60px;
-      text-align: center;
-    }
-
-    footer p {
-      color: #aaa;
-      margin-top: 5px;
-      font-size: 13px;
-    }
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.65);
-      z-index: 5000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .modal.show {
-      display: flex;
-    }
-
-    .modal-box {
-      background: white;
-      width: min(450px,100%);
-      border-radius: 18px;
-      padding: 22px;
-    }
-
-    .modal-box h3 {
-      margin-bottom: 12px;
-    }
-
-    .modal-box input {
-      margin-bottom: 13px;
-      font-size: 16px;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
-    .auth-box {
-      max-width: 420px;
-      margin: 30px auto;
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 18px;
-      padding: 24px;
-    }
-
-    .auth-box input {
-      margin-bottom: 10px;
-    }
-
-    .auth-box .btn {
-      width: 100%;
-      margin-top: 5px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .toast {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      z-index: 6000;
-      background: #111;
-      color: white;
-      padding: 12px 17px;
-      border-radius: 10px;
-      display: none;
-      max-width: 330px;
-    }
-
-    .toast.show {
-      display: block;
-    }
-
-    @media (max-width: 900px) {
-      .template-grid,
-      .project-grid {
-        grid-template-columns: repeat(2,1fr);
-      }
-
-      .dashboard,
-      .quick-actions {
-        grid-template-columns: repeat(2,1fr);
-      }
-
-      .workflow {
-        grid-template-columns: repeat(4,1fr);
-      }
-    }
-
-    @media (max-width: 700px) {
-      .topbar {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .nav {
-        width: 100%;
-        overflow-x: auto;
-        flex-wrap: nowrap;
-      }
-
-      .nav button {
-        white-space: nowrap;
-      }
-
-      .template-grid,
-      .project-grid,
-      .dashboard,
-      .quick-actions,
-      .services-grid,
-      .editor-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .workflow {
-        grid-template-columns: repeat(2,1fr);
-      }
-
-      .hero {
-        padding-top: 35px;
-      }
-
-      .hero h1 {
-        font-size: 42px;
-      }
-
-      .code-area,
-      .preview-frame {
-        min-height: 350px;
-      }
-
-      .about {
-        padding: 20px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OTG AI Website Builder</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:Inter,Arial,sans-serif;
+  background:#f5f7fb;
+  color:#111827;
+  line-height:1.6;
+}
+
+button,
+input,
+textarea,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+a{
+  color:inherit;
+}
+
+.container{
+  width:min(1180px,92%);
+  margin:auto;
+}
+
+header{
+  background:#111827;
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:1000;
+  box-shadow:0 4px 20px rgba(0,0,0,.12);
+}
+
+.nav{
+  min-height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+
+.logo{
+  font-size:20px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.logo span{
+  color:#22c55e;
+}
+
+.nav-links{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.nav-links button{
+  border:0;
+  background:transparent;
+  color:#d1d5db;
+  padding:9px 12px;
+  border-radius:8px;
+}
+
+.nav-links button:hover{
+  background:#1f2937;
+  color:white;
+}
+
+.btn{
+  border:0;
+  border-radius:9px;
+  padding:11px 16px;
+  background:#111827;
+  color:white;
+  font-weight:700;
+}
+
+.btn:hover{
+  opacity:.92;
+}
+
+.btn-primary{
+  background:#16a34a;
+}
+
+.btn-primary:hover{
+  background:#15803d;
+}
+
+.btn-success{
+  background:#16a34a;
+}
+
+.btn-danger{
+  background:#dc2626;
+}
+
+.btn-light{
+  background:#eef2f7;
+  color:#111827;
+}
+
+.btn-outline{
+  background:white;
+  color:#111827;
+  border:1px solid #d1d5db;
+}
+
+.btn-small{
+  padding:8px 11px;
+  font-size:13px;
+}
+
+.hero{
+  background:linear-gradient(135deg,#111827,#1f2937);
+  color:white;
+  padding:75px 0;
+}
+
+.hero-grid{
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:45px;
+  align-items:center;
+}
+
+.hero h1{
+  font-size:clamp(36px,6vw,62px);
+  line-height:1.05;
+  margin-bottom:18px;
+}
+
+.hero p{
+  color:#d1d5db;
+  font-size:18px;
+  max-width:650px;
+}
+
+.hero-actions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:28px;
+}
+
+.hero-card{
+  background:white;
+  color:#111827;
+  border-radius:20px;
+  padding:25px;
+  box-shadow:0 20px 50px rgba(0,0,0,.25);
+}
+
+.hero-card h3{
+  margin-bottom:15px;
+}
+
+.hero-card-item{
+  padding:13px 0;
+  border-bottom:1px solid #e5e7eb;
+}
+
+.hero-card-item:last-child{
+  border-bottom:0;
+}
+
+section{
+  padding:65px 0;
+}
+
+.section-title{
+  text-align:center;
+  margin-bottom:35px;
+}
+
+.section-title h2{
+  font-size:32px;
+  margin-bottom:8px;
+}
+
+.section-title p{
+  color:#64748b;
+}
+
+.dashboard{
+  padding:45px 0;
+}
+
+.welcome{
+  margin-bottom:30px;
+}
+
+.welcome h2{
+  font-size:30px;
+}
+
+.welcome p{
+  color:#64748b;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:30px;
+}
+
+.stat{
+  background:white;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:20px;
+}
+
+.stat strong{
+  display:block;
+  font-size:28px;
+  margin-top:4px;
+}
+
+.stat span{
+  color:#64748b;
+  font-size:14px;
+}
+
+.card{
+  background:white;
+  border:1px solid #e5e7eb;
+  border-radius:15px;
+  padding:24px;
+  margin-bottom:20px;
+}
+
+.generator{
+  display:grid;
+  grid-template-columns:1fr .8fr;
+  gap:25px;
+}
+
+textarea{
+  width:100%;
+  min-height:150px;
+  resize:vertical;
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  padding:14px;
+  outline:none;
+}
+
+textarea:focus,
+input:focus,
+select:focus{
+  border-color:#16a34a;
+  box-shadow:0 0 0 3px rgba(22,163,74,.1);
+}
+
+.input{
+  width:100%;
+  padding:12px 14px;
+  border:1px solid #d1d5db;
+  border-radius:9px;
+  outline:none;
+}
+
+label{
+  display:block;
+  font-weight:700;
+  margin-bottom:7px;
+}
+
+.form-group{
+  margin-bottom:17px;
+}
+
+.template-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+}
+
+.template{
+  background:white;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  overflow:hidden;
+  transition:.2s;
+}
+
+.template:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.template-preview{
+  height:125px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+  font-size:20px;
+  color:white;
+}
+
+.template-body{
+  padding:15px;
+}
+
+.template-body h3{
+  margin-bottom:5px;
+}
+
+.template-body p{
+  color:#64748b;
+  font-size:13px;
+  margin-bottom:12px;
+}
+
+.quick-actions{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+.quick{
+  padding:22px;
+  border:1px solid #e5e7eb;
+  background:white;
+  border-radius:14px;
+}
+
+.quick h3{
+  margin-bottom:6px;
+}
+
+.quick p{
+  color:#64748b;
+  font-size:14px;
+  margin-bottom:15px;
+}
+
+.editor{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.editor-panel,
+.preview-panel{
+  background:white;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  overflow:hidden;
+}
+
+.editor-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 15px;
+  border-bottom:1px solid #e5e7eb;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.editor-tabs{
+  display:flex;
+  gap:5px;
+}
+
+.editor-tabs button{
+  border:0;
+  background:#f1f5f9;
+  padding:8px 12px;
+  border-radius:7px;
+}
+
+.editor-tabs button.active{
+  background:#111827;
+  color:white;
+}
+
+.code-area{
+  width:100%;
+  min-height:520px;
+  border:0;
+  border-radius:0;
+  padding:18px;
+  resize:none;
+  font-family:monospace;
+  font-size:13px;
+  background:#0f172a;
+  color:#e2e8f0;
+  outline:none;
+}
+
+.preview-frame{
+  width:100%;
+  height:520px;
+  border:0;
+  background:white;
+}
+
+.project-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:18px;
+}
+
+.project{
+  background:white;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:20px;
+}
+
+.project-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+}
+
+.project h3{
+  margin-bottom:3px;
+}
+
+.project-date{
+  color:#64748b;
+  font-size:13px;
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+}
+
+.badge-published{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.badge-draft{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.project-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:17px;
+}
+
+.empty{
+  text-align:center;
+  padding:45px 20px;
+  color:#64748b;
+  border:2px dashed #d1d5db;
+  border-radius:14px;
+}
+
+footer{
+  background:#111827;
+  color:#cbd5e1;
+  padding:35px 0;
+  margin-top:30px;
+}
+
+.footer-inner{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  flex-wrap:wrap;
+}
+
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.65);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:3000;
+}
+
+.modal-overlay.show{
+  display:flex;
+}
+
+.modal{
+  width:min(500px,100%);
+  background:white;
+  border-radius:16px;
+  padding:25px;
+  box-shadow:0 25px 70px rgba(0,0,0,.3);
+}
+
+.modal h3{
+  margin-bottom:18px;
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:20px;
+}
+
+.toast{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  background:#111827;
+  color:white;
+  padding:13px 18px;
+  border-radius:9px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+  z-index:5000;
+  transform:translateY(120px);
+  opacity:0;
+  transition:.25s;
+  max-width:360px;
+}
+
+.toast.show{
+  transform:translateY(0);
+  opacity:1;
+}
+
+.user-area{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.user-email{
+  color:#cbd5e1;
+  font-size:13px;
+}
+
+.hidden{
+  display:none!important;
+}
+
+.center{
+  text-align:center;
+}
+
+.loading{
+  padding:30px;
+  text-align:center;
+  color:#64748b;
+}
+
+@media(max-width:900px){
+  .hero-grid,
+  .generator,
+  .editor{
+    grid-template-columns:1fr;
+  }
+
+  .template-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .project-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:600px){
+  .nav{
+    padding:10px 0;
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .nav-links{
+    width:100%;
+    overflow:auto;
+    flex-wrap:nowrap;
+  }
+
+  .hero{
+    padding:50px 0;
+  }
+
+  section{
+    padding:45px 0;
+  }
+
+  .template-grid{
+    grid-template-columns:1fr;
+  }
+
+  .quick-actions{
+    grid-template-columns:1fr;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .user-email{
+    display:none;
+  }
+
+  .editor{
+    grid-template-columns:1fr;
+  }
+
+  .code-area,
+  .preview-frame{
+    min-height:420px;
+    height:420px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-<div id="app">
-
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo">OTG</div>
-      <span>OTG AI Website Builder</span>
+<header id="mainHeader">
+  <div class="container nav">
+    <div class="logo">
+      OTG <span>AI</span> Website Builder
     </div>
 
-    <nav class="nav">
+    <div class="nav-links">
       <button onclick="scrollToSection('builder')">Builder</button>
       <button onclick="scrollToSection('templates')">Templates</button>
       <button onclick="scrollToSection('projects')">My Projects</button>
       <button onclick="scrollToSection('about')">About OTG</button>
-      <button id="authButton" onclick="showAuth()">Login</button>
-    </nav>
-  </header>
+      <button id="loginNav" onclick="showAuth()">Login</button>
+      <button id="logoutNav" onclick="logout()" class="hidden">Logout</button>
+    </div>
 
-  <main>
+    <div class="user-area">
+      <span id="userEmail" class="user-email"></span>
+    </div>
+  </div>
+</header>
 
-    <section class="hero container">
-      <span class="hero-badge">🚀 OTG AI CREATIVE TECHNOLOGY</span>
+<main id="app">
 
-      <h1>
-        Turn your ideas into
-        <span class="gradient-text">beautiful websites.</span>
-      </h1>
+<section class="hero" id="builder">
+  <div class="container hero-grid">
+
+    <div>
+      <h1>Build your website with OTG AI.</h1>
 
       <p>
-        Choose a professional template, customize it with AI,
-        edit your code, preview your website, save it and publish it.
+        Turn your idea into a beautiful, responsive website.
+        Create, edit, save, publish and share your website from one simple builder.
       </p>
-    </section>
 
-    <section class="container">
-      <div class="workflow">
-        <div class="step active">1. Choose Template</div>
-        <div class="step">2. Customize</div>
-        <div class="step">3. AI Edit</div>
-        <div class="step">4. Preview</div>
-        <div class="step">5. Save</div>
-        <div class="step">6. Publish</div>
-        <div class="step">7. Share</div>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="scrollToSection('generator')">
+          🚀 Create Your Website
+        </button>
+
+        <button class="btn btn-light" onclick="scrollToSection('templates')">
+          Explore Templates
+        </button>
       </div>
-    </section>
+    </div>
 
-    <section class="section container">
-      <div class="section-title">
-        <h2>Student Dashboard</h2>
-        <p>Your website-building activity at a glance.</p>
-      </div>
+    <div class="hero-card">
+      <h3>What you can do</h3>
 
-      <div class="dashboard">
-        <div class="stat">
-          <span>My Projects</span>
-          <strong id="statProjects">0</strong>
-        </div>
+      <div class="hero-card-item">🤖 Generate a website from an idea</div>
+      <div class="hero-card-item">🎨 Start from professional templates</div>
+      <div class="hero-card-item">✏️ Edit your website</div>
+      <div class="hero-card-item">💾 Save your projects</div>
+      <div class="hero-card-item">🌐 Publish and share online</div>
+    </div>
 
-        <div class="stat">
-          <span>Published Websites</span>
-          <strong id="statPublished">0</strong>
-        </div>
+  </div>
+</section>
 
-        <div class="stat">
-          <span>AI Generations Today</span>
-          <strong id="statAI">0/5</strong>
-        </div>
+<section class="dashboard">
+  <div class="container">
 
-        <div class="stat">
-          <span>Templates</span>
-          <strong>12</strong>
-        </div>
-      </div>
-    </section>
+    <div class="welcome">
+      <h2 id="welcomeName">Student Dashboard</h2>
+      <p>Build and manage your websites with OTG AI Website Builder.</p>
+    </div>
 
-    <section class="section container" id="builder">
-      <div class="section-title">
-        <h2>🤖 AI Website Generator</h2>
-        <p>Describe what you want and OTG AI will build or improve it.</p>
+    <div class="stats">
+      <div class="stat">
+        <span>Total Projects</span>
+        <strong id="totalProjects">0</strong>
       </div>
 
-      <div class="ai-box">
-        <h2>Build with OTG AI</h2>
+      <div class="stat">
+        <span>Published</span>
+        <strong id="publishedProjects">0</strong>
+      </div>
 
-        <p>
-          Create a website from scratch or tell the AI what you want
-          changed in your current website.
+      <div class="stat">
+        <span>Drafts</span>
+        <strong id="draftProjects">0</strong>
+      </div>
+
+      <div class="stat">
+        <span>OTG Builder</span>
+        <strong>AI</strong>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="generator">
+  <div class="container">
+
+    <div class="section-title">
+      <h2>🤖 AI Website Generator</h2>
+      <p>Describe the website you want to create.</p>
+    </div>
+
+    <div class="generator">
+
+      <div class="card">
+
+        <div class="form-group">
+          <label for="aiPrompt">What should your website be about?</label>
+
+          <textarea
+            id="aiPrompt"
+            placeholder="Example: Create a modern website for my fashion business called Prince Fashion. I sell men's and women's clothing."
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="websiteStyle">Website style</label>
+
+          <select id="websiteStyle" class="input">
+            <option value="modern">Modern</option>
+            <option value="professional">Professional</option>
+            <option value="minimal">Minimal</option>
+            <option value="creative">Creative</option>
+            <option value="luxury">Luxury</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" onclick="generateWithAI()">
+          ✨ Generate Website
+        </button>
+
+      </div>
+
+      <div class="card">
+
+        <h3>Quick examples</h3>
+
+        <p style="color:#64748b;margin:10px 0 18px;">
+          Tap an example to use it.
         </p>
 
-        <textarea
-          id="aiPrompt"
-          placeholder="Example: Create a modern website for my graphic design business called Prince OnaJb Designs. Add my services, portfolio, pricing, testimonials and a WhatsApp button."
-        ></textarea>
+        <div class="quick-actions" style="grid-template-columns:1fr;">
 
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="generateWithAI()">
-            ✨ Generate with AI
-          </button>
+          <div class="quick">
+            <h3>👗 Fashion</h3>
+            <p>Fashion store for men and women.</p>
+            <button class="btn btn-small" onclick="useExample('fashion')">
+              Use Example
+            </button>
+          </div>
 
-          <button class="btn btn-light" onclick="useSelectedTemplate()">
-            Use Selected Template
+          <div class="quick">
+            <h3>💼 Business</h3>
+            <p>Professional company website.</p>
+            <button class="btn btn-small" onclick="useExample('business')">
+              Use Example
+            </button>
+          </div>
+
+          <div class="quick">
+            <h3>🎨 Portfolio</h3>
+            <p>Personal designer portfolio.</p>
+            <button class="btn btn-small" onclick="useExample('portfolio')">
+              Use Example
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="templates">
+  <div class="container">
+
+    <div class="section-title">
+      <h2>🎨 Professional Templates</h2>
+      <p>Start faster with a ready-made website structure.</p>
+    </div>
+
+    <div class="template-grid">
+
+      <div class="template">
+        <div class="template-preview" style="background:#111827;">
+          BUSINESS
+        </div>
+        <div class="template-body">
+          <h3>Business</h3>
+          <p>Clean company website.</p>
+          <button class="btn btn-small" onclick="useTemplate('business')">
+            Use Template
           </button>
         </div>
       </div>
-    </section>
 
-    <section class="section container" id="templates">
-      <div class="section-title">
-        <h2>🎨 Professional Templates</h2>
-        <p>
-          Start faster with a template designed for your type of business.
-        </p>
+      <div class="template">
+        <div class="template-preview" style="background:#7c3aed;">
+          PORTFOLIO
+        </div>
+        <div class="template-body">
+          <h3>Portfolio</h3>
+          <p>Showcase your work.</p>
+          <button class="btn btn-small" onclick="useTemplate('portfolio')">
+            Use Template
+          </button>
+        </div>
       </div>
 
-      <div class="template-toolbar">
-        <input
-          id="templateSearch"
-          type="text"
-          placeholder="Search templates..."
-          oninput="renderTemplates()"
-        />
-
-        <select id="templateCategory" onchange="renderTemplates()">
-          <option value="all">All Categories</option>
-          <option value="design">Creative</option>
-          <option value="business">Business</option>
-          <option value="fashion">Fashion</option>
-          <option value="food">Food</option>
-          <option value="service">Services</option>
-          <option value="education">Education</option>
-          <option value="store">Store</option>
-          <option value="health">Healthcare</option>
-          <option value="personal">Personal</option>
-          <option value="event">Event</option>
-        </select>
+      <div class="template">
+        <div class="template-preview" style="background:#be123c;">
+          FASHION
+        </div>
+        <div class="template-body">
+          <h3>Fashion</h3>
+          <p>Elegant fashion brand.</p>
+          <button class="btn btn-small" onclick="useTemplate('fashion')">
+            Use Template
+          </button>
+        </div>
       </div>
 
-      <div class="template-grid" id="templateGrid"></div>
-    </section>
-
-    <section class="section container">
-      <div class="section-title">
-        <h2>⚡ Quick Actions</h2>
-        <p>Jump straight into your most-used tools.</p>
+      <div class="template">
+        <div class="template-preview" style="background:#0369a1;">
+          RESTAURANT
+        </div>
+        <div class="template-body">
+          <h3>Restaurant</h3>
+          <p>Food and restaurant site.</p>
+          <button class="btn btn-small" onclick="useTemplate('restaurant')">
+            Use Template
+          </button>
+        </div>
       </div>
 
-      <div class="quick-actions">
-        <button class="quick-action" onclick="newWebsite()">
-          ➕ New Website
-          <span>Start from scratch.</span>
+      <div class="template">
+        <div class="template-preview" style="background:#047857;">
+          AGENCY
+        </div>
+        <div class="template-body">
+          <h3>Agency</h3>
+          <p>Creative agency website.</p>
+          <button class="btn btn-small" onclick="useTemplate('agency')">
+            Use Template
+          </button>
+        </div>
+      </div>
+
+      <div class="template">
+        <div class="template-preview" style="background:#92400e;">
+          PERSONAL
+        </div>
+        <div class="template-body">
+          <h3>Personal</h3>
+          <p>Personal profile website.</p>
+          <button class="btn btn-small" onclick="useTemplate('personal')">
+            Use Template
+          </button>
+        </div>
+      </div>
+
+      <div class="template">
+        <div class="template-preview" style="background:#0f766e;">
+          SCHOOL
+        </div>
+        <div class="template-body">
+          <h3>School</h3>
+          <p>School or academy website.</p>
+          <button class="btn btn-small" onclick="useTemplate('school')">
+            Use Template
+          </button>
+        </div>
+      </div>
+
+      <div class="template">
+        <div class="template-preview" style="background:#4338ca;">
+          EVENT
+        </div>
+        <div class="template-body">
+          <h3>Event</h3>
+          <p>Event and celebration page.</p>
+          <button class="btn btn-small" onclick="useTemplate('event')">
+            Use Template
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+
+    <div class="section-title">
+      <h2>⚡ Quick Actions</h2>
+      <p>Start working quickly.</p>
+    </div>
+
+    <div class="quick-actions">
+
+      <div class="quick">
+        <h3>🚀 New Website</h3>
+        <p>Start a fresh website from scratch.</p>
+        <button class="btn btn-primary" onclick="newWebsite()">
+          Start New
         </button>
-
-        <button class="quick-action" onclick="scrollToSection('templates')">
-          🎨 Browse Templates
-          <span>Choose a professional design.</span>
-        </button>
-
-        <button class="quick-action" onclick="scrollToSection('editor')">
-          💻 Open Editor
-          <span>Edit HTML, CSS and JavaScript.</span>
-        </button>
-
-        <button class="quick-action" onclick="saveProject()">
-          💾 Save Project
-          <span>Save your current website.</span>
-        </button>
-      </div>
-    </section>
-
-    <section class="section container" id="editor">
-      <div class="section-title">
-        <h2>💻 Website Editor</h2>
-        <p>Edit HTML, CSS and JavaScript directly.</p>
       </div>
 
-      <div class="editor-grid">
+      <div class="quick">
+        <h3>💾 My Projects</h3>
+        <p>Open your saved websites.</p>
+        <button class="btn" onclick="scrollToSection('projects')">
+          View Projects
+        </button>
+      </div>
 
-        <div class="editor-panel">
+      <div class="quick">
+        <h3>✏️ Website Editor</h3>
+        <p>Edit HTML, CSS and JavaScript.</p>
+        <button class="btn" onclick="scrollToSection('editor')">
+          Open Editor
+        </button>
+      </div>
 
-          <div class="tabs">
-            <button class="tab active" id="htmlTab" onclick="switchEditor('html')">
+    </div>
+
+  </div>
+</section>
+
+<section id="editor">
+
+  <div class="container">
+
+    <div class="section-title">
+      <h2>🛠 Website Editor</h2>
+      <p>Edit your website and preview it instantly.</p>
+    </div>
+
+    <div class="editor">
+
+      <div class="editor-panel">
+
+        <div class="editor-header">
+
+          <strong>Code Editor</strong>
+
+          <div class="editor-tabs">
+
+            <button
+              id="htmlTab"
+              class="active"
+              onclick="switchEditor('html')"
+            >
               HTML
             </button>
 
-            <button class="tab" id="cssTab" onclick="switchEditor('css')">
+            <button
+              id="cssTab"
+              onclick="switchEditor('css')"
+            >
               CSS
             </button>
 
-            <button class="tab" id="jsTab" onclick="switchEditor('js')">
-              JavaScript
-            </button>
-          </div>
-
-          <textarea id="codeEditor" class="code-area"></textarea>
-
-          <div class="editor-actions">
-            <button class="btn btn-primary" onclick="updateEditor()">
-              Update
+            <button
+              id="jsTab"
+              onclick="switchEditor('js')"
+            >
+              JS
             </button>
 
-            <button class="btn btn-light" onclick="resetBuilder()">
-              Reset
-            </button>
-
-            <button class="btn btn-success" onclick="saveProject()">
-              Save Project
-            </button>
-
-            <button class="btn" onclick="publishWebsite()">
-              Publish Website
-            </button>
-          </div>
-        </div>
-
-        <div class="preview-panel">
-          <h3 style="margin-bottom:10px;">Live Preview</h3>
-
-          <iframe
-            id="previewFrame"
-            class="preview-frame"
-            sandbox="allow-scripts allow-forms allow-modals"
-          ></iframe>
-        </div>
-
-      </div>
-    </section>
-
-    <section class="section container" id="projects">
-      <div class="section-title">
-        <h2>📁 My Projects</h2>
-        <p>Manage your saved websites.</p>
-      </div>
-
-      <div class="projects-toolbar">
-        <input
-          id="projectSearch"
-          placeholder="Search projects..."
-          oninput="renderProjects()"
-        />
-
-        <button class="btn btn-primary" onclick="newWebsite()">
-          + New Project
-        </button>
-      </div>
-
-      <div class="project-grid" id="projectGrid"></div>
-    </section>
-
-    <section class="section container" id="about">
-      <div class="about">
-
-        <h2>About OTG</h2>
-
-        <p>
-          OTG AI Website Builder is a creative platform designed to help
-          students, designers, entrepreneurs and creators turn their ideas
-          into beautiful websites using AI and practical digital skills.
-        </p>
-
-        <h2 style="margin-top:25px;">OTG</h2>
-
-        <p>
-          <strong>Prince OnaJb</strong><br>
-          CEO & Founder, OTG Graphic Academy
-        </p>
-
-        <p>
-          Prince OnaJb is a graphic designer, creative educator and digital
-          creator passionate about helping people turn ordinary ideas into
-          professional visual and digital experiences.
-        </p>
-
-        <p>
-          Through OTG Graphic Academy, he teaches students practical creative
-          skills while encouraging them to adapt to modern technology, AI and
-          the changing digital world.
-        </p>
-
-        <p>
-          <strong>“I turn ordinary ideas into visual reality.”</strong>
-        </p>
-
-        <h2 style="margin-top:25px;">What I Do</h2>
-
-        <div class="services-grid">
-
-          <div class="service">
-            <h3>🎨 Graphic Design</h3>
-            <p>
-              Professional visual designs, flyers, branding and creative communication.
-            </p>
-          </div>
-
-          <div class="service">
-            <h3>💻 Website Creation</h3>
-            <p>
-              Building modern websites and digital experiences for brands and businesses.
-            </p>
-          </div>
-
-          <div class="service">
-            <h3>🤖 AI & Creative Technology</h3>
-            <p>
-              Helping creatives understand and use modern AI tools effectively.
-            </p>
-          </div>
-
-          <div class="service">
-            <h3>🎓 Training & Mentorship</h3>
-            <p>
-              Practical training designed to help students develop useful creative skills.
-            </p>
-          </div>
-
-          <div class="service">
-            <h3>🏆 Branding</h3>
-            <p>
-              Creating strong visual identities that help businesses stand out.
-            </p>
-          </div>
-
-          <div class="service">
-            <h3>🚀 Digital Creativity</h3>
-            <p>
-              Turning ideas into practical digital products and creative solutions.
-            </p>
           </div>
 
         </div>
 
-        <h2 style="margin-top:30px;">OTG Graphic Academy</h2>
-
-        <p>
-          OTG Graphic Academy is focused on helping students build practical
-          creative skills they can use in the real world.
-        </p>
-
-        <p>
-          Students are encouraged to learn, practice, create portfolios,
-          work with clients and understand how technology can support—not
-          replace—their creativity.
-        </p>
-
-        <button class="btn btn-primary" onclick="scrollToSection('builder')">
-          🚀 Start Building
-        </button>
+        <textarea
+          id="codeEditor"
+          class="code-area"
+          spellcheck="false"
+          oninput="updateWebsiteCode()"
+        ></textarea>
 
       </div>
-    </section>
 
-  </main>
+      <div class="preview-panel">
 
-  <footer>
-    <strong>OTG AI Website Builder</strong>
+        <div class="editor-header">
+          <strong>Live Preview</strong>
 
-    <p>
-      Built by Prince OnaJb — CEO & Founder, OTG Graphic Academy
-    </p>
+          <button
+            class="btn btn-small"
+            onclick="updatePreview()"
+          >
+            Refresh Preview
+          </button>
+        </div>
 
-    <p>
-      Empowering creatives to turn ideas into digital reality.
-    </p>
-  </footer>
+        <iframe
+          id="previewFrame"
+          class="preview-frame"
+          sandbox="allow-scripts allow-forms allow-modals"
+        ></iframe>
 
-</div>
+      </div>
+
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
+
+      <button class="btn btn-primary" onclick="saveProject()">
+        💾 Save Project
+      </button>
+
+      <button class="btn btn-outline" onclick="newWebsite()">
+        New Website
+      </button>
+
+      <button class="btn btn-outline" onclick="updatePreview()">
+        Preview
+      </button>
+
+      <button class="btn btn-success" onclick="publishWebsite()">
+        🌐 Publish Website
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+<section id="projects">
+
+  <div class="container">
+
+    <div class="section-title">
+      <h2>📁 My Projects</h2>
+      <p>Manage all your saved websites.</p>
+    </div>
+
+    <div id="projectsContainer">
+      <div class="loading">Loading projects...</div>
+    </div>
+
+  </div>
+
+</section>
+
+<section id="about">
+
+  <div class="container">
+
+    <div class="section-title">
+      <h2>About OTG</h2>
+      <p>OTG AI Website Builder</p>
+    </div>
+
+    <div class="card center">
+
+      <h2>Turn your ideas into websites.</h2>
+
+      <p style="max-width:700px;margin:15px auto;color:#64748b;">
+        OTG AI Website Builder helps students, designers, entrepreneurs
+        and creators turn ideas into professional websites without starting
+        everything from zero.
+      </p>
+
+      <button class="btn btn-primary" onclick="scrollToSection('generator')">
+        Start Building
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div>
+      <strong>OTG AI Website Builder</strong>
+      <p>Build. Edit. Publish. Share.</p>
+    </div>
+
+    <div>
+      © 2026 OTG Graphic Academy
+    </div>
+  </div>
+</footer>
 
 <!-- AUTH MODAL -->
-<div class="modal" id="authModal">
-  <div class="modal-box">
 
-    <h3 id="authTitle">Login</h3>
+<div class="modal-overlay" id="authModal">
 
-    <input
-      id="authEmail"
-      type="email"
-      autocomplete="email"
-      placeholder="Email"
-    />
+  <div class="modal">
 
-    <input
-      id="authPassword"
-      type="password"
-      autocomplete="current-password"
-      placeholder="Password"
-    />
+    <h3 id="authTitle">Login to OTG AI</h3>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input
+        id="authEmail"
+        class="input"
+        type="email"
+        placeholder="you@example.com"
+      >
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input
+        id="authPassword"
+        class="input"
+        type="password"
+        placeholder="Password"
+      >
+    </div>
+
+    <div id="authNameGroup" class="form-group hidden">
+      <label>Your name</label>
+      <input
+        id="authName"
+        class="input"
+        type="text"
+        placeholder="Your name"
+      >
+    </div>
 
     <div class="modal-actions">
+
       <button class="btn btn-light" onclick="closeModal('authModal')">
         Cancel
       </button>
 
-      <button class="btn btn-primary" onclick="submitAuth()">
-        Continue
+      <button
+        id="authSubmit"
+        class="btn btn-primary"
+        onclick="handleAuth()"
+      >
+        Login
       </button>
+
     </div>
 
-    <p style="margin-top:13px;text-align:center;font-size:13px;">
-      <button
-        style="border:0;background:none;color:#7c3aed;font-weight:700;"
-        onclick="toggleAuthMode()"
-        id="authToggle"
-      >
-        Create account instead
-      </button>
+    <p
+      id="authSwitch"
+      style="margin-top:18px;text-align:center;color:#64748b;cursor:pointer;"
+      onclick="toggleAuthMode()"
+    >
+      Don't have an account? Sign up
     </p>
 
   </div>
+
 </div>
 
-<!-- NAME MODAL -->
-<div class="modal" id="nameModal">
-  <div class="modal-box">
+<!-- PROJECT NAME MODAL -->
 
-    <h3>Save Website</h3>
+<div class="modal-overlay" id="nameModal">
 
-    <input
-      id="projectNameInput"
-      type="text"
-      inputmode="text"
-      autocomplete="off"
-      autocapitalize="words"
-      spellcheck="false"
-      placeholder="Enter website name"
-    />
+  <div class="modal">
+
+    <h3 id="nameModalTitle">Save Website</h3>
+
+    <div class="form-group">
+
+      <label>Website name</label>
+
+      <input
+        id="projectNameInput"
+        class="input"
+        type="text"
+        placeholder="My New Website"
+      >
+
+    </div>
 
     <div class="modal-actions">
-      <button class="btn btn-light" onclick="closeModal('nameModal')">
+
+      <button
+        class="btn btn-light"
+        onclick="closeModal('nameModal')"
+      >
         Cancel
       </button>
 
-      <button class="btn btn-primary" onclick="confirmSaveProject()">
+      <button
+        id="nameModalButton"
+        class="btn btn-primary"
+        onclick="confirmSaveProject()"
+      >
         Save
       </button>
+
     </div>
 
   </div>
+
 </div>
 
 <!-- RENAME MODAL -->
-<div class="modal" id="renameModal">
-  <div class="modal-box">
+
+<div class="modal-overlay" id="renameModal">
+
+  <div class="modal">
 
     <h3>Rename Project</h3>
 
-    <input
-      id="renameInput"
-      type="text"
-      inputmode="text"
-      autocomplete="off"
-      autocapitalize="words"
-      spellcheck="false"
-      placeholder="New project name"
-    />
+    <div class="form-group">
+
+      <label>New project name</label>
+
+      <input
+        id="renameInput"
+        class="input"
+        type="text"
+      >
+
+    </div>
 
     <div class="modal-actions">
-      <button class="btn btn-light" onclick="closeModal('renameModal')">
+
+      <button
+        class="btn btn-light"
+        onclick="closeModal('renameModal')"
+      >
         Cancel
       </button>
 
-      <button class="btn btn-primary" onclick="confirmRename()">
+      <button
+        class="btn btn-primary"
+        onclick="confirmRename()"
+      >
         Rename
       </button>
+
     </div>
 
   </div>
+
 </div>
 
-<div class="toast" id="toast"></div>
+<div id="toast" class="toast"></div>
 
 <script>
-  const SUPABASE_URL =
-    "https://actwvvokfdemobgsfctx.supabase.co";
 
-  const SUPABASE_KEY =
-    "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
+const SUPABASE_URL =
+  "https://actwvvokfdemobgsfctx.supabase.co";
 
-  const supabaseClient =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
+const SUPABASE_KEY =
+  "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
 
-  let currentUser = null;
-  let currentProjectId = null;
-  let selectedTemplate = null;
-  let currentEditor = "html";
-  let renameProjectId = null;
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
-  let website = {
-    html: "",
-    css: "",
-    js: ""
-  };
+let currentUser = null;
+let currentProjectId = null;
+let currentEditor = "html";
+let renameProjectId = null;
 
-  const templates = [
-    {
-      id: "graphic-design",
-      name: "Graphic Design Studio",
-      category: "design",
-      icon: "🎨",
-      description: "Professional website for graphic designers and creative studios.",
-      color: "linear-gradient(135deg,#111827,#7c3aed)",
-      prompt: "Create a premium Graphic Design Studio website with Home, About, Services, Design Portfolio, Pricing, Testimonials and Contact sections. Add a WhatsApp CTA."
-    },
-    {
-      id: "photography",
-      name: "Photography Studio",
-      category: "design",
-      icon: "📸",
-      description: "Showcase photography services and beautiful work.",
-      color: "linear-gradient(135deg,#0f172a,#475569)",
-      prompt: "Create a modern photography studio website with Home, About, Gallery, Services, Packages, Testimonials and Contact sections. Add WhatsApp."
-    },
-    {
-      id: "business",
-      name: "Business / Corporate",
-      category: "business",
-      icon: "🏢",
-      description: "Professional corporate website for a company.",
-      color: "linear-gradient(135deg,#0f172a,#2563eb)",
-      prompt: "Create a professional corporate business website with Home, About, Services, Why Choose Us, Testimonials and Contact sections. Add WhatsApp."
-    },
-    {
-      id: "fashion",
-      name: "Fashion & Clothing",
-      category: "fashion",
-      icon: "👗",
-      description: "Modern fashion brand and clothing store website.",
-      color: "linear-gradient(135deg,#be123c,#fb7185)",
-      prompt: "Create a stylish fashion and clothing website with hero section, collections, products, About, testimonials and Contact. Add WhatsApp shopping CTA."
-    },
-    {
-      id: "restaurant",
-      name: "Restaurant / Food",
-      category: "food",
-      icon: "🍽️",
-      description: "Restaurant, food business or catering website.",
-      color: "linear-gradient(135deg,#7c2d12,#f97316)",
-      prompt: "Create a beautiful restaurant website with menu, food categories, About, gallery, testimonials, location and WhatsApp order button."
-    },
-    {
-      id: "salon",
-      name: "Salon / Barbershop",
-      category: "service",
-      icon: "💈",
-      description: "Professional beauty salon or barbershop website.",
-      color: "linear-gradient(135deg,#581c87,#c084fc)",
-      prompt: "Create a premium salon and barbershop website with services, pricing, gallery, team, testimonials, booking and WhatsApp CTA."
-    },
-    {
-      id: "real-estate",
-      name: "Real Estate",
-      category: "business",
-      icon: "🏠",
-      description: "Property and real estate business website.",
-      color: "linear-gradient(135deg,#064e3b,#10b981)",
-      prompt: "Create a modern real estate website with properties, property details, services, About, testimonials and contact. Add WhatsApp inquiry buttons."
-    },
-    {
-      id: "school",
-      name: "School / Academy",
-      category: "education",
-      icon: "🎓",
-      description: "School, training center or academy website.",
-      color: "linear-gradient(135deg,#1e3a8a,#3b82f6)",
-      prompt: "Create a professional school or academy website with About, courses, programs, teachers, testimonials, admission information and contact. Add WhatsApp."
-    },
-    {
-      id: "online-store",
-      name: "Online Store",
-      category: "store",
-      icon: "🛒",
-      description: "Modern ecommerce-style business website.",
-      color: "linear-gradient(135deg,#111827,#059669)",
-      prompt: "Create a modern online store website with hero, products, categories, featured products, About, testimonials and WhatsApp ordering."
-    },
-    {
-      id: "clinic",
-      name: "Clinic / Healthcare",
-      category: "health",
-      icon: "🏥",
-      description: "Professional clinic or healthcare website.",
-      color: "linear-gradient(135deg,#075985,#06b6d4)",
-      prompt: "Create a clean professional healthcare clinic website with services, doctors, About, patient information, testimonials and contact. Add WhatsApp."
-    },
-    {
-      id: "portfolio",
-      name: "Personal Portfolio",
-      category: "personal",
-      icon: "👤",
-      description: "Personal portfolio for a creator or professional.",
-      color: "linear-gradient(135deg,#312e81,#8b5cf6)",
-      prompt: "Create a premium personal portfolio website with hero, About, skills, services, portfolio, testimonials and contact. Add WhatsApp."
-    },
-    {
-      id: "event",
-      name: "Event / Entertainment",
-      category: "event",
-      icon: "🎉",
-      description: "Event, entertainment, artist or campaign website.",
-      color: "linear-gradient(135deg,#9f1239,#f43f5e)",
-      prompt: "Create an exciting event and entertainment website with hero, event details, schedule, gallery, speakers or performers, tickets and contact. Add WhatsApp."
-    }
-  ];
+let authMode = "login";
 
-  function showToast(message) {
-    const toast = document.getElementById("toast");
-    toast.textContent = message;
-    toast.classList.add("show");
+let website = {
+  html: "",
+  css: "",
+  js: ""
+};
 
+window.otgProjects = [];
+
+const templates = {
+
+  business: {
+    html: `
+<section class="site-hero">
+  <div class="site-container">
+    <span class="site-label">WELCOME</span>
+    <h1>Your Business, Built for Growth.</h1>
+    <p>We help customers discover quality products and reliable services.</p>
+    <a href="#contact" class="site-btn">Get Started</a>
+  </div>
+</section>
+
+<section class="site-section">
+  <div class="site-container">
+    <h2>About Us</h2>
+    <p>Welcome to our business. We are committed to providing excellent products and services to our customers.</p>
+  </div>
+</section>
+
+<section class="site-section alt">
+  <div class="site-container">
+    <h2>Our Services</h2>
+    <div class="site-grid">
+      <div class="site-card">
+        <h3>Quality Service</h3>
+        <p>Professional service built around your needs.</p>
+      </div>
+      <div class="site-card">
+        <h3>Trusted Support</h3>
+        <p>We are available to help you every step of the way.</p>
+      </div>
+      <div class="site-card">
+        <h3>Great Value</h3>
+        <p>Reliable solutions at competitive prices.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="site-section" id="contact">
+  <div class="site-container center-site">
+    <h2>Contact Us</h2>
+    <p>We would love to hear from you.</p>
+    <a class="site-btn" href="mailto:hello@example.com">Contact Us</a>
+  </div>
+</section>
+    `,
+    css: `
+.site-container{
+  width:min(1100px,90%);
+  margin:auto;
+}
+.site-hero{
+  padding:110px 20px;
+  background:linear-gradient(135deg,#111827,#1f2937);
+  color:white;
+  text-align:center;
+}
+.site-label{
+  letter-spacing:3px;
+  font-size:12px;
+  opacity:.8;
+}
+.site-hero h1{
+  font-size:clamp(38px,6vw,70px);
+  line-height:1.05;
+  margin:15px 0;
+}
+.site-hero p{
+  max-width:650px;
+  margin:0 auto 25px;
+  color:#d1d5db;
+  font-size:18px;
+}
+.site-btn{
+  display:inline-block;
+  padding:13px 20px;
+  background:#16a34a;
+  color:white;
+  text-decoration:none;
+  border-radius:8px;
+  font-weight:700;
+}
+.site-section{
+  padding:80px 20px;
+}
+.site-section h2{
+  text-align:center;
+  font-size:35px;
+  margin-bottom:15px;
+}
+.site-section> .site-container>p{
+  max-width:700px;
+  margin:auto;
+  text-align:center;
+  color:#64748b;
+}
+.alt{
+  background:#f8fafc;
+}
+.site-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+  margin-top:30px;
+}
+.site-card{
+  background:white;
+  padding:25px;
+  border-radius:14px;
+  box-shadow:0 5px 25px rgba(0,0,0,.06);
+}
+.site-card p{
+  color:#64748b;
+}
+.center-site{
+  text-align:center;
+}
+@media(max-width:700px){
+  .site-grid{
+    grid-template-columns:1fr;
+  }
+}
+    `,
+    js: ``
+  },
+
+  portfolio: {
+    html: `
+<section class="portfolio-hero">
+  <div class="portfolio-container">
+    <p class="small">HELLO, I'M</p>
+    <h1>Your Name</h1>
+    <p class="lead">Creative Designer & Digital Creator</p>
+    <a href="#work" class="portfolio-btn">View My Work</a>
+  </div>
+</section>
+
+<section id="work" class="portfolio-section">
+  <div class="portfolio-container">
+    <h2>My Work</h2>
+
+    <div class="portfolio-grid">
+      <div class="portfolio-card">
+        <div class="portfolio-image">PROJECT 01</div>
+        <h3>Brand Design</h3>
+        <p>Creative visual identity project.</p>
+      </div>
+
+      <div class="portfolio-card">
+        <div class="portfolio-image">PROJECT 02</div>
+        <h3>Social Media Design</h3>
+        <p>Modern digital campaign project.</p>
+      </div>
+
+      <div class="portfolio-card">
+        <div class="portfolio-image">PROJECT 03</div>
+        <h3>Web Design</h3>
+        <p>Clean and responsive website concept.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="portfolio-section dark" id="contact">
+  <div class="portfolio-container center-site">
+    <h2>Let's Work Together</h2>
+    <p>Have a project in mind? Let's create something great.</p>
+    <a href="mailto:hello@example.com" class="portfolio-btn">Contact Me</a>
+  </div>
+</section>
+    `,
+    css: `
+*{
+  box-sizing:border-box;
+}
+.portfolio-container{
+  width:min(1100px,90%);
+  margin:auto;
+}
+.portfolio-hero{
+  padding:120px 20px;
+  background:#111827;
+  color:white;
+}
+.small{
+  letter-spacing:4px;
+  color:#94a3b8;
+}
+.portfolio-hero h1{
+  font-size:clamp(48px,8vw,90px);
+  margin:10px 0;
+}
+.lead{
+  color:#cbd5e1;
+  font-size:20px;
+  margin-bottom:25px;
+}
+.portfolio-btn{
+  display:inline-block;
+  padding:13px 20px;
+  border-radius:8px;
+  background:#7c3aed;
+  color:white;
+  text-decoration:none;
+  font-weight:700;
+}
+.portfolio-section{
+  padding:80px 20px;
+}
+.portfolio-section h2{
+  text-align:center;
+  font-size:38px;
+  margin-bottom:35px;
+}
+.portfolio-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:22px;
+}
+.portfolio-card{
+  background:white;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  overflow:hidden;
+}
+.portfolio-image{
+  height:190px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#ede9fe;
+  color:#5b21b6;
+  font-weight:800;
+}
+.portfolio-card h3,
+.portfolio-card p{
+  margin:15px 18px 0;
+}
+.portfolio-card p{
+  margin-bottom:18px;
+  color:#64748b;
+}
+.dark{
+  background:#111827;
+  color:white;
+}
+@media(max-width:700px){
+  .portfolio-grid{
+    grid-template-columns:1fr;
+  }
+}
+    `,
+    js: ``
+  },
+
+  fashion: {
+    html: `
+<section class="fashion-hero">
+  <div class="fashion-container">
+    <span>PRINCE FASHION</span>
+    <h1>Style That Speaks For You.</h1>
+    <p>Discover modern fashion for men and women.</p>
+    <a href="#collection">Explore Collection</a>
+  </div>
+</section>
+
+<section class="fashion-section" id="collection">
+  <div class="fashion-container">
+    <h2>Our Collection</h2>
+
+    <div class="fashion-grid">
+      <div class="fashion-card">
+        <div class="fashion-image">MEN'S COLLECTION</div>
+        <h3>Men's Fashion</h3>
+        <p>Modern styles for confident men.</p>
+      </div>
+
+      <div class="fashion-card">
+        <div class="fashion-image">WOMEN'S COLLECTION</div>
+        <h3>Women's Fashion</h3>
+        <p>Elegant pieces for every occasion.</p>
+      </div>
+
+      <div class="fashion-card">
+        <div class="fashion-image">NEW ARRIVALS</div>
+        <h3>New Arrivals</h3>
+        <p>Fresh styles available now.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="fashion-section dark-fashion" id="contact">
+  <div class="fashion-container center-site">
+    <h2>Shop With Us</h2>
+    <p>Contact us to place your order.</p>
+    <a href="mailto:hello@example.com">Contact Us</a>
+  </div>
+</section>
+    `,
+    css: `
+.fashion-container{
+  width:min(1100px,90%);
+  margin:auto;
+}
+.fashion-hero{
+  padding:120px 20px;
+  text-align:center;
+  color:white;
+  background:linear-gradient(135deg,#4c0519,#be123c);
+}
+.fashion-hero span{
+  letter-spacing:4px;
+  font-size:13px;
+}
+.fashion-hero h1{
+  font-size:clamp(42px,7vw,78px);
+  line-height:1.05;
+  margin:15px 0;
+}
+.fashion-hero p{
+  font-size:19px;
+  color:#ffe4e6;
+  margin-bottom:25px;
+}
+.fashion-hero a,
+.dark-fashion a{
+  display:inline-block;
+  background:white;
+  color:#9f1239;
+  padding:13px 20px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+}
+.fashion-section{
+  padding:80px 20px;
+}
+.fashion-section h2{
+  text-align:center;
+  font-size:38px;
+  margin-bottom:35px;
+}
+.fashion-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:22px;
+}
+.fashion-card{
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  overflow:hidden;
+}
+.fashion-image{
+  height:220px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff1f2;
+  color:#9f1239;
+  font-weight:800;
+  letter-spacing:1px;
+}
+.fashion-card h3,
+.fashion-card p{
+  margin:15px 18px 0;
+}
+.fashion-card p{
+  margin-bottom:18px;
+  color:#64748b;
+}
+.dark-fashion{
+  background:#111827;
+  color:white;
+  text-align:center;
+}
+.dark-fashion p{
+  color:#cbd5e1;
+  margin-bottom:20px;
+}
+@media(max-width:700px){
+  .fashion-grid{
+    grid-template-columns:1fr;
+  }
+}
+    `,
+    js: ``
+  },
+
+  restaurant: {
+    html: `
+<section class="restaurant-hero">
+  <div class="restaurant-container">
+    <span>WELCOME TO OUR KITCHEN</span>
+    <h1>Great Food.<br>Great Moments.</h1>
+    <p>Fresh meals prepared with passion.</p>
+    <a href="#menu">View Menu</a>
+  </div>
+</section>
+
+<section class="restaurant-section" id="menu">
+  <div class="restaurant-container">
+    <h2>Our Menu</h2>
+
+    <div class="menu-grid">
+      <div class="menu-item">
+        <h3>Signature Meal</h3>
+        <p>Delicious house special prepared fresh.</p>
+        <strong>₦5,000</strong>
+      </div>
+
+      <div class="menu-item">
+        <h3>Family Special</h3>
+        <p>A satisfying meal for the whole family.</p>
+        <strong>₦8,000</strong>
+      </div>
+
+      <div class="menu-item">
+        <h3>Chef's Choice</h3>
+        <p>A special selection from our kitchen.</p>
+        <strong>₦7,000</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="restaurant-section dark-restaurant" id="contact">
+  <div class="restaurant-container center-site">
+    <h2>Visit Us</h2>
+    <p>We look forward to serving you.</p>
+    <a href="tel:+2340000000000">Call Us</a>
+  </div>
+</section>
+    `,
+    css: `
+.restaurant-container{
+  width:min(1100px,90%);
+  margin:auto;
+}
+.restaurant-hero{
+  padding:120px 20px;
+  background:#0369a1;
+  color:white;
+}
+.restaurant-hero span{
+  letter-spacing:3px;
+  font-size:12px;
+}
+.restaurant-hero h1{
+  font-size:clamp(45px,7vw,80px);
+  line-height:1.05;
+  margin:15px 0;
+}
+.restaurant-hero p{
+  color:#dbeafe;
+  font-size:19px;
+  margin-bottom:25px;
+}
+.restaurant-hero a,
+.dark-restaurant a{
+  display:inline-block;
+  background:white;
+  color:#075985;
+  padding:13px 20px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+}
+.restaurant-section{
+  padding:80px 20px;
+}
+.restaurant-section h2{
+  text-align:center;
+  font-size:38px;
+  margin-bottom:35px;
+}
+.menu-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+.menu-item{
+  padding:25px;
+  border-radius:14px;
+  background:#f8fafc;
+}
+.menu-item p{
+  color:#64748b;
+  margin:8px 0 15px;
+}
+.dark-restaurant{
+  background:#0f172a;
+  color:white;
+  text-align:center;
+}
+.dark-restaurant p{
+  color:#cbd5e1;
+  margin-bottom:20px;
+}
+@media(max-width:700px){
+  .menu-grid{
+    grid-template-columns:1fr;
+  }
+}
+    `,
+    js: ``
+  }
+
+};
+
+templates.agency = templates.business;
+templates.personal = templates.portfolio;
+templates.school = templates.business;
+templates.event = templates.business;
+
+function scrollToSection(id){
+  const el = document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:"smooth"});
+}
+
+function showToast(message){
+  const toast = document.getElementById("toast");
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(window.otgToastTimer);
+
+  window.otgToastTimer =
     setTimeout(() => {
       toast.classList.remove("show");
-    }, 3000);
+    },3000);
+}
+
+function closeModal(id){
+  document.getElementById(id).classList.remove("show");
+}
+
+function openModal(id){
+  document.getElementById(id).classList.add("show");
+}
+
+function showAuth(){
+  openModal("authModal");
+}
+
+function toggleAuthMode(){
+
+  authMode =
+    authMode === "login"
+      ? "signup"
+      : "login";
+
+  const title =
+    document.getElementById("authTitle");
+
+  const submit =
+    document.getElementById("authSubmit");
+
+  const nameGroup =
+    document.getElementById("authNameGroup");
+
+  const switchText =
+    document.getElementById("authSwitch");
+
+  if(authMode === "signup"){
+
+    title.textContent = "Create OTG Account";
+    submit.textContent = "Sign Up";
+    nameGroup.classList.remove("hidden");
+
+    switchText.textContent =
+      "Already have an account? Login";
+
+  }else{
+
+    title.textContent = "Login to OTG AI";
+    submit.textContent = "Login";
+    nameGroup.classList.add("hidden");
+
+    switchText.textContent =
+      "Don't have an account? Sign up";
+  }
+}
+
+async function handleAuth(){
+
+  const email =
+    document.getElementById("authEmail")
+      .value
+      .trim();
+
+  const password =
+    document.getElementById("authPassword")
+      .value;
+
+  const name =
+    document.getElementById("authName")
+      .value
+      .trim();
+
+  if(!email || !password){
+    showToast("Enter your email and password.");
+    return;
   }
 
-  function scrollToSection(id) {
-    document.getElementById(id)?.scrollIntoView({
-      behavior: "smooth"
-    });
-  }
+  try{
 
-  function closeModal(id) {
-    document.getElementById(id).classList.remove("show");
-  }
+    if(authMode === "signup"){
 
-  function showModal(id) {
-    document.getElementById(id).classList.add("show");
-  }
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth.signUp({
+          email,
+          password,
+          options:{
+            data:{
+              full_name:name
+            }
+          }
+        });
 
-  function renderTemplates() {
-    const grid = document.getElementById("templateGrid");
+      if(error) throw error;
 
-    const search =
-      document.getElementById("templateSearch").value
-        .toLowerCase()
-        .trim();
+      if(data.session){
 
-    const category =
-      document.getElementById("templateCategory").value;
+        currentUser =
+          data.user;
 
-    const filtered = templates.filter(t => {
+        closeModal("authModal");
 
-      const matchesSearch =
-        !search ||
-        t.name.toLowerCase().includes(search) ||
-        t.description.toLowerCase().includes(search);
+        showToast("Account created successfully.");
 
-      const matchesCategory =
-        category === "all" ||
-        t.category === category;
+        await initializeUser();
 
-      return matchesSearch && matchesCategory;
-    });
+      }else{
 
-    grid.innerHTML = filtered.map(t => `
-      <div class="template-card">
-
-        <div
-          class="template-preview"
-          style="background:${t.color}"
-        >
-          ${t.icon} ${t.name}
-        </div>
-
-        <div class="template-content">
-
-          <h3>${t.name}</h3>
-
-          <p>${t.description}</p>
-
-          <div class="template-meta">
-
-            <span class="category">
-              ${getCategoryName(t.category)}
-            </span>
-
-            <button
-              class="btn btn-primary"
-              onclick="selectTemplate('${t.id}')"
-            >
-              Use Template
-            </button>
-
-          </div>
-
-        </div>
-      </div>
-    `).join("");
-  }
-
-  function getCategoryName(category) {
-    const names = {
-      design: "Creative",
-      business: "Business",
-      fashion: "Fashion",
-      food: "Food",
-      service: "Services",
-      education: "Education",
-      store: "Store",
-      health: "Healthcare",
-      personal: "Personal",
-      event: "Event"
-    };
-
-    return names[category] || "Website";
-  }
-
-  function selectTemplate(id) {
-    const template = templates.find(t => t.id === id);
-
-    if (!template) return;
-
-    selectedTemplate = template;
-
-    document.getElementById("aiPrompt").value =
-      template.prompt;
-
-    showToast(
-      `${template.name} selected. You can now customize it with AI.`
-    );
-
-    scrollToSection("builder");
-  }
-
-  function useSelectedTemplate() {
-    if (!selectedTemplate) {
-      showToast("Please choose a template first.");
-      scrollToSection("templates");
-      return;
-    }
-
-    document.getElementById("aiPrompt").value =
-      selectedTemplate.prompt;
-
-    generateWithAI();
-  }
-
-  async function generateWithAI() {
-    const prompt =
-      document.getElementById("aiPrompt").value.trim();
-
-    if (!prompt) {
-      showToast("Tell OTG AI what you want to build.");
-      return;
-    }
-
-    const today = new Date().toISOString().slice(0,10);
-
-    const usage =
-      JSON.parse(localStorage.getItem("otg_ai_usage") || "{}");
-
-    if (usage.date !== today) {
-      usage.date = today;
-      usage.count = 0;
-    }
-
-    if (usage.count >= 5) {
-      showToast("You have used your 5 free AI generations for today.");
-      return;
-    }
-
-    showToast("OTG AI is building your website...");
-
-    try {
-      const response = await fetch("/api/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          prompt:
-            prompt +
-            `
-
-IMPORTANT:
-Create a complete responsive website.
-Include a clear WhatsApp contact button.
-Use a professional modern design.
-Make the website mobile friendly.
-Do not use external JavaScript libraries.
-Return complete HTML, CSS and JavaScript.`,
-          html: website.html,
-          css: website.css,
-          js: website.js
-        })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.error || "AI generation failed."
+        showToast(
+          "Account created. Check your email if confirmation is required."
         );
       }
 
-      website.html = data.html || "";
-      website.css = data.css || "";
-      website.js = data.js || "";
+    }else{
 
-      usage.count++;
-      localStorage.setItem(
-        "otg_ai_usage",
-        JSON.stringify(usage)
-      );
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
 
-      updateAIStat();
-      loadEditor();
-      updatePreview();
+      if(error) throw error;
 
-      showToast("Website generated successfully.");
+      currentUser =
+        data.user;
 
-      scrollToSection("editor");
+      closeModal("authModal");
 
-    } catch (error) {
-      showToast(error.message || "AI generation failed.");
+      showToast("Login successful.");
+
+      await initializeUser();
     }
+
+  }catch(error){
+
+    showToast(error.message);
   }
+}
 
-  function updateAIStat() {
-    const today = new Date().toISOString().slice(0,10);
+async function logout(){
 
-    const usage =
-      JSON.parse(localStorage.getItem("otg_ai_usage") || "{}");
+  await supabaseClient.auth.signOut();
 
-    const count =
-      usage.date === today ? usage.count || 0 : 0;
+  currentUser = null;
+  currentProjectId = null;
 
-    document.getElementById("statAI").textContent =
-      `${count}/5`;
+  window.otgProjects = [];
+
+  updateAuthUI();
+
+  await renderProjects();
+
+  showToast("Logged out.");
+}
+
+function updateAuthUI(){
+
+  const loginNav =
+    document.getElementById("loginNav");
+
+  const logoutNav =
+    document.getElementById("logoutNav");
+
+  const userEmail =
+    document.getElementById("userEmail");
+
+  if(currentUser){
+
+    loginNav.classList.add("hidden");
+    logoutNav.classList.remove("hidden");
+
+    userEmail.textContent =
+      currentUser.email || "";
+
+    const name =
+      currentUser.user_metadata?.full_name;
+
+    document.getElementById("welcomeName")
+      .textContent =
+      name
+        ? `Welcome, ${name}`
+        : "Student Dashboard";
+
+  }else{
+
+    loginNav.classList.remove("hidden");
+    logoutNav.classList.add("hidden");
+
+    userEmail.textContent = "";
+
+    document.getElementById("welcomeName")
+      .textContent =
+      "Student Dashboard";
   }
+}
 
-  function switchEditor(type) {
-    currentEditor = type;
+function newWebsite(){
 
-    document.querySelectorAll(".tab").forEach(tab => {
-      tab.classList.remove("active");
-    });
+  currentProjectId = null;
 
+  website = {
+    html:"",
+    css:"",
+    js:""
+  };
+
+  document.getElementById("codeEditor")
+    .value = "";
+
+  currentEditor = "html";
+
+  loadEditor();
+
+  updatePreview();
+
+  scrollToSection("editor");
+
+  showToast("New website started.");
+}
+
+function useExample(type){
+
+  const examples = {
+
+    fashion:
+      "Create a modern fashion business website called Prince Fashion. I sell men's and women's clothing.",
+
+    business:
+      "Create a professional business website for my company. Include About Us, Services, Why Choose Us and Contact sections.",
+
+    portfolio:
+      "Create a creative portfolio website for a graphic designer. Include my introduction, services, projects and contact information."
+  };
+
+  document.getElementById("aiPrompt")
+    .value =
+    examples[type] || examples.business;
+
+  scrollToSection("generator");
+}
+
+function useTemplate(type){
+
+  const template =
+    templates[type] ||
+    templates.business;
+
+  currentProjectId = null;
+
+  website = {
+    html:template.html,
+    css:template.css,
+    js:template.js
+  };
+
+  loadEditor();
+  updatePreview();
+
+  scrollToSection("editor");
+
+  showToast("Template loaded.");
+}
+
+function loadEditor(){
+
+  const editor =
+    document.getElementById("codeEditor");
+
+  editor.value =
+    website[currentEditor] || "";
+
+  document.querySelectorAll(".editor-tabs button")
+    .forEach(btn => btn.classList.remove("active"));
+
+  const active =
     document.getElementById(
-      type === "html"
-        ? "htmlTab"
-        : type === "css"
-          ? "cssTab"
-          : "jsTab"
-    ).classList.add("active");
+      currentEditor + "Tab"
+    );
 
-    loadEditor();
-  }
+  if(active) active.classList.add("active");
+}
 
-  function loadEditor() {
-    const editor =
-      document.getElementById("codeEditor");
+function switchEditor(type){
 
-    editor.value = website[currentEditor] || "";
-  }
+  website[currentEditor] =
+    document.getElementById("codeEditor")
+      .value;
 
-  function updateEditor() {
-    website[currentEditor] =
-      document.getElementById("codeEditor").value;
+  currentEditor = type;
 
-    updatePreview();
+  loadEditor();
+}
 
-    showToast("Changes applied.");
-  }
+function updateWebsiteCode(){
 
-  function updatePreview() {
-    const frame =
-      document.getElementById("previewFrame");
+  website[currentEditor] =
+    document.getElementById("codeEditor")
+      .value;
 
-    const source = `
+  updatePreview();
+}
+
+function updatePreview(){
+
+  website[currentEditor] =
+    document.getElementById("codeEditor")
+      .value;
+
+  const frame =
+    document.getElementById("previewFrame");
+
+  const documentHtml = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -1564,531 +2187,155 @@ ${website.css}
 </head>
 <body>
 ${website.html}
-
 <script>
+try{
 ${website.js}
+}catch(error){
+console.error(error);
+}
 <\/script>
 </body>
 </html>
 `;
 
-    frame.srcdoc = source;
-  }
-
-  function newWebsite() {
-    currentProjectId = null;
-
-    website = {
-      html: `
-<section style="padding:80px 20px;text-align:center;font-family:Arial">
-  <h1>Welcome to My Website</h1>
-  <p>Tell OTG AI what you want to create.</p>
-  <a href="#contact"
-     style="display:inline-block;padding:14px 20px;background:#111;color:white;border-radius:8px;text-decoration:none">
-     Get Started
-  </a>
-</section>
-`,
-      css: `
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f8fafc;
-  color:#111827;
+  frame.srcdoc = documentHtml;
 }
-`,
-      js: ``
-    };
 
-    selectedTemplate = null;
+async function generateWithAI(){
 
-    loadEditor();
-    updatePreview();
+  const prompt =
+    document.getElementById("aiPrompt")
+      .value
+      .trim();
 
-    scrollToSection("editor");
+  const style =
+    document.getElementById("websiteStyle")
+      .value;
 
-    showToast("New website started.");
+  if(!prompt){
+
+    showToast(
+      "Describe the website you want to create."
+    );
+
+    return;
   }
 
-  function resetBuilder() {
-    if (!confirm("Reset your current website?")) {
-      return;
-    }
+  showToast("Creating your website...");
 
-    newWebsite();
-  }
+  try{
 
-  function showAuth() {
-    if (currentUser) {
-      logout();
-      return;
-    }
+    /*
+      If your Vercel /api/generate route exists,
+      OTG will use it here.
+    */
 
-    document.getElementById("authTitle").textContent = "Login";
-    document.getElementById("authToggle").textContent =
-      "Create account instead";
+    const response =
+      await fetch("/api/generate",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          prompt,
+          style
+        })
+      });
 
-    authSignup = false;
+    if(response.ok){
 
-    showModal("authModal");
-  }
+      const result =
+        await response.json();
 
-  let authSignup = false;
+      if(result.html){
 
-  function toggleAuthMode() {
-    authSignup = !authSignup;
+        currentProjectId = null;
 
-    document.getElementById("authTitle").textContent =
-      authSignup ? "Create Account" : "Login";
+        website = {
+          html:result.html || "",
+          css:result.css || "",
+          js:result.js || ""
+        };
 
-    document.getElementById("authToggle").textContent =
-      authSignup
-        ? "Login instead"
-        : "Create account instead";
-  }
+        loadEditor();
+        updatePreview();
+        scrollToSection("editor");
 
-  async function submitAuth() {
-    const email =
-      document.getElementById("authEmail").value.trim();
-
-    const password =
-      document.getElementById("authPassword").value;
-
-    if (!email || !password) {
-      showToast("Enter your email and password.");
-      return;
-    }
-
-    try {
-      let result;
-
-      if (authSignup) {
-        result =
-          await supabaseClient.auth.signUp({
-            email,
-            password
-          });
-      } else {
-        result =
-          await supabaseClient.auth.signInWithPassword({
-            email,
-            password
-          });
-      }
-
-      if (result.error) {
-        throw result.error;
-      }
-
-      closeModal("authModal");
-
-      if (authSignup) {
         showToast(
-          "Account created. Check your email if confirmation is required."
+          "Your website has been generated."
         );
-      } else {
-        showToast("Welcome back.");
-      }
-
-      await loadUser();
-
-    } catch (error) {
-      showToast(error.message);
-    }
-  }
-
-  async function logout() {
-    await supabaseClient.auth.signOut();
-
-    currentUser = null;
-    currentProjectId = null;
-
-    updateAuthButton();
-
-    renderProjects();
-
-    showToast("Logged out.");
-  }
-
-  async function loadUser() {
-    const {
-      data
-    } = await supabaseClient.auth.getUser();
-
-    currentUser = data?.user || null;
-
-    updateAuthButton();
-
-    renderProjects();
-  }
-
-  function updateAuthButton() {
-    const button =
-      document.getElementById("authButton");
-
-    button.textContent =
-      currentUser ? "Logout" : "Login";
-  }
-
-  function openNameModal() {
-    const input =
-      document.getElementById("projectNameInput");
-
-    input.value = "";
-
-    showModal("nameModal");
-
-    requestAnimationFrame(() => {
-      input.focus();
-
-      setTimeout(() => {
-        input.focus();
-      }, 200);
-    });
-  }
-
-  function saveProject() {
-    if (!currentUser) {
-      showToast("Please login before saving a project.");
-      showAuth();
-      return;
-    }
-
-    openNameModal();
-  }
-  async function confirmSaveProject() {
-    const title =
-      document.getElementById("projectNameInput")
-        .value
-        .trim();
-
-    if (!title) {
-      showToast("Enter a project name.");
-      return;
-    }
-
-    try {
-      let data, error;
-
-      if (currentProjectId) {
-        ({ data, error } = await supabaseClient
-          .from("projects")
-          .update({
-            title,
-            html: website.html,
-            css: website.css,
-            js: website.js,
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", currentProjectId)
-          .eq("user_id", currentUser.id)
-          .select()
-          .single());
-      } else {
-        const slug =
-          createSlug(title) +
-          "-" +
-          Math.random()
-            .toString(36)
-            .substring(2, 8);
-
-        ({ data, error } = await supabaseClient
-          .from("projects")
-          .insert({
-            user_id: currentUser.id,
-            title,
-            html: website.html,
-            css: website.css,
-            js: website.js,
-            slug,
-            is_published: false
-          })
-          .select()
-          .single());
-
-        if (data) {
-          currentProjectId = data.id;
-        }
-      }
-
-      if (error) {
-        throw error;
-      }
-
-      closeModal("nameModal");
-
-      showToast("Project saved successfully.");
-
-      await renderProjects();
-
-    } catch (error) {
-      showToast(error.message);
-    }
-  }
-
-  function createSlug(text) {
-    return text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-  }
-
-  async function renderProjects() {
-    const grid =
-      document.getElementById("projectGrid");
-
-    if (!currentUser) {
-      grid.innerHTML = `
-        <div
-          style="
-            grid-column:1/-1;
-            background:white;
-            border:1px solid #e5e7eb;
-            border-radius:16px;
-            padding:30px;
-            text-align:center;
-          "
-        >
-          <h3>Login to view your projects</h3>
-
-          <p style="color:#64748b;margin:8px 0 15px;">
-            Your saved websites will appear here.
-          </p>
-
-          <button
-            class="btn btn-primary"
-            onclick="showAuth()"
-          >
-            Login
-          </button>
-        </div>
-      `;
-
-      updateProjectStats([]);
-      return;
-    }
-
-    try {
-      const {
-        data,
-        error
-      } = await supabaseClient
-        .from("projects")
-        .select("*")
-        .eq("user_id", currentUser.id)
-        .order("updated_at", {
-          ascending: false
-        });
-
-      if (error) {
-        throw error;
-      }
-
-      window.otgProjects = data || [];
-
-      const search =
-        document.getElementById("projectSearch")
-          .value
-          .toLowerCase()
-          .trim();
-
-      const projects =
-        window.otgProjects.filter(project =>
-          !search ||
-          project.title
-            .toLowerCase()
-            .includes(search)
-        );
-
-      updateProjectStats(window.otgProjects);
-
-      if (!projects.length) {
-        grid.innerHTML = `
-          <div
-            style="
-              grid-column:1/-1;
-              background:white;
-              border:1px solid #e5e7eb;
-              border-radius:16px;
-              padding:30px;
-              text-align:center;
-            "
-          >
-            <h3>No projects found</h3>
-
-            <p style="color:#64748b;margin:8px 0 15px;">
-              Create your first website to see it here.
-            </p>
-
-            <button
-              class="btn btn-primary"
-              onclick="newWebsite()"
-            >
-              Create Website
-            </button>
-          </div>
-        `;
 
         return;
       }
-
-      grid.innerHTML = projects.map(project => `
-        <div class="project-card">
-
-          <span
-            class="project-status ${
-              project.is_published
-                ? "published"
-                : "draft"
-            }"
-          >
-            ${
-              project.is_published
-                ? "PUBLISHED"
-                : "DRAFT"
-            }
-          </span>
-
-          <h3>
-            ${escapeHtml(project.title)}
-          </h3>
-
-          <p>
-            Updated
-            ${
-              project.updated_at
-                ? new Date(
-                    project.updated_at
-                  ).toLocaleDateString()
-                : "recently"
-            }
-          </p>
-
-          <div class="project-actions">
-
-            <button
-              class="btn"
-              onclick="editProject('${project.id}')"
-            >
-              Edit
-            </button>
-
-            <button
-              class="btn btn-light"
-              onclick="renameProject('${project.id}')"
-            >
-              Rename
-            </button>
-
-            ${
-              project.is_published
-              ? `
-                <button
-                  class="btn btn-success"
-                  onclick="copyProjectLink('${project.slug}')"
-                >
-                  Copy Link
-                </button>
-
-                <button
-                  class="btn btn-light"
-                  onclick='shareProject(
-                    "${project.slug}",
-                    ${JSON.stringify(project.title)}
-                  )'
-                >
-                  Share
-                </button>
-
-                <button
-                  class="btn btn-light"
-                  onclick="unpublishProject('${project.id}')"
-                >
-                  Unpublish
-                </button>
-
-                <button
-                  class="btn btn-light"
-                  onclick="viewProject('${project.slug}')"
-                >
-                  View
-                </button>
-              `
-              : `
-                <button
-                  class="btn"
-                  onclick="publishExisting('${project.id}')"
-                >
-                  Publish
-                </button>
-              `
-            }
-
-            <button
-              class="btn btn-danger"
-              onclick="deleteProject('${project.id}')"
-            >
-              Delete
-            </button>
-
-          </div>
-
-        </div>
-      `).join("");
-
-    } catch (error) {
-      grid.innerHTML = `
-        <div
-          style="
-            grid-column:1/-1;
-            background:#fee2e2;
-            color:#991b1b;
-            padding:18px;
-            border-radius:12px;
-          "
-        >
-          ${escapeHtml(error.message)}
-        </div>
-      `;
     }
-  }
 
-  function updateProjectStats(projects) {
-    document.getElementById("statProjects")
-      .textContent = projects.length;
+    throw new Error("AI route unavailable.");
 
-    document.getElementById("statPublished")
-      .textContent =
-        projects.filter(
-          project => project.is_published
-        ).length;
-  }
+  }catch(error){
 
-  function escapeHtml(value) {
-    return String(value || "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
+    /*
+      Client-side fallback.
+      This keeps the builder useful even if
+      the AI API temporarily fails.
+    */
 
-  function editProject(id) {
-    const project =
-      window.otgProjects.find(
-        p => p.id === id
+    const lower =
+      prompt.toLowerCase();
+
+    let selected =
+      "business";
+
+    if(
+      lower.includes("fashion") ||
+      lower.includes("clothing") ||
+      lower.includes("boutique")
+    ){
+
+      selected = "fashion";
+
+    }else if(
+      lower.includes("portfolio") ||
+      lower.includes("designer")
+    ){
+
+      selected = "portfolio";
+
+    }else if(
+      lower.includes("restaurant") ||
+      lower.includes("food") ||
+      lower.includes("cafe")
+    ){
+
+      selected = "restaurant";
+    }
+
+    const template =
+      templates[selected];
+
+    const businessName =
+      extractBusinessName(prompt) ||
+      "My Business";
+
+    let html =
+      template.html
+        .replaceAll(
+          "PRINCE FASHION",
+          escapeHtml(businessName)
+        );
+
+    html =
+      html.replace(
+        /Your Business, Built for Growth\./g,
+        escapeHtml(businessName)
       );
 
-    if (!project) return;
-
-    currentProjectId = id;
-
     website = {
-      html: project.html || "",
-      css: project.css || "",
-      js: project.js || ""
+      html,
+      css:template.css,
+      js:template.js
     };
+
+    currentProjectId = null;
 
     loadEditor();
     updatePreview();
@@ -2096,346 +2343,928 @@ body{
     scrollToSection("editor");
 
     showToast(
-      `${project.title} loaded.`
+      "Website created from your idea."
     );
   }
+}
 
-  function renameProject(id) {
-    const project =
-      window.otgProjects.find(
-        p => p.id === id
-      );
+function extractBusinessName(text){
 
-    if (!project) return;
+  const patterns = [
+    /called\s+["']?([^"'.]+)["']?/i,
+    /named\s+["']?([^"'.]+)["']?/i,
+    /business\s+called\s+["']?([^"'.]+)["']?/i
+  ];
 
-    renameProjectId = id;
+  for(const pattern of patterns){
 
-    document.getElementById("renameInput")
-      .value = project.title;
+    const match =
+      text.match(pattern);
 
-    showModal("renameModal");
-
-    requestAnimationFrame(() => {
-      document.getElementById("renameInput").focus();
-    });
-  }
-
-  async function confirmRename() {
-    const title =
-      document.getElementById("renameInput")
-        .value
-        .trim();
-
-    if (!title) {
-      showToast("Enter a project name.");
-      return;
-    }
-
-    if (!renameProjectId) return;
-
-    try {
-      const {
-        error
-      } = await supabaseClient
-        .from("projects")
-        .update({
-          title,
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", renameProjectId)
-        .eq("user_id", currentUser.id);
-
-      if (error) {
-        throw error;
-      }
-
-      closeModal("renameModal");
-
-      renameProjectId = null;
-
-      showToast("Project renamed successfully.");
-
-      await renderProjects();
-
-    } catch (error) {
-      showToast(error.message);
+    if(match && match[1]){
+      return match[1].trim();
     }
   }
 
-  async function deleteProject(id) {
-    const project =
-      window.otgProjects.find(
-        p => p.id === id
-      );
+  return "";
+}
 
-    if (!project) return;
+function escapeHtml(value){
 
-    if (!confirm(
-      `Delete "${project.title}"? This cannot be undone.`
-    )) {
-      return;
-    }
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
 
-    try {
-      const {
-        error
-      } = await supabaseClient
-        .from("projects")
-        .delete()
-        .eq("id", id)
-        .eq("user_id", currentUser.id);
+function createSlug(title){
 
-      if (error) {
-        throw error;
-      }
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"");
+}
 
-      if (currentProjectId === id) {
-        currentProjectId = null;
-      }
+function saveProject(){
 
-      showToast("Project deleted.");
+  if(!currentUser){
 
-      await renderProjects();
+    showToast(
+      "Please login before saving a project."
+    );
 
-    } catch (error) {
-      showToast(error.message);
-    }
+    showAuth();
+
+    return;
   }
 
-  async function copyProjectLink(slug) {
-    const url =
-      `${window.location.origin}/?site=${encodeURIComponent(slug)}`;
+  document.getElementById("nameModalTitle")
+    .textContent =
+    currentProjectId
+      ? "Update Website"
+      : "Save Website";
 
-    try {
-      await navigator.clipboard.writeText(url);
+  document.getElementById("nameModalButton")
+    .textContent =
+    currentProjectId
+      ? "Update"
+      : "Save";
 
-      showToast("Website link copied.");
+  openModal("nameModal");
 
-    } catch (error) {
+  const existing =
+    window.otgProjects.find(
+      p => p.id === currentProjectId
+    );
 
-      const textarea =
-        document.createElement("textarea");
+  document.getElementById("projectNameInput")
+    .value =
+    existing?.title || "";
+}
 
-      textarea.value = url;
+async function confirmSaveProject(){
 
-      document.body.appendChild(textarea);
+  const title =
+    document.getElementById("projectNameInput")
+      .value
+      .trim();
 
-      textarea.select();
+  if(!title){
 
-      document.execCommand("copy");
+    showToast("Enter a project name.");
 
-      textarea.remove();
-
-      showToast("Website link copied.");
-    }
+    return;
   }
 
-  async function shareProject(slug, title) {
-    const url =
-      `${window.location.origin}/?site=${encodeURIComponent(slug)}`;
+  website[currentEditor] =
+    document.getElementById("codeEditor")
+      .value;
 
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title,
-          text:
-            "Check out my website created with OTG AI Website Builder.",
-          url
-        });
+  try{
 
-        return;
+    let data;
+    let error;
 
-      } catch (error) {
+    if(currentProjectId){
 
-        if (
-          error &&
-          error.name === "AbortError"
-        ) {
-          return;
-        }
-      }
-    }
-
-    await copyProjectLink(slug);
-  }
-
-  async function unpublishProject(id) {
-    if (!confirm(
-      "Unpublish this website? The public link will stop working until you publish it again."
-    )) {
-      return;
-    }
-
-    try {
-      const {
-        error
-      } = await supabaseClient
-        .from("projects")
-        .update({
-          is_published: false,
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", id)
-        .eq("user_id", currentUser.id);
-
-      if (error) {
-        throw error;
-      }
-
-      showToast("Website unpublished.");
-
-      await renderProjects();
-
-    } catch (error) {
-      showToast(error.message);
-    }
-  }
-
-  async function publishExisting(id) {
-    try {
-      const {
+      ({
         data,
         error
-      } = await supabaseClient
-        .from("projects")
-        .update({
-          is_published: true,
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", id)
-        .eq("user_id", currentUser.id)
-        .select()
-        .single();
+      } =
+        await supabaseClient
+          .from("projects")
+          .update({
+            title,
+            html:website.html,
+            css:website.css,
+            js:website.js,
+            updated_at:new Date().toISOString()
+          })
+          .eq("id",currentProjectId)
+          .eq("user_id",currentUser.id)
+          .select()
+          .single());
 
-      if (error) {
-        throw error;
+    }else{
+
+      const slug =
+        createSlug(title) +
+        "-" +
+        Math.random()
+          .toString(36)
+          .substring(2,8);
+
+      ({
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("projects")
+          .insert({
+            user_id:currentUser.id,
+            title,
+            html:website.html,
+            css:website.css,
+            js:website.js,
+            slug,
+            is_published:false
+          })
+          .select()
+          .single());
+
+      if(data){
+        currentProjectId = data.id;
       }
-
-      await copyProjectLink(data.slug);
-
-      showToast(
-        "Published! Website link copied."
-      );
-
-      await renderProjects();
-
-    } catch (error) {
-      showToast(error.message);
-    }
-  }
-
-  async function publishWebsite() {
-    if (!currentUser) {
-      showToast("Please login before publishing.");
-      showAuth();
-      return;
     }
 
-    if (currentProjectId) {
-      await publishExisting(currentProjectId);
-      return;
-    }
+    if(error) throw error;
 
-    openPublishModal();
-  }
+    closeModal("nameModal");
 
-  function openPublishModal() {
-    const title =
-      document.getElementById("projectNameInput");
-
-    title.value = "";
-
-    document.querySelector("#nameModal h3")
-      .textContent = "Publish Website";
-
-    const saveButton =
-      document.querySelector(
-        "#nameModal .btn-primary"
-      );
-
-    saveButton.textContent = "Publish & Save";
-
-    showModal("nameModal");
-
-    requestAnimationFrame(() => {
-      title.focus();
-    });
-  }
-
-  async function publishFromNewProject() {
-    await confirmSaveProject();
-
-    if (currentProjectId) {
-      await publishExisting(currentProjectId);
-    }
-  }
-
-  function viewProject(slug) {
-    window.open(
-      `${window.location.origin}/?site=${encodeURIComponent(slug)}`,
-      "_blank"
+    showToast(
+      "Project saved successfully."
     );
+
+    await renderProjects();
+
+  }catch(error){
+
+    showToast(error.message);
+  }
+}
+
+async function renderProjects(){
+
+  const container =
+    document.getElementById(
+      "projectsContainer"
+    );
+
+  if(!currentUser){
+
+    container.innerHTML = `
+      <div class="empty">
+        <h3>Login to see your projects</h3>
+        <p style="margin:8px 0 15px;">
+          Your saved websites will appear here.
+        </p>
+        <button class="btn btn-primary"
+          onclick="showAuth()">
+          Login
+        </button>
+      </div>
+    `;
+
+    updateProjectStats([]);
+
+    return;
   }
 
-  async function checkPublicSite() {
-    const params =
-      new URLSearchParams(
-        window.location.search
-      );
+  container.innerHTML =
+    `<div class="loading">Loading projects...</div>`;
 
-    const slug =
-      params.get("site");
-
-    if (!slug) return false;
+  try{
 
     const {
       data,
       error
-    } = await supabaseClient
-      .from("projects")
-      .select("*")
-      .eq("slug", slug)
-      .eq("is_published", true)
-      .single();
+    } =
+      await supabaseClient
+        .from("projects")
+        .select("*")
+        .eq("user_id",currentUser.id)
+        .order("updated_at",{ascending:false});
 
-    if (error || !data) {
+    if(error) throw error;
 
-      document.body.innerHTML = `
-        <div
-          style="
-            min-height:100vh;
-            display:grid;
-            place-items:center;
-            padding:30px;
-            text-align:center;
-            font-family:Arial;
-          "
-        >
-          <div>
+    window.otgProjects =
+      data || [];
 
-            <h1>Website not found</h1>
+    updateProjectStats(
+      window.otgProjects
+    );
 
-            <p style="color:#64748b;">
-              This website may have been removed or unpublished.
-            </p>
+    if(!window.otgProjects.length){
 
-            <a
-              href="/"
-              style="
-                display:inline-block;
-                margin-top:15px;
-                padding:12px 18px;
-                background:#111;
-                color:white;
-                border-radius:8px;
-                text-decoration:none;
-              "
-            >
-              Go to OTG AI Website Builder
-            </a>
+      container.innerHTML = `
+        <div class="empty">
+          <h3>No projects yet</h3>
+          <p style="margin-top:8px;">
+            Create your first website above.
+          </p>
+        </div>
+      `;
+
+      return;
+    }
+
+    container.innerHTML =
+      `<div class="project-grid">
+        ${window.otgProjects.map(project => `
+
+          <div class="project">
+
+            <div class="project-top">
+
+              <div>
+
+                <h3>
+                  ${escapeHtml(project.title)}
+                </h3>
+
+                <div class="project-date">
+                  Updated
+                  ${formatDate(project.updated_at)}
+                </div>
+
+              </div>
+
+              <span class="badge ${
+                project.is_published
+                  ? "badge-published"
+                  : "badge-draft"
+              }">
+                ${
+                  project.is_published
+                    ? "PUBLISHED"
+                    : "DRAFT"
+                }
+              </span>
+
+            </div>
+
+            <div class="project-actions">
+
+              <button
+                class="btn btn-small"
+                onclick="editProject('${project.id}')"
+              >
+                Edit
+              </button>
+
+              <button
+                class="btn btn-small btn-outline"
+                onclick="viewProject('${project.slug}')"
+              >
+                View
+              </button>
+
+              ${
+                project.is_published
+                ? `
+
+                  <button
+                    class="btn btn-small btn-success"
+                    onclick="copyProjectLink('${project.slug}')"
+                  >
+                    Copy Link
+                  </button>
+
+                  <button
+                    class="btn btn-small btn-light"
+                    onclick='shareProject("${project.slug}",${JSON.stringify(project.title)})'
+                  >
+                    Share
+                  </button>
+
+                  <button
+                    class="btn btn-small btn-light"
+                    onclick="unpublishProject('${project.id}')"
+                  >
+                    Unpublish
+                  </button>
+
+                `
+                :
+                `
+
+                  <button
+                    class="btn btn-small btn-primary"
+                    onclick="publishExisting('${project.id}')"
+                  >
+                    Publish
+                  </button>
+
+                `
+              }
+
+              <button
+                class="btn btn-small btn-light"
+                onclick="renameProject('${project.id}')"
+              >
+                Rename
+              </button>
+
+              <button
+                class="btn btn-small btn-danger"
+                onclick="deleteProject('${project.id}')"
+              >
+                Delete
+              </button>
+
+            </div>
 
           </div>
+
+        `).join("")}
+      </div>`;
+
+  }catch(error){
+
+    container.innerHTML = `
+      <div class="empty">
+        <h3>Unable to load projects</h3>
+        <p>${escapeHtml(error.message)}</p>
+      </div>
+    `;
+
+    updateProjectStats([]);
+  }
+}
+
+function formatDate(date){
+
+  if(!date) return "";
+
+  try{
+
+    return new Date(date)
+      .toLocaleDateString(
+        undefined,
+        {
+          year:"numeric",
+          month:"short",
+          day:"numeric"
+        }
+      );
+
+  }catch(error){
+
+    return "";
+  }
+}
+function updateProjectStats(projects){
+
+  const total =
+    projects.length;
+
+  const published =
+    projects.filter(
+      p => p.is_published
+    ).length;
+
+  const drafts =
+    total - published;
+
+  document.getElementById(
+    "totalProjects"
+  ).textContent = total;
+
+  document.getElementById(
+    "publishedProjects"
+  ).textContent = published;
+
+  document.getElementById(
+    "draftProjects"
+  ).textContent = drafts;
+}
+
+function editProject(id){
+
+  const project =
+    window.otgProjects.find(
+      p => p.id === id
+    );
+
+  if(!project) return;
+
+  currentProjectId = id;
+
+  website = {
+    html:project.html || "",
+    css:project.css || "",
+    js:project.js || ""
+  };
+
+  currentEditor = "html";
+
+  loadEditor();
+  updatePreview();
+
+  scrollToSection("editor");
+
+  showToast(
+    `${project.title} loaded.`
+  );
+}
+
+function renameProject(id){
+
+  const project =
+    window.otgProjects.find(
+      p => p.id === id
+    );
+
+  if(!project) return;
+
+  renameProjectId = id;
+
+  document.getElementById(
+    "renameInput"
+  ).value = project.title;
+
+  openModal("renameModal");
+}
+
+async function confirmRename(){
+
+  const title =
+    document.getElementById(
+      "renameInput"
+    ).value.trim();
+
+  if(!title){
+
+    showToast("Enter a project name.");
+
+    return;
+  }
+
+  if(!renameProjectId) return;
+
+  try{
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("projects")
+        .update({
+          title,
+          updated_at:new Date().toISOString()
+        })
+        .eq("id",renameProjectId)
+        .eq("user_id",currentUser.id);
+
+    if(error) throw error;
+
+    closeModal("renameModal");
+
+    showToast(
+      "Project renamed successfully."
+    );
+
+    await renderProjects();
+
+  }catch(error){
+
+    showToast(error.message);
+  }
+}
+
+async function deleteProject(id){
+
+  const project =
+    window.otgProjects.find(
+      p => p.id === id
+    );
+
+  if(!project) return;
+
+  const confirmed =
+    confirm(
+      `Delete "${project.title}"? This cannot be undone.`
+    );
+
+  if(!confirmed) return;
+
+  try{
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("projects")
+        .delete()
+        .eq("id",id)
+        .eq("user_id",currentUser.id);
+
+    if(error) throw error;
+
+    if(currentProjectId === id){
+
+      currentProjectId = null;
+
+      newWebsite();
+    }
+
+    showToast(
+      "Project deleted."
+    );
+
+    await renderProjects();
+
+  }catch(error){
+
+    showToast(error.message);
+  }
+}
+
+function getProjectUrl(slug){
+
+  return (
+    `${window.location.origin}/?site=` +
+    encodeURIComponent(slug)
+  );
+}
+
+async function copyProjectLink(slug){
+
+  const url =
+    getProjectUrl(slug);
+
+  try{
+
+    await navigator.clipboard.writeText(url);
+
+    showToast(
+      "Website link copied."
+    );
+
+  }catch(error){
+
+    const temp =
+      document.createElement("textarea");
+
+    temp.value = url;
+
+    document.body.appendChild(temp);
+
+    temp.select();
+
+    document.execCommand("copy");
+
+    temp.remove();
+
+    showToast(
+      "Website link copied."
+    );
+  }
+}
+
+async function shareProject(slug,title){
+
+  const url =
+    getProjectUrl(slug);
+
+  if(navigator.share){
+
+    try{
+
+      await navigator.share({
+
+        title,
+
+        text:
+          "Check out my website created with OTG AI Website Builder.",
+
+        url
+
+      });
+
+      return;
+
+    }catch(error){
+
+      if(
+        error &&
+        error.name === "AbortError"
+      ){
+
+        return;
+      }
+    }
+  }
+
+  await copyProjectLink(slug);
+}
+
+async function unpublishProject(id){
+
+  const confirmed =
+    confirm(
+      "Unpublish this website? The public link will stop working until you publish it again."
+    );
+
+  if(!confirmed) return;
+
+  try{
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("projects")
+        .update({
+          is_published:false,
+          updated_at:new Date().toISOString()
+        })
+        .eq("id",id)
+        .eq("user_id",currentUser.id);
+
+    if(error) throw error;
+
+    showToast(
+      "Website unpublished."
+    );
+
+    await renderProjects();
+
+  }catch(error){
+
+    showToast(error.message);
+  }
+}
+
+async function publishExisting(id){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("projects")
+        .update({
+          is_published:true,
+          updated_at:new Date().toISOString()
+        })
+        .eq("id",id)
+        .eq("user_id",currentUser.id)
+        .select()
+        .single();
+
+    if(error) throw error;
+
+    await copyProjectLink(
+      data.slug
+    );
+
+    showToast(
+      "Published! Website link copied."
+    );
+
+    await renderProjects();
+
+  }catch(error){
+
+    showToast(error.message);
+  }
+}
+
+function publishWebsite(){
+
+  if(!currentUser){
+
+    showToast(
+      "Please login before publishing."
+    );
+
+    showAuth();
+
+    return;
+  }
+
+  if(currentProjectId){
+
+    publishExisting(
+      currentProjectId
+    );
+
+    return;
+  }
+
+  document.getElementById(
+    "nameModalTitle"
+  ).textContent =
+    "Publish Website";
+
+  document.getElementById(
+    "nameModalButton"
+  ).textContent =
+    "Publish & Save";
+
+  document.getElementById(
+    "nameModalButton"
+  ).onclick =
+    "publishFromNewProject()";
+
+  openModal("nameModal");
+}
+
+async function publishFromNewProject(){
+
+  const title =
+    document.getElementById(
+      "projectNameInput"
+    ).value.trim();
+
+  if(!title){
+
+    showToast(
+      "Enter a website name."
+    );
+
+    return;
+  }
+
+  website[currentEditor] =
+    document.getElementById(
+      "codeEditor"
+    ).value;
+
+  try{
+
+    const slug =
+      createSlug(title) +
+      "-" +
+      Math.random()
+        .toString(36)
+        .substring(2,8);
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("projects")
+        .insert({
+
+          user_id:
+            currentUser.id,
+
+          title,
+
+          html:
+            website.html,
+
+          css:
+            website.css,
+
+          js:
+            website.js,
+
+          slug,
+
+          is_published:true
+
+        })
+        .select()
+        .single();
+
+    if(error) throw error;
+
+    currentProjectId =
+      data.id;
+
+    closeModal("nameModal");
+
+    await copyProjectLink(
+      data.slug
+    );
+
+    showToast(
+      "Published! Website link copied."
+    );
+
+    await renderProjects();
+
+  }catch(error){
+
+    showToast(error.message);
+  }
+}
+
+function resetNameModal(){
+
+  document.getElementById(
+    "nameModalTitle"
+  ).textContent =
+    "Save Website";
+
+  document.getElementById(
+    "nameModalButton"
+  ).textContent =
+    "Save";
+
+  document.getElementById(
+    "nameModalButton"
+  ).onclick =
+    "confirmSaveProject()";
+}
+
+function openNameModal(){
+
+  resetNameModal();
+
+  openModal("nameModal");
+}
+
+function viewProject(slug){
+
+  window.open(
+    getProjectUrl(slug),
+    "_blank"
+  );
+}
+
+async function checkPublicSite(){
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const slug =
+    params.get("site");
+
+  if(!slug) return false;
+
+  document.getElementById(
+    "mainHeader"
+  ).style.display = "none";
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("projects")
+        .select("*")
+        .eq("slug",slug)
+        .eq("is_published",true)
+        .single();
+
+    if(error || !data){
+
+      document.body.innerHTML = `
+
+        <div style="
+          min-height:100vh;
+          display:grid;
+          place-items:center;
+          padding:30px;
+          text-align:center;
+          font-family:Arial,sans-serif;
+          background:#f8fafc;
+        ">
+
+          <div>
+
+            <h1 style="
+              font-size:40px;
+              margin-bottom:10px;
+            ">
+              Website not found
+            </h1>
+
+            <p style="
+              color:#64748b;
+            ">
+              This website may have been removed
+              or unpublished.
+            </p>
+
+          </div>
+
         </div>
+
       `;
 
       return true;
@@ -2444,104 +3273,181 @@ body{
     await renderPublicSite(data);
 
     return true;
-  }
 
-  async function renderPublicSite(project) {
+  }catch(error){
+
     document.body.innerHTML = `
-      <div
-        style="
-          min-height:100vh;
-          background:white;
-        "
-      >
 
-        <div
-          style="
-            position:fixed;
-            top:0;
-            left:0;
-            right:0;
-            z-index:9999;
-            padding:8px 12px;
-            background:rgba(17,24,39,.95);
-            color:white;
-            text-align:center;
-            font-family:Arial;
-            font-size:12px;
-          "
-        >
-          Built with
-          <strong>OTG AI Website Builder</strong>
+      <div style="
+        min-height:100vh;
+        display:grid;
+        place-items:center;
+        padding:30px;
+        text-align:center;
+        font-family:Arial,sans-serif;
+      ">
+
+        <div>
+
+          <h1>Unable to load website</h1>
+
+          <p style="
+            color:#64748b;
+          ">
+            ${escapeHtml(error.message)}
+          </p>
+
         </div>
 
-        <div
-          id="publicWebsite"
-          style="padding-top:30px;"
-        ></div>
-
       </div>
+
     `;
 
-    const container =
-      document.getElementById("publicWebsite");
+    return true;
+  }
+}
 
-    const style =
-      document.createElement("style");
+async function renderPublicSite(project){
 
-    style.textContent =
-      project.css || "";
+  const html =
+    project.html || "";
 
-    document.head.appendChild(style);
+  const css =
+    project.css || "";
 
-    container.innerHTML =
-      project.html || "";
+  const js =
+    project.js || "";
 
-    if (project.js) {
-      try {
-        const script =
-          document.createElement("script");
+  document.body.innerHTML = `
 
-        script.textContent =
-          project.js;
+    <div id="publicWebsite">
 
-        document.body.appendChild(script);
+      <style>
+        ${css}
+      </style>
 
-      } catch (error) {
-        console.error(error);
-      }
+      ${html}
+
+    </div>
+
+  `;
+
+  if(js.trim()){
+
+    try{
+
+      const script =
+        document.createElement("script");
+
+      script.textContent =
+        js;
+
+      document.body.appendChild(
+        script
+      );
+
+    }catch(error){
+
+      console.error(error);
     }
   }
 
-  async function initializeApp() {
-    const isPublicSite =
-      await checkPublicSite();
+  document.title =
+    project.title ||
+    "OTG Website";
+}
 
-    if (isPublicSite) {
-      return;
-    }
+async function initializeUser(){
 
-    renderTemplates();
+  updateAuthUI();
 
-    newWebsite();
+  await renderProjects();
+}
 
-    updateAIStat();
+async function initializeApp(){
 
-    await loadUser();
+  const isPublic =
+    await checkPublicSite();
+
+  if(isPublic) return;
+
+  const {
+    data
+  } =
+    await supabaseClient.auth
+      .getSession();
+
+  currentUser =
+    data?.session?.user || null;
+
+  updateAuthUI();
+
+  await renderProjects();
+
+  if(currentUser){
 
     supabaseClient.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (_event,session) => {
 
         currentUser =
           session?.user || null;
 
-        updateAuthButton();
+        updateAuthUI();
 
         await renderProjects();
       }
     );
   }
+}
 
-  initializeApp();
+/*
+  Keep Save modal behaviour correct after
+  using the Publish button.
+*/
+
+document
+  .getElementById("nameModal")
+  .addEventListener(
+    "click",
+    function(event){
+
+      if(event.target === this){
+
+        closeModal("nameModal");
+
+        resetNameModal();
+      }
+    }
+  );
+
+document
+  .getElementById("authModal")
+  .addEventListener(
+    "click",
+    function(event){
+
+      if(event.target === this){
+
+        closeModal("authModal");
+      }
+    }
+  );
+
+document
+  .getElementById("renameModal")
+  .addEventListener(
+    "click",
+    function(event){
+
+      if(event.target === this){
+
+        closeModal("renameModal");
+      }
+    }
+  );
+
+initializeApp();
+
 </script>
 
 </body>
