@@ -1,19 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>OTG AI Website Builder</title>
 
-  <meta
-    name="description"
-    content="Build beautiful websites with AI using your phone."
-  />
+  <meta name="description"
+    content="Build beautiful websites with AI using your phone.">
 
-  <meta name="theme-color" content="#111827" />
+  <meta name="theme-color" content="#111827">
 
-  <link rel="manifest" href="/manifest.json" />
+  <link rel="manifest" href="/manifest.json">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -42,10 +40,6 @@
     button {
       cursor: pointer;
     }
-
-    /* ============================================================
-       TOP BAR
-    ============================================================ */
 
     .topbar {
       background: #111827;
@@ -115,17 +109,19 @@
       justify-content: flex-end;
     }
 
-    /* ============================================================
-       GENERAL
-    ============================================================ */
-
     .container {
       width: min(1200px, 94%);
       margin: 20px auto 50px;
     }
 
     .hero {
-      background: linear-gradient(135deg, #111827, #1d4ed8);
+      background:
+        linear-gradient(
+          135deg,
+          #111827,
+          #1d4ed8
+        );
+
       color: white;
       padding: 35px 25px;
       border-radius: 22px;
@@ -168,7 +164,8 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
       gap: 16px;
     }
 
@@ -203,7 +200,8 @@
     textarea:focus,
     select:focus {
       border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+      box-shadow:
+        0 0 0 3px rgba(37,99,235,.1);
     }
 
     .btn {
@@ -258,18 +256,10 @@
       display: none !important;
     }
 
-    /* ============================================================
-       AUTH
-    ============================================================ */
-
     .auth-box {
       max-width: 500px;
       margin: 50px auto;
     }
-
-    /* ============================================================
-       TABS / EDITOR
-    ============================================================ */
 
     .tabs {
       display: flex;
@@ -314,13 +304,10 @@
       background: white;
     }
 
-    /* ============================================================
-       TEMPLATES
-    ============================================================ */
-
     .template-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns:
+        repeat(3, 1fr);
       gap: 14px;
       margin-top: 15px;
     }
@@ -343,10 +330,6 @@
       margin-bottom: 12px;
     }
 
-    /* ============================================================
-       PRODUCT MANAGER
-    ============================================================ */
-
     .product-row {
       display: grid;
       grid-template-columns:
@@ -365,10 +348,6 @@
       border-radius: 8px;
       padding: 9px;
     }
-
-    /* ============================================================
-       STATUS
-    ============================================================ */
 
     .status {
       padding: 10px 12px;
@@ -392,10 +371,6 @@
       color: #991b1b;
     }
 
-    /* ============================================================
-       PROJECTS
-    ============================================================ */
-
     .project-item {
       border: 1px solid #e5e7eb;
       border-radius: 12px;
@@ -411,9 +386,9 @@
       font-size: 12px;
     }
 
-    /* ============================================================
+    /* =========================
        ABOUT OTG
-    ============================================================ */
+    ========================= */
 
     .about-section {
       margin-bottom: 25px;
@@ -426,7 +401,11 @@
           rgba(250,204,21,.18),
           transparent 35%
         ),
-        linear-gradient(135deg,#111827,#1d4ed8);
+        linear-gradient(
+          135deg,
+          #111827,
+          #1d4ed8
+        );
 
       color: white;
       border-radius: 22px;
@@ -435,12 +414,12 @@
     }
 
     .about-hero h1 {
-      font-size: clamp(32px,7vw,58px);
+      font-size: clamp(32px, 7vw, 58px);
       margin-bottom: 12px;
     }
 
     .about-hero p {
-      max-width: 750px;
+      max-width: 780px;
       line-height: 1.7;
       color: #dbeafe;
     }
@@ -469,12 +448,11 @@
       padding: 25px;
     }
 
-    .founder-badge .founder-logo {
+    .founder-logo {
       font-size: 72px;
       font-weight: 900;
       letter-spacing: -7px;
       color: #facc15;
-
       text-shadow:
         4px 4px 0 rgba(255,255,255,.12),
         8px 8px 0 rgba(0,0,0,.15);
@@ -500,7 +478,7 @@
     .expertise-grid {
       display: grid;
       grid-template-columns:
-        repeat(3, minmax(0,1fr));
+        repeat(3, minmax(0, 1fr));
       gap: 14px;
       margin-top: 18px;
     }
@@ -519,6 +497,7 @@
     .expertise-item p {
       font-size: 13px;
       color: #64748b;
+      line-height: 1.55;
     }
 
     .quote-box {
@@ -536,10 +515,6 @@
       margin-top: 20px;
     }
 
-    /* ============================================================
-       FOOTER
-    ============================================================ */
-
     .platform-footer {
       text-align: center;
       color: #64748b;
@@ -551,11 +526,7 @@
       color: #111827;
     }
 
-    /* ============================================================
-       MOBILE
-    ============================================================ */
-
-    @media (max-width: 800px) {
+    @media (max-width:800px) {
 
       .topbar {
         align-items: flex-start;
@@ -608,7 +579,6 @@
       .expertise-grid {
         grid-template-columns: 1fr;
       }
-
     }
 
   </style>
@@ -616,1808 +586,1678 @@
 
 <body>
 
-  <!-- ============================================================
-       TOP BAR
-  ============================================================ -->
+<header class="topbar">
 
-  <header class="topbar">
+  <div class="brand-wrap">
 
-    <div class="brand-wrap">
+    <div class="otg-logo">
+      OTG
+    </div>
 
-      <div class="otg-logo">
-        OTG
+    <div class="brand">
+      <span>OTG</span> AI Website Builder
+    </div>
+
+  </div>
+
+  <nav class="main-nav">
+
+    <button onclick="showBuilder()">
+      Builder
+    </button>
+
+    <button onclick="showAbout()">
+      About OTG
+    </button>
+
+  </nav>
+
+  <div class="user-area">
+
+    <span id="userEmail" class="small"></span>
+
+    <button
+      id="loginBtn"
+      class="btn yellow"
+      onclick="showAuth()">
+      Login / Sign Up
+    </button>
+
+    <button
+      id="logoutBtn"
+      class="btn light hidden"
+      onclick="logout()">
+      Logout
+    </button>
+
+  </div>
+
+</header>
+
+<main class="container">
+
+<!-- AUTH -->
+
+<section
+  id="authSection"
+  class="card auth-box hidden">
+
+  <h2 id="authTitle">
+    Create your OTG account
+  </h2>
+
+  <p class="muted">
+    Sign up to build, save and publish your own websites.
+  </p>
+
+  <div class="field">
+
+    <label>Email</label>
+
+    <input
+      id="authEmail"
+      type="email"
+      placeholder="you@example.com">
+
+  </div>
+
+  <div class="field">
+
+    <label>Password</label>
+
+    <input
+      id="authPassword"
+      type="password"
+      placeholder="Minimum 6 characters">
+
+  </div>
+
+  <div
+    class="row"
+    style="margin-top:15px;">
+
+    <button
+      class="btn primary"
+      onclick="signUp()">
+      Create Account
+    </button>
+
+    <button
+      class="btn dark"
+      onclick="signIn()">
+      Login
+    </button>
+
+  </div>
+
+  <div id="authMessage"></div>
+
+</section>
+
+
+<!-- ABOUT OTG -->
+
+<section
+  id="aboutSection"
+  class="about-section hidden">
+
+  <div class="about-hero">
+
+    <h1>
+      About OTG
+    </h1>
+
+    <p>
+      OTG AI Website Builder is a creative platform designed to help
+      students, designers, entrepreneurs and creators turn their ideas
+      into beautiful websites using AI and practical digital skills.
+    </p>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="founder-card">
+
+      <div class="founder-badge">
+
+        <div class="founder-logo">
+          OTG
+        </div>
+
       </div>
 
-      <div class="brand">
-        <span>OTG</span> AI Website Builder
+      <div class="founder-content">
+
+        <h2>
+          Prince OnaJb
+        </h2>
+
+        <div class="founder-title">
+          CEO &amp; Founder, OTG Graphic Academy
+        </div>
+
+        <p>
+          Prince OnaJb is a graphic designer, creative educator and
+          digital creator passionate about helping people turn ordinary
+          ideas into professional visual and digital experiences.
+        </p>
+
+        <p>
+          Through OTG Graphic Academy, he teaches students practical
+          creative skills while encouraging them to adapt to modern
+          technology, AI and the changing digital world.
+        </p>
+
+        <div class="quote-box">
+          “I turn ordinary ideas into visual reality.”
+        </div>
+
       </div>
 
     </div>
 
-
-    <nav class="main-nav">
-
-      <button onclick="showBuilder()">
-        Builder
-      </button>
-
-      <button onclick="showAbout()">
-        About OTG
-      </button>
-
-    </nav>
+  </div>
 
 
-    <div class="user-area">
+  <div class="card">
 
-      <span
-        id="userEmail"
-        class="small"
-      ></span>
+    <h2>
+      What I Do
+    </h2>
+
+    <p class="muted">
+      Creative and digital services built around practical skills,
+      technology and visual communication.
+    </p>
+
+    <div class="expertise-grid">
+
+      <div class="expertise-item">
+
+        <h3>
+          🎨 Graphic Design
+        </h3>
+
+        <p>
+          Professional visual designs, flyers, branding and creative
+          communication.
+        </p>
+
+      </div>
+
+
+      <div class="expertise-item">
+
+        <h3>
+          💻 Website Creation
+        </h3>
+
+        <p>
+          Building modern websites and digital experiences for brands
+          and businesses.
+        </p>
+
+      </div>
+
+
+      <div class="expertise-item">
+
+        <h3>
+          🤖 AI &amp; Creative Technology
+        </h3>
+
+        <p>
+          Helping creatives understand and use modern AI tools
+          effectively.
+        </p>
+
+      </div>
+
+
+      <div class="expertise-item">
+
+        <h3>
+          🎓 Training &amp; Mentorship
+        </h3>
+
+        <p>
+          Practical training designed to help students develop useful
+          creative skills.
+        </p>
+
+      </div>
+
+
+      <div class="expertise-item">
+
+        <h3>
+          🏆 Branding
+        </h3>
+
+        <p>
+          Creating strong visual identities that help businesses stand out.
+        </p>
+
+      </div>
+
+
+      <div class="expertise-item">
+
+        <h3>
+          🚀 Digital Creativity
+        </h3>
+
+        <p>
+          Turning ideas into practical digital products and creative
+          solutions.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>
+      OTG Graphic Academy
+    </h2>
+
+    <p>
+      OTG Graphic Academy is focused on helping students build practical
+      creative skills they can use in the real world.
+    </p>
+
+    <p style="margin-top:10px;">
+
+      Students are encouraged to learn, practice, create portfolios,
+      work with clients and understand how technology can support—not
+      replace—their creativity.
+
+    </p>
+
+    <div class="about-actions">
 
       <button
-        id="loginBtn"
-        class="btn yellow"
-        onclick="showAuth()"
-      >
-        Login / Sign Up
-      </button>
-
-      <button
-        id="logoutBtn"
-        class="btn light hidden"
-        onclick="logout()"
-      >
-        Logout
+        class="btn primary"
+        onclick="showBuilder()">
+        🚀 Start Building
       </button>
 
     </div>
 
-  </header>
+  </div>
 
 
-  <main class="container">
+  <div class="card">
+
+    <h2>
+      For OTG Students
+    </h2>
+
+    <p>
+
+      This platform is part of the bigger OTG vision: giving creatives
+      practical tools to learn, experiment, build projects and turn
+      their skills into opportunities.
+
+    </p>
+
+    <p style="margin-top:10px;">
+
+      Create your website, save your projects, publish your work and
+      continue improving your digital skills.
+
+    </p>
+
+  </div>
 
 
-    <!-- ==========================================================
-         AUTH
-    =========================================================== -->
+  <div class="card">
 
-    <section
-      id="authSection"
-      class="card auth-box hidden"
-    >
+    <h2>
+      Connect With OTG
+    </h2>
 
-      <h2 id="authTitle">
-        Create your OTG account
-      </h2>
+    <p class="muted">
 
-      <p class="muted">
-        Sign up to build, save and publish your own websites.
-      </p>
+      Follow the OTG journey and discover more creative work, training
+      and digital projects.
 
+    </p>
 
-      <div class="field">
+  </div>
 
-        <label>
-          Email
-        </label>
-
-        <input
-          id="authEmail"
-          type="email"
-          placeholder="you@example.com"
-        >
-
-      </div>
+</section>
 
 
-      <div class="field">
+<!-- BUILDER -->
 
-        <label>
-          Password
-        </label>
+<section id="builderSection">
 
-        <input
-          id="authPassword"
-          type="password"
-          placeholder="Minimum 6 characters"
-        >
+  <section class="hero">
 
-      </div>
+    <h1>
+      Build your website with AI.
+    </h1>
+
+    <p>
+      Describe what you want and OTG AI will create the website for you.
+      Edit it, preview it, save it and publish it.
+    </p>
+
+  </section>
 
 
-      <div
-        class="row"
-        style="margin-top:15px;"
-      >
+  <section class="card">
+
+    <h2>
+      🚀 Create Your Website
+    </h2>
+
+    <p class="muted">
+      Tell the AI what you want to build.
+    </p>
+
+    <div class="field">
+
+      <textarea
+        id="aiPrompt"
+        placeholder="Example: Create a professional website for my restaurant called Taste Haven. We sell Nigerian and continental food. Add a menu, prices, location, WhatsApp ordering and a beautiful mobile design.">
+      </textarea>
+
+    </div>
+
+    <div
+      class="row"
+      style="margin-top:12px;">
+
+      <button
+        class="btn primary"
+        onclick="generateWithAI()">
+        ✨ Generate Website
+      </button>
+
+      <button
+        class="btn light"
+        onclick="clearBuilder()">
+        Clear
+      </button>
+
+    </div>
+
+    <div id="aiStatus"></div>
+
+  </section>
+
+
+  <section class="card">
+
+    <h2>
+      Website Templates
+    </h2>
+
+    <p class="muted">
+      Start quickly with a template, then customize everything.
+    </p>
+
+    <div class="template-grid">
+
+      <div class="template">
+
+        <h3>
+          👗 Fashion Store
+        </h3>
+
+        <p>
+          Clothing, products, cart and WhatsApp ordering.
+        </p>
 
         <button
           class="btn primary"
-          onclick="signUp()"
-        >
-          Create Account
+          onclick="loadFashionTemplate()">
+          Use Template
         </button>
+
+      </div>
+
+
+      <div class="template">
+
+        <h3>
+          🍔 Restaurant
+        </h3>
+
+        <p>
+          Menu, food products, prices and contact section.
+        </p>
 
         <button
-          class="btn dark"
-          onclick="signIn()"
-        >
-          Login
+          class="btn primary"
+          onclick="loadRestaurantTemplate()">
+          Use Template
         </button>
 
       </div>
 
 
-      <div id="authMessage"></div>
+      <div class="template">
 
-    </section>
-
-
-    <!-- ==========================================================
-         ABOUT OTG
-    =========================================================== -->
-
-    <section
-      id="aboutSection"
-      class="about-section hidden"
-    >
-
-      <div class="about-hero">
-
-        <h1>
-          About OTG
-        </h1>
+        <h3>
+          💼 Portfolio
+        </h3>
 
         <p>
-          OTG AI Website Builder is a creative platform designed to
-          help students, designers, entrepreneurs and creators turn
-          their ideas into beautiful websites using AI and practical
-          digital skills.
+          Personal portfolio for designers, developers and creatives.
         </p>
+
+        <button
+          class="btn primary"
+          onclick="loadPortfolioTemplate()">
+          Use Template
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <section
+    id="storeManager"
+    class="card hidden">
+
+    <h2>
+      🛍️ Manage Your Products
+    </h2>
+
+    <p class="muted">
+      Change your products and prices here.
+      <b>No coding required.</b>
+    </p>
+
+    <div class="grid">
+
+      <div class="field">
+
+        <label>
+          Business / Store Name
+        </label>
+
+        <input
+          id="storeName"
+          value="Prince Fashion">
 
       </div>
 
 
-      <!-- FOUNDER -->
+      <div class="field">
 
-      <div class="card">
+        <label>
+          Tagline
+        </label>
 
-        <div class="founder-card">
-
-          <div class="founder-badge">
-
-            <div class="founder-logo">
-              OTG
-            </div>
-
-          </div>
-
-
-          <div class="founder-content">
-
-            <h2>
-              Prince OnaJb
-            </h2>
-
-            <div class="founder-title">
-              CEO & Founder, OTG Graphic Academy
-            </div>
-
-
-            <p>
-              Prince OnaJb is a graphic designer, creative educator
-              and digital creator passionate about helping people turn
-              ordinary ideas into professional visual and digital
-              experiences.
-            </p>
-
-
-            <p>
-              Through OTG Graphic Academy, he teaches students
-              practical creative skills while encouraging them to
-              adapt to modern technology, AI and the changing digital
-              world.
-            </p>
-
-
-            <div class="quote-box">
-              “I turn ordinary ideas into visual reality.”
-            </div>
-
-          </div>
-
-        </div>
+        <input
+          id="storeTagline"
+          value="Style for everyone">
 
       </div>
 
 
-      <!-- WHAT I DO -->
+      <div class="field">
 
-      <div class="card">
+        <label>
+          WhatsApp Number
+        </label>
 
-        <h2>
-          What I Do
-        </h2>
-
-        <p class="muted">
-          Creative and digital services built around practical skills,
-          technology and visual communication.
-        </p>
-
-
-        <div class="expertise-grid">
-
-
-          <div class="expertise-item">
-
-            <h3>
-              🎨 Graphic Design
-            </h3>
-
-            <p>
-              Professional visual designs, flyers, branding and
-              creative communication.
-            </p>
-
-          </div>
-
-
-          <div class="expertise-item">
-
-            <h3>
-              💻 Website Creation
-            </h3>
-
-            <p>
-              Building modern websites and digital experiences for
-              brands and businesses.
-            </p>
-
-          </div>
-
-
-          <div class="expertise-item">
-
-            <h3>
-              🤖 AI & Creative Technology
-            </h3>
-
-            <p>
-              Helping creatives understand and use modern AI tools
-              effectively.
-            </p>
-
-          </div>
-
-
-          <div class="expertise-item">
-
-            <h3>
-              🎓 Training & Mentorship
-            </h3>
-
-            <p>
-              Practical training designed to help students develop
-              useful creative skills.
-            </p>
-
-          </div>
-
-
-          <div class="expertise-item">
-
-            <h3>
-              🏆 Branding
-            </h3>
-
-            <p>
-              Creating strong visual identities that help businesses
-              stand out.
-            </p>
-
-          </div>
-
-
-          <div class="expertise-item">
-
-            <h3>
-              🚀 Digital Creativity
-            </h3>
-
-            <p>
-              Turning ideas into practical digital products and
-              creative solutions.
-            </p>
-
-          </div>
-
-
-        </div>
+        <input
+          id="storeWhatsapp"
+          placeholder="2348012345678">
 
       </div>
 
+    </div>
 
-      <!-- OTG ACADEMY -->
 
-      <div class="card">
+    <div style="margin-top:20px;">
 
-        <h2>
-          OTG Graphic Academy
-        </h2>
+      <h3>
+        Products
+      </h3>
 
-        <p>
-          OTG Graphic Academy is focused on helping students build
-          practical creative skills they can use in the real world.
-        </p>
+      <p class="muted small">
+        Name | Price | Category | Description | Emoji
+      </p>
 
-        <p style="margin-top:10px;">
-          Students are encouraged to learn, practice, create
-          portfolios, work with clients and understand how technology
-          can support—not replace—their creativity.
-        </p>
+    </div>
 
 
-        <div class="about-actions">
+    <div
+      id="productsEditor"
+      style="margin-top:12px;">
+    </div>
 
-          <button
-            class="btn primary"
-            onclick="showBuilder()"
-          >
-            🚀 Start Building
-          </button>
 
-        </div>
+    <div
+      class="row"
+      style="margin-top:15px;">
 
-      </div>
+      <button
+        class="btn success"
+        onclick="addProduct()">
+        + Add Product
+      </button>
 
+      <button
+        class="btn primary"
+        onclick="updateStorePreview()">
+        🔄 Update Preview
+      </button>
 
-      <!-- STUDENTS -->
+    </div>
 
-      <div class="card">
+  </section>
 
-        <h2>
-          For OTG Students
-        </h2>
 
-        <p>
-          This platform is part of the bigger OTG vision: giving
-          creatives practical tools to learn, experiment, build
-          projects and turn their skills into opportunities.
-        </p>
+  <section class="card">
 
-        <p style="margin-top:10px;">
-          Create your website, save your projects, publish your work
-          and continue improving your digital skills.
-        </p>
+    <div class="tabs">
 
-      </div>
+      <button
+        class="tab active"
+        onclick="showEditor('html',this)">
+        HTML
+      </button>
 
+      <button
+        class="tab"
+        onclick="showEditor('css',this)">
+        CSS
+      </button>
 
-      <!-- CONNECT -->
+      <button
+        class="tab"
+        onclick="showEditor('js',this)">
+        JavaScript
+      </button>
 
-      <div class="card">
+      <button
+        class="tab"
+        onclick="showEditor('preview',this)">
+        Live Preview
+      </button>
 
-        <h2>
-          Connect With OTG
-        </h2>
+    </div>
 
-        <p class="muted">
-          Follow the OTG journey and discover more creative work,
-          training and digital projects.
-        </p>
 
-      </div>
+    <div
+      id="htmlEditor"
+      class="code-box">
 
+      <textarea
+        id="htmlCode"
+        spellcheck="false">
+      </textarea>
 
-    </section>
+    </div>
 
 
-    <!-- ==========================================================
-         BUILDER
-    =========================================================== -->
+    <div
+      id="cssEditor"
+      class="code-box hidden">
 
-    <section id="builderSection">
+      <textarea
+        id="cssCode"
+        spellcheck="false">
+      </textarea>
 
+    </div>
 
-      <!-- HERO -->
 
-      <section class="hero">
+    <div
+      id="jsEditor"
+      class="code-box hidden">
 
-        <h1>
-          Build your website with AI.
-        </h1>
+      <textarea
+        id="jsCode"
+        spellcheck="false">
+      </textarea>
 
-        <p>
-          Describe what you want and OTG AI will create the website
-          for you. Edit it, preview it, save it and publish it.
-        </p>
+    </div>
 
-      </section>
 
+    <div
+      id="previewEditor"
+      class="hidden">
 
-      <!-- ========================================================
-           AI
-      ========================================================= -->
+      <iframe
+        id="previewFrame"
+        class="preview">
+      </iframe>
 
-      <section class="card">
+    </div>
 
-        <h2>
-          🚀 Create Your Website
-        </h2>
 
-        <p class="muted">
-          Tell the AI what you want to build.
-        </p>
+    <div
+      class="row"
+      style="margin-top:15px;">
 
+      <button
+        class="btn primary"
+        onclick="updatePreview()">
+        ▶ Update Preview
+      </button>
 
-        <div class="field">
+      <button
+        class="btn success"
+        onclick="saveProject()">
+        💾 Save Project
+      </button>
 
-          <textarea
-            id="aiPrompt"
-            placeholder="Example: Create a professional website for my restaurant called Taste Haven. We sell Nigerian and continental food. Add a menu, prices, location, WhatsApp ordering and a beautiful mobile design."
-          ></textarea>
+      <button
+        class="btn yellow"
+        onclick="publishWebsite()">
+        🌍 Publish Website
+      </button>
 
-        </div>
+    </div>
 
 
-        <div
-          class="row"
-          style="margin-top:12px;"
-        >
+    <div id="saveStatus"></div>
 
-          <button
-            class="btn primary"
-            onclick="generateWithAI()"
-          >
-            ✨ Generate Website
-          </button>
+  </section>
 
 
-          <button
-            class="btn light"
-            onclick="clearBuilder()"
-          >
-            Clear
-          </button>
+  <section class="card">
 
-        </div>
+    <h2>
+      📁 My Projects
+    </h2>
 
+    <p class="muted">
+      Your saved websites appear here.
+    </p>
 
-        <div id="aiStatus"></div>
+    <div id="projectsList">
 
-      </section>
+      <p class="muted">
+        Login to see your projects.
+      </p>
 
+    </div>
 
-      <!-- ========================================================
-           TEMPLATES
-      ========================================================= -->
+  </section>
 
-      <section class="card">
+</section>
 
-        <h2>
-          Website Templates
-        </h2>
 
-        <p class="muted">
-          Start quickly with a template, then customize everything.
-        </p>
+<footer class="platform-footer">
 
+  <strong>
+    OTG AI Website Builder
+  </strong>
 
-        <div class="template-grid">
+  <br>
 
+  Built by Prince OnaJb —
+  CEO &amp; Founder, OTG Graphic Academy
 
-          <div class="template">
+  <br><br>
 
-            <h3>
-              👗 Fashion Store
-            </h3>
+  Empowering creatives to turn ideas into digital reality.
 
-            <p>
-              Clothing, products, cart and WhatsApp ordering.
-            </p>
+</footer>
 
-            <button
-              class="btn primary"
-              onclick="loadFashionTemplate()"
-            >
-              Use Template
-            </button>
-
-          </div>
-
-
-          <div class="template">
-
-            <h3>
-              🍔 Restaurant
-            </h3>
-
-            <p>
-              Menu, food products, prices and contact section.
-            </p>
-
-            <button
-              class="btn primary"
-              onclick="loadRestaurantTemplate()"
-            >
-              Use Template
-            </button>
-
-          </div>
-
-
-          <div class="template">
-
-            <h3>
-              💼 Portfolio
-            </h3>
-
-            <p>
-              Personal portfolio for designers, developers and
-              creatives.
-            </p>
-
-            <button
-              class="btn primary"
-              onclick="loadPortfolioTemplate()"
-            >
-              Use Template
-            </button>
-
-          </div>
-
-
-        </div>
-
-      </section>
-
-
-      <!-- ========================================================
-           STORE MANAGER
-      ========================================================= -->
-
-      <section
-        id="storeManager"
-        class="card hidden"
-      >
-
-        <h2>
-          🛍️ Manage Your Products
-        </h2>
-
-        <p class="muted">
-          Change your products and prices here.
-          <b>No coding required.</b>
-        </p>
-
-
-        <div class="grid">
-
-
-          <div class="field">
-
-            <label>
-              Business / Store Name
-            </label>
-
-            <input
-              id="storeName"
-              value="Prince Fashion"
-            >
-
-          </div>
-
-
-          <div class="field">
-
-            <label>
-              Tagline
-            </label>
-
-            <input
-              id="storeTagline"
-              value="Style for everyone"
-            >
-
-          </div>
-
-
-          <div class="field">
-
-            <label>
-              WhatsApp Number
-            </label>
-
-            <input
-              id="storeWhatsapp"
-              placeholder="2348012345678"
-            >
-
-          </div>
-
-
-        </div>
-
-
-        <div style="margin-top:20px;">
-
-          <h3>
-            Products
-          </h3>
-
-          <p class="muted small">
-            Name | Price | Category | Description | Emoji
-          </p>
-
-        </div>
-
-
-        <div
-          id="productsEditor"
-          style="margin-top:12px;"
-        ></div>
-
-
-        <div
-          class="row"
-          style="margin-top:15px;"
-        >
-
-          <button
-            class="btn success"
-            onclick="addProduct()"
-          >
-            + Add Product
-          </button>
-
-
-          <button
-            class="btn primary"
-            onclick="updateStorePreview()"
-          >
-            🔄 Update Preview
-          </button>
-
-        </div>
-
-      </section>
-
-
-      <!-- ========================================================
-           EDITOR
-      ========================================================= -->
-
-      <section class="card">
-
-
-        <div class="tabs">
-
-          <button
-            class="tab active"
-            onclick="showEditor('html', this)"
-          >
-            HTML
-          </button>
-
-
-          <button
-            class="tab"
-            onclick="showEditor('css', this)"
-          >
-            CSS
-          </button>
-
-
-          <button
-            class="tab"
-            onclick="showEditor('js', this)"
-          >
-            JavaScript
-          </button>
-
-
-          <button
-            class="tab"
-            onclick="showEditor('preview', this)"
-          >
-            Live Preview
-          </button>
-
-        </div>
-
-
-        <div
-          id="htmlEditor"
-          class="code-box"
-        >
-
-          <textarea
-            id="htmlCode"
-            spellcheck="false"
-          ></textarea>
-
-        </div>
-
-
-        <div
-          id="cssEditor"
-          class="code-box hidden"
-        >
-
-          <textarea
-            id="cssCode"
-            spellcheck="false"
-          ></textarea>
-
-        </div>
-
-
-        <div
-          id="jsEditor"
-          class="code-box hidden"
-        >
-
-          <textarea
-            id="jsCode"
-            spellcheck="false"
-          ></textarea>
-
-        </div>
-
-
-        <div
-          id="previewEditor"
-          class="hidden"
-        >
-
-          <iframe
-            id="previewFrame"
-            class="preview"
-          ></iframe>
-
-        </div>
-
-
-        <div
-          class="row"
-          style="margin-top:15px;"
-        >
-
-          <button
-            class="btn primary"
-            onclick="updatePreview()"
-          >
-            ▶ Update Preview
-          </button>
-
-
-          <button
-            class="btn success"
-            onclick="saveProject()"
-          >
-            💾 Save Project
-          </button>
-
-
-          <button
-            class="btn yellow"
-            onclick="publishWebsite()"
-          >
-            🌍 Publish Website
-          </button>
-
-        </div>
-
-
-        <div id="saveStatus"></div>
-
-      </section>
-
-
-      <!-- ========================================================
-           PROJECTS
-      ========================================================= -->
-
-      <section class="card">
-
-        <h2>
-          📁 My Projects
-        </h2>
-
-        <p class="muted">
-          Your saved websites appear here.
-        </p>
-
-
-        <div id="projectsList">
-
-          <p class="muted">
-            Login to see your projects.
-          </p>
-
-        </div>
-
-      </section>
-
-
-    </section>
-
-
-    <!-- ==========================================================
-         FOOTER
-    =========================================================== -->
-
-    <footer class="platform-footer">
-
-      <strong>
-        OTG AI Website Builder
-      </strong>
-
-      <br>
-
-      Built by Prince OnaJb —
-      CEO & Founder, OTG Graphic Academy
-
-      <br><br>
-
-      Empowering creatives to turn ideas into digital reality.
-
-    </footer>
-
-
-  </main>
-
-
+</main>
 <script>
 
-  /* ============================================================
-     SUPABASE
-  ============================================================ */
+const SUPABASE_URL =
+  "https://actwvvokfdemobgsfctx.supabase.co";
 
-  const SUPABASE_URL =
-    "https://actwvvokfdemobgsfctx.supabase.co";
+const SUPABASE_KEY =
+  "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
 
-  const SUPABASE_KEY =
-    "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
-
-
-  const supabaseClient =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
-
-
-  /* ============================================================
-     GLOBAL STATE
-  ============================================================ */
-
-  let currentUser = null;
-
-  let currentProjectId = null;
-
-  let currentProjectSlug = null;
-
-  let currentHTML = "";
-
-  let currentCSS = "";
-
-  let currentJS = "";
-
-  let storeProducts = [];
-
-
-  /* ============================================================
-     STARTUP
-  ============================================================ */
-
-  document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
-
-      await checkUser();
-
-      loadPublicWebsite();
-
-
-      if ("serviceWorker" in navigator) {
-
-        navigator.serviceWorker
-          .register("/sw.js")
-          .catch(() => {});
-
-      }
-
-    }
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
   );
 
 
-  /* ============================================================
-     AUTH
-  ============================================================ */
+let currentUser = null;
+let currentProjectId = null;
+let currentProjectSlug = null;
 
-  async function checkUser() {
+let currentHTML = "";
+let currentCSS = "";
+let currentJS = "";
 
-    const {
-      data: { session }
-    } =
-      await supabaseClient.auth.getSession();
+let storeProducts = [];
 
 
-    if (session) {
 
-      currentUser =
-        session.user;
+/* =========================
+   STARTUP
+========================= */
 
-      showLoggedIn();
+document.addEventListener(
+  "DOMContentLoaded",
+  async () => {
 
-      await loadProjects();
+    await checkUser();
 
-    } else {
+    loadPublicWebsite();
 
-      showLoggedOut();
+    if ("serviceWorker" in navigator) {
+
+      navigator.serviceWorker
+        .register("/sw.js")
+        .catch(() => {});
 
     }
 
   }
+);
 
 
-  function showLoggedIn() {
 
-    document
-      .getElementById("userEmail")
-      .textContent =
-      currentUser.email;
+/* =========================
+   AUTH
+========================= */
 
+async function checkUser() {
 
-    document
-      .getElementById("loginBtn")
-      .classList.add("hidden");
+  const {
+    data: { session }
+  } =
+    await supabaseClient.auth.getSession();
 
 
-    document
-      .getElementById("logoutBtn")
-      .classList.remove("hidden");
+  if (session) {
 
-
-    document
-      .getElementById("authSection")
-      .classList.add("hidden");
-
-  }
-
-
-  function showLoggedOut() {
-
-    currentUser = null;
-
-
-    document
-      .getElementById("userEmail")
-      .textContent = "";
-
-
-    document
-      .getElementById("loginBtn")
-      .classList.remove("hidden");
-
-
-    document
-      .getElementById("logoutBtn")
-      .classList.add("hidden");
-
-  }
-
-
-  function showAuth() {
-
-    document
-      .getElementById("authSection")
-      .classList.remove("hidden");
-
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-  }
-
-
-  async function signUp() {
-
-    const email =
-      document
-        .getElementById("authEmail")
-        .value
-        .trim();
-
-
-    const password =
-      document
-        .getElementById("authPassword")
-        .value;
-
-
-    if (!email || !password) {
-
-      authMessage(
-        "Enter your email and password.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    const { error } =
-      await supabaseClient.auth.signUp({
-        email,
-        password
-      });
-
-
-    if (error) {
-
-      authMessage(
-        error.message,
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    authMessage(
-      "Account created. Check your email if confirmation is required.",
-      "success"
-    );
-
-  }
-
-
-  async function signIn() {
-
-    const email =
-      document
-        .getElementById("authEmail")
-        .value
-        .trim();
-
-
-    const password =
-      document
-        .getElementById("authPassword")
-        .value;
-
-
-    if (!email || !password) {
-
-      authMessage(
-        "Enter your email and password.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
-
-
-    if (error) {
-
-      authMessage(
-        error.message,
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    currentUser =
-      data.user;
-
+    currentUser = session.user;
 
     showLoggedIn();
 
-
     await loadProjects();
 
-  }
-
-
-  async function logout() {
-
-    await supabaseClient.auth.signOut();
-
-
-    currentUser = null;
-
-    currentProjectId = null;
-
-    currentProjectSlug = null;
-
+  } else {
 
     showLoggedOut();
 
   }
 
+}
 
-  function authMessage(
-    message,
-    type
-  ) {
 
+
+function showLoggedIn() {
+
+  document
+    .getElementById("userEmail")
+    .textContent =
+    currentUser.email;
+
+
+  document
+    .getElementById("loginBtn")
+    .classList
+    .add("hidden");
+
+
+  document
+    .getElementById("logoutBtn")
+    .classList
+    .remove("hidden");
+
+
+  document
+    .getElementById("authSection")
+    .classList
+    .add("hidden");
+
+}
+
+
+
+function showLoggedOut() {
+
+  currentUser = null;
+
+  document
+    .getElementById("userEmail")
+    .textContent = "";
+
+
+  document
+    .getElementById("loginBtn")
+    .classList
+    .remove("hidden");
+
+
+  document
+    .getElementById("logoutBtn")
+    .classList
+    .add("hidden");
+
+}
+
+
+
+function showAuth() {
+
+  document
+    .getElementById("authSection")
+    .classList
+    .remove("hidden");
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+
+async function signUp() {
+
+  const email =
     document
-      .getElementById("authMessage")
-      .innerHTML =
-      `<div class="status ${type}">
-        ${escapeHTML(message)}
-      </div>`;
+      .getElementById("authEmail")
+      .value
+      .trim();
+
+
+  const password =
+    document
+      .getElementById("authPassword")
+      .value;
+
+
+  if (!email || !password) {
+
+    authMessage(
+      "Enter your email and password.",
+      "error"
+    );
+
+    return;
 
   }
 
 
-  /* ============================================================
-     OTG NAVIGATION
-  ============================================================ */
-
-  function showAbout() {
-
-    document
-      .getElementById("builderSection")
-      .classList.add("hidden");
-
-
-    document
-      .getElementById("aboutSection")
-      .classList.remove("hidden");
-
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
+  const {
+    error
+  } =
+    await supabaseClient.auth.signUp({
+      email,
+      password
     });
 
-  }
 
+  if (error) {
 
-  function showBuilder() {
+    authMessage(
+      error.message,
+      "error"
+    );
 
-    document
-      .getElementById("aboutSection")
-      .classList.add("hidden");
-
-
-    document
-      .getElementById("builderSection")
-      .classList.remove("hidden");
-
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+    return;
 
   }
 
 
-  /* ============================================================
-     AI
-  ============================================================ */
+  authMessage(
+    "Account created. Check your email if confirmation is required.",
+    "success"
+  );
 
-  async function generateWithAI() {
-
-    const prompt =
-      document
-        .getElementById("aiPrompt")
-        .value
-        .trim();
+}
 
 
-    if (!prompt) {
 
-      showAIStatus(
-        "Tell me what website you want to build first.",
-        "error"
-      );
+async function signIn() {
 
-      return;
-
-    }
+  const email =
+    document
+      .getElementById("authEmail")
+      .value
+      .trim();
 
 
-    const button =
-      document.querySelector(
-        'button[onclick="generateWithAI()"]'
-      );
+  const password =
+    document
+      .getElementById("authPassword")
+      .value;
 
 
-    button.disabled = true;
+  if (!email || !password) {
 
-    button.textContent =
-      "⏳ Building...";
+    authMessage(
+      "Enter your email and password.",
+      "error"
+    );
 
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.auth
+      .signInWithPassword({
+        email,
+        password
+      });
+
+
+  if (error) {
+
+    authMessage(
+      error.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  currentUser = data.user;
+
+  showLoggedIn();
+
+  await loadProjects();
+
+}
+
+
+
+async function logout() {
+
+  await supabaseClient.auth.signOut();
+
+  currentUser = null;
+
+  currentProjectId = null;
+
+  currentProjectSlug = null;
+
+  showLoggedOut();
+
+}
+
+
+
+function authMessage(
+  message,
+  type
+) {
+
+  document
+    .getElementById("authMessage")
+    .innerHTML =
+    `<div class="status ${type}">
+      ${escapeHTML(message)}
+    </div>`;
+
+}
+
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function showAbout() {
+
+  document
+    .getElementById("builderSection")
+    .classList
+    .add("hidden");
+
+
+  document
+    .getElementById("aboutSection")
+    .classList
+    .remove("hidden");
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+
+function showBuilder() {
+
+  document
+    .getElementById("aboutSection")
+    .classList
+    .add("hidden");
+
+
+  document
+    .getElementById("builderSection")
+    .classList
+    .remove("hidden");
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+
+/* =========================
+   AI WEBSITE GENERATOR
+========================= */
+
+async function generateWithAI() {
+
+  const prompt =
+    document
+      .getElementById("aiPrompt")
+      .value
+      .trim();
+
+
+  if (!prompt) {
 
     showAIStatus(
-      "OTG AI is building your website...",
-      "info"
+      "Tell me what website you want to build first.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const button =
+    document.querySelector(
+      'button[onclick="generateWithAI()"]'
     );
 
 
-    try {
+  button.disabled = true;
 
-      const response =
-        await fetch(
-          "/api/generate",
-          {
-            method: "POST",
+  button.textContent =
+    "⏳ Building...";
 
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
 
-            body: JSON.stringify({
+  showAIStatus(
+    "OTG AI is building your website...",
+    "info"
+  );
+
+
+  try {
+
+    const response =
+      await fetch(
+        "/api/generate",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify({
               prompt,
               html: currentHTML,
               css: currentCSS,
               js: currentJS
             })
-          }
-        );
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.error ||
-          "AI generation failed."
-        );
-
-      }
-
-
-      currentHTML =
-        data.html || "";
-
-
-      currentCSS =
-        data.css || "";
-
-
-      currentJS =
-        data.js || "";
-
-
-      syncEditors();
-
-      updatePreview();
-
-
-      showAIStatus(
-        "Website generated successfully.",
-        "success"
+        }
       );
 
 
-    } catch (error) {
+    const data =
+      await response.json();
 
-      showAIStatus(
-        error.message,
-        "error"
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.error ||
+        "AI generation failed."
       );
 
     }
 
-
-    button.disabled = false;
-
-    button.textContent =
-      "✨ Generate Website";
-
-  }
-
-
-  function showAIStatus(
-    message,
-    type
-  ) {
-
-    document
-      .getElementById("aiStatus")
-      .innerHTML =
-      `<div class="status ${type}">
-        ${escapeHTML(message)}
-      </div>`;
-
-  }
-
-
-  /* ============================================================
-     EDITORS
-  ============================================================ */
-
-  function syncEditors() {
-
-    document
-      .getElementById("htmlCode")
-      .value =
-      currentHTML;
-
-
-    document
-      .getElementById("cssCode")
-      .value =
-      currentCSS;
-
-
-    document
-      .getElementById("jsCode")
-      .value =
-      currentJS;
-
-  }
-
-
-  function readEditors() {
 
     currentHTML =
-      document
-        .getElementById("htmlCode")
-        .value;
-
+      data.html || "";
 
     currentCSS =
-      document
-        .getElementById("cssCode")
-        .value;
-
+      data.css || "";
 
     currentJS =
-      document
-        .getElementById("jsCode")
-        .value;
+      data.js || "";
+
+
+    syncEditors();
+
+    updatePreview();
+
+
+    showAIStatus(
+      "Website generated successfully.",
+      "success"
+    );
+
+
+  } catch (error) {
+
+    showAIStatus(
+      error.message,
+      "error"
+    );
 
   }
 
 
-  function showEditor(
-    type,
+  button.disabled = false;
+
+  button.textContent =
+    "✨ Generate Website";
+
+}
+
+
+
+function showAIStatus(
+  message,
+  type
+) {
+
+  document
+    .getElementById("aiStatus")
+    .innerHTML =
+    `<div class="status ${type}">
+      ${escapeHTML(message)}
+    </div>`;
+
+}
+
+
+
+/* =========================
+   EDITORS
+========================= */
+
+function syncEditors() {
+
+  document
+    .getElementById("htmlCode")
+    .value =
+    currentHTML;
+
+
+  document
+    .getElementById("cssCode")
+    .value =
+    currentCSS;
+
+
+  document
+    .getElementById("jsCode")
+    .value =
+    currentJS;
+
+}
+
+
+
+function readEditors() {
+
+  currentHTML =
+    document
+      .getElementById("htmlCode")
+      .value;
+
+
+  currentCSS =
+    document
+      .getElementById("cssCode")
+      .value;
+
+
+  currentJS =
+    document
+      .getElementById("jsCode")
+      .value;
+
+}
+
+
+
+function showEditor(
+  type,
+  button
+) {
+
+  document
+    .querySelectorAll(".tab")
+    .forEach(tab =>
+      tab.classList.remove("active")
+    );
+
+
+  if (button) {
+
     button
-  ) {
+      .classList
+      .add("active");
+
+  }
+
+
+  [
+    "htmlEditor",
+    "cssEditor",
+    "jsEditor",
+    "previewEditor"
+  ]
+  .forEach(id => {
 
     document
-      .querySelectorAll(".tab")
-      .forEach(
-        tab =>
-          tab.classList.remove("active")
-      );
+      .getElementById(id)
+      .classList
+      .add("hidden");
+
+  });
 
 
-    if (button) {
-
-      button.classList.add("active");
-
-    }
-
+  if (type === "html") {
 
     document
       .getElementById("htmlEditor")
-      .classList.add("hidden");
+      .classList
+      .remove("hidden");
 
+  }
+
+
+  if (type === "css") {
 
     document
       .getElementById("cssEditor")
-      .classList.add("hidden");
+      .classList
+      .remove("hidden");
 
+  }
+
+
+  if (type === "js") {
 
     document
       .getElementById("jsEditor")
-      .classList.add("hidden");
+      .classList
+      .remove("hidden");
 
+  }
+
+
+  if (type === "preview") {
 
     document
       .getElementById("previewEditor")
-      .classList.add("hidden");
+      .classList
+      .remove("hidden");
 
 
-    if (type === "html") {
-
-      document
-        .getElementById("htmlEditor")
-        .classList.remove("hidden");
-
-    }
-
-
-    if (type === "css") {
-
-      document
-        .getElementById("cssEditor")
-        .classList.remove("hidden");
-
-    }
-
-
-    if (type === "js") {
-
-      document
-        .getElementById("jsEditor")
-        .classList.remove("hidden");
-
-    }
-
-
-    if (type === "preview") {
-
-      document
-        .getElementById("previewEditor")
-        .classList.remove("hidden");
-
-
-      updatePreview();
-
-    }
+    updatePreview();
 
   }
 
+}
 
-  function updatePreview() {
 
-    readEditors();
 
+function updatePreview() {
 
-    const documentHTML = `
-<!DOCTYPE html>
-<html>
+  readEditors();
 
-<head>
 
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
->
+  const documentHTML =
+    `<!DOCTYPE html>
+    <html>
+    <head>
 
-<style>
-${currentCSS}
-</style>
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-</head>
+      <style>
+        ${currentCSS}
+      </style>
 
-<body>
+    </head>
 
-${currentHTML}
+    <body>
 
-<script>
-${currentJS}
-<\/script>
+      ${currentHTML}
 
-</body>
+      <script>
+        ${currentJS}
+      <\/script>
 
-</html>
-`;
+    </body>
+    </html>`;
 
 
-    document
-      .getElementById("previewFrame")
-      .srcdoc =
-      documentHTML;
+  document
+    .getElementById("previewFrame")
+    .srcdoc =
+    documentHTML;
 
-  }
+}
 
 
-  /* ============================================================
-     PRODUCT MANAGER
-  ============================================================ */
 
-  function defaultProducts() {
+/* =========================
+   FASHION STORE
+========================= */
 
-    return [
+function defaultProducts() {
 
-      {
-        name: "Classic Shirt",
-        price: 25000,
-        category: "Men",
-        description:
-          "Premium classic shirt.",
-        icon: "👕",
-        image: ""
-      },
+  return [
 
-      {
-        name: "Elegant Dress",
-        price: 45000,
-        category: "Women",
-        description:
-          "Beautiful elegant dress.",
-        icon: "👗",
-        image: ""
-      },
-
-      {
-        name: "Premium Outfit",
-        price: 55000,
-        category: "New Arrivals",
-        description:
-          "Premium fashion outfit.",
-        icon: "✨",
-        image: ""
-      }
-
-    ];
-
-  }
-
-
-  function renderProductEditor() {
-
-    const container =
-      document.getElementById(
-        "productsEditor"
-      );
-
-
-    container.innerHTML = "";
-
-
-    storeProducts.forEach(
-      (product, index) => {
-
-        const row =
-          document.createElement("div");
-
-
-        row.className =
-          "product-row";
-
-
-        row.innerHTML = `
-
-<input
-  data-index="${index}"
-  data-field="name"
-  value="${escapeAttribute(product.name)}"
-  placeholder="Product name"
->
-
-
-<input
-  data-index="${index}"
-  data-field="price"
-  type="number"
-  value="${Number(product.price) || 0}"
-  placeholder="Price"
->
-
-
-<input
-  data-index="${index}"
-  data-field="category"
-  value="${escapeAttribute(product.category)}"
-  placeholder="Category"
->
-
-
-<input
-  data-index="${index}"
-  data-field="description"
-  value="${escapeAttribute(product.description)}"
-  placeholder="Description"
->
-
-
-<input
-  data-index="${index}"
-  data-field="icon"
-  value="${escapeAttribute(product.icon || "🛍️")}"
-  placeholder="Emoji"
->
-
-
-<button
-  class="danger"
-  onclick="removeProduct(${index})"
->
-  ×
-</button>
-
-`;
-
-
-        container.appendChild(row);
-
-      }
-    );
-
-  }
-
-
-  function readProductEditor() {
-
-    document
-      .querySelectorAll(
-        "#productsEditor [data-field]"
-      )
-      .forEach(input => {
-
-        const index =
-          Number(input.dataset.index);
-
-
-        const field =
-          input.dataset.field;
-
-
-        storeProducts[index][field] =
-          input.value;
-
-      });
-
-
-    storeProducts.forEach(
-      product => {
-
-        product.price =
-          Number(product.price) || 0;
-
-      }
-    );
-
-  }
-
-
-  function addProduct() {
-
-    readProductEditor();
-
-
-    storeProducts.push({
-
-      name: "New Product",
-
-      price: 10000,
-
-      category: "Products",
-
+    {
+      name: "Classic Shirt",
+      price: 25000,
+      category: "Men",
       description:
-        "Product description",
-
-      icon: "🛍️",
-
+        "Premium classic shirt.",
+      icon: "👕",
       image: ""
+    },
+
+    {
+      name: "Elegant Dress",
+      price: 45000,
+      category: "Women",
+      description:
+        "Beautiful elegant dress.",
+      icon: "👗",
+      image: ""
+    },
+
+    {
+      name: "Premium Outfit",
+      price: 55000,
+      category: "New Arrivals",
+      description:
+        "Premium fashion outfit.",
+      icon: "✨",
+      image: ""
+    }
+
+  ];
+
+}
+
+
+
+function renderProductEditor() {
+
+  const container =
+    document.getElementById(
+      "productsEditor"
+    );
+
+
+  container.innerHTML = "";
+
+
+  storeProducts.forEach(
+    (product, index) => {
+
+      const row =
+        document.createElement("div");
+
+
+      row.className =
+        "product-row";
+
+
+      row.innerHTML = `
+
+        <input
+          data-index="${index}"
+          data-field="name"
+          value="${escapeAttribute(product.name)}"
+          placeholder="Product name">
+
+        <input
+          data-index="${index}"
+          data-field="price"
+          type="number"
+          value="${Number(product.price) || 0}"
+          placeholder="Price">
+
+        <input
+          data-index="${index}"
+          data-field="category"
+          value="${escapeAttribute(product.category)}"
+          placeholder="Category">
+
+        <input
+          data-index="${index}"
+          data-field="description"
+          value="${escapeAttribute(product.description)}"
+          placeholder="Description">
+
+        <input
+          data-index="${index}"
+          data-field="icon"
+          value="${escapeAttribute(product.icon || "🛍️")}"
+          placeholder="Emoji">
+
+        <button
+          class="danger"
+          onclick="removeProduct(${index})">
+          ×
+        </button>
+
+      `;
+
+
+      container.appendChild(row);
+
+    }
+  );
+
+}
+
+
+
+function readProductEditor() {
+
+  document
+    .querySelectorAll(
+      "#productsEditor [data-field]"
+    )
+    .forEach(input => {
+
+      const index =
+        Number(input.dataset.index);
+
+      const field =
+        input.dataset.field;
+
+
+      storeProducts[index][field] =
+        input.value;
 
     });
 
 
-    renderProductEditor();
+  storeProducts.forEach(
+    product => {
+
+      product.price =
+        Number(product.price) || 0;
+
+    }
+  );
+
+}
+
+
+
+function addProduct() {
+
+  readProductEditor();
+
+
+  storeProducts.push({
+
+    name: "New Product",
+
+    price: 10000,
+
+    category: "Products",
+
+    description:
+      "Product description",
+
+    icon: "🛍️",
+
+    image: ""
+
+  });
+
+
+  renderProductEditor();
+
+}
+
+
+
+function removeProduct(index) {
+
+  readProductEditor();
+
+
+  if (storeProducts.length <= 1) {
+
+    alert(
+      "You need at least one product."
+    );
+
+    return;
 
   }
 
 
-  function removeProduct(index) {
-
-    readProductEditor();
-
-
-    if (
-      storeProducts.length <= 1
-    ) {
-
-      alert(
-        "You need at least one product."
-      );
-
-      return;
-
-    }
+  storeProducts.splice(
+    index,
+    1
+  );
 
 
-    storeProducts.splice(
-      index,
-      1
+  renderProductEditor();
+
+}
+
+
+
+function updateStorePreview() {
+
+  readProductEditor();
+
+  buildFashionStore();
+
+  syncEditors();
+
+  updatePreview();
+
+}
+
+
+
+function loadFashionTemplate() {
+
+  storeProducts =
+    defaultProducts();
+
+
+  document
+    .getElementById("storeManager")
+    .classList
+    .remove("hidden");
+
+
+  renderProductEditor();
+
+  buildFashionStore();
+
+  syncEditors();
+
+  updatePreview();
+
+
+  document
+    .getElementById("aiPrompt")
+    .value =
+    "Create a professional fashion store.";
+
+}
+
+
+
+function buildFashionStore() {
+
+  const name =
+    document
+      .getElementById("storeName")
+      .value ||
+    "My Store";
+
+
+  const tagline =
+    document
+      .getElementById("storeTagline")
+      .value ||
+    "Quality products for everyone";
+
+
+  const whatsapp =
+    document
+      .getElementById("storeWhatsapp")
+      .value ||
+    "";
+
+
+  const productsJSON =
+    JSON.stringify(
+      storeProducts
     );
 
 
-    renderProductEditor();
-
-  }
-
-
-  function updateStorePreview() {
-
-    readProductEditor();
-
-    buildFashionStore();
-
-    syncEditors();
-
-    updatePreview();
-
-  }
-
-
-  /* ============================================================
-     FASHION STORE
-  ============================================================ */
-
-  function loadFashionTemplate() {
-
-    storeProducts =
-      defaultProducts();
-
-
-    document
-      .getElementById("storeManager")
-      .classList.remove("hidden");
-
-
-    renderProductEditor();
-
-
-    buildFashionStore();
-
-    syncEditors();
-
-    updatePreview();
-
-
-    document
-      .getElementById("aiPrompt")
-      .value =
-      "Create a professional fashion store.";
-
-  }
-
-
-  function buildFashionStore() {
-
-    const name =
-      document
-        .getElementById("storeName")
-        .value ||
-      "My Store";
-
-
-    const tagline =
-      document
-        .getElementById("storeTagline")
-        .value ||
-      "Quality products for everyone";
-
-
-    const whatsapp =
-      document
-        .getElementById("storeWhatsapp")
-        .value ||
-      "";
-
-
-    const productsJSON =
-      JSON.stringify(
-        storeProducts
-      );
-
-
-    currentHTML = `
+  currentHTML = `
 
 <header class="shop-header">
 
@@ -2454,7 +2294,6 @@ ${currentJS}
       ${escapeHTML(tagline)}
     </p>
 
-
     <a href="#products">
 
       <button>
@@ -2472,8 +2311,7 @@ ${currentJS}
 
   <input
     id="productSearch"
-    placeholder="Search products..."
-  >
+    placeholder="Search products...">
 
 
   <select id="categoryFilter">
@@ -2489,8 +2327,7 @@ ${currentJS}
 
 <section
   id="products"
-  class="products-section"
->
+  class="products-section">
 
   <h2>
     Our Products
@@ -2498,16 +2335,15 @@ ${currentJS}
 
   <div
     id="productGrid"
-    class="product-grid"
-  ></div>
+    class="product-grid">
+  </div>
 
 </section>
 
 
 <aside
   id="cartDrawer"
-  class="cart-drawer"
->
+  class="cart-drawer">
 
   <div class="cart-head">
 
@@ -2547,8 +2383,8 @@ ${currentJS}
 
 <div
   id="cartOverlay"
-  class="cart-overlay"
-></div>
+  class="cart-overlay">
+</div>
 
 
 <footer class="shop-footer">
@@ -2570,12 +2406,11 @@ ${currentJS}
 `;
 
 
-    currentCSS = `
+  currentCSS = `
 
 * {
   box-sizing: border-box;
 }
-
 
 body {
   margin: 0;
@@ -2583,7 +2418,6 @@ body {
   background: #f8fafc;
   color: #111827;
 }
-
 
 .shop-header {
   background: #111827;
@@ -2595,18 +2429,15 @@ body {
   gap: 15px;
 }
 
-
 .shop-header h1 {
   margin: 0;
   color: #facc15;
 }
 
-
 .shop-header p {
   margin: 4px 0 0;
   color: #cbd5e1;
 }
-
 
 .shop-header button {
   background: #facc15;
@@ -2616,14 +2447,12 @@ body {
   font-weight: bold;
 }
 
-
 .shop-hero {
   min-height: 420px;
   display: flex;
   align-items: center;
   padding: 50px 7%;
   color: white;
-
   background:
     linear-gradient(
       120deg,
@@ -2632,21 +2461,16 @@ body {
     );
 }
 
-
 .shop-hero h2 {
-  font-size:
-    clamp(35px, 8vw, 65px);
-
+  font-size: clamp(35px, 8vw, 65px);
   margin-bottom: 12px;
 }
-
 
 .shop-hero p {
   font-size: 18px;
   max-width: 600px;
   color: #dbeafe;
 }
-
 
 .shop-hero button {
   background: #facc15;
@@ -2657,14 +2481,12 @@ body {
   margin-top: 15px;
 }
 
-
 .shop-controls {
   width: min(1100px, 90%);
   margin: 25px auto;
   display: flex;
   gap: 12px;
 }
-
 
 .shop-controls input,
 .shop-controls select {
@@ -2674,26 +2496,22 @@ body {
   flex: 1;
 }
 
-
 .products-section {
   width: min(1100px, 90%);
   margin: 30px auto 70px;
 }
 
-
 .products-section h2 {
   font-size: 32px;
 }
 
-
 .product-grid {
   display: grid;
   grid-template-columns:
-    repeat(auto-fit, minmax(220px, 1fr));
+    repeat(auto-fit,minmax(220px,1fr));
   gap: 18px;
   margin-top: 20px;
 }
-
 
 .product-card {
   background: white;
@@ -2703,33 +2521,27 @@ body {
     0 8px 25px rgba(0,0,0,.08);
 }
 
-
 .product-image {
   height: 180px;
   display: flex;
   justify-content: center;
   align-items: center;
-
   background:
     linear-gradient(
       135deg,
       #dbeafe,
       #fef3c7
     );
-
   font-size: 65px;
 }
-
 
 .product-body {
   padding: 17px;
 }
 
-
 .product-body h3 {
   margin: 0 0 7px;
 }
-
 
 .product-body p {
   color: #64748b;
@@ -2737,13 +2549,11 @@ body {
   min-height: 40px;
 }
 
-
 .price {
   color: #1d4ed8;
   font-size: 20px;
   font-weight: 800;
 }
-
 
 .product-body button {
   width: 100%;
@@ -2755,29 +2565,24 @@ body {
   margin-top: 10px;
 }
 
-
 .cart-drawer {
   position: fixed;
   top: 0;
   right: -420px;
-  width: min(400px, 92%);
+  width: min(400px,92%);
   height: 100vh;
   background: white;
   z-index: 100;
+  padding: 20px;
   box-shadow:
     -10px 0 35px rgba(0,0,0,.2);
-
-  padding: 20px;
-
   transition: .3s;
   overflow-y: auto;
 }
 
-
 .cart-drawer.open {
   right: 0;
 }
-
 
 .cart-overlay {
   position: fixed;
@@ -2787,18 +2592,15 @@ body {
   display: none;
 }
 
-
 .cart-overlay.open {
   display: block;
 }
-
 
 .cart-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-
 
 .cart-head button {
   border: 0;
@@ -2810,13 +2612,11 @@ body {
   border-radius: 10px;
 }
 
-
 .cart-item {
   border-bottom:
     1px solid #e5e7eb;
   padding: 15px 0;
 }
-
 
 .cart-item-top {
   display: flex;
@@ -2824,14 +2624,12 @@ body {
   gap: 10px;
 }
 
-
 .qty-controls {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-top: 8px;
 }
-
 
 .qty-controls button {
   border: 0;
@@ -2841,14 +2639,12 @@ body {
   border-radius: 7px;
 }
 
-
 .cart-total {
   display: flex;
   justify-content: space-between;
   padding: 20px 0;
   font-size: 20px;
 }
-
 
 #whatsappCheckout {
   width: 100%;
@@ -2860,7 +2656,6 @@ body {
   font-weight: bold;
 }
 
-
 .shop-footer {
   background: #111827;
   color: white;
@@ -2868,11 +2663,9 @@ body {
   padding: 35px 20px;
 }
 
-
 .shop-footer p {
   color: #94a3b8;
 }
-
 
 @media(max-width:600px) {
 
@@ -2890,15 +2683,13 @@ body {
 `;
 
 
-    currentJS = `
+  currentJS = `
 
 const products =
   ${productsJSON};
 
-
 const whatsappNumber =
   "${escapeJS(whatsapp)}";
-
 
 let cart = [];
 
@@ -2936,7 +2727,8 @@ const cartOverlay =
 function money(value) {
 
   return "₦" +
-    Number(value).toLocaleString();
+    Number(value)
+      .toLocaleString();
 
 }
 
@@ -2944,7 +2736,8 @@ function money(value) {
 function renderProducts() {
 
   const search =
-    searchInput.value
+    searchInput
+      .value
       .toLowerCase();
 
 
@@ -2954,123 +2747,105 @@ function renderProducts() {
 
   const filtered =
     products.filter(
-      product => {
-
-        const matchesSearch =
-          product.name
-            .toLowerCase()
-            .includes(search);
-
-
-        const matchesCategory =
-          category === "all" ||
-          product.category === category;
-
-
-        return (
-          matchesSearch &&
-          matchesCategory
-        );
-
-      }
+      product =>
+        product.name
+          .toLowerCase()
+          .includes(search)
+        &&
+        (
+          category === "all"
+          ||
+          category === product.category
+        )
     );
 
 
   productGrid.innerHTML =
-    filtered.map(
-      product => {
+    filtered
+      .map(product => {
 
         const safeName =
           product.name
-            .replace(/\\\\/g, "\\\\\\\\")
-            .replace(/'/g, "\\\\'");
+            .replace(/\\\\/g,"\\\\\\\\")
+            .replace(/'/g,"\\\\'");
 
 
         return \`
 
-<div class="product-card">
+          <div class="product-card">
 
-  <div class="product-image">
-    \${product.icon || "🛍️"}
-  </div>
+            <div class="product-image">
+              \${product.icon || "🛍️"}
+            </div>
 
+            <div class="product-body">
 
-  <div class="product-body">
+              <small>
+                \${product.category}
+              </small>
 
-    <small>
-      \${product.category}
-    </small>
+              <h3>
+                \${product.name}
+              </h3>
 
+              <p>
+                \${product.description || ""}
+              </p>
 
-    <h3>
-      \${product.name}
-    </h3>
+              <div class="price">
+                \${money(product.price)}
+              </div>
 
+              <button
+                onclick="addToCart('\${safeName}')">
 
-    <p>
-      \${product.description || ""}
-    </p>
+                Add to Cart
 
+              </button>
 
-    <div class="price">
-      \${money(product.price)}
-    </div>
+            </div>
 
+          </div>
 
-    <button
-      onclick="addToCart('\${safeName}')"
-    >
-      Add to Cart
-    </button>
+        \`;
 
-  </div>
-
-</div>
-
-\`;
-
-      }
-    ).join("");
+      })
+      .join("");
 
 }
+
 
 
 function loadCategories() {
 
-  const categories =
-    [...new Set(
+  [
+    ...new Set(
       products.map(
         product =>
           product.category
       )
-    )];
+    )
+  ]
+  .forEach(category => {
 
-
-  categories.forEach(
-    category => {
-
-      const option =
-        document.createElement(
-          "option"
-        );
-
-
-      option.value =
-        category;
-
-
-      option.textContent =
-        category;
-
-
-      categoryFilter.appendChild(
-        option
+    const option =
+      document.createElement(
+        "option"
       );
 
-    }
-  );
+    option.value =
+      category;
+
+    option.textContent =
+      category;
+
+    categoryFilter
+      .appendChild(option);
+
+  });
 
 }
+
 
 
 function addToCart(name) {
@@ -3113,6 +2888,7 @@ function addToCart(name) {
 }
 
 
+
 function changeQuantity(
   name,
   amount
@@ -3147,6 +2923,7 @@ function changeQuantity(
 }
 
 
+
 function renderCart() {
 
   const cartItems =
@@ -3169,7 +2946,7 @@ function renderCart() {
 
   const totalItems =
     cart.reduce(
-      (sum, item) =>
+      (sum,item) =>
         sum + item.quantity,
       0
     );
@@ -3177,7 +2954,7 @@ function renderCart() {
 
   const total =
     cart.reduce(
-      (sum, item) =>
+      (sum,item) =>
         sum +
         item.price *
         item.quantity,
@@ -3204,71 +2981,68 @@ function renderCart() {
 
 
   cartItems.innerHTML =
-    cart.map(
-      item => {
+    cart
+      .map(item => {
 
         const safeName =
           item.name
-            .replace(/\\\\/g, "\\\\\\\\")
-            .replace(/'/g, "\\\\'");
+            .replace(/\\\\/g,"\\\\\\\\")
+            .replace(/'/g,"\\\\'");
 
 
         return \`
 
-<div class="cart-item">
+          <div class="cart-item">
 
-  <div class="cart-item-top">
+            <div class="cart-item-top">
 
-    <strong>
-      \${item.name}
-    </strong>
+              <strong>
+                \${item.name}
+              </strong>
 
-    <span>
-      \${money(
-        item.price *
-        item.quantity
-      )}
-    </span>
+              <span>
+                \${money(
+                  item.price *
+                  item.quantity
+                )}
+              </span>
 
-  </div>
-
-
-  <div class="qty-controls">
-
-    <button
-      onclick="changeQuantity(
-        '\${safeName}',
-        -1
-      )"
-    >
-      −
-    </button>
+            </div>
 
 
-    <strong>
-      \${item.quantity}
-    </strong>
+            <div class="qty-controls">
 
+              <button
+                onclick="changeQuantity(
+                  '\${safeName}',
+                  -1
+                )">
+                −
+              </button>
 
-    <button
-      onclick="changeQuantity(
-        '\${safeName}',
-        1
-      )"
-    >
-      +
-    </button>
+              <strong>
+                \${item.quantity}
+              </strong>
 
-  </div>
+              <button
+                onclick="changeQuantity(
+                  '\${safeName}',
+                  1
+                )">
+                +
+              </button>
 
-</div>
+            </div>
 
-\`;
+          </div>
 
-      }
-    ).join("");
+        \`;
+
+      })
+      .join("");
 
 }
+
 
 
 function openCart() {
@@ -3277,12 +3051,12 @@ function openCart() {
     .classList
     .add("open");
 
-
   cartOverlay
     .classList
     .add("open");
 
 }
+
 
 
 function closeCart() {
@@ -3291,12 +3065,12 @@ function closeCart() {
     .classList
     .remove("open");
 
-
   cartOverlay
     .classList
     .remove("open");
 
 }
+
 
 
 function checkoutWhatsApp() {
@@ -3314,7 +3088,7 @@ function checkoutWhatsApp() {
 
   const total =
     cart.reduce(
-      (sum, item) =>
+      (sum,item) =>
         sum +
         item.price *
         item.quantity,
@@ -3323,34 +3097,28 @@ function checkoutWhatsApp() {
 
 
   let message =
-    "Hello! I would like to place an order.%0A%0A";
+    "Hello! I would like to place an order.\\n\\n";
 
 
-  cart.forEach(
-    item => {
+  cart.forEach(item => {
 
-      message +=
-        encodeURIComponent(
-          item.name +
-          " x" +
-          item.quantity +
-          " - " +
-          money(
-            item.price *
-            item.quantity
-          )
-        ) +
-        "%0A";
+    message +=
+      item.name +
+      " x" +
+      item.quantity +
+      " - " +
+      money(
+        item.price *
+        item.quantity
+      ) +
+      "\\n";
 
-    }
-  );
+  });
 
 
   message +=
-    "%0ATotal: " +
-    encodeURIComponent(
-      money(total)
-    );
+    "\\nTotal: " +
+    money(total);
 
 
   const number =
@@ -3376,17 +3144,16 @@ function checkoutWhatsApp() {
     "https://wa.me/" +
     number +
     "?text=" +
-    message,
+    encodeURIComponent(message),
     "_blank"
   );
 
 }
 
 
+
 document
-  .getElementById(
-    "cartButton"
-  )
+  .getElementById("cartButton")
   .addEventListener(
     "click",
     openCart
@@ -3394,9 +3161,7 @@ document
 
 
 document
-  .getElementById(
-    "closeCart"
-  )
+  .getElementById("closeCart")
   .addEventListener(
     "click",
     closeCart
@@ -3404,9 +3169,7 @@ document
 
 
 document
-  .getElementById(
-    "cartOverlay"
-  )
+  .getElementById("cartOverlay")
   .addEventListener(
     "click",
     closeCart
@@ -3414,25 +3177,25 @@ document
 
 
 document
-  .getElementById(
-    "whatsappCheckout"
-  )
+  .getElementById("whatsappCheckout")
   .addEventListener(
     "click",
     checkoutWhatsApp
   );
 
 
-searchInput.addEventListener(
-  "input",
-  renderProducts
-);
+searchInput
+  .addEventListener(
+    "input",
+    renderProducts
+  );
 
 
-categoryFilter.addEventListener(
-  "change",
-  renderProducts
-);
+categoryFilter
+  .addEventListener(
+    "change",
+    renderProducts
+  );
 
 
 loadCategories();
@@ -3443,16 +3206,17 @@ renderCart();
 
 `;
 
-  }
+}
 
 
-  /* ============================================================
-     RESTAURANT TEMPLATE
-  ============================================================ */
 
-  function loadRestaurantTemplate() {
+/* =========================
+   RESTAURANT TEMPLATE
+========================= */
 
-    currentHTML = `
+function loadRestaurantTemplate() {
+
+  currentHTML = `
 
 <div class="restaurant">
 
@@ -3464,54 +3228,28 @@ renderCart();
     Delicious meals made with love.
   </p>
 
-
   <h2>
     Our Menu
   </h2>
 
-
   <div class="menu">
 
     <div>
-
-      <h3>
-        Jollof Rice
-      </h3>
-
-      <p>
-        ₦5,000
-      </p>
-
+      <h3>Jollof Rice</h3>
+      <p>₦5,000</p>
     </div>
 
-
     <div>
-
-      <h3>
-        Fried Rice & Chicken
-      </h3>
-
-      <p>
-        ₦6,500
-      </p>
-
+      <h3>Fried Rice & Chicken</h3>
+      <p>₦6,500</p>
     </div>
 
-
     <div>
-
-      <h3>
-        Special Platter
-      </h3>
-
-      <p>
-        ₦12,000
-      </p>
-
+      <h3>Special Platter</h3>
+      <p>₦12,000</p>
     </div>
 
   </div>
-
 
   <button onclick="orderFood()">
     Order on WhatsApp
@@ -3522,14 +3260,13 @@ renderCart();
 `;
 
 
-    currentCSS = `
+  currentCSS = `
 
 body {
   margin: 0;
   font-family: Arial;
   background: #fff7ed;
 }
-
 
 .restaurant {
   max-width: 900px;
@@ -3538,38 +3275,26 @@ body {
   text-align: center;
 }
 
-
 .restaurant h1 {
   font-size: 50px;
   color: #ea580c;
 }
 
-
 .menu {
   display: grid;
-
   grid-template-columns:
-    repeat(
-      auto-fit,
-      minmax(200px,1fr)
-    );
-
+    repeat(auto-fit,minmax(200px,1fr));
   gap: 15px;
-
   margin: 30px 0;
 }
-
 
 .menu div {
   background: white;
   padding: 25px;
   border-radius: 15px;
-
   box-shadow:
-    0 5px 20px
-    rgba(0,0,0,.08);
+    0 5px 20px rgba(0,0,0,.08);
 }
-
 
 button {
   background: #ea580c;
@@ -3583,7 +3308,7 @@ button {
 `;
 
 
-    currentJS = `
+  currentJS = `
 
 function orderFood() {
 
@@ -3596,20 +3321,21 @@ function orderFood() {
 `;
 
 
-    syncEditors();
+  syncEditors();
 
-    updatePreview();
+  updatePreview();
 
-  }
+}
 
 
-  /* ============================================================
-     PORTFOLIO TEMPLATE
-  ============================================================ */
 
-  function loadPortfolioTemplate() {
+/* =========================
+   PORTFOLIO TEMPLATE
+========================= */
 
-    currentHTML = `
+function loadPortfolioTemplate() {
+
+  currentHTML = `
 
 <section class="portfolio">
 
@@ -3617,14 +3343,12 @@ function orderFood() {
     My Creative Portfolio
   </h1>
 
-
   <p>
     I create beautiful digital experiences.
   </p>
 
 
   <div class="portfolio-grid">
-
 
     <div>
 
@@ -3661,7 +3385,6 @@ function orderFood() {
 
     </div>
 
-
   </div>
 
 </section>
@@ -3669,7 +3392,7 @@ function orderFood() {
 `;
 
 
-    currentCSS = `
+  currentCSS = `
 
 body {
   margin: 0;
@@ -3678,32 +3401,23 @@ body {
   color: white;
 }
 
-
 .portfolio {
   max-width: 900px;
   margin: auto;
   padding: 70px 20px;
 }
 
-
 .portfolio h1 {
   font-size: 55px;
   color: #facc15;
 }
 
-
 .portfolio-grid {
   display: grid;
-
   grid-template-columns:
-    repeat(
-      auto-fit,
-      minmax(250px,1fr)
-    );
-
+    repeat(auto-fit,minmax(250px,1fr));
   gap: 20px;
 }
-
 
 .portfolio-grid div {
   background: #1e293b;
@@ -3714,258 +3428,347 @@ body {
 `;
 
 
-    currentJS = "";
+  currentJS = "";
 
 
-    syncEditors();
+  syncEditors();
 
-    updatePreview();
+  updatePreview();
+
+}
+
+
+
+/* =========================
+   SAVE PROJECT
+========================= */
+
+async function saveProject() {
+
+  if (!currentUser) {
+
+    alert(
+      "Please sign up or login before saving your project."
+    );
+
+    showAuth();
+
+    return;
 
   }
 
 
-  /* ============================================================
-     SAVE PROJECT
-  ============================================================ */
-
-  async function saveProject() {
-
-    if (!currentUser) {
-
-      alert(
-        "Please sign up or login before saving your project."
-      );
+  readEditors();
 
 
-      showAuth();
-
-      return;
-
-    }
-
-
-    readEditors();
-
-
-    const title =
-      prompt(
-        "Give your website a name:",
-        "My Website"
-      );
-
-
-    if (!title) return;
-
-
-    const projectData = {
-
-      user_id:
-        currentUser.id,
-
-      title,
-
-      html:
-        currentHTML,
-
-      css:
-        currentCSS,
-
-      js:
-        currentJS
-
-    };
-
-
-    let result;
-
-
-    if (currentProjectId) {
-
-      result =
-        await supabaseClient
-          .from("projects")
-          .update(projectData)
-          .eq(
-            "id",
-            currentProjectId
-          )
-          .select()
-          .single();
-
-
-    } else {
-
-      result =
-        await supabaseClient
-          .from("projects")
-          .insert(projectData)
-          .select()
-          .single();
-
-    }
-
-
-    if (result.error) {
-
-      showSaveStatus(
-        result.error.message,
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    currentProjectId =
-      result.data.id;
-
-
-    currentProjectSlug =
-      result.data.slug;
-
-
-    showSaveStatus(
-      "Project saved successfully.",
-      "success"
+  const title =
+    prompt(
+      "Give your website a name:",
+      "My Website"
     );
 
 
-    await loadProjects();
+  if (!title) return;
+
+
+  const projectData = {
+
+    user_id:
+      currentUser.id,
+
+    title,
+
+    html:
+      currentHTML,
+
+    css:
+      currentCSS,
+
+    js:
+      currentJS
+
+  };
+
+
+  let result;
+
+
+  if (currentProjectId) {
+
+    result =
+      await supabaseClient
+        .from("projects")
+        .update(projectData)
+        .eq(
+          "id",
+          currentProjectId
+        )
+        .select()
+        .single();
+
+  } else {
+
+    result =
+      await supabaseClient
+        .from("projects")
+        .insert(projectData)
+        .select()
+        .single();
 
   }
 
 
-  /* ============================================================
-     LOAD PROJECTS
-  ============================================================ */
+  if (result.error) {
 
-  async function loadProjects() {
+    showSaveStatus(
+      result.error.message,
+      "error"
+    );
 
-    if (!currentUser) return;
+    return;
 
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("projects")
-        .select("*")
-        .eq(
-          "user_id",
-          currentUser.id
-        )
-        .order(
-          "updated_at",
-          {
-            ascending: false
-          }
-        );
+  }
 
 
-    const container =
-      document.getElementById(
-        "projectsList"
+  currentProjectId =
+    result.data.id;
+
+
+  currentProjectSlug =
+    result.data.slug;
+
+
+  showSaveStatus(
+    "Project saved successfully.",
+    "success"
+  );
+
+
+  await loadProjects();
+
+}
+
+
+
+/* =========================
+   LOAD PROJECTS
+========================= */
+
+async function loadProjects() {
+
+  if (!currentUser) return;
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("projects")
+      .select("*")
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "updated_at",
+        {
+          ascending: false
+        }
       );
 
 
-    if (error) {
-
-      container.innerHTML =
-        `<div class="status error">
-          ${escapeHTML(
-            error.message
-          )}
-        </div>`;
-
-      return;
-
-    }
+  const container =
+    document.getElementById(
+      "projectsList"
+    );
 
 
-    if (!data.length) {
-
-      container.innerHTML =
-        `<p class="muted">
-          You haven't saved any projects yet.
-        </p>`;
-
-      return;
-
-    }
-
+  if (error) {
 
     container.innerHTML =
-      data.map(
-        project => `
+      `<div class="status error">
+        ${escapeHTML(error.message)}
+      </div>`;
 
-<div class="project-item">
-
-  <div>
-
-    <strong>
-      ${escapeHTML(
-        project.title
-      )}
-    </strong>
-
-
-    <div class="small muted">
-
-      ${
-        project.is_published
-          ? "🌍 Published"
-          : "📝 Draft"
-      }
-
-    </div>
-
-  </div>
-
-
-  <div class="row">
-
-    <button
-      class="btn primary"
-      onclick="openProject('${project.id}')"
-    >
-      Open
-    </button>
-
-
-    ${
-      project.is_published &&
-      project.slug
-
-        ?
-
-`<button
-  class="btn success"
-  onclick="openPublished(
-    '${escapeJS(project.slug)}'
-  )"
->
-  View
-</button>`
-
-        :
-
-""
-
-    }
-
-  </div>
-
-</div>
-
-`
-      ).join("");
+    return;
 
   }
 
 
-  async function openProject(id) {
+  if (!data.length) {
+
+    container.innerHTML =
+      `<p class="muted">
+        You haven't saved any projects yet.
+      </p>`;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    data
+      .map(project => `
+
+        <div class="project-item">
+
+          <div>
+
+            <strong>
+              ${escapeHTML(
+                project.title
+              )}
+            </strong>
+
+            <div class="small muted">
+
+              ${
+                project.is_published
+                  ? "🌍 Published"
+                  : "📝 Draft"
+              }
+
+            </div>
+
+          </div>
+
+
+          <div class="row">
+
+            <button
+              class="btn primary"
+              onclick="openProject('${project.id}')">
+
+              Open
+
+            </button>
+
+
+            ${
+              project.is_published &&
+              project.slug
+
+                ? `
+
+                  <button
+                    class="btn success"
+                    onclick="openPublished('${escapeJS(project.slug)}')">
+
+                    View
+
+                  </button>
+
+                `
+
+                : ""
+            }
+
+          </div>
+
+        </div>
+
+      `)
+      .join("");
+
+}
+
+
+
+/* =========================
+   OPEN PROJECT
+========================= */
+
+async function openProject(id) {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("projects")
+      .select("*")
+      .eq(
+        "id",
+        id
+      )
+      .single();
+
+
+  if (error) {
+
+    alert(
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  currentProjectId =
+    data.id;
+
+
+  currentProjectSlug =
+    data.slug;
+
+
+  currentHTML =
+    data.html || "";
+
+
+  currentCSS =
+    data.css || "";
+
+
+  currentJS =
+    data.js || "";
+
+
+  syncEditors();
+
+  updatePreview();
+
+  showBuilder();
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+
+/* =========================
+   PUBLISH
+========================= */
+
+async function publishWebsite() {
+
+  if (!currentUser) {
+
+    alert(
+      "Please login before publishing your website."
+    );
+
+    showAuth();
+
+    return;
+
+  }
+
+
+  readEditors();
+
+
+  let project;
+
+
+  if (currentProjectId) {
 
     const {
       data,
@@ -3973,11 +3776,26 @@ body {
     } =
       await supabaseClient
         .from("projects")
-        .select("*")
+        .update({
+
+          html:
+            currentHTML,
+
+          css:
+            currentCSS,
+
+          js:
+            currentJS,
+
+          is_published:
+            true
+
+        })
         .eq(
           "id",
-          id
+          currentProjectId
         )
+        .select()
         .single();
 
 
@@ -3992,246 +3810,17 @@ body {
     }
 
 
-    currentProjectId =
-      data.id;
+    project = data;
 
 
-    currentProjectSlug =
-      data.slug;
+  } else {
 
-
-    currentHTML =
-      data.html || "";
-
-
-    currentCSS =
-      data.css || "";
-
-
-    currentJS =
-      data.js || "";
-
-
-    syncEditors();
-
-    updatePreview();
-
-
-    showBuilder();
-
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-  }
-
-
-  /* ============================================================
-     PUBLISH
-  ============================================================ */
-
-  async function publishWebsite() {
-
-    if (!currentUser) {
-
-      alert(
-        "Please login before publishing your website."
-      );
-
-
-      showAuth();
-
-      return;
-
-    }
-
-
-    readEditors();
-
-
-    let project;
-
-
-    if (currentProjectId) {
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .from("projects")
-          .update({
-
-            html:
-              currentHTML,
-
-            css:
-              currentCSS,
-
-            js:
-              currentJS,
-
-            is_published:
-              true
-
-          })
-          .eq(
-            "id",
-            currentProjectId
-          )
-          .select()
-          .single();
-
-
-      if (error) {
-
-        alert(
-          error.message
-        );
-
-        return;
-
-      }
-
-
-      project =
-        data;
-
-
-    } else {
-
-      const title =
-        prompt(
-          "Website name:",
-          "My Website"
-        ) ||
-        "My Website";
-
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .from("projects")
-          .insert({
-
-            user_id:
-              currentUser.id,
-
-            title,
-
-            html:
-              currentHTML,
-
-            css:
-              currentCSS,
-
-            js:
-              currentJS,
-
-            is_published:
-              true
-
-          })
-          .select()
-          .single();
-
-
-      if (error) {
-
-        alert(
-          error.message
-        );
-
-        return;
-
-      }
-
-
-      project =
-        data;
-
-    }
-
-
-    currentProjectId =
-      project.id;
-
-
-    currentProjectSlug =
-      project.slug;
-
-
-    const url =
-      window.location.origin +
-      "/?site=" +
-      project.slug;
-
-
-    showSaveStatus(
-
-      `
-      <b>
-        Website published!
-      </b>
-
-      <br>
-
-      <a
-        href="${url}"
-        target="_blank"
-      >
-        ${url}
-      </a>
-      `,
-
-      "success",
-
-      true
-
-    );
-
-
-    await loadProjects();
-
-  }
-
-
-  function openPublished(slug) {
-
-    window.open(
-
-      window.location.origin +
-      "/?site=" +
-      slug,
-
-      "_blank"
-
-    );
-
-  }
-
-
-  /* ============================================================
-     PUBLIC WEBSITE RENDERER
-  ============================================================ */
-
-  async function loadPublicWebsite() {
-
-    const params =
-      new URLSearchParams(
-        window.location.search
-      );
-
-
-    const slug =
-      params.get("site");
-
-
-    if (!slug) return;
+    const title =
+      prompt(
+        "Website name:",
+        "My Website"
+      ) ||
+      "My Website";
 
 
     const {
@@ -4240,197 +3829,312 @@ body {
     } =
       await supabaseClient
         .from("projects")
-        .select(
-          "html,css,js,title"
-        )
-        .eq(
-          "slug",
-          slug
-        )
-        .eq(
-          "is_published",
-          true
-        )
+        .insert({
+
+          user_id:
+            currentUser.id,
+
+          title,
+
+          html:
+            currentHTML,
+
+          css:
+            currentCSS,
+
+          js:
+            currentJS,
+
+          is_published:
+            true
+
+        })
+        .select()
         .single();
 
 
-    if (error || !data) {
+    if (error) {
 
-      document.body.innerHTML = `
-
-<div style="
-  font-family:Arial;
-  text-align:center;
-  padding:60px 20px;
-">
-
-  <h1>
-    Website not found
-  </h1>
-
-  <p>
-    This published website does not exist.
-  </p>
-
-</div>
-
-`;
+      alert(
+        error.message
+      );
 
       return;
 
     }
 
 
-    document.body.innerHTML = `
-
-<style>
-${data.css}
-</style>
-
-${data.html}
-
-<script>
-${data.js}
-<\/script>
-
-`;
+    project = data;
 
   }
 
 
-  /* ============================================================
-     CLEAR
-  ============================================================ */
-
-  function clearBuilder() {
-
-    if (
-      !confirm(
-        "Clear the current website?"
-      )
-    ) return;
+  currentProjectId =
+    project.id;
 
 
-    currentHTML = "";
-
-    currentCSS = "";
-
-    currentJS = "";
+  currentProjectSlug =
+    project.slug;
 
 
-    currentProjectId = null;
-
-    currentProjectSlug = null;
-
-
-    syncEditors();
-
-    updatePreview();
-
-  }
+  const url =
+    window.location.origin +
+    "/?site=" +
+    project.slug;
 
 
-  /* ============================================================
-     STATUS
-  ============================================================ */
+  showSaveStatus(
 
-  function showSaveStatus(
-    message,
-    type,
-    allowHTML = false
-  ) {
+    `<b>Website published!</b>
+     <br>
+     <a
+       href="${url}"
+       target="_blank">
+       ${url}
+     </a>`,
 
-    document
-      .getElementById(
-        "saveStatus"
-      )
-      .innerHTML =
+    "success",
 
-      `<div class="status ${type}">
-        ${
-          allowHTML
-            ? message
-            : escapeHTML(message)
-        }
-      </div>`;
+    true
 
-  }
+  );
 
 
-  /* ============================================================
-     SECURITY / HELPERS
-  ============================================================ */
+  await loadProjects();
 
-  function escapeHTML(value) {
-
-    return String(
-      value || ""
-    )
-
-      .replace(
-        /&/g,
-        "&amp;"
-      )
-
-      .replace(
-        /</g,
-        "&lt;"
-      )
-
-      .replace(
-        />/g,
-        "&gt;"
-      )
-
-      .replace(
-        /"/g,
-        "&quot;"
-      )
-
-      .replace(
-        /'/g,
-        "&#039;"
-      );
-
-  }
+}
 
 
-  function escapeAttribute(value) {
 
-    return escapeHTML(
-      value
+/* =========================
+   OPEN PUBLISHED WEBSITE
+========================= */
+
+function openPublished(slug) {
+
+  window.open(
+    window.location.origin +
+    "/?site=" +
+    slug,
+    "_blank"
+  );
+
+}
+
+
+
+/* =========================
+   PUBLIC WEBSITE
+========================= */
+
+async function loadPublicWebsite() {
+
+  const params =
+    new URLSearchParams(
+      window.location.search
     );
 
+
+  const slug =
+    params.get("site");
+
+
+  if (!slug) return;
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("projects")
+      .select(
+        "html,css,js,title"
+      )
+      .eq(
+        "slug",
+        slug
+      )
+      .eq(
+        "is_published",
+        true
+      )
+      .single();
+
+
+  if (error || !data) {
+
+    document.body.innerHTML = `
+
+      <div
+        style="
+          font-family:Arial;
+          text-align:center;
+          padding:60px 20px;
+        ">
+
+        <h1>
+          Website not found
+        </h1>
+
+        <p>
+          This published website does not exist.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
   }
 
 
-  function escapeJS(value) {
+  document.body.innerHTML = `
 
-    return String(
-      value || ""
+    <style>
+      ${data.css}
+    </style>
+
+    ${data.html}
+
+    <script>
+      ${data.js}
+    <\/script>
+
+  `;
+
+}
+
+
+
+/* =========================
+   CLEAR BUILDER
+========================= */
+
+function clearBuilder() {
+
+  if (
+    !confirm(
+      "Clear the current website?"
     )
+  ) {
 
-      .replace(
-        /\\/g,
-        "\\\\"
-      )
-
-      .replace(
-        /"/g,
-        '\\"'
-      )
-
-      .replace(
-        /\n/g,
-        "\\n"
-      )
-
-      .replace(
-        /\r/g,
-        "\\r"
-      );
+    return;
 
   }
+
+
+  currentHTML = "";
+
+  currentCSS = "";
+
+  currentJS = "";
+
+  currentProjectId = null;
+
+  currentProjectSlug = null;
+
+
+  syncEditors();
+
+  updatePreview();
+
+}
+
+
+
+/* =========================
+   STATUS
+========================= */
+
+function showSaveStatus(
+  message,
+  type,
+  allowHTML = false
+) {
+
+  document
+    .getElementById("saveStatus")
+    .innerHTML =
+
+    `<div class="status ${type}">
+      ${
+        allowHTML
+          ? message
+          : escapeHTML(message)
+      }
+    </div>`;
+
+}
+
+
+
+/* =========================
+   SECURITY / HELPERS
+========================= */
+
+function escapeHTML(value) {
+
+  return String(
+    value || ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+
+function escapeAttribute(value) {
+
+  return escapeHTML(value);
+
+}
+
+
+
+function escapeJS(value) {
+
+  return String(
+    value || ""
+  )
+    .replace(
+      /\\/g,
+      "\\\\"
+    )
+    .replace(
+      /"/g,
+      '\\"'
+    )
+    .replace(
+      /\n/g,
+      "\\n"
+    )
+    .replace(
+      /\r/g,
+      "\\r"
+    );
+
+}
 
 </script>
 
