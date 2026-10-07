@@ -3,19 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <meta name="theme-color" content="#111111">
   <link rel="manifest" href="/manifest.json">
 
   <title>OTG AI Website Builder</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     * {
       box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
     }
 
     body {
@@ -39,7 +36,7 @@
 
     header p {
       margin: 0;
-      opacity: 0.85;
+      opacity: .85;
     }
 
     .container {
@@ -48,44 +45,42 @@
       margin: 20px auto;
     }
 
-    .box {
+    .box,
+    .editor,
+    .preview-box {
       background: white;
       border-radius: 14px;
       padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 3px 14px rgba(0,0,0,0.08);
+      box-shadow: 0 3px 14px rgba(0,0,0,.08);
     }
 
-    .box h2 {
+    h2 {
       margin-top: 0;
     }
 
-    textarea,
     input,
-    select {
+    textarea {
       width: 100%;
       border: 1px solid #ccc;
       border-radius: 9px;
       padding: 12px;
       font-size: 15px;
       font-family: Arial, sans-serif;
-      outline: none;
     }
 
-    textarea:focus,
     input:focus,
-    select:focus {
+    textarea:focus {
+      outline: none;
       border-color: #111;
+    }
+
+    textarea {
+      resize: vertical;
     }
 
     #prompt {
       min-height: 120px;
-      resize: vertical;
-      margin-bottom: 12px;
-    }
-
-    #whatsapp {
-      margin-bottom: 12px;
     }
 
     button {
@@ -99,27 +94,40 @@
       margin: 5px 5px 5px 0;
     }
 
-    button:hover {
-      opacity: 0.9;
-    }
-
-    .install-btn {
-      display: none;
+    .green {
       background: #087f3f;
     }
 
-    .usage {
-      background: #f1f1f1;
-      padding: 12px;
-      border-radius: 9px;
-      margin: 12px 0;
-      font-weight: bold;
+    .blue {
+      background: #1565c0;
+    }
+
+    .red {
+      background: #c62828;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .auth-grid,
+    .editors,
+    .templates {
+      display: grid;
+      gap: 15px;
+    }
+
+    .auth-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .editors {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
     }
 
     .templates {
-      display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
     }
 
     .template {
@@ -129,43 +137,13 @@
       background: #fafafa;
     }
 
-    .template h3 {
-      margin-top: 0;
-    }
-
     .template button {
       width: 100%;
     }
 
-    .editors {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .editor {
-      background: white;
-      border-radius: 14px;
-      padding: 18px;
-      box-shadow: 0 3px 14px rgba(0,0,0,0.08);
-    }
-
-    .editor h3 {
-      margin-top: 0;
-    }
-
     .editor textarea {
       height: 300px;
-      resize: vertical;
       font-family: monospace;
-      font-size: 14px;
-    }
-
-    .preview-box {
-      background: white;
-      border-radius: 14px;
-      padding: 20px;
-      box-shadow: 0 3px 14px rgba(0,0,0,0.08);
     }
 
     .preview-box iframe {
@@ -176,12 +154,28 @@
       background: white;
     }
 
+    .usage,
+    .account {
+      padding: 12px;
+      border-radius: 9px;
+      margin: 12px 0;
+    }
+
+    .usage {
+      background: #f1f1f1;
+      font-weight: bold;
+    }
+
+    .account {
+      background: #eef7ff;
+    }
+
     .status {
       margin-top: 12px;
       font-weight: bold;
     }
 
-    .small-note {
+    .small {
       font-size: 13px;
       color: #666;
     }
@@ -193,34 +187,24 @@
     }
 
     @media (max-width: 800px) {
-
-      header {
-        padding: 22px 12px;
-      }
-
       header h1 {
         font-size: 24px;
       }
 
       .container {
         width: 96%;
-        margin: 12px auto;
       }
 
       .box,
       .editor,
       .preview-box {
         padding: 15px;
-        border-radius: 12px;
       }
 
+      .auth-grid,
+      .editors,
       .templates {
         grid-template-columns: 1fr;
-      }
-
-      .editors {
-        grid-template-columns: 1fr;
-        gap: 14px;
       }
 
       .editor textarea {
@@ -234,12 +218,10 @@
       button {
         width: 100%;
         margin: 5px 0;
-        padding: 13px;
       }
 
-      textarea,
       input,
-      select {
+      textarea {
         font-size: 16px;
       }
     }
@@ -248,201 +230,520 @@
 
 <body>
 
-  <header>
-    <h1>🚀 OTG AI Website Builder</h1>
-    <p>Create beautiful websites with AI — right from your phone.</p>
-  </header>
+<header>
+  <h1>🚀 OTG AI Website Builder</h1>
+  <p>Create beautiful websites with AI — right from your phone.</p>
+</header>
 
-  <div class="container">
+<div class="container">
 
-    <!-- AI ASSISTANT -->
-    <div class="box">
+  <!-- ================================
+       SUPABASE CONNECTION
+       🔴 PASTE YOUR KEY HERE
+  ================================= -->
 
-      <h2>🤖 AI Website Assistant</h2>
+  <script>
+    const SUPABASE_URL =
+      "https://actwvvokfdemobgsfctx.supabase.co";
 
-      <p class="small-note">
-        Describe what you want your website to look like and OTG AI will build it.
-      </p>
+    // 🔴🔴🔴 PASTE YOUR SUPABASE PUBLISHABLE KEY HERE 🔴🔴🔴
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
 
-      <textarea
-        id="prompt"
-        placeholder="Example: Create a beautiful fashion website for Prince Fashion..."></textarea>
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+  </script>
 
-      <input
-        type="tel"
-        id="whatsapp"
-        placeholder="Enter your WhatsApp number (e.g. 08012345678)">
 
-      <div class="usage" id="usage">
-        Checking today's free AI usage...
+  <!-- ACCOUNT -->
+
+  <div class="box">
+
+    <h2>👤 Student Account</h2>
+
+    <div id="loggedOut">
+
+      <div class="auth-grid">
+
+        <div>
+          <h3>Create Account</h3>
+
+          <input
+            type="email"
+            id="signupEmail"
+            placeholder="Email address">
+
+          <br><br>
+
+          <input
+            type="password"
+            id="signupPassword"
+            placeholder="Password">
+
+          <button
+            class="green"
+            onclick="signUp()">
+            Create Account
+          </button>
+        </div>
+
+
+        <div>
+          <h3>Login</h3>
+
+          <input
+            type="email"
+            id="loginEmail"
+            placeholder="Email address">
+
+          <br><br>
+
+          <input
+            type="password"
+            id="loginPassword"
+            placeholder="Password">
+
+          <button
+            class="blue"
+            onclick="login()">
+            Login
+          </button>
+        </div>
+
       </div>
 
-      <button onclick="askAI()">✨ Ask OTG AI</button>
+    </div>
+
+
+    <div id="loggedIn" class="hidden">
+
+      <div class="account">
+        ✅ Logged in as:
+        <strong id="userEmail"></strong>
+      </div>
 
       <button
-        id="installButton"
-        class="install-btn"
-        onclick="installApp()">
-        📲 Install OTG Builder
+        class="red"
+        onclick="logout()">
+        🚪 Logout
       </button>
 
-      <div id="status" class="status"></div>
-
     </div>
 
-
-    <!-- TEMPLATES -->
-    <div class="box">
-
-      <h2>🎨 Website Templates</h2>
-
-      <p class="small-note">
-        Choose a starting template and customize it with AI.
-      </p>
-
-      <div class="templates">
-
-        <div class="template">
-          <h3>👗 Fashion</h3>
-          <p>Perfect for clothing and fashion businesses.</p>
-          <button onclick="loadTemplate('fashion')">
-            Use Template
-          </button>
-        </div>
-
-        <div class="template">
-          <h3>💼 Business</h3>
-          <p>A clean professional business website.</p>
-          <button onclick="loadTemplate('business')">
-            Use Template
-          </button>
-        </div>
-
-        <div class="template">
-          <h3>🎨 Portfolio</h3>
-          <p>Perfect for designers, students and creatives.</p>
-          <button onclick="loadTemplate('portfolio')">
-            Use Template
-          </button>
-        </div>
-
-      </div>
-
+    <div
+      id="authStatus"
+      class="status">
     </div>
 
-
-    <!-- EDITORS -->
-    <div class="editors">
-
-      <div class="editor">
-        <h3>📄 HTML Editor</h3>
-
-        <textarea
-          id="html"
-          placeholder="Write your HTML here..."></textarea>
-      </div>
+  </div>
 
 
-      <div class="editor">
-        <h3>🎨 CSS Editor</h3>
+  <!-- AI -->
 
-        <textarea
-          id="css"
-          placeholder="Write your CSS here..."></textarea>
-      </div>
+  <div class="box">
 
+    <h2>🤖 AI Website Assistant</h2>
 
-      <div class="editor">
-        <h3>⚙️ JavaScript Editor</h3>
+    <p class="small">
+      Describe the website you want to create or improve.
+    </p>
 
-        <textarea
-          id="js"
-          placeholder="Write your JavaScript here..."></textarea>
-      </div>
+    <textarea
+      id="prompt"
+      placeholder="Example: Create a beautiful fashion website for Prince Fashion...">
+    </textarea>
 
+    <br><br>
+
+    <input
+      type="tel"
+      id="whatsapp"
+      placeholder="WhatsApp number e.g. 08012345678">
+
+    <div
+      class="usage"
+      id="usage">
     </div>
 
+    <button onclick="askAI()">
+      ✨ Ask OTG AI
+    </button>
 
-    <!-- PREVIEW -->
-    <div class="preview-box">
+    <button
+      id="installButton"
+      class="green hidden"
+      onclick="installApp()">
+      📲 Install OTG Builder
+    </button>
 
-      <h2>👁️ Live Preview</h2>
+    <div
+      id="status"
+      class="status">
+    </div>
 
-      <button onclick="updatePreview()">
-        🔄 Update Preview
-      </button>
+  </div>
 
-      <iframe id="preview"></iframe>
+
+  <!-- SAVE PROJECT -->
+
+  <div class="box">
+
+    <h2>💾 Save Project</h2>
+
+    <input
+      id="projectTitle"
+      placeholder="Project name, e.g. Prince Fashion">
+
+    <button
+      class="green"
+      onclick="saveProject()">
+      💾 Save My Website
+    </button>
+
+    <button
+      class="blue"
+      onclick="loadProjects()">
+      📂 My Saved Projects
+    </button>
+
+    <div id="projectsList"></div>
+
+  </div>
+
+
+  <!-- TEMPLATES -->
+
+  <div class="box">
+
+    <h2>🎨 Website Templates</h2>
+
+    <div class="templates">
+
+      <div class="template">
+        <h3>👗 Fashion</h3>
+        <p>Perfect for clothing businesses.</p>
+
+        <button onclick="loadTemplate('fashion')">
+          Use Template
+        </button>
+      </div>
+
+
+      <div class="template">
+        <h3>💼 Business</h3>
+        <p>A clean professional website.</p>
+
+        <button onclick="loadTemplate('business')">
+          Use Template
+        </button>
+      </div>
+
+
+      <div class="template">
+        <h3>🎨 Portfolio</h3>
+        <p>Perfect for designers and creatives.</p>
+
+        <button onclick="loadTemplate('portfolio')">
+          Use Template
+        </button>
+      </div>
 
     </div>
 
   </div>
 
 
-  <footer>
-    <p>© 2026 OTG AI Website Builder</p>
-    <p>Built for OTG students 🚀</p>
-  </footer>
+  <!-- EDITORS -->
+
+  <div class="editors">
+
+    <div class="editor">
+
+      <h3>📄 HTML Editor</h3>
+
+      <textarea
+        id="html"
+        placeholder="Write your HTML here...">
+      </textarea>
+
+    </div>
 
 
-  <script>
+    <div class="editor">
 
-    /* =========================
-       DAILY AI LIMIT
-    ========================= */
+      <h3>🎨 CSS Editor</h3>
 
-    const DAILY_LIMIT = 5;
+      <textarea
+        id="css"
+        placeholder="Write your CSS here...">
+      </textarea>
 
-    function getUsageKey() {
-      const today = new Date().toISOString().split("T")[0];
-      return "otg_ai_usage_" + today;
+    </div>
+
+
+    <div class="editor">
+
+      <h3>⚙️ JavaScript Editor</h3>
+
+      <textarea
+        id="js"
+        placeholder="Write your JavaScript here...">
+      </textarea>
+
+    </div>
+
+  </div>
+
+
+  <!-- PREVIEW -->
+
+  <div class="preview-box">
+
+    <h2>👁️ Live Preview</h2>
+
+    <button onclick="updatePreview()">
+      🔄 Update Preview
+    </button>
+
+    <iframe id="preview"></iframe>
+
+  </div>
+
+</div>
+
+
+<footer>
+  <p>© 2026 OTG AI Website Builder</p>
+  <p>Built for OTG students 🚀</p>
+</footer>
+
+
+<script>
+
+  /* ==========================
+     AUTHENTICATION
+  ========================== */
+
+  async function signUp() {
+
+    const email =
+      document.getElementById("signupEmail")
+        .value.trim();
+
+    const password =
+      document.getElementById("signupPassword")
+        .value;
+
+    const status =
+      document.getElementById("authStatus");
+
+    if (!email || !password) {
+      status.textContent =
+        "Please enter your email and password.";
+      return;
     }
 
-    function getUsage() {
-      return parseInt(localStorage.getItem(getUsageKey()) || "0");
+    if (password.length < 6) {
+      status.textContent =
+        "Password must be at least 6 characters.";
+      return;
     }
 
-    function updateUsageDisplay() {
+    status.textContent =
+      "Creating your account...";
 
-      const used = getUsage();
-      const remaining = Math.max(DAILY_LIMIT - used, 0);
+    const { error } =
+      await supabaseClient.auth.signUp({
+        email,
+        password
+      });
 
-      document.getElementById("usage").textContent =
-        "🤖 Free AI generations remaining today: " + remaining + " / " + DAILY_LIMIT;
+    if (error) {
+      status.textContent =
+        "❌ " + error.message;
+      return;
     }
 
-    function increaseUsage() {
+    status.textContent =
+      "✅ Account created. Check your email if confirmation is required.";
+  }
 
-      const key = getUsageKey();
-      const used = getUsage();
 
-      localStorage.setItem(key, used + 1);
+  async function login() {
 
-      updateUsageDisplay();
+    const email =
+      document.getElementById("loginEmail")
+        .value.trim();
+
+    const password =
+      document.getElementById("loginPassword")
+        .value;
+
+    const status =
+      document.getElementById("authStatus");
+
+    if (!email || !password) {
+      status.textContent =
+        "Please enter your email and password.";
+      return;
     }
+
+    status.textContent =
+      "Logging in...";
+
+    const { error } =
+      await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    if (error) {
+      status.textContent =
+        "❌ " + error.message;
+      return;
+    }
+
+    status.textContent =
+      "✅ Login successful.";
+
+    updateAuthUI();
+  }
+
+
+  async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    updateAuthUI();
+
+    document.getElementById("authStatus")
+      .textContent =
+      "You have been logged out.";
+  }
+
+
+  async function updateAuthUI() {
+
+    const {
+      data: { user }
+    } =
+      await supabaseClient.auth.getUser();
+
+    const loggedOut =
+      document.getElementById("loggedOut");
+
+    const loggedIn =
+      document.getElementById("loggedIn");
+
+    if (user) {
+
+      loggedOut.classList.add("hidden");
+
+      loggedIn.classList.remove("hidden");
+
+      document.getElementById("userEmail")
+        .textContent =
+        user.email || "";
+
+    } else {
+
+      loggedOut.classList.remove("hidden");
+
+      loggedIn.classList.add("hidden");
+
+      document.getElementById("userEmail")
+        .textContent = "";
+    }
+  }
+
+
+  updateAuthUI();
+
+
+  /* ==========================
+     DAILY AI LIMIT
+  ========================== */
+
+  const DAILY_LIMIT = 5;
+
+
+  function getUsageKey() {
+
+    const today =
+      new Date()
+        .toISOString()
+        .split("T")[0];
+
+    return "otg_ai_usage_" + today;
+  }
+
+
+  function getUsage() {
+
+    return parseInt(
+      localStorage.getItem(getUsageKey()) || "0",
+      10
+    );
+  }
+
+
+  function updateUsageDisplay() {
+
+    const used = getUsage();
+
+    const remaining =
+      Math.max(
+        DAILY_LIMIT - used,
+        0
+      );
+
+    document.getElementById("usage")
+      .textContent =
+      "🤖 Free AI generations remaining today: " +
+      remaining +
+      " / " +
+      DAILY_LIMIT;
+  }
+
+
+  function increaseUsage() {
+
+    const key = getUsageKey();
+
+    const used = getUsage();
+
+    localStorage.setItem(
+      key,
+      used + 1
+    );
 
     updateUsageDisplay();
+  }
 
 
-    /* =========================
-       LIVE PREVIEW
-    ========================= */
+  updateUsageDisplay();
 
-    function updatePreview() {
 
-      const html =
-        document.getElementById("html").value;
+  /* ==========================
+     LIVE PREVIEW
+  ========================== */
 
-      const css =
-        document.getElementById("css").value;
+  function updatePreview() {
 
-      const js =
-        document.getElementById("js").value;
+    const html =
+      document.getElementById("html").value;
 
-      const preview =
-        document.getElementById("preview");
+    const css =
+      document.getElementById("css").value;
 
-      const documentContent = `
+    const js =
+      document.getElementById("js").value;
+
+    document.getElementById("preview")
+      .srcdoc = `
 
         <!DOCTYPE html>
 
@@ -450,14 +751,17 @@
 
         <head>
 
-          <meta charset="UTF-8">
+          <meta
+            charset="UTF-8">
 
           <meta
             name="viewport"
             content="width=device-width, initial-scale=1.0">
 
           <style>
+
             ${css}
+
           </style>
 
         </head>
@@ -475,470 +779,647 @@
         </body>
 
         </html>
-      `;
 
-      preview.srcdoc = documentContent;
+      `;
+  }
+
+
+  /* ==========================
+     AI GENERATOR
+  ========================== */
+
+  async function askAI() {
+
+    const prompt =
+      document.getElementById("prompt")
+        .value.trim();
+
+    const whatsapp =
+      document.getElementById("whatsapp")
+        .value.trim();
+
+    const currentHTML =
+      document.getElementById("html").value;
+
+    const currentCSS =
+      document.getElementById("css").value;
+
+    const currentJS =
+      document.getElementById("js").value;
+
+    const status =
+      document.getElementById("status");
+
+
+    if (!prompt) {
+
+      status.textContent =
+        "Please describe the website you want to build.";
+
+      return;
     }
 
 
-    /* =========================
-       AI GENERATOR
-    ========================= */
-
-    async function askAI() {
-
-      const prompt =
-        document.getElementById("prompt").value.trim();
-
-      const whatsapp =
-        document.getElementById("whatsapp").value.trim();
-
-      const currentHTML =
-        document.getElementById("html").value;
-
-      const currentCSS =
-        document.getElementById("css").value;
-
-      const currentJS =
-        document.getElementById("js").value;
-
-      const status =
-        document.getElementById("status");
-
-
-      if (!prompt) {
-
-        status.textContent =
-          "Please describe the website you want to build.";
-
-        return;
-      }
-
-
-      const used = getUsage();
-
-      if (used >= DAILY_LIMIT) {
-
-        status.textContent =
-          "⚠️ You have used all 5 free AI generations for today. Please try again tomorrow.";
-
-        return;
-      }
-
+    if (getUsage() >= DAILY_LIMIT) {
 
       status.textContent =
-        "🤖 OTG AI is generating your website...";
+        "⚠️ You have used all 5 free AI generations for today.";
+
+      return;
+    }
 
 
-      const whatsappInstruction = whatsapp
+    status.textContent =
+      "🤖 OTG AI is generating your website...";
 
+
+    const whatsappInstruction =
+      whatsapp
         ? `
 
-The website owner's WhatsApp number is:
+Website owner's WhatsApp number:
 
 ${whatsapp}
 
-If the user requests a WhatsApp contact button or WhatsApp contact feature, use THIS number.
+If a WhatsApp button is requested, use this number.
 
-Convert a Nigerian number beginning with 0 into international format using country code 234.
+If the number begins with 0,
+convert it to Nigerian international
+format using 234.
 
-Do not invent, replace, or change the owner's WhatsApp number.
+Do not invent or change the number.
 
 `
-
         : `
 
-The website owner has not provided a WhatsApp number.
+No WhatsApp number was provided.
 
-Do NOT invent or create a fake WhatsApp number.
-
-If a WhatsApp contact feature is requested, create the button/interface without inventing a number.
+Do not invent a WhatsApp number.
 
 `;
 
 
-      const fullPrompt = `
+    const fullPrompt = `
 
 ${prompt}
 
 ${whatsappInstruction}
 
-Create or modify the website using the current HTML, CSS and JavaScript.
+Create or modify the website using
+the current HTML, CSS and JavaScript.
 
-Make the website responsive and mobile-friendly.
+Make it responsive and mobile-friendly.
 
 `;
 
 
-      try {
+    try {
 
-        const response = await fetch(
+      const response =
+        await fetch(
           "/api/generate",
           {
             method: "POST",
 
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type":
+                "application/json"
             },
 
             body: JSON.stringify({
-
               prompt: fullPrompt,
-
               html: currentHTML,
-
               css: currentCSS,
-
               js: currentJS
-
             })
           }
         );
 
 
-        const data =
-          await response.json();
+      const data =
+        await response.json();
 
 
-        if (!response.ok) {
+      if (!response.ok) {
 
-          throw new Error(
-            data.error || "Something went wrong."
-          );
-
-        }
-
-
-        document.getElementById("html").value =
-          data.html || "";
-
-        document.getElementById("css").value =
-          data.css || "";
-
-        document.getElementById("js").value =
-          data.js || "";
-
-
-        increaseUsage();
-
-        updatePreview();
-
-
-        status.textContent =
-          "✅ Your website has been generated successfully.";
-
+        throw new Error(
+          data.error ||
+          "Something went wrong."
+        );
       }
 
 
-      catch (error) {
+      document.getElementById("html")
+        .value =
+        data.html || "";
 
-        status.textContent =
-          "❌ Error: " + error.message;
 
-      }
+      document.getElementById("css")
+        .value =
+        data.css || "";
 
-    }
 
+      document.getElementById("js")
+        .value =
+        data.js || "";
 
-    /* =========================
-       TEMPLATES
-    ========================= */
 
-    function loadTemplate(type) {
-
-      let html = "";
-      let css = "";
-      let js = "";
-
-
-      if (type === "fashion") {
-
-        html = `
-
-          <div class="fashion">
-
-            <h1>Prince Fashion</h1>
-
-            <p>Style that speaks for you.</p>
-
-            <button onclick="alert('Welcome to Prince Fashion!')">
-              Shop Now
-            </button>
-
-          </div>
-
-        `;
-
-
-        css = `
-
-          body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #111;
-            color: white;
-          }
-
-          .fashion {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 30px;
-          }
-
-          h1 {
-            font-size: 48px;
-            margin-bottom: 10px;
-          }
-
-          p {
-            font-size: 20px;
-          }
-
-          button {
-            background: white;
-            color: #111;
-            border: none;
-            padding: 14px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-          }
-
-        `;
-
-        js = "";
-
-      }
-
-
-      if (type === "business") {
-
-        html = `
-
-          <div class="business">
-
-            <h1>My Business</h1>
-
-            <p>Welcome to our official website.</p>
-
-            <button onclick="showMessage()">
-              Contact Us
-            </button>
-
-          </div>
-
-        `;
-
-
-        css = `
-
-          body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-          }
-
-          .business {
-            max-width: 800px;
-            margin: 100px auto;
-            padding: 40px;
-            background: white;
-            text-align: center;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,.1);
-          }
-
-          button {
-            background: #111;
-            color: white;
-            border: none;
-            padding: 14px 25px;
-            border-radius: 8px;
-          }
-
-        `;
-
-
-        js = `
-
-          function showMessage() {
-            alert("Thank you for contacting us!");
-          }
-
-        `;
-
-      }
-
-
-      if (type === "portfolio") {
-
-        html = `
-
-          <div class="portfolio">
-
-            <h1>My Creative Portfolio</h1>
-
-            <p>Graphic Designer • Creative • Entrepreneur</p>
-
-            <button onclick="showPortfolio()">
-              View My Work
-            </button>
-
-            <div id="work"></div>
-
-          </div>
-
-        `;
-
-
-        css = `
-
-          body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #111;
-            color: white;
-          }
-
-          .portfolio {
-            text-align: center;
-            padding: 80px 20px;
-          }
-
-          h1 {
-            font-size: 42px;
-          }
-
-          button {
-            background: white;
-            color: #111;
-            border: none;
-            padding: 14px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-          }
-
-          #work {
-            margin-top: 30px;
-          }
-
-        `;
-
-
-        js = `
-
-          function showPortfolio() {
-
-            document.getElementById("work").innerHTML =
-              "<h2>My Designs</h2><p>More creative work coming soon.</p>";
-
-          }
-
-        `;
-
-      }
-
-
-      document.getElementById("html").value = html;
-      document.getElementById("css").value = css;
-      document.getElementById("js").value = js;
-
+      increaseUsage();
 
       updatePreview();
 
 
-      document.getElementById("status").textContent =
-        "✅ Template loaded. You can now customize it with OTG AI.";
+      status.textContent =
+        "✅ Your website has been generated successfully.";
 
+    } catch (error) {
+
+      status.textContent =
+        "❌ Error: " +
+        error.message;
+    }
+  }
+
+
+  /* ==========================
+     SAVE PROJECT
+  ========================== */
+
+  async function saveProject() {
+
+    const {
+      data: { user }
+    } =
+      await supabaseClient.auth.getUser();
+
+
+    if (!user) {
+
+      document.getElementById("status")
+        .textContent =
+        "🔐 Please create an account or log in before saving.";
+
+      return;
     }
 
 
-    /* =========================
-       PWA INSTALL
-    ========================= */
+    const title =
+      document.getElementById("projectTitle")
+        .value.trim() ||
+      "My Website";
 
-    let deferredPrompt = null;
+
+    const html =
+      document.getElementById("html").value;
+
+    const css =
+      document.getElementById("css").value;
+
+    const js =
+      document.getElementById("js").value;
+
+
+    document.getElementById("status")
+      .textContent =
+      "💾 Saving your website...";
+
+
+    const { error } =
+      await supabaseClient
+        .from("projects")
+        .insert({
+          user_id: user.id,
+          title,
+          html,
+          css,
+          js
+        });
+
+
+    if (error) {
+
+      document.getElementById("status")
+        .textContent =
+        "❌ " + error.message;
+
+      return;
+    }
+
+
+    document.getElementById("status")
+      .textContent =
+      "✅ Website saved successfully.";
+
+    loadProjects();
+  }
+
+
+  /* ==========================
+     LOAD PROJECTS
+  ========================== */
+
+  async function loadProjects() {
+
+    const {
+      data: { user }
+    } =
+      await supabaseClient.auth.getUser();
+
+
+    const list =
+      document.getElementById("projectsList");
+
+
+    if (!user) {
+
+      list.innerHTML =
+        "<p>🔐 Please log in to see your saved projects.</p>";
+
+      return;
+    }
+
+
+    const { data, error } =
+      await supabaseClient
+        .from("projects")
+        .select("*")
+        .order(
+          "updated_at",
+          { ascending: false }
+        );
+
+
+    if (error) {
+
+      list.innerHTML =
+        "<p>❌ " +
+        error.message +
+        "</p>";
+
+      return;
+    }
+
+
+    if (!data.length) {
+
+      list.innerHTML =
+        "<p>You don't have any saved projects yet.</p>";
+
+      return;
+    }
+
+
+    list.innerHTML = "";
+
+
+    data.forEach(project => {
+
+      const item =
+        document.createElement("div");
+
+      item.style.padding = "12px";
+      item.style.marginTop = "10px";
+      item.style.border =
+        "1px solid #ddd";
+      item.style.borderRadius =
+        "9px";
+
+
+      const title =
+        document.createElement("strong");
+
+      title.textContent =
+        project.title;
+
+
+      const button =
+        document.createElement("button");
+
+      button.className = "blue";
+      button.textContent = "Open";
+
+      button.onclick =
+        () => openProject(project.id);
+
+
+      item.appendChild(title);
+      item.appendChild(
+        document.createElement("br")
+      );
+      item.appendChild(button);
+
+      list.appendChild(item);
+    });
+  }
+
+
+  async function openProject(id) {
+
+    const { data, error } =
+      await supabaseClient
+        .from("projects")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+
+    if (error) {
+
+      document.getElementById("status")
+        .textContent =
+        "❌ " + error.message;
+
+      return;
+    }
+
+
+    document.getElementById("projectTitle")
+      .value =
+      data.title || "";
+
+
+    document.getElementById("html")
+      .value =
+      data.html || "";
+
+
+    document.getElementById("css")
+      .value =
+      data.css || "";
+
+
+    document.getElementById("js")
+      .value =
+      data.js || "";
+
+
+    updatePreview();
+
+
+    document.getElementById("status")
+      .textContent =
+      "✅ Project opened.";
+  }
+
+
+  /* ==========================
+     TEMPLATES
+  ========================== */
+
+  function loadTemplate(type) {
+
+    let html = "";
+    let css = "";
+    let js = "";
+
+
+    if (type === "fashion") {
+
+      html = `
+        <div class="fashion">
+          <h1>Prince Fashion</h1>
+          <p>Style that speaks for you.</p>
+
+          <button onclick="alert('Welcome to Prince Fashion!')">
+            Shop Now
+          </button>
+        </div>
+      `;
+
+
+      css = `
+        body {
+          margin: 0;
+          font-family: Arial, sans-serif;
+          background: #111;
+          color: white;
+        }
+
+        .fashion {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          padding: 30px;
+        }
+
+        h1 {
+          font-size: 48px;
+        }
+
+        button {
+          background: white;
+          color: #111;
+          border: none;
+          padding: 14px 25px;
+          border-radius: 8px;
+        }
+      `;
+    }
+
+
+    if (type === "business") {
+
+      html = `
+        <div class="business">
+          <h1>My Business</h1>
+          <p>Welcome to our official website.</p>
+
+          <button onclick="showMessage()">
+            Contact Us
+          </button>
+        </div>
+      `;
+
+
+      css = `
+        body {
+          margin: 0;
+          font-family: Arial, sans-serif;
+          background: #f5f5f5;
+        }
+
+        .business {
+          max-width: 800px;
+          margin: 100px auto;
+          padding: 40px;
+          background: white;
+          text-align: center;
+          border-radius: 15px;
+        }
+
+        button {
+          background: #111;
+          color: white;
+          border: none;
+          padding: 14px 25px;
+          border-radius: 8px;
+        }
+      `;
+
+
+      js = `
+        function showMessage() {
+          alert("Thank you for contacting us!");
+        }
+      `;
+    }
+
+
+    if (type === "portfolio") {
+
+      html = `
+        <div class="portfolio">
+          <h1>My Creative Portfolio</h1>
+          <p>Graphic Designer • Creative • Entrepreneur</p>
+
+          <button onclick="showPortfolio()">
+            View My Work
+          </button>
+
+          <div id="work"></div>
+        </div>
+      `;
+
+
+      css = `
+        body {
+          margin: 0;
+          font-family: Arial, sans-serif;
+          background: #111;
+          color: white;
+        }
+
+        .portfolio {
+          text-align: center;
+          padding: 80px 20px;
+        }
+
+        button {
+          background: white;
+          color: #111;
+          border: none;
+          padding: 14px 25px;
+          border-radius: 8px;
+        }
+
+        #work {
+          margin-top: 30px;
+        }
+      `;
+
+
+      js = `
+        function showPortfolio() {
+          document.getElementById("work").innerHTML =
+            "<h2>My Designs</h2><p>More creative work coming soon.</p>";
+        }
+      `;
+    }
+
+
+    document.getElementById("html")
+      .value = html;
+
+    document.getElementById("css")
+      .value = css;
+
+    document.getElementById("js")
+      .value = js;
+
+
+    updatePreview();
+
+
+    document.getElementById("status")
+      .textContent =
+      "✅ Template loaded. You can customize it with OTG AI.";
+  }
+
+
+  /* ==========================
+     PWA INSTALL
+  ========================== */
+
+  let deferredPrompt = null;
+
+
+  window.addEventListener(
+    "beforeinstallprompt",
+    event => {
+
+      event.preventDefault();
+
+      deferredPrompt = event;
+
+      document
+        .getElementById("installButton")
+        .classList.remove("hidden");
+    }
+  );
+
+
+  async function installApp() {
+
+    if (!deferredPrompt) {
+
+      document.getElementById("status")
+        .textContent =
+        "📱 Your browser does not currently offer installation.";
+
+      return;
+    }
+
+
+    deferredPrompt.prompt();
+
+    const result =
+      await deferredPrompt.userChoice;
+
+
+    if (result.outcome === "accepted") {
+
+      document.getElementById("status")
+        .textContent =
+        "✅ OTG AI Builder installed successfully.";
+    }
+
+
+    deferredPrompt = null;
+
+
+    document.getElementById("installButton")
+      .classList.add("hidden");
+  }
+
+
+  /* ==========================
+     SERVICE WORKER
+  ========================== */
+
+  if ("serviceWorker" in navigator) {
 
     window.addEventListener(
-      "beforeinstallprompt",
-      function(event) {
+      "load",
+      () => {
 
-        event.preventDefault();
+        navigator.serviceWorker
+          .register("/sw.js")
+          .catch(error => {
 
-        deferredPrompt = event;
-
-        document.getElementById(
-          "installButton"
-        ).style.display = "block";
+            console.log(
+              "Service worker error:",
+              error
+            );
+          });
 
       }
     );
+  }
 
-
-    async function installApp() {
-
-      if (!deferredPrompt) {
-
-        document.getElementById("status").textContent =
-          "📱 Your browser does not currently offer installation.";
-
-        return;
-      }
-
-
-      deferredPrompt.prompt();
-
-      const result =
-        await deferredPrompt.userChoice;
-
-
-      if (result.outcome === "accepted") {
-
-        document.getElementById("status").textContent =
-          "✅ OTG AI Builder installed successfully.";
-
-      }
-
-
-      deferredPrompt = null;
-
-      document.getElementById(
-        "installButton"
-      ).style.display = "none";
-
-    }
-
-
-    /* =========================
-       SERVICE WORKER
-    ========================= */
-
-    if ("serviceWorker" in navigator) {
-
-      window.addEventListener(
-        "load",
-        function() {
-
-          navigator.serviceWorker.register(
-            "/sw.js"
-          ).catch(function(error) {
-
-            console.log(
-              "Service worker registration failed:",
-              error
-            );
-
-          });
-
-        }
-      );
-
-    }
-
-  </script>
+</script>
 
 </body>
 </html>
