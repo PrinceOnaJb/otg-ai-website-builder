@@ -1,34 +1,36 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({
+      error: "Method not allowed"
+    });
   }
 
   try {
     const { prompt, html = "", css = "", js = "" } = req.body || {};
 
     if (!prompt || !prompt.trim()) {
-      return res.status(400).json({ error: "Prompt is required" });
+      return res.status(400).json({
+        error: "Prompt is required"
+      });
     }
 
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: "gpt-6-luna",
-        input: [
-          {
-            role: "system",
-            content: [
-              {
-                type: "input_text",
-                text: `You are OTG AI Website Assistant.
+    const systemInstruction = `
+You are OTG AI Website Assistant.
 
-Help users build and improve websites.
+Your job is to help users create and improve websites.
 
-Return ONLY valid JSON with exactly these three properties:
+The user can ask you to:
+- Create a new website
+- Modify an existing website
+- Improve HTML
+- Improve CSS
+- Add JavaScript functionality
+- Make websites responsive and professional
+
+You MUST return ONLY valid JSON.
+
+The JSON must contain exactly these three properties:
+
 {
   "html": "...",
   "css": "...",
@@ -36,45 +38,80 @@ Return ONLY valid JSON with exactly these three properties:
 }
 
 Do not use markdown.
-Do not include explanations outside the JSON.
-Keep the HTML, CSS and JavaScript complete and usable.`
-              }
-            ]
-          },
-          {
-            role: "user",
-            content: [
-              {
-                type: "input_text",
-                text: `User request:
+Do not use code fences.
+Do not write explanations outside the JSON.
+Return complete, usable HTML, CSS and JavaScript.
+`;
+
+    const userPrompt = `
+User request:
+
 ${prompt}
 
 Current HTML:
+
 ${html}
 
 Current CSS:
+
 ${css}
 
 Current JavaScript:
+
 ${js}
 
-Build or modify the website according to the user's request.`
+Build or modify the website according to the user's request.
+`;
+
+    const response = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": process.env.GEMINI_API_KEY
+        },
+
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [
+              {
+                text: systemInstruction
               }
             ]
+          },
+
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: userPrompt
+                }
+              ]
+            }
+          ],
+
+          generationConfig: {
+            responseMimeType: "application/json"
           }
-        ]
-      })
-    });
+        })
+      }
+    );
 
     const data = await response.json();
 
     if (!response.ok) {
       return res.status(response.status).json({
-        error: data.error?.message || "OpenAI request failed"
+        error:
+          data.error?.message ||
+          "Gemini API request failed"
       });
     }
 
-    const text = data.output_text;
+    const text =
+      data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!text) {
       return res.status(500).json({
