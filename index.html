@@ -3,27 +3,619 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#111111">
+<meta name="theme-color" content="#f5c400">
 <link rel="manifest" href="/manifest.json">
 <title>OTG AI Website Builder</title>
 
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#111}
-header{background:#111;color:white;padding:16px;text-align:center}
-nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:12px;background:white}
-button{border:0;border-radius:8px;padding:12px 16px;cursor:pointer;font-weight:bold}
-.primary{background:#111;color:white}
-.green{background:#087f3d;color:white}
-.card{background:white;border-radius:14px;padding:20px;margin:15px auto;max-width:1000px;box-shadow:0 3px 15px #0001}
-input,textarea{width:100%;padding:12px;margin:7px 0;border:1px solid #ddd;border-radius:8px}
-textarea{min-height:130px}
-.hidden{display:none}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
-.template{border:1px solid #ddd;padding:18px;border-radius:12px}
-iframe{width:100%;height:650px;border:1px solid #ddd;border-radius:12px;background:white}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
-.small{font-size:13px;color:#666}
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f5f6f8;
+  color:#111827;
+}
+
+button{
+  cursor:pointer;
+  border:0;
+}
+
+.hidden{
+  display:none!important;
+}
+
+header{
+  background:#111827;
+  color:white;
+  padding:18px;
+  text-align:center;
+}
+
+header h1{
+  margin:0;
+}
+
+header p{
+  margin:6px 0 0;
+  color:#f5c400;
+}
+
+nav{
+  background:white;
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+  padding:12px;
+  box-shadow:0 2px 10px #0001;
+}
+
+nav button{
+  background:#f1f3f5;
+  color:#111827;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+}
+
+section.card{
+  max-width:1100px;
+  margin:20px auto;
+  padding:22px;
+  background:white;
+  border-radius:18px;
+  box-shadow:0 5px 25px #0000000d;
+}
+
+input,
+textarea{
+  width:100%;
+  padding:13px;
+  border:1px solid #d8dce2;
+  border-radius:9px;
+  margin:7px 0 14px;
+  font-size:15px;
+}
+
+textarea{
+  min-height:140px;
+}
+
+.primary{
+  background:#111827;
+  color:white;
+}
+
+.gold{
+  background:#f5c400;
+  color:#111827;
+}
+
+.blue{
+  background:#1769e0;
+  color:white;
+}
+
+button.action{
+  padding:12px 17px;
+  border-radius:9px;
+  font-weight:bold;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.small{
+  color:#6b7280;
+  font-size:13px;
+}
+
+/* TEMPLATE CARDS */
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:18px;
+}
+
+.template{
+  padding:22px;
+  border:1px solid #e5e7eb;
+  border-radius:15px;
+  background:white;
+}
+
+/* PREVIEW */
+
+iframe{
+  width:100%;
+  height:720px;
+  border:1px solid #ddd;
+  border-radius:15px;
+  background:white;
+}
+
+/* FASHION TEMPLATE */
+
+.fashion-store{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#fff;
+  color:#111827;
+}
+
+.fashion-store *{
+  box-sizing:border-box;
+}
+
+.store-nav{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:#111827;
+  color:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 6%;
+  box-shadow:0 3px 15px #0004;
+}
+
+.store-logo{
+  font-size:22px;
+  font-weight:900;
+}
+
+.store-logo span{
+  color:#f5c400;
+}
+
+.store-nav-links{
+  display:flex;
+  gap:20px;
+}
+
+.store-nav-links a{
+  color:white;
+  text-decoration:none;
+  font-size:14px;
+}
+
+.cart-button{
+  position:relative;
+  background:#f5c400;
+  color:#111827;
+  border-radius:10px;
+  padding:10px 14px;
+  font-weight:bold;
+}
+
+.cart-count{
+  position:absolute;
+  top:-7px;
+  right:-7px;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:#1769e0;
+  color:white;
+  font-size:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* HERO */
+
+.fashion-hero{
+  min-height:570px;
+  display:flex;
+  align-items:center;
+  padding:60px 7%;
+  background:
+    radial-gradient(circle at 80% 30%,#f5c40055,transparent 30%),
+    linear-gradient(135deg,#fff 0%,#fff9dc 50%,#eaf2ff 100%);
+}
+
+.hero-content{
+  max-width:650px;
+}
+
+.hero-badge{
+  display:inline-block;
+  background:#111827;
+  color:#f5c400;
+  padding:8px 13px;
+  border-radius:30px;
+  font-size:12px;
+  font-weight:bold;
+  letter-spacing:1px;
+}
+
+.hero-content h1{
+  font-size:clamp(45px,8vw,82px);
+  line-height:.95;
+  margin:20px 0;
+  color:#111827;
+}
+
+.hero-content h1 span{
+  color:#1769e0;
+}
+
+.hero-content p{
+  font-size:18px;
+  line-height:1.7;
+  max-width:550px;
+  color:#4b5563;
+}
+
+.hero-buttons{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:28px;
+}
+
+.hero-btn{
+  padding:14px 22px;
+  border-radius:10px;
+  font-weight:bold;
+}
+
+.hero-btn-main{
+  background:#f5c400;
+  color:#111827;
+}
+
+.hero-btn-second{
+  background:#1769e0;
+  color:white;
+}
+
+/* SECTION */
+
+.store-section{
+  padding:70px 7%;
+}
+
+.section-title{
+  text-align:center;
+  margin-bottom:35px;
+}
+
+.section-title span{
+  color:#1769e0;
+}
+
+.section-title h2{
+  font-size:36px;
+  margin:8px 0;
+}
+
+.section-title p{
+  color:#6b7280;
+}
+
+/* FILTER */
+
+.filters{
+  display:flex;
+  justify-content:center;
+  gap:9px;
+  flex-wrap:wrap;
+  margin-bottom:30px;
+}
+
+.filter-btn{
+  padding:10px 16px;
+  border-radius:25px;
+  background:#eef0f3;
+  color:#111827;
+  font-weight:bold;
+}
+
+.filter-btn.active{
+  background:#f5c400;
+}
+
+/* SEARCH */
+
+.search-box{
+  max-width:500px;
+  margin:0 auto 30px;
+  position:relative;
+}
+
+.search-box input{
+  margin:0;
+  border-radius:30px;
+  padding:15px 20px;
+}
+
+/* PRODUCTS */
+
+.product-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:24px;
+}
+
+.product-card{
+  background:white;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 8px 30px #00000012;
+  transition:.25s;
+  border:1px solid #edf0f3;
+}
+
+.product-card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 14px 35px #0000001c;
+}
+
+.product-image{
+  height:240px;
+  background:linear-gradient(135deg,#fff5b8,#e9f1ff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:55px;
+  position:relative;
+}
+
+.product-tag{
+  position:absolute;
+  top:12px;
+  left:12px;
+  background:#1769e0;
+  color:white;
+  padding:6px 9px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:bold;
+}
+
+.product-info{
+  padding:18px;
+}
+
+.product-info h3{
+  margin:0 0 7px;
+}
+
+.product-info p{
+  color:#6b7280;
+  font-size:13px;
+}
+
+.price{
+  color:#1769e0;
+  font-size:20px;
+  font-weight:900;
+  margin:12px 0;
+}
+
+.product-actions{
+  display:flex;
+  gap:8px;
+}
+
+.add-cart{
+  flex:1;
+  padding:11px;
+  border-radius:9px;
+  background:#111827;
+  color:white;
+  font-weight:bold;
+}
+
+.buy-now{
+  padding:11px;
+  border-radius:9px;
+  background:#f5c400;
+  color:#111827;
+  font-weight:bold;
+}
+
+/* FEATURES */
+
+.features{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:18px;
+}
+
+.feature{
+  padding:25px;
+  border-radius:15px;
+  background:#f8f9fb;
+  text-align:center;
+}
+
+.feature-icon{
+  font-size:32px;
+}
+
+/* CART */
+
+.cart-panel{
+  position:fixed;
+  right:0;
+  top:0;
+  height:100vh;
+  width:min(420px,100%);
+  background:white;
+  z-index:1000;
+  box-shadow:-8px 0 30px #0003;
+  padding:22px;
+  transform:translateX(100%);
+  transition:.3s;
+  overflow:auto;
+}
+
+.cart-panel.open{
+  transform:translateX(0);
+}
+
+.cart-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.close-cart{
+  background:#eee;
+  padding:9px 12px;
+  border-radius:8px;
+}
+
+.cart-item{
+  padding:15px 0;
+  border-bottom:1px solid #eee;
+}
+
+.cart-item-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.quantity{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:10px;
+}
+
+.quantity button{
+  width:30px;
+  height:30px;
+  border-radius:7px;
+  background:#eef0f3;
+}
+
+.cart-total{
+  font-size:24px;
+  font-weight:900;
+  margin:25px 0;
+}
+
+.checkout{
+  width:100%;
+  padding:15px;
+  border-radius:10px;
+  background:#1769e0;
+  color:white;
+  font-weight:bold;
+}
+
+/* FOOTER */
+
+.store-footer{
+  background:#111827;
+  color:white;
+  padding:50px 7%;
+}
+
+.store-footer h2{
+  color:#f5c400;
+}
+
+.store-footer p{
+  color:#cbd5e1;
+}
+
+.footer-bottom{
+  border-top:1px solid #ffffff22;
+  margin-top:30px;
+  padding-top:20px;
+  color:#94a3b8;
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+  .store-nav{
+    padding:13px 4%;
+  }
+
+  .store-nav-links{
+    display:none;
+  }
+
+  .fashion-hero{
+    min-height:520px;
+    padding:45px 6%;
+  }
+
+  .hero-content h1{
+    font-size:50px;
+  }
+
+  .hero-content p{
+    font-size:16px;
+  }
+
+  .store-section{
+    padding:50px 5%;
+  }
+
+  .section-title h2{
+    font-size:29px;
+  }
+
+  .product-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+  }
+
+  .product-image{
+    height:170px;
+    font-size:40px;
+  }
+
+  .product-info{
+    padding:13px;
+  }
+
+  .product-info h3{
+    font-size:15px;
+  }
+
+  .price{
+    font-size:16px;
+  }
+
+  .product-actions{
+    flex-direction:column;
+  }
+
+  .add-cart,
+  .buy-now{
+    width:100%;
+  }
+}
+
+@media(max-width:420px){
+
+  .product-grid{
+    grid-template-columns:1fr;
+  }
+
+  .hero-content h1{
+    font-size:44px;
+  }
+}
 </style>
 </head>
 
@@ -42,446 +634,1300 @@ iframe{width:100%;height:650px;border:1px solid #ddd;border-radius:12px;backgrou
 </nav>
 
 <section id="home" class="card">
+
 <h2>Build Your Website With AI</h2>
+
 <p>Create a professional website from your phone using AI.</p>
 
 <div id="authBox">
+
 <h3>Student Login</h3>
+
 <input id="email" type="email" placeholder="Email">
+
 <input id="password" type="password" placeholder="Password">
 
 <div class="actions">
-<button class="primary" onclick="signIn()">Login</button>
-<button onclick="signUp()">Create Account</button>
+
+<button class="action primary" onclick="signIn()">Login</button>
+
+<button class="action" onclick="signUp()">Create Account</button>
+
 </div>
 
 <p id="authMessage" class="small"></p>
+
 </div>
 
 <div id="loggedIn" class="hidden">
+
 <p>✅ You are logged in.</p>
-<button class="primary" onclick="showSection('builder')">Open Builder</button>
-<button onclick="signOut()">Logout</button>
+
+<button class="action primary" onclick="showSection('builder')">
+Open Builder
+</button>
+
+<button class="action" onclick="signOut()">Logout</button>
+
 </div>
+
 </section>
 
 <section id="builder" class="card hidden">
+
 <h2>AI Website Builder</h2>
 
 <label>Describe the website you want</label>
-<textarea id="prompt" placeholder="Example: Create a professional fashion website for Prince Fashion selling men's and women's clothing."></textarea>
+
+<textarea id="prompt"
+placeholder="Example: Create a premium fashion website for my clothing business."></textarea>
 
 <label>WhatsApp Contact Number</label>
-<input id="whatsappNumber" placeholder="Example: 2348012345678">
+
+<input
+id="whatsappNumber"
+placeholder="Example: 2348012345678">
 
 <div class="actions">
-<button class="primary" onclick="generateWebsite()">✨ Generate Website</button>
-<button onclick="showSection('templates')">Use Template</button>
+
+<button class="action primary"
+onclick="generateWebsite()">
+✨ Generate Website
+</button>
+
+<button class="action"
+onclick="showSection('templates')">
+Use Template
+</button>
+
 </div>
 
 <p id="aiStatus" class="small"></p>
 
 <h3>Live Preview</h3>
+
 <iframe id="preview"></iframe>
 
 <div class="actions">
-<button class="green" onclick="publishWebsite()">🚀 Publish Website</button>
+
+<button class="action gold"
+onclick="publishWebsite()">
+🚀 Publish Website
+</button>
+
 </div>
 
 <p id="publishResult"></p>
+
 </section>
 
 <section id="templates" class="card hidden">
+
 <h2>Website Templates</h2>
 
 <div class="grid">
 
 <div class="template">
+
 <h3>Fashion Store</h3>
-<p>Men's and women's clothing store.</p>
-<button class="primary" onclick="useFashionTemplate()">Use Template</button>
+
+<p>Premium clothing store with cart and WhatsApp checkout.</p>
+
+<button class="action primary"
+onclick="useFashionTemplate()">
+Use Template
+</button>
+
 </div>
 
 <div class="template">
+
 <h3>Business</h3>
+
 <p>Professional business website.</p>
-<button class="primary" onclick="useBusinessTemplate()">Use Template</button>
+
+<button class="action primary"
+onclick="useBusinessTemplate()">
+Use Template
+</button>
+
 </div>
 
 <div class="template">
+
 <h3>Portfolio</h3>
+
 <p>Personal portfolio website.</p>
-<button class="primary" onclick="usePortfolioTemplate()">Use Template</button>
+
+<button class="action primary"
+onclick="usePortfolioTemplate()">
+Use Template
+</button>
+
 </div>
 
 </div>
+
 </section>
 
 <section id="install" class="card hidden">
+
 <h2>Install OTG AI Website Builder</h2>
-<p>Add OTG AI Website Builder to your phone's home screen for easy access.</p>
-<p class="small">In Chrome, tap the three dots ⋮ and choose <b>Add to Home screen</b> or <b>Install app</b>.</p>
+
+<p>Add OTG AI Website Builder to your phone's home screen.</p>
+
+<p class="small">
+In Chrome, tap the three dots ⋮ and choose
+<b>Add to Home screen</b> or <b>Install app</b>.
+</p>
+
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const SUPABASE_URL = "https://actwvvokfdemobgsfctx.supabase.co";
 
-const SUPABASE_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE";
+const SUPABASE_URL =
+"https://actwvvokfdemobgsfctx.supabase.co";
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+const SUPABASE_KEY =
+"sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
 );
 
-let currentHTML = "";
-let currentCSS = "";
-let currentJS = "";
+let currentHTML="";
+let currentCSS="";
+let currentJS="";
 
 function showSection(id){
-  document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
+
+document.querySelectorAll("section")
+.forEach(s=>s.classList.add("hidden"));
+
+document.getElementById(id)
+.classList.remove("hidden");
+
 }
 
 async function signUp(){
-  const email=document.getElementById("email").value.trim();
-  const password=document.getElementById("password").value;
 
-  if(!email||!password){
-    alert("Enter your email and password.");
-    return;
-  }
+const email=document
+.getElementById("email").value.trim();
 
-  const {error}=await supabaseClient.auth.signUp({
-    email,
-    password
-  });
+const password=document
+.getElementById("password").value;
 
-  document.getElementById("authMessage").textContent=
-    error ? error.message :
-    "Account created. Check your email to confirm your account.";
+if(!email||!password){
+
+alert("Enter your email and password.");
+
+return;
+}
+
+const {error}=await supabaseClient.auth.signUp({
+email,
+password
+});
+
+document.getElementById("authMessage")
+.textContent=
+error
+? error.message
+: "Account created. Check your email to confirm your account.";
+
 }
 
 async function signIn(){
-  const email=document.getElementById("email").value.trim();
-  const password=document.getElementById("password").value;
 
-  const {error}=await supabaseClient.auth.signInWithPassword({
-    email,
-    password
-  });
+const email=document
+.getElementById("email").value.trim();
 
-  if(error){
-    document.getElementById("authMessage").textContent=error.message;
-    return;
-  }
+const password=document
+.getElementById("password").value;
 
-  updateAuthUI();
+const {error}=
+await supabaseClient.auth.signInWithPassword({
+email,
+password
+});
+
+if(error){
+
+document.getElementById("authMessage")
+.textContent=error.message;
+
+return;
+}
+
+updateAuthUI();
+
 }
 
 async function signOut(){
-  await supabaseClient.auth.signOut();
-  updateAuthUI();
-  showSection("home");
+
+await supabaseClient.auth.signOut();
+
+updateAuthUI();
+
+showSection("home");
+
 }
 
 async function updateAuthUI(){
-  const {data}=await supabaseClient.auth.getSession();
 
-  if(data.session){
-    document.getElementById("authBox").classList.add("hidden");
-    document.getElementById("loggedIn").classList.remove("hidden");
-  }else{
-    document.getElementById("authBox").classList.remove("hidden");
-    document.getElementById("loggedIn").classList.add("hidden");
-  }
+const {data}=
+await supabaseClient.auth.getSession();
+
+if(data.session){
+
+document.getElementById("authBox")
+.classList.add("hidden");
+
+document.getElementById("loggedIn")
+.classList.remove("hidden");
+
+}else{
+
+document.getElementById("authBox")
+.classList.remove("hidden");
+
+document.getElementById("loggedIn")
+.classList.add("hidden");
+
+}
+
 }
 
 async function generateWebsite(){
 
-  const prompt=document.getElementById("prompt").value.trim();
+const prompt=
+document.getElementById("prompt")
+.value.trim();
 
-  if(!prompt){
-    alert("Describe the website you want.");
-    return;
-  }
+if(!prompt){
 
-  document.getElementById("aiStatus").textContent="Generating website...";
+alert("Describe the website you want.");
 
-  try{
+return;
+}
 
-    const response=await fetch("/api/generate.js",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        prompt,
-        html:currentHTML,
-        css:currentCSS,
-        js:currentJS
-      })
-    });
+document.getElementById("aiStatus")
+.textContent="Generating website...";
 
-    const data=await response.json();
+try{
 
-    if(!response.ok){
-      throw new Error(data.error||"AI generation failed.");
-    }
+const response=
+await fetch("/api/generate.js",{
 
-    currentHTML=data.html||"";
-    currentCSS=data.css||"";
-    currentJS=data.js||"";
+method:"POST",
 
-    renderPreview();
+headers:{
+"Content-Type":"application/json"
+},
 
-    document.getElementById("aiStatus").textContent=
-      "✅ Website generated successfully.";
+body:JSON.stringify({
 
-  }catch(error){
+prompt,
 
-    document.getElementById("aiStatus").textContent=
-      "❌ "+error.message;
-  }
+html:currentHTML,
+
+css:currentCSS,
+
+js:currentJS
+
+})
+
+});
+
+const data=await response.json();
+
+if(!response.ok){
+
+throw new Error(
+data.error||"AI generation failed."
+);
+
+}
+
+currentHTML=data.html||"";
+
+currentCSS=data.css||"";
+
+currentJS=data.js||"";
+
+renderPreview();
+
+document.getElementById("aiStatus")
+.textContent=
+"✅ Website generated successfully.";
+
+}catch(error){
+
+document.getElementById("aiStatus")
+.textContent=
+"❌ "+error.message;
+
+}
+
 }
 
 function renderPreview(){
 
-  const whatsapp=document
-    .getElementById("whatsappNumber")
-    .value
-    .replace(/[^0-9]/g,"");
+const whatsapp=
+document.getElementById("whatsappNumber")
+.value
+.replace(/[^0-9]/g,"");
 
-  const doc=`
+const doc=`
+
 <!DOCTYPE html>
+
 <html>
+
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>${currentCSS}</style>
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
+<style>
+${currentCSS}
+</style>
+
 </head>
+
 <body>
+
 ${currentHTML}
 
 <script>
+
 window.OTG_WHATSAPP="${whatsapp}";
+
 ${currentJS}
+
 <\/script>
 
 </body>
+
 </html>
+
 `;
 
-  document.getElementById("preview").srcdoc=doc;
+document.getElementById("preview")
+.srcdoc=doc;
+
 }
+
+/* =========================
+   PREMIUM FASHION TEMPLATE
+========================= */
 
 function useFashionTemplate(){
 
 currentHTML=`
-<div class="hero">
-<h1>Prince Fashion</h1>
-<p>Style for everyone</p>
-<button onclick="document.getElementById('collection').scrollIntoView({behavior:'smooth'})">
-Shop Now
+
+<div class="fashion-store">
+
+<header class="store-nav">
+
+<div class="store-logo">
+Prince <span>Fashion</span>
+</div>
+
+<div class="store-nav-links">
+
+<a href="#home">Home</a>
+
+<a href="#collection">Shop</a>
+
+<a href="#about">About</a>
+
+<a href="#contact">Contact</a>
+
+</div>
+
+<button class="cart-button"
+onclick="openCart()">
+
+🛒 Cart
+
+<span class="cart-count"
+id="cartCount">0</span>
+
 </button>
+
+</header>
+
+<section
+class="fashion-hero"
+id="home">
+
+<div class="hero-content">
+
+<div class="hero-badge">
+NEW COLLECTION 2026
 </div>
 
-<section id="collection">
-<h2>Our Collection</h2>
+<h1>
+Style That
+<span>Speaks.</span>
+</h1>
 
-<div class="category">
-<h2>Men's Wear</h2>
+<p>
+Discover premium men's and women's fashion
+designed for people who want to look confident,
+elegant and unforgettable.
+</p>
 
-<div class="products">
+<div class="hero-buttons">
 
-<div class="product">
+<button
+class="hero-btn hero-btn-main"
+onclick="scrollToCollection()">
+Shop Collection
+</button>
+
+<button
+class="hero-btn hero-btn-second"
+onclick="contactWhatsApp()">
+Chat on WhatsApp
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section
+class="store-section"
+id="collection">
+
+<div class="section-title">
+
+<p>CURATED FOR YOU</p>
+
+<h2>
+Our <span>Collection</span>
+</h2>
+
+<p>
+Find your perfect style.
+</p>
+
+</div>
+
+<div class="search-box">
+
+<input
+id="productSearch"
+placeholder="🔍 Search products..."
+oninput="searchProducts()">
+
+</div>
+
+<div class="filters">
+
+<button
+class="filter-btn active"
+onclick="filterProducts('all',this)">
+All
+</button>
+
+<button
+class="filter-btn"
+onclick="filterProducts('men',this)">
+Men
+</button>
+
+<button
+class="filter-btn"
+onclick="filterProducts('women',this)">
+Women
+</button>
+
+<button
+class="filter-btn"
+onclick="filterProducts('new',this)">
+New Arrivals
+</button>
+
+</div>
+
+<div class="product-grid"
+id="productGrid">
+
+<div class="product-card"
+data-category="men"
+data-name="Classic Shirt">
+
+<div class="product-image">
+
+<span class="product-tag">MEN</span>
+
+👔
+
+</div>
+
+<div class="product-info">
+
 <h3>Classic Shirt</h3>
-<p>₦25,000</p>
-<button onclick="orderProduct('Classic Shirt','₦25,000')">Order on WhatsApp</button>
+
+<p>Premium everyday shirt.</p>
+
+<div class="price">
+₦25,000
 </div>
 
-<div class="product">
+<div class="product-actions">
+
+<button
+class="add-cart"
+onclick="addToCart('Classic Shirt',25000,'👔')">
+Add to Cart
+</button>
+
+<button
+class="buy-now"
+onclick="buyNow('Classic Shirt',25000)">
+Buy
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="product-card"
+data-category="men"
+data-name="Premium Senator">
+
+<div class="product-image">
+
+<span class="product-tag">MEN</span>
+
+🥻
+
+</div>
+
+<div class="product-info">
+
 <h3>Premium Senator</h3>
-<p>₦65,000</p>
-<button onclick="orderProduct('Premium Senator','₦65,000')">Order on WhatsApp</button>
+
+<p>Elegant traditional outfit.</p>
+
+<div class="price">
+₦65,000
 </div>
 
-<div class="product">
+<div class="product-actions">
+
+<button
+class="add-cart"
+onclick="addToCart('Premium Senator',65000,'🥻')">
+Add to Cart
+</button>
+
+<button
+class="buy-now"
+onclick="buyNow('Premium Senator',65000)">
+Buy
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="product-card"
+data-category="men"
+data-name="Casual T-Shirt">
+
+<div class="product-image">
+
+<span class="product-tag">MEN</span>
+
+👕
+</div>
+
+<div class="product-info">
+
 <h3>Casual T-Shirt</h3>
-<p>₦18,000</p>
-<button onclick="orderProduct('Casual T-Shirt','₦18,000')">Order on WhatsApp</button>
+
+<p>Comfortable casual style.</p>
+
+<div class="price">
+₦18,000
+</div>
+
+<div class="product-actions">
+
+<button
+class="add-cart"
+onclick="addToCart('Casual T-Shirt',18000,'👕')">
+Add to Cart
+</button>
+
+<button
+class="buy-now"
+onclick="buyNow('Casual T-Shirt',18000)">
+Buy
+</button>
+
 </div>
 
 </div>
+
 </div>
 
-<div class="category">
-<h2>Women's Wear</h2>
+<div class="product-card"
+data-category="women"
+data-name="Elegant Dress">
 
-<div class="products">
+<div class="product-image">
 
-<div class="product">
+<span class="product-tag">WOMEN</span>
+
+👗
+
+</div>
+
+<div class="product-info">
+
 <h3>Elegant Dress</h3>
-<p>₦45,000</p>
-<button onclick="orderProduct('Elegant Dress','₦45,000')">Order on WhatsApp</button>
+
+<p>Elegant modern fashion.</p>
+
+<div class="price">
+₦45,000
 </div>
 
-<div class="product">
+<div class="product-actions">
+
+<button
+class="add-cart"
+onclick="addToCart('Elegant Dress',45000,'👗')">
+Add to Cart
+</button>
+
+<button
+class="buy-now"
+onclick="buyNow('Elegant Dress',45000)">
+Buy
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="product-card"
+data-category="women"
+data-name="Luxury Gown">
+
+<div class="product-image">
+
+<span class="product-tag">WOMEN</span>
+
+👘
+
+</div>
+
+<div class="product-info">
+
 <h3>Luxury Gown</h3>
-<p>₦75,000</p>
-<button onclick="orderProduct('Luxury Gown','₦75,000')">Order on WhatsApp</button>
+
+<p>Luxury occasion wear.</p>
+
+<div class="price">
+₦75,000
 </div>
 
-<div class="product">
+<div class="product-actions">
+
+<button
+class="add-cart"
+onclick="addToCart('Luxury Gown',75000,'👘')">
+Add to Cart
+</button>
+
+<button
+class="buy-now"
+onclick="buyNow('Luxury Gown',75000)">
+Buy
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="product-card"
+data-category="women"
+data-name="Stylish Top">
+
+<div class="product-image">
+
+<span class="product-tag">WOMEN</span>
+
+👚
+
+</div>
+
+<div class="product-info">
+
 <h3>Stylish Top</h3>
-<p>₦22,000</p>
-<button onclick="orderProduct('Stylish Top','₦22,000')">Order on WhatsApp</button>
+
+<p>Simple and beautiful.</p>
+
+<div class="price">
+₦22,000
+</div>
+
+<div class="product-actions">
+
+<button
+class="add-cart"
+onclick="addToCart('Stylish Top',22000,'👚')">
+Add to Cart
+</button>
+
+<button
+class="buy-now"
+onclick="buyNow('Stylish Top',22000)">
+Buy
+</button>
+
 </div>
 
 </div>
+
 </div>
 
-<div class="category">
-<h2>New Arrivals</h2>
+<div class="product-card"
+data-category="new"
+data-name="New Collection">
 
-<div class="products">
+<div class="product-image">
 
-<div class="product">
+<span class="product-tag">NEW</span>
+
+✨
+
+</div>
+
+<div class="product-info">
+
 <h3>New Collection</h3>
-<p>₦35,000</p>
-<button onclick="orderProduct('New Collection','₦35,000')">Order on WhatsApp</button>
+
+<p>Fresh from our collection.</p>
+
+<div class="price">
+₦35,000
 </div>
 
-<div class="product">
+<div class="product-actions">
+
+<button
+class="add-cart"
+onclick="addToCart('New Collection',35000,'✨')">
+Add to Cart
+</button>
+
+<button
+class="buy-now"
+onclick="buyNow('New Collection',35000)">
+Buy
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="product-card"
+data-category="new"
+data-name="Premium Outfit">
+
+<div class="product-image">
+
+<span class="product-tag">NEW</span>
+
+💎
+
+</div>
+
+<div class="product-info">
+
 <h3>Premium Outfit</h3>
-<p>₦55,000</p>
-<button onclick="orderProduct('Premium Outfit','₦55,000')">Order on WhatsApp</button>
+
+<p>Premium fashion statement.</p>
+
+<div class="price">
+₦55,000
 </div>
 
-<div class="product">
+<div class="product-actions">
+
+<button
+class="add-cart"
+onclick="addToCart('Premium Outfit',55000,'💎')">
+Add to Cart
+</button>
+
+<button
+class="buy-now"
+onclick="buyNow('Premium Outfit',55000)">
+Buy
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="product-card"
+data-category="new"
+data-name="Weekend Style">
+
+<div class="product-image">
+
+<span class="product-tag">NEW</span>
+
+🔥
+
+</div>
+
+<div class="product-info">
+
 <h3>Weekend Style</h3>
-<p>₦30,000</p>
-<button onclick="orderProduct('Weekend Style','₦30,000')">Order on WhatsApp</button>
+
+<p>Perfect relaxed weekend look.</p>
+
+<div class="price">
+₦30,000
+</div>
+
+<div class="product-actions">
+
+<button
+class="add-cart"
+onclick="addToCart('Weekend Style',30000,'🔥')">
+Add to Cart
+</button>
+
+<button
+class="buy-now"
+onclick="buyNow('Weekend Style',30000)">
+Buy
+</button>
+
 </div>
 
 </div>
+
+</div>
+
 </div>
 
 </section>
 
-<section class="contact">
-<h2>Contact Us</h2>
-<button onclick="contactWhatsApp()">Chat on WhatsApp</button>
+<section
+class="store-section"
+id="about">
+
+<div class="section-title">
+
+<p>WHY CHOOSE US</p>
+
+<h2>
+Fashion Made <span>Simple</span>
+</h2>
+
+</div>
+
+<div class="features">
+
+<div class="feature">
+
+<div class="feature-icon">
+✨
+</div>
+
+<h3>Premium Quality</h3>
+
+<p>
+Carefully selected fashion pieces.
+</p>
+
+</div>
+
+<div class="feature">
+
+<div class="feature-icon">
+🚚
+</div>
+
+<h3>Easy Delivery</h3>
+
+<p>
+Convenient delivery options.
+</p>
+
+</div>
+
+<div class="feature">
+
+<div class="feature-icon">
+💬
+</div>
+
+<h3>Easy Ordering</h3>
+
+<p>
+Order directly through WhatsApp.
+</p>
+
+</div>
+
+<div class="feature">
+
+<div class="feature-icon">
+💎
+</div>
+
+<h3>Great Style</h3>
+
+<p>
+Look good and feel confident.
+</p>
+
+</div>
+
+</div>
+
 </section>
 
-<footer>© 2026 Prince Fashion</footer>
+<footer
+class="store-footer"
+id="contact">
+
+<h2>Prince Fashion</h2>
+
+<p>
+Style for everyone.
+Premium fashion for every occasion.
+</p>
+
+<button
+class="hero-btn hero-btn-main"
+onclick="contactWhatsApp()">
+Chat With Us on WhatsApp
+</button>
+
+<div class="footer-bottom">
+
+© 2026 Prince Fashion.
+All rights reserved.
+
+</div>
+
+</footer>
+
+<div
+class="cart-panel"
+id="cartPanel">
+
+<div class="cart-header">
+
+<h2>Your Cart</h2>
+
+<button
+class="close-cart"
+onclick="closeCart()">
+✕
+</button>
+
+</div>
+
+<div id="cartItems">
+
+<p>Your cart is empty.</p>
+
+</div>
+
+<div
+class="cart-total"
+id="cartTotal">
+Total: ₦0
+</div>
+
+<button
+class="checkout"
+onclick="checkoutCart()">
+Order Cart on WhatsApp
+</button>
+
+</div>
+
+</div>
 `;
 
-currentCSS=`
-body{
-margin:0;
-font-family:Arial,sans-serif;
-color:#222;
-background:#f7f7f7;
-}
-
-.hero{
-background:#111;
-color:white;
-padding:80px 20px;
-text-align:center;
-}
-
-.hero h1{
-font-size:48px;
-margin:0 0 10px;
-}
-
-.hero button,
-.product button,
-.contact button{
-background:#087f3d;
-color:white;
-border:0;
-padding:12px 18px;
-border-radius:8px;
-cursor:pointer;
-}
-
-#collection{
-padding:40px 20px;
-max-width:1100px;
-margin:auto;
-}
-
-#collection>h2{
-text-align:center;
-font-size:32px;
-}
-
-.category{
-margin:40px 0;
-}
-
-.products{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-}
-
-.product{
-background:white;
-padding:25px;
-border-radius:15px;
-box-shadow:0 3px 15px #0001;
-}
-
-.product h3{
-margin-top:0;
-}
-
-.contact{
-text-align:center;
-padding:50px 20px;
-background:#eee;
-}
-
-footer{
-text-align:center;
-padding:20px;
-background:#111;
-color:white;
-}
-
-@media(max-width:600px){
-.hero h1{font-size:36px}
-#collection{padding:30px 15px}
-}
-`;
+currentCSS="";
 
 currentJS=`
+
+let cart=[];
+
 function getWhatsAppNumber(){
-return (window.OTG_WHATSAPP||"").replace(/[^0-9]/g,"");
+
+return (window.OTG_WHATSAPP||"")
+.replace(/[^0-9]/g,"");
+
 }
 
-function orderProduct(product,price){
+function scrollToCollection(){
+
+document
+.getElementById("collection")
+.scrollIntoView({
+behavior:"smooth"
+});
+
+}
+
+function openCart(){
+
+document
+.getElementById("cartPanel")
+.classList.add("open");
+
+}
+
+function closeCart(){
+
+document
+.getElementById("cartPanel")
+.classList.remove("open");
+
+}
+
+function addToCart(name,price,icon){
+
+const existing=
+cart.find(item=>item.name===name);
+
+if(existing){
+
+existing.quantity++;
+
+}else{
+
+cart.push({
+name,
+price,
+icon,
+quantity:1
+});
+
+}
+
+updateCart();
+
+openCart();
+
+}
+
+function removeFromCart(name){
+
+cart=
+cart.filter(item=>item.name!==name);
+
+updateCart();
+
+}
+
+function changeQuantity(name,amount){
+
+const item=
+cart.find(item=>item.name===name);
+
+if(!item)return;
+
+item.quantity+=amount;
+
+if(item.quantity<=0){
+
+removeFromCart(name);
+
+return;
+
+}
+
+updateCart();
+
+}
+
+function updateCart(){
+
+const count=
+cart.reduce(
+(total,item)=>total+item.quantity,
+0
+);
+
+document.getElementById("cartCount")
+.textContent=count;
+
+const container=
+document.getElementById("cartItems");
+
+if(cart.length===0){
+
+container.innerHTML=
+"<p>Your cart is empty.</p>";
+
+document.getElementById("cartTotal")
+.textContent="Total: ₦0";
+
+return;
+
+}
+
+let total=0;
+
+container.innerHTML=
+cart.map(item=>{
+
+total+=item.price*item.quantity;
+
+return \`
+
+<div class="cart-item">
+
+<div class="cart-item-top">
+
+<div>
+
+<strong>
+\${item.icon} \${item.name}
+</strong>
+
+<div>
+₦\${item.price.toLocaleString()}
+</div>
+
+</div>
+
+<button
+onclick="removeFromCart('\${item.name}')">
+✕
+</button>
+
+</div>
+
+<div class="quantity">
+
+<button
+onclick="changeQuantity('\${item.name}',-1)">
+−
+</button>
+
+<span>
+\${item.quantity}
+</span>
+
+<button
+onclick="changeQuantity('\${item.name}',1)">
++
+</button>
+
+</div>
+
+</div>
+
+\`;
+
+}).join("");
+
+document.getElementById("cartTotal")
+.textContent=
+"Total: ₦"+total.toLocaleString();
+
+}
+
+function buyNow(name,price){
+
+addToCart(name,price,"🛍️");
+
+checkoutCart();
+
+}
+
+function checkoutCart(){
 
 const number=getWhatsAppNumber();
 
 if(!number){
-alert("Please enter the WhatsApp number for this website in the builder.");
+
+alert(
+"Please enter the WhatsApp number for this website in the builder."
+);
+
 return;
+
 }
 
-const message=
-"Hello, I want to order "+product+
-" for "+price+".";
+if(cart.length===0){
+
+alert("Your cart is empty.");
+
+return;
+
+}
+
+let total=0;
+
+let message=
+"Hello Prince Fashion!%0A%0AI would like to order:%0A";
+
+cart.forEach(item=>{
+
+total+=item.price*item.quantity;
+
+message+=
+"- "+
+item.name+
+" x"+
+item.quantity+
+" — ₦"+
+(item.price*item.quantity).toLocaleString()+
+"%0A";
+
+});
+
+message+=
+"%0ATotal: ₦"+
+total.toLocaleString()+
+"%0A%0AThank you.";
 
 window.open(
-"https://wa.me/"+number+
-"?text="+encodeURIComponent(message),
+"https://wa.me/"+
+number+
+"?text="+message,
 "_blank"
 );
+
 }
 
 function contactWhatsApp(){
@@ -489,131 +1935,286 @@ function contactWhatsApp(){
 const number=getWhatsAppNumber();
 
 if(!number){
-alert("Please enter the WhatsApp number for this website in the builder.");
+
+alert(
+"Please enter the WhatsApp number for this website in the builder."
+);
+
 return;
+
 }
 
 window.open(
-"https://wa.me/"+number+
-"?text="+encodeURIComponent("Hello, I want to make an enquiry."),
+"https://wa.me/"+
+number+
+"?text="+
+encodeURIComponent(
+"Hello Prince Fashion! I would like to make an enquiry."
+),
 "_blank"
 );
+
 }
+
+function filterProducts(category,button){
+
+document
+.querySelectorAll(".filter-btn")
+.forEach(btn=>
+btn.classList.remove("active")
+);
+
+button.classList.add("active");
+
+document
+.querySelectorAll(".product-card")
+.forEach(card=>{
+
+if(
+category==="all" ||
+card.dataset.category===category
+){
+
+card.style.display="block";
+
+}else{
+
+card.style.display="none";
+
+}
+
+});
+
+}
+
+function searchProducts(){
+
+const search=
+document
+.getElementById("productSearch")
+.value
+.toLowerCase();
+
+document
+.querySelectorAll(".product-card")
+.forEach(card=>{
+
+const name=
+card.dataset.name.toLowerCase();
+
+card.style.display=
+name.includes(search)
+?"block"
+:"none";
+
+});
+
+}
+
+updateCart();
+
 `;
 
 showSection("builder");
+
 renderPreview();
+
 }
+
+/* =========================
+   SIMPLE BUSINESS TEMPLATE
+========================= */
 
 function useBusinessTemplate(){
 
 currentHTML=`
-<div style="padding:60px;text-align:center">
+
+<div style="
+padding:70px 20px;
+text-align:center;
+font-family:Arial;
+">
+
 <h1>My Business</h1>
-<p>Welcome to our professional business website.</p>
-<button>Contact Us</button>
+
+<p>
+Welcome to our professional business website.
+</p>
+
+<button style="
+padding:14px 20px;
+background:#1769e0;
+color:white;
+border:0;
+border-radius:8px;
+">
+Contact Us
+</button>
+
 </div>
+
 `;
 
-currentCSS=`
-body{
-font-family:Arial;
-background:#f5f5f5;
-}
-`;
+currentCSS="";
 
 currentJS="";
 
 showSection("builder");
+
 renderPreview();
+
 }
+
+/* =========================
+   PORTFOLIO TEMPLATE
+========================= */
 
 function usePortfolioTemplate(){
 
 currentHTML=`
-<div style="padding:50px;text-align:center">
+
+<div style="
+padding:70px 20px;
+text-align:center;
+font-family:Arial;
+">
+
 <h1>My Portfolio</h1>
-<p>Welcome to my creative portfolio.</p>
+
+<p>
+Welcome to my creative portfolio.
+</p>
+
 <h2>My Work</h2>
-<p>Design • Branding • Creative Projects</p>
+
+<p>
+Design • Branding • Creative Projects
+</p>
+
 </div>
+
 `;
 
-currentCSS=`
-body{
-font-family:Arial;
-background:#fff;
-}
-`;
+currentCSS="";
 
 currentJS="";
 
 showSection("builder");
+
 renderPreview();
+
 }
+
+/* =========================
+   PUBLISH
+========================= */
 
 async function publishWebsite(){
 
-const {data,error}=await supabaseClient.auth.getUser();
+const {data,error}=
+await supabaseClient.auth.getUser();
 
 if(error||!data.user){
+
 alert("Please login first.");
+
 return;
+
 }
 
 if(!currentHTML){
+
 alert("Create or select a website first.");
+
 return;
+
 }
 
 let title="My Website";
 
-if(document.getElementById("prompt").value.trim()){
-title=document.getElementById("prompt").value
+if(
+document.getElementById("prompt")
+.value.trim()
+){
+
+title=
+document.getElementById("prompt")
+.value
 .trim()
 .substring(0,60);
+
 }
 
 const slug=
-title.toLowerCase()
+title
+.toLowerCase()
 .replace(/[^a-z0-9]+/g,"-")
 .replace(/^-|-$/g,"")
-+"-"+Math.random().toString(36).substring(2,7);
++
+"-"+
+Math.random()
+.toString(36)
+.substring(2,7);
 
-const {error:insertError}=await supabaseClient
+const {error:insertError}=
+await supabaseClient
 .from("projects")
 .insert({
+
 user_id:data.user.id,
+
 title,
+
 html:currentHTML,
+
 css:currentCSS,
+
 js:currentJS,
+
 slug,
+
 is_published:true
+
 });
 
 if(insertError){
+
 alert(insertError.message);
+
 return;
+
 }
 
 const url=
 window.location.origin+
 "/?site="+slug;
 
-document.getElementById("publishResult").innerHTML=
-"✅ Published! <br><br>"+
-"<a href='"+url+"' target='_blank'>"+url+"</a>";
+document.getElementById("publishResult")
+.innerHTML=
+"✅ Published!<br><br>"+
+"<a href='"+url+"' target='_blank'>"+
+url+
+"</a>";
+
 }
+
+/* =========================
+   PUBLISHED SITE
+========================= */
 
 async function loadPublishedSite(){
 
-const params=new URLSearchParams(window.location.search);
+const params=
+new URLSearchParams(
+window.location.search
+);
+
 const slug=params.get("site");
 
 if(!slug)return;
 
-const {data,error}=await supabaseClient
+const {data,error}=
+await supabaseClient
 .from("projects")
 .select("html,css,js,title")
 .eq("slug",slug)
@@ -624,22 +2225,37 @@ if(error||!data)return;
 
 document.body.innerHTML=
 data.html+
-"<style>"+data.css+"</style>";
+"<style>"+
+data.css+
+"</style>";
 
-const script=document.createElement("script");
-script.textContent=data.js||"";
+const script=
+document.createElement("script");
+
+script.textContent=
+data.js||"";
+
 document.body.appendChild(script);
+
 }
 
-supabaseClient.auth.onAuthStateChange(()=>{
+supabaseClient.auth
+.onAuthStateChange(()=>{
 updateAuthUI();
 });
 
 updateAuthUI();
 
-if(new URLSearchParams(window.location.search).has("site")){
+if(
+new URLSearchParams(
+window.location.search
+).has("site")
+){
+
 loadPublishedSite();
+
 }
+
 </script>
 
 </body>
