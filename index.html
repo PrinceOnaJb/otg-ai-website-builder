@@ -4,10 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#111111" />
-  <meta name="description" content="OTG AI Website Builder — Create beautiful websites with AI." />
+  <meta name="description" content="OTG AI Website Builder - Build beautiful websites with AI." />
   <link rel="manifest" href="/manifest.json" />
-
   <title>OTG AI Website Builder</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     * {
@@ -38,378 +39,255 @@
       cursor: pointer;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    /* =========================
-       TOP BAR
-    ========================= */
-
     .topbar {
       position: sticky;
       top: 0;
       z-index: 1000;
-      background: rgba(255,255,255,.96);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .topbar-inner {
-      max-width: 1250px;
-      margin: auto;
-      min-height: 68px;
-      padding: 10px 18px;
+      background: #111;
+      color: white;
+      padding: 12px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 15px;
+      box-shadow: 0 2px 15px rgba(0,0,0,.15);
     }
 
     .brand {
       display: flex;
       align-items: center;
       gap: 10px;
-      min-width: max-content;
+      font-weight: 800;
     }
 
-    .brand-logo {
-      width: 42px;
-      height: 42px;
-      border-radius: 13px;
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
       display: grid;
       place-items: center;
+      background: linear-gradient(135deg,#00d4ff,#7c3aed,#ff2d95);
       color: white;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 900;
-      background:
-        linear-gradient(135deg, #111827, #2563eb);
-      box-shadow: 0 7px 20px rgba(37,99,235,.25);
-      transform: rotate(-4deg);
-    }
-
-    .brand-text strong {
-      display: block;
-      font-size: 16px;
-    }
-
-    .brand-text span {
-      color: #6b7280;
-      font-size: 11px;
+      box-shadow: 0 5px 20px rgba(124,58,237,.35);
     }
 
     .nav {
       display: flex;
+      gap: 8px;
       align-items: center;
-      gap: 4px;
-      overflow-x: auto;
+      flex-wrap: wrap;
     }
 
     .nav button {
       border: 0;
       background: transparent;
-      padding: 9px 10px;
-      border-radius: 9px;
-      color: #4b5563;
-      white-space: nowrap;
+      color: #ddd;
+      padding: 9px 11px;
+      border-radius: 8px;
     }
 
     .nav button:hover {
-      background: #f3f4f6;
-      color: #111827;
+      background: #222;
+      color: white;
     }
 
-    .auth-area {
-      display: flex;
-      align-items: center;
-      gap: 7px;
+    .container {
+      width: min(1200px, 94%);
+      margin: auto;
+    }
+
+    .hero {
+      padding: 55px 0 35px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 7px 13px;
+      border-radius: 30px;
+      background: #e9e7ff;
+      color: #5b21b6;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .hero h1 {
+      font-size: clamp(34px,6vw,68px);
+      line-height: 1.02;
+      margin-bottom: 18px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg,#7c3aed,#ec4899,#06b6d4);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      max-width: 700px;
+      margin: auto;
+      color: #64748b;
+      font-size: 17px;
+    }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(7,1fr);
+      gap: 8px;
+      margin: 25px 0 35px;
+    }
+
+    .step {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px 6px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    .step.active {
+      background: #111;
+      color: white;
+    }
+
+    .section {
+      margin: 45px 0;
+    }
+
+    .section-title {
+      margin-bottom: 20px;
+    }
+
+    .section-title h2 {
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+
+    .section-title p {
+      color: #64748b;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 15px;
+    }
+
+    .stat {
+      background: white;
+      padding: 20px;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 28px;
+      margin-top: 5px;
+    }
+
+    .stat span {
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .ai-box {
+      background: #111827;
+      color: white;
+      border-radius: 20px;
+      padding: 24px;
+    }
+
+    .ai-box h2 {
+      margin-bottom: 8px;
+    }
+
+    .ai-box p {
+      color: #cbd5e1;
+      margin-bottom: 18px;
+    }
+
+    textarea,
+    input,
+    select {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      background: white;
+      border-radius: 10px;
+      padding: 13px;
+      outline: none;
+    }
+
+    textarea:focus,
+    input:focus,
+    select:focus {
+      border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124,58,237,.1);
+    }
+
+    .ai-box textarea {
+      min-height: 120px;
+      margin-bottom: 12px;
+      color: #111;
     }
 
     .btn {
       border: 0;
-      border-radius: 11px;
-      padding: 11px 15px;
+      padding: 11px 17px;
+      border-radius: 10px;
       font-weight: 700;
-      transition: .2s;
+      background: #111;
+      color: white;
     }
 
     .btn:hover {
-      transform: translateY(-1px);
+      opacity: .9;
     }
 
-    .btn-dark {
-      background: #111827;
-      color: white;
+    .btn-primary {
+      background: linear-gradient(135deg,#7c3aed,#ec4899);
     }
 
-    .btn-blue {
-      background: #2563eb;
-      color: white;
-    }
-
-    .btn-green {
+    .btn-success {
       background: #059669;
-      color: white;
-    }
-
-    .btn-light {
-      background: #eef2f7;
-      color: #111827;
     }
 
     .btn-danger {
-      background: #fee2e2;
-      color: #b91c1c;
+      background: #dc2626;
     }
 
-    .hidden {
-      display: none !important;
+    .btn-light {
+      background: #f1f5f9;
+      color: #111827;
     }
 
-    /* =========================
-       HERO
-    ========================= */
-
-    .hero {
-      max-width: 1250px;
-      margin: auto;
-      padding: 55px 18px 30px;
-      display: grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 35px;
-      align-items: center;
+    .btn-whatsapp {
+      background: #25d366;
+      color: white;
     }
 
-    .hero-badge {
-      display: inline-flex;
-      background: #e8efff;
-      color: #2563eb;
-      padding: 8px 12px;
-      border-radius: 100px;
-      font-size: 12px;
-      font-weight: 800;
-      margin-bottom: 15px;
-    }
-
-    .hero h1 {
-      font-size: clamp(38px, 6vw, 72px);
-      line-height: .98;
-      letter-spacing: -3px;
-      margin-bottom: 18px;
-    }
-
-    .hero h1 span {
-      color: #2563eb;
-    }
-
-    .hero p {
-      max-width: 650px;
-      color: #6b7280;
-      font-size: 17px;
-      margin-bottom: 22px;
-    }
-
-    .hero-actions {
+    .template-toolbar {
       display: flex;
       gap: 10px;
+      margin-bottom: 18px;
       flex-wrap: wrap;
     }
 
-    .hero-card {
-      background: #111827;
-      color: white;
-      border-radius: 25px;
-      padding: 25px;
-      min-height: 300px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 25px 60px rgba(17,24,39,.2);
+    .template-toolbar input {
+      flex: 1;
+      min-width: 220px;
     }
 
-    .hero-card::before,
-    .hero-card::after {
-      content: "";
-      position: absolute;
-      border-radius: 50%;
-      background: rgba(37,99,235,.35);
-      filter: blur(3px);
-    }
-
-    .hero-card::before {
-      width: 200px;
-      height: 200px;
-      right: -60px;
-      top: -60px;
-    }
-
-    .hero-card::after {
-      width: 150px;
-      height: 150px;
-      left: -50px;
-      bottom: -50px;
-      background: rgba(16,185,129,.25);
-    }
-
-    .hero-card-content {
-      position: relative;
-      z-index: 2;
-    }
-
-    .hero-card h3 {
-      font-size: 27px;
-      margin-bottom: 10px;
-    }
-
-    .hero-mini {
+    .template-grid {
       display: grid;
-      grid-template-columns: repeat(2,1fr);
-      gap: 10px;
-      margin-top: 25px;
-    }
-
-    .hero-mini div {
-      padding: 15px;
-      border-radius: 15px;
-      background: rgba(255,255,255,.08);
-    }
-
-    .hero-mini strong {
-      display: block;
-      font-size: 22px;
-    }
-
-    .hero-mini span {
-      color: #cbd5e1;
-      font-size: 11px;
-    }
-
-    /* =========================
-       SECTIONS
-    ========================= */
-
-    .section {
-      max-width: 1250px;
-      margin: auto;
-      padding: 35px 18px;
-    }
-
-    .section-heading {
-      margin-bottom: 20px;
-    }
-
-    .section-heading h2 {
-      font-size: 27px;
-      letter-spacing: -.7px;
-    }
-
-    .section-heading p {
-      color: #6b7280;
-      margin-top: 4px;
-    }
-
-    /* =========================
-       WORKFLOW
-    ========================= */
-
-    .workflow {
-      display: grid;
-      grid-template-columns: repeat(5,1fr);
-      gap: 10px;
-    }
-
-    .workflow-item {
-      background: white;
-      border: 1px solid #e5e7eb;
-      padding: 16px;
-      border-radius: 15px;
-    }
-
-    .workflow-number {
-      width: 32px;
-      height: 32px;
-      display: grid;
-      place-items: center;
-      background: #111827;
-      color: white;
-      border-radius: 10px;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-
-    .workflow-item strong {
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .workflow-item span {
-      color: #6b7280;
-      font-size: 12px;
-    }
-
-    /* =========================
-       DASHBOARD
-    ========================= */
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 12px;
-    }
-
-    .stat-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
-      padding: 18px;
-    }
-
-    .stat-card span {
-      color: #6b7280;
-      font-size: 12px;
-    }
-
-    .stat-card strong {
-      display: block;
-      font-size: 28px;
-      margin-top: 4px;
-    }
-
-    /* =========================
-       TEMPLATE FILTER
-    ========================= */
-
-    .template-filter {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 10px;
-      margin-bottom: 15px;
-    }
-
-    .filter-btn {
-      border: 1px solid #e5e7eb;
-      background: white;
-      padding: 9px 13px;
-      border-radius: 100px;
-      white-space: nowrap;
-      font-size: 13px;
-    }
-
-    .filter-btn.active {
-      background: #111827;
-      color: white;
-      border-color: #111827;
-    }
-
-    /* =========================
-       TEMPLATE GRID
-    ========================= */
-
-    .templates {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 14px;
+      grid-template-columns: repeat(3,1fr);
+      gap: 18px;
     }
 
     .template-card {
@@ -421,485 +299,367 @@
     }
 
     .template-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 15px 35px rgba(15,23,42,.08);
+      transform: translateY(-4px);
+      box-shadow: 0 15px 35px rgba(0,0,0,.08);
     }
 
     .template-preview {
-      min-height: 150px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
+      height: 145px;
+      display: grid;
+      place-items: center;
       color: white;
-      position: relative;
-      overflow: hidden;
+      font-size: 24px;
+      font-weight: 900;
     }
 
-    .template-preview::after {
-      content: "";
-      position: absolute;
-      width: 130px;
-      height: 130px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.12);
-      right: -30px;
-      top: -30px;
+    .template-content {
+      padding: 17px;
     }
 
-    .template-icon {
-      font-size: 35px;
-      position: relative;
-      z-index: 2;
+    .template-content h3 {
+      margin-bottom: 5px;
     }
 
-    .template-preview strong {
-      font-size: 19px;
-      position: relative;
-      z-index: 2;
-      margin-top: 8px;
+    .template-content p {
+      color: #64748b;
+      font-size: 13px;
+      min-height: 42px;
+      margin-bottom: 13px;
     }
 
-    .template-info {
-      padding: 15px;
+    .template-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
     }
 
-    .template-info p {
-      color: #6b7280;
-      font-size: 12px;
-      min-height: 38px;
-      margin-bottom: 12px;
+    .category {
+      font-size: 11px;
+      font-weight: 700;
+      background: #f1f5f9;
+      padding: 5px 8px;
+      border-radius: 20px;
     }
 
-    .template-info .btn {
-      width: 100%;
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 12px;
     }
 
-    .graphic {
-      background: linear-gradient(135deg,#111827,#7c3aed);
-    }
-
-    .photography {
-      background: linear-gradient(135deg,#111827,#475569);
-    }
-
-    .fashion {
-      background: linear-gradient(135deg,#be123c,#7f1d1d);
-    }
-
-    .business {
-      background: linear-gradient(135deg,#1e3a8a,#2563eb);
-    }
-
-    .restaurant {
-      background: linear-gradient(135deg,#7c2d12,#ea580c);
-    }
-
-    .salon {
-      background: linear-gradient(135deg,#831843,#db2777);
-    }
-
-    .realestate {
-      background: linear-gradient(135deg,#064e3b,#059669);
-    }
-
-    .school {
-      background: linear-gradient(135deg,#312e81,#4f46e5);
-    }
-
-    .store {
-      background: linear-gradient(135deg,#164e63,#0891b2);
-    }
-
-    .clinic {
-      background: linear-gradient(135deg,#065f46,#10b981);
-    }
-
-    .portfolio {
-      background: linear-gradient(135deg,#1f2937,#6b7280);
-    }
-
-    .event {
-      background: linear-gradient(135deg,#581c87,#9333ea);
-    }
-
-    /* =========================
-       AI GENERATOR
-    ========================= */
-
-    .builder-card {
+    .quick-action {
       background: white;
       border: 1px solid #e5e7eb;
-      border-radius: 20px;
-      padding: 20px;
+      padding: 18px;
+      border-radius: 15px;
+      text-align: left;
+      font-weight: 700;
     }
 
-    .generator-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    label {
+    .quick-action span {
       display: block;
+      color: #64748b;
       font-size: 12px;
-      font-weight: 800;
-      margin-bottom: 7px;
+      font-weight: 400;
+      margin-top: 4px;
     }
-
-    textarea,
-    input,
-    select {
-      width: 100%;
-      border: 1px solid #d1d5db;
-      background: white;
-      color: #111827;
-      border-radius: 11px;
-      padding: 12px;
-      outline: none;
-    }
-
-    textarea:focus,
-    input:focus,
-    select:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37,99,235,.1);
-    }
-
-    textarea {
-      min-height: 125px;
-      resize: vertical;
-    }
-
-    .generator-actions {
-      margin-top: 12px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .counter {
-      margin-top: 10px;
-      color: #6b7280;
-      font-size: 12px;
-    }
-
-    /* =========================
-       EDITOR
-    ========================= */
 
     .editor-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 15px;
+      gap: 18px;
     }
 
-    .editor-panel {
-      background: #0f172a;
-      border-radius: 17px;
-      overflow: hidden;
+    .editor-panel,
+    .preview-panel {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 16px;
     }
 
-    .editor-tabs {
+    .tabs {
       display: flex;
-      background: #111827;
-      overflow-x: auto;
+      gap: 7px;
+      margin-bottom: 10px;
     }
 
-    .editor-tab {
+    .tab {
       border: 0;
-      background: transparent;
-      color: #94a3b8;
-      padding: 12px 16px;
+      background: #f1f5f9;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 12px;
     }
 
-    .editor-tab.active {
-      background: #1e293b;
+    .tab.active {
+      background: #111;
       color: white;
     }
 
     .code-area {
-      width: 100%;
-      min-height: 430px;
-      border: 0;
-      border-radius: 0;
+      min-height: 450px;
+      font-family: monospace;
+      font-size: 13px;
+      resize: vertical;
       background: #0f172a;
       color: #e2e8f0;
-      padding: 16px;
-      font-family: Consolas, monospace;
-      font-size: 13px;
-      line-height: 1.5;
-      resize: vertical;
-      outline: none;
+      border-color: #0f172a;
     }
 
-    .preview-panel {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 17px;
-      overflow: hidden;
-      min-height: 480px;
-    }
-
-    .preview-header {
-      padding: 12px 15px;
-      background: #f8fafc;
-      border-bottom: 1px solid #e5e7eb;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    #previewFrame {
+    .preview-frame {
       width: 100%;
-      height: 430px;
-      border: 0;
+      min-height: 450px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
       background: white;
     }
 
-    /* =========================
-       PROJECTS
-    ========================= */
+    .editor-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
 
-    .project-toolbar {
+    .projects-toolbar {
       display: flex;
       gap: 10px;
-      margin-bottom: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
     }
 
-    .projects-grid {
+    .projects-toolbar input {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .project-grid {
       display: grid;
       grid-template-columns: repeat(3,1fr);
-      gap: 14px;
+      gap: 15px;
     }
 
     .project-card {
       background: white;
       border: 1px solid #e5e7eb;
-      border-radius: 17px;
+      border-radius: 16px;
       padding: 17px;
     }
 
     .project-card h3 {
-      font-size: 17px;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
     }
 
     .project-card p {
-      color: #6b7280;
+      color: #64748b;
       font-size: 12px;
+      margin-bottom: 13px;
+    }
+
+    .project-status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
       margin-bottom: 12px;
     }
 
-    .project-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .project-actions button {
-      border: 0;
-      background: #eef2f7;
-      border-radius: 8px;
-      padding: 8px 9px;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .project-actions .publish {
+    .published {
       background: #dcfce7;
       color: #166534;
     }
 
-    .project-actions .delete {
-      background: #fee2e2;
-      color: #991b1b;
+    .draft {
+      background: #fef3c7;
+      color: #92400e;
     }
 
-    /* =========================
-       ABOUT
-    ========================= */
-
-    .about-box {
-      background: #111827;
-      color: white;
-      border-radius: 23px;
-      padding: 30px;
-    }
-
-    .about-box p {
-      color: #cbd5e1;
-      max-width: 850px;
-      margin: 10px 0;
-    }
-
-    .about-grid {
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 12px;
-      margin-top: 22px;
-    }
-
-    .about-item {
-      background: rgba(255,255,255,.07);
-      padding: 17px;
-      border-radius: 14px;
-    }
-
-    .about-item strong {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .about-item span {
-      color: #cbd5e1;
-      font-size: 12px;
-    }
-
-    /* =========================
-       FOOTER
-    ========================= */
-
-    footer {
-      margin-top: 30px;
-      background: #0b1120;
-      color: white;
-      padding: 35px 18px;
-    }
-
-    .footer-inner {
-      max-width: 1250px;
-      margin: auto;
+    .project-actions {
       display: flex;
-      justify-content: space-between;
-      gap: 20px;
+      gap: 6px;
       flex-wrap: wrap;
     }
 
-    footer p {
-      color: #94a3b8;
-      font-size: 12px;
-      margin-top: 4px;
+    .project-actions button {
+      padding: 7px 9px;
+      font-size: 11px;
     }
 
-    /* =========================
-       MODALS
-    ========================= */
+    .about {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 30px;
+    }
 
-    .modal-backdrop {
+    .about h2 {
+      margin-bottom: 15px;
+    }
+
+    .about p {
+      color: #475569;
+      margin-bottom: 13px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .service {
+      background: #f8fafc;
+      padding: 18px;
+      border-radius: 13px;
+    }
+
+    .service h3 {
+      margin-bottom: 5px;
+    }
+
+    .service p {
+      font-size: 13px;
+      margin: 0;
+    }
+
+    footer {
+      background: #111;
+      color: white;
+      padding: 35px 0;
+      margin-top: 60px;
+      text-align: center;
+    }
+
+    footer p {
+      color: #aaa;
+      margin-top: 5px;
+      font-size: 13px;
+    }
+
+    .modal {
       position: fixed;
       inset: 0;
+      background: rgba(0,0,0,.65);
       z-index: 5000;
-      background: rgba(0,0,0,.6);
       display: none;
       align-items: center;
       justify-content: center;
       padding: 20px;
     }
 
-    .modal-backdrop.show {
+    .modal.show {
       display: flex;
     }
 
-    .modal {
-      width: min(450px,100%);
+    .modal-box {
       background: white;
-      border-radius: 20px;
+      width: min(450px,100%);
+      border-radius: 18px;
       padding: 22px;
-      box-shadow: 0 25px 80px rgba(0,0,0,.3);
     }
 
-    .modal h3 {
-      margin-bottom: 6px;
+    .modal-box h3 {
+      margin-bottom: 12px;
     }
 
-    .modal p {
-      color: #6b7280;
-      font-size: 13px;
-      margin-bottom: 15px;
+    .modal-box input {
+      margin-bottom: 13px;
+      font-size: 16px;
     }
 
     .modal-actions {
       display: flex;
-      gap: 8px;
       justify-content: flex-end;
-      margin-top: 15px;
+      gap: 8px;
     }
 
-    /* =========================
-       TOAST
-    ========================= */
+    .auth-box {
+      max-width: 420px;
+      margin: 30px auto;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 24px;
+    }
+
+    .auth-box input {
+      margin-bottom: 10px;
+    }
+
+    .auth-box .btn {
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
 
     .toast {
       position: fixed;
+      right: 20px;
       bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
       z-index: 6000;
-      background: #111827;
+      background: #111;
       color: white;
       padding: 12px 17px;
-      border-radius: 11px;
-      font-size: 13px;
-      opacity: 0;
-      transition: .3s;
-      max-width: 90%;
-      text-align: center;
+      border-radius: 10px;
+      display: none;
+      max-width: 330px;
     }
 
     .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
+      display: block;
     }
 
-    /* =========================
-       MOBILE
-    ========================= */
-
     @media (max-width: 900px) {
-      .hero {
+      .template-grid,
+      .project-grid {
+        grid-template-columns: repeat(2,1fr);
+      }
+
+      .dashboard,
+      .quick-actions {
+        grid-template-columns: repeat(2,1fr);
+      }
+
+      .workflow {
+        grid-template-columns: repeat(4,1fr);
+      }
+    }
+
+    @media (max-width: 700px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        width: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+
+      .nav button {
+        white-space: nowrap;
+      }
+
+      .template-grid,
+      .project-grid,
+      .dashboard,
+      .quick-actions,
+      .services-grid,
+      .editor-grid {
         grid-template-columns: 1fr;
       }
 
       .workflow {
         grid-template-columns: repeat(2,1fr);
-      }
-
-      .templates {
-        grid-template-columns: repeat(2,1fr);
-      }
-
-      .stats {
-        grid-template-columns: repeat(2,1fr);
-      }
-
-      .projects-grid {
-        grid-template-columns: repeat(2,1fr);
-      }
-
-      .generator-grid,
-      .editor-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .about-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 620px) {
-      .topbar-inner {
-        align-items: flex-start;
-        flex-wrap: wrap;
-      }
-
-      .nav {
-        width: 100%;
-        order: 3;
-      }
-
-      .auth-area {
-        margin-left: auto;
       }
 
       .hero {
@@ -907,41 +667,16 @@
       }
 
       .hero h1 {
-        letter-spacing: -2px;
+        font-size: 42px;
       }
 
-      .workflow {
-        grid-template-columns: 1fr 1fr;
+      .code-area,
+      .preview-frame {
+        min-height: 350px;
       }
 
-      .templates {
-        grid-template-columns: 1fr;
-      }
-
-      .stats {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .projects-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .about-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .project-toolbar {
-        flex-direction: column;
-      }
-
-      .generator-actions,
-      .hero-actions {
-        flex-direction: column;
-      }
-
-      .generator-actions .btn,
-      .hero-actions .btn {
-        width: 100%;
+      .about {
+        padding: 20px;
       }
     }
   </style>
@@ -949,2909 +684,1700 @@
 
 <body>
 
-  <!-- =========================
-       TOP BAR
-  ========================= -->
+<div id="app">
 
   <header class="topbar">
-    <div class="topbar-inner">
-
-      <div class="brand">
-        <div class="brand-logo">OTG</div>
-
-        <div class="brand-text">
-          <strong>OTG AI Website Builder</strong>
-          <span>Build. Create. Publish.</span>
-        </div>
-      </div>
-
-      <nav class="nav">
-        <button onclick="scrollToSection('builder')">Builder</button>
-        <button onclick="scrollToSection('dashboard')">Dashboard</button>
-        <button onclick="scrollToSection('templates')">Templates</button>
-        <button onclick="scrollToSection('projects')">My Projects</button>
-        <button onclick="scrollToSection('about')">About OTG</button>
-      </nav>
-
-      <div class="auth-area">
-        <button id="loginBtn" class="btn btn-dark" onclick="login()">Login</button>
-        <button id="logoutBtn" class="btn btn-light hidden" onclick="logout()">Logout</button>
-      </div>
-
+    <div class="brand">
+      <div class="logo">OTG</div>
+      <span>OTG AI Website Builder</span>
     </div>
+
+    <nav class="nav">
+      <button onclick="scrollToSection('builder')">Builder</button>
+      <button onclick="scrollToSection('templates')">Templates</button>
+      <button onclick="scrollToSection('projects')">My Projects</button>
+      <button onclick="scrollToSection('about')">About OTG</button>
+      <button id="authButton" onclick="showAuth()">Login</button>
+    </nav>
   </header>
 
+  <main>
 
-  <!-- =========================
-       HERO
-  ========================= -->
-
-  <section class="hero">
-
-    <div>
-      <div class="hero-badge">🚀 AI-POWERED WEBSITE CREATION</div>
+    <section class="hero container">
+      <span class="hero-badge">🚀 OTG AI CREATIVE TECHNOLOGY</span>
 
       <h1>
         Turn your ideas into
-        <span>websites.</span>
+        <span class="gradient-text">beautiful websites.</span>
       </h1>
 
       <p>
-        Create professional websites with AI, customize your design,
-        save your projects and publish your work online — directly from your phone.
+        Choose a professional template, customize it with AI,
+        edit your code, preview your website, save it and publish it.
       </p>
+    </section>
 
-      <div class="hero-actions">
-        <button class="btn btn-blue" onclick="scrollToSection('builder')">
-          🚀 Create Website
-        </button>
-
-        <button class="btn btn-light" onclick="scrollToSection('templates')">
-          🎨 Explore Templates
-        </button>
+    <section class="container">
+      <div class="workflow">
+        <div class="step active">1. Choose Template</div>
+        <div class="step">2. Customize</div>
+        <div class="step">3. AI Edit</div>
+        <div class="step">4. Preview</div>
+        <div class="step">5. Save</div>
+        <div class="step">6. Publish</div>
+        <div class="step">7. Share</div>
       </div>
-    </div>
+    </section>
 
-
-    <div class="hero-card">
-      <div class="hero-card-content">
-
-        <h3>Build with OTG AI</h3>
-
-        <p style="color:#cbd5e1;">
-          Describe what you want and let AI create the foundation.
-          Then customize it yourself.
-        </p>
-
-        <div class="hero-mini">
-          <div>
-            <strong>AI</strong>
-            <span>Website generation</span>
-          </div>
-
-          <div>
-            <strong>5/day</strong>
-            <span>Free AI generations</span>
-          </div>
-
-          <div>
-            <strong>Save</strong>
-            <span>Your projects</span>
-          </div>
-
-          <div>
-            <strong>Publish</strong>
-            <span>Share your website</span>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       WORKFLOW
-  ========================= -->
-
-  <section class="section">
-
-    <div class="section-heading">
-      <h2>How OTG Builder Works</h2>
-      <p>From idea to published website in a few simple steps.</p>
-    </div>
-
-    <div class="workflow">
-
-      <div class="workflow-item">
-        <div class="workflow-number">1</div>
-        <strong>Choose</strong>
-        <span>Select a template or start from scratch.</span>
+    <section class="section container">
+      <div class="section-title">
+        <h2>Student Dashboard</h2>
+        <p>Your website-building activity at a glance.</p>
       </div>
 
-      <div class="workflow-item">
-        <div class="workflow-number">2</div>
-        <strong>Customize</strong>
-        <span>Describe what you want AI to build.</span>
+      <div class="dashboard">
+        <div class="stat">
+          <span>My Projects</span>
+          <strong id="statProjects">0</strong>
+        </div>
+
+        <div class="stat">
+          <span>Published Websites</span>
+          <strong id="statPublished">0</strong>
+        </div>
+
+        <div class="stat">
+          <span>AI Generations Today</span>
+          <strong id="statAI">0/5</strong>
+        </div>
+
+        <div class="stat">
+          <span>Templates</span>
+          <strong>12</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="builder">
+      <div class="section-title">
+        <h2>🤖 AI Website Generator</h2>
+        <p>Describe what you want and OTG AI will build or improve it.</p>
       </div>
 
-      <div class="workflow-item">
-        <div class="workflow-number">3</div>
-        <strong>Edit</strong>
-        <span>Adjust your HTML, CSS and JavaScript.</span>
-      </div>
+      <div class="ai-box">
+        <h2>Build with OTG AI</h2>
 
-      <div class="workflow-item">
-        <div class="workflow-number">4</div>
-        <strong>Save</strong>
-        <span>Keep your project in your OTG account.</span>
-      </div>
-
-      <div class="workflow-item">
-        <div class="workflow-number">5</div>
-        <strong>Publish</strong>
-        <span>Share your website with other people.</span>
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       DASHBOARD
-  ========================= -->
-
-  <section class="section" id="dashboard">
-
-    <div class="section-heading">
-      <h2>Student Dashboard</h2>
-      <p id="dashboardMessage">
-        Welcome to your OTG creative workspace.
-      </p>
-    </div>
-
-    <div class="stats">
-
-      <div class="stat-card">
-        <span>My Projects</span>
-        <strong id="statProjects">0</strong>
-      </div>
-
-      <div class="stat-card">
-        <span>Published</span>
-        <strong id="statPublished">0</strong>
-      </div>
-
-      <div class="stat-card">
-        <span>AI Generations Left</span>
-        <strong id="statGenerations">5</strong>
-      </div>
-
-      <div class="stat-card">
-        <span>Account</span>
-        <strong id="statAccount">Guest</strong>
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       TEMPLATES
-  ========================= -->
-
-  <section class="section" id="templates">
-
-    <div class="section-heading">
-      <h2>OTG Templates</h2>
-
-      <p>
-        Choose a professional starting point and customize it with AI.
-      </p>
-    </div>
-
-    <div class="template-filter">
-
-      <button class="filter-btn active" onclick="filterTemplates('all',this)">
-        All
-      </button>
-
-      <button class="filter-btn" onclick="filterTemplates('creative',this)">
-        🎨 Creative
-      </button>
-
-      <button class="filter-btn" onclick="filterTemplates('business',this)">
-        💼 Business
-      </button>
-
-      <button class="filter-btn" onclick="filterTemplates('lifestyle',this)">
-        👗 Lifestyle
-      </button>
-
-      <button class="filter-btn" onclick="filterTemplates('service',this)">
-        🛠️ Services
-      </button>
-
-      <button class="filter-btn" onclick="filterTemplates('education',this)">
-        🎓 Education
-      </button>
-
-      <button class="filter-btn" onclick="filterTemplates('commerce',this)">
-        🛒 Commerce
-      </button>
-
-    </div>
-
-
-    <div class="templates" id="templateGrid">
-
-      <!-- GRAPHIC DESIGN -->
-
-      <div class="template-card" data-category="creative">
-
-        <div class="template-preview graphic">
-          <div class="template-icon">🎨</div>
-          <strong>Graphic Design Studio</strong>
-        </div>
-
-        <div class="template-info">
-          <p>
-            Showcase flyers, branding, logos, social media designs and creative services.
-          </p>
-
-          <button class="btn btn-dark"
-                  onclick="useTemplate('Graphic Design Studio')">
-            Use Template
-          </button>
-        </div>
-
-      </div>
-
-
-      <!-- PHOTOGRAPHY -->
-
-      <div class="template-card" data-category="creative">
-
-        <div class="template-preview photography">
-          <div class="template-icon">📸</div>
-          <strong>Photography</strong>
-        </div>
-
-        <div class="template-info">
-          <p>
-            Display photography work, galleries, packages and booking information.
-          </p>
-
-          <button class="btn btn-dark"
-                  onclick="useTemplate('Photography')">
-            Use Template
-          </button>
-        </div>
-
-      </div>
-
-
-      <!-- PORTFOLIO -->
-
-      <div class="template-card" data-category="creative">
-
-        <div class="template-preview portfolio">
-          <div class="template-icon">👤</div>
-          <strong>Personal Portfolio</strong>
-        </div>
-
-        <div class="template-info">
-          <p>
-            Create a professional personal portfolio for your skills and achievements.
-          </p>
-
-          <button class="btn btn-dark"
-                  onclick="useTemplate('Personal Portfolio')">
-            Use Template
-          </button>
-        </div>
-
-      </div>
-
-
-      <!-- FASHION -->
-
-      <div class="template-card" data-category="lifestyle">
-
-        <div class="template-preview fashion">
-          <div class="template-icon">👗</div>
-          <strong>Fashion & Clothing</strong>
-        </div>
-
-        <div class="template-info">
-          <p>
-            Showcase men's and women's clothing, collections, prices and WhatsApp orders.
-          </p>
-
-          <button class="btn btn-dark"
-                  onclick="useTemplate('Fashion & Clothing')">
-            Use Template
-          </button>
-        </div>
-
-      </div>
-
-
-      <!-- BUSINESS -->
-
-      <div class="template-card" data-category="business">
-
-        <div class="template-preview business">
-          <div class="template-icon">💼</div>
-          <strong>Business / Corporate</strong>
-        </div>
-
-        <div class="template-info">
-          <p>
-            Professional company website with services, about section and contact.
-          </p>
-
-          <button class="btn btn-dark"
-                  onclick="useTemplate('Business / Corporate')">
-            Use Template
-          </button>
-        </div>
-
-      </div>
-
-
-      <!-- RESTAURANT -->
-
-      <div class="template-card" data-category="lifestyle">
-
-        <div class="template-preview restaurant">
-          <div class="template-icon">🍽️</div>
-          <strong>Restaurant & Food</strong>
-        </div>
-
-        <div class="template-info">
-          <p>
-            Menu, food gallery, location, reservations and WhatsApp ordering.
-          </p>
-
-          <button class="btn btn-dark"
-                  onclick="useTemplate('Restaurant & Food')">
-            Use Template
-          </button>
-        </div>
-
-      </div>
-
-
-      <!-- SALON -->
-
-      <div class="template-card" data-category="service">
-
-        <div class="template-preview salon">
-          <div class="template-icon">💇</div>
-          <strong>Salon & Barbershop</strong>
-        </div>
-
-        <div class="template-info">
-          <p>
-            Services, prices, gallery, booking and customer contact.
-          </p>
-
-          <button class="btn btn-dark"
-                  onclick="useTemplate('Salon & Barbershop')">
-            Use Template
-          </button>
-        </div>
-
-      </div>
-
-
-      <!-- REAL ESTATE -->
-
-      <div class="template-card" data-category="business">
-
-        <div class="template-preview realestate">
-          <div class="template-icon">🏠</div>
-          <strong>Real Estate</strong>
-        </div>
-
-        <div class="template-info">
-          <p>
-            Property listings, prices, locations and agent contact information.
-          </p>
-
-          <button class="btn btn-dark"
-                  onclick="useTemplate('Real Estate')">
-            Use Template
-          </button>
-        </div>
-
-      </div>
-
-
-      <!-- SCHOOL -->
-
-      <div class="template-card" data-category="education">
-
-        <div class="template-preview school">
-          <div class="template-icon">🎓</div>
-          <strong>School / Academy</strong>
-        </div>
-
-        <div class="template-info">
-          <p>
-            School information, courses, admissions, programs and contact details.
-          </p>
-
-          <button class="btn btn-dark"
-                  onclick="useTemplate('School / Academy')">
-            Use Template
-          </button>
-        </div>
-
-      </div>
-
-
-      <!-- ONLINE STORE -->
-
-      <div class="template-card" data-category="commerce">
-
-        <div class="template-preview store">
-          <div class="template-icon">🛒</div>
-          <strong>Online Store</strong>
-        </div>
-
-        <div class="template-info">
-          <p>
-            Product catalog, prices, shopping sections and WhatsApp ordering.
-          </p>
-
-          <button class="btn btn-dark"
-                  onclick="useTemplate('Online Store')">
-            Use Template
-          </button>
-        </div>
-
-      </div>
-
-
-      <!-- CLINIC -->
-
-      <div class="template-card" data-category="service">
-
-        <div class="template-preview clinic">
-          <div class="template-icon">🏥</div>
-          <strong>Clinic / Healthcare</strong>
-        </div>
-
-        <div class="template-info">
-          <p>
-            Medical services, doctors, opening hours, location and contact.
-          </p>
-
-          <button class="btn btn-dark"
-                  onclick="useTemplate('Clinic / Healthcare')">
-            Use Template
-          </button>
-        </div>
-
-      </div>
-
-
-      <!-- EVENT -->
-
-      <div class="template-card" data-category="creative">
-
-        <div class="template-preview event">
-          <div class="template-icon">🎉</div>
-          <strong>Event & Entertainment</strong>
-        </div>
-
-        <div class="template-info">
-          <p>
-            Events, entertainment, tickets, speakers, venue and registration.
-          </p>
-
-          <button class="btn btn-dark"
-                  onclick="useTemplate('Event & Entertainment')">
-            Use Template
-          </button>
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       BUILDER
-  ========================= -->
-
-  <section class="section" id="builder">
-
-    <div class="section-heading">
-      <h2>AI Website Generator</h2>
-
-      <p>
-        Tell OTG AI what you want to create or improve.
-      </p>
-    </div>
-
-
-    <div class="builder-card">
-
-      <div class="generator-grid">
-
-        <div>
-
-          <label for="websitePrompt">
-            What do you want to build?
-          </label>
-
-          <textarea
-            id="websitePrompt"
-            placeholder="Example: Create a professional website for my graphic design business called Prince OnaJb Designs. Add my services, portfolio, pricing, about section and WhatsApp contact."
-          ></textarea>
-
-        </div>
-
-
-        <div>
-
-          <label for="whatsappNumber">
-            WhatsApp Number
-          </label>
-
-          <input
-            id="whatsappNumber"
-            type="text"
-            inputmode="tel"
-            placeholder="2348012345678"
-          />
-
-          <br><br>
-
-          <label for="designStyle">
-            Design Style
-          </label>
-
-          <select id="designStyle">
-
-            <option value="modern">
-              Modern & Professional
-            </option>
-
-            <option value="minimal">
-              Minimal & Clean
-            </option>
-
-            <option value="luxury">
-              Luxury & Premium
-            </option>
-
-            <option value="bold">
-              Bold & Creative
-            </option>
-
-            <option value="corporate">
-              Corporate
-            </option>
-
-            <option value="colorful">
-              Colorful & Energetic
-            </option>
-
-          </select>
-
-        </div>
-
-      </div>
-
-
-      <div class="generator-actions">
-
-        <button
-          class="btn btn-blue"
-          onclick="generateWebsite()"
-          id="generateBtn"
-        >
-          🤖 Generate Website
-        </button>
-
-        <button
-          class="btn btn-light"
-          onclick="newWebsite()"
-        >
-          ✨ Start From Scratch
-        </button>
-
-        <button
-          class="btn btn-light"
-          onclick="scrollToSection('templates')"
-        >
-          🎨 Choose Template
-        </button>
-
-      </div>
-
-
-      <div class="counter">
-        AI generations remaining today:
-        <strong id="generationCount">5</strong>
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       EDITOR + PREVIEW
-  ========================= -->
-
-  <section class="section">
-
-    <div class="section-heading">
-
-      <h2>Website Editor</h2>
-
-      <p>
-        Edit your HTML, CSS and JavaScript, then preview your website.
-      </p>
-
-    </div>
-
-
-    <div class="editor-grid">
-
-      <div class="editor-panel">
-
-        <div class="editor-tabs">
-
-          <button
-            class="editor-tab active"
-            id="tabHTML"
-            onclick="switchEditor('html')"
-          >
-            HTML
-          </button>
-
-          <button
-            class="editor-tab"
-            id="tabCSS"
-            onclick="switchEditor('css')"
-          >
-            CSS
-          </button>
-
-          <button
-            class="editor-tab"
-            id="tabJS"
-            onclick="switchEditor('js')"
-          >
-            JavaScript
-          </button>
-
-        </div>
-
-
-        <textarea
-          id="htmlCode"
-          class="code-area"
-          spellcheck="false"
-          placeholder="HTML code..."
-        ></textarea>
-
-        <textarea
-          id="cssCode"
-          class="code-area hidden"
-          spellcheck="false"
-          placeholder="CSS code..."
-        ></textarea>
-
-        <textarea
-          id="jsCode"
-          class="code-area hidden"
-          spellcheck="false"
-          placeholder="JavaScript code..."
-        ></textarea>
-
-      </div>
-
-
-      <div class="preview-panel">
-
-        <div class="preview-header">
-
-          <strong>Live Preview</strong>
-
-          <button
-            class="btn btn-light"
-            onclick="updatePreview()"
-          >
-            🔄 Refresh
-          </button>
-
-        </div>
-
-        <iframe
-          id="previewFrame"
-          sandbox="allow-scripts allow-forms allow-modals"
-        ></iframe>
-
-      </div>
-
-    </div>
-
-
-    <div class="generator-actions" style="margin-top:15px;">
-
-      <button
-        class="btn btn-green"
-        onclick="saveProject()"
-      >
-        💾 Save Project
-      </button>
-
-      <button
-        class="btn btn-blue"
-        onclick="publishWebsite()"
-      >
-        🚀 Publish Website
-      </button>
-
-      <button
-        class="btn btn-light"
-        onclick="updatePreview()"
-      >
-        👁️ Preview
-      </button>
-
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       PROJECTS
-  ========================= -->
-
-  <section class="section" id="projects">
-
-    <div class="section-heading">
-
-      <h2>My Projects</h2>
-
-      <p>
-        Your saved websites appear here.
-      </p>
-
-    </div>
-
-
-    <div class="project-toolbar">
-
-      <input
-        id="projectSearch"
-        placeholder="Search projects..."
-        oninput="renderProjects()"
-      />
-
-      <button
-        class="btn btn-dark"
-        onclick="newWebsite()"
-      >
-        + New Website
-      </button>
-
-    </div>
-
-
-    <div
-      class="projects-grid"
-      id="projectsGrid"
-    >
-      <div class="project-card">
-        <h3>No projects yet</h3>
         <p>
-          Create your first website to see it here.
+          Create a website from scratch or tell the AI what you want
+          changed in your current website.
+        </p>
+
+        <textarea
+          id="aiPrompt"
+          placeholder="Example: Create a modern website for my graphic design business called Prince OnaJb Designs. Add my services, portfolio, pricing, testimonials and a WhatsApp button."
+        ></textarea>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="generateWithAI()">
+            ✨ Generate with AI
+          </button>
+
+          <button class="btn btn-light" onclick="useSelectedTemplate()">
+            Use Selected Template
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="templates">
+      <div class="section-title">
+        <h2>🎨 Professional Templates</h2>
+        <p>
+          Start faster with a template designed for your type of business.
         </p>
       </div>
-    </div>
 
-  </section>
+      <div class="template-toolbar">
+        <input
+          id="templateSearch"
+          type="text"
+          placeholder="Search templates..."
+          oninput="renderTemplates()"
+        />
 
+        <select id="templateCategory" onchange="renderTemplates()">
+          <option value="all">All Categories</option>
+          <option value="design">Creative</option>
+          <option value="business">Business</option>
+          <option value="fashion">Fashion</option>
+          <option value="food">Food</option>
+          <option value="service">Services</option>
+          <option value="education">Education</option>
+          <option value="store">Store</option>
+          <option value="health">Healthcare</option>
+          <option value="personal">Personal</option>
+          <option value="event">Event</option>
+        </select>
+      </div>
 
-  <!-- =========================
-       ABOUT OTG
-  ========================= -->
+      <div class="template-grid" id="templateGrid"></div>
+    </section>
 
-  <section class="section" id="about">
+    <section class="section container">
+      <div class="section-title">
+        <h2>⚡ Quick Actions</h2>
+        <p>Jump straight into your most-used tools.</p>
+      </div>
 
-    <div class="about-box">
+      <div class="quick-actions">
+        <button class="quick-action" onclick="newWebsite()">
+          ➕ New Website
+          <span>Start from scratch.</span>
+        </button>
 
-      <h2>About OTG</h2>
+        <button class="quick-action" onclick="scrollToSection('templates')">
+          🎨 Browse Templates
+          <span>Choose a professional design.</span>
+        </button>
 
-      <p>
-        OTG AI Website Builder is a creative platform designed to help
-        students, designers, entrepreneurs and creators turn their ideas
-        into beautiful websites using AI and practical digital skills.
-      </p>
+        <button class="quick-action" onclick="scrollToSection('editor')">
+          💻 Open Editor
+          <span>Edit HTML, CSS and JavaScript.</span>
+        </button>
 
-      <h2 style="margin-top:25px;">OTG</h2>
+        <button class="quick-action" onclick="saveProject()">
+          💾 Save Project
+          <span>Save your current website.</span>
+        </button>
+      </div>
+    </section>
 
-      <p>
-        <strong style="color:white;">
-          Prince OnaJb
-        </strong><br>
-        CEO & Founder, OTG Graphic Academy
-      </p>
+    <section class="section container" id="editor">
+      <div class="section-title">
+        <h2>💻 Website Editor</h2>
+        <p>Edit HTML, CSS and JavaScript directly.</p>
+      </div>
 
-      <p>
-        Prince OnaJb is a graphic designer, creative educator and digital
-        creator passionate about helping people turn ordinary ideas into
-        professional visual and digital experiences.
-      </p>
+      <div class="editor-grid">
 
-      <p>
-        Through OTG Graphic Academy, he teaches students practical creative
-        skills while encouraging them to adapt to modern technology, AI
-        and the changing digital world.
-      </p>
+        <div class="editor-panel">
 
-      <p style="color:white;font-size:18px;font-weight:800;">
-        “I turn ordinary ideas into visual reality.”
-      </p>
+          <div class="tabs">
+            <button class="tab active" id="htmlTab" onclick="switchEditor('html')">
+              HTML
+            </button>
 
+            <button class="tab" id="cssTab" onclick="switchEditor('css')">
+              CSS
+            </button>
 
-      <div class="about-grid">
+            <button class="tab" id="jsTab" onclick="switchEditor('js')">
+              JavaScript
+            </button>
+          </div>
 
-        <div class="about-item">
-          <strong>🎨 Graphic Design</strong>
-          <span>
-            Professional visual designs, flyers, branding and creative communication.
-          </span>
+          <textarea id="codeEditor" class="code-area"></textarea>
+
+          <div class="editor-actions">
+            <button class="btn btn-primary" onclick="updateEditor()">
+              Update
+            </button>
+
+            <button class="btn btn-light" onclick="resetBuilder()">
+              Reset
+            </button>
+
+            <button class="btn btn-success" onclick="saveProject()">
+              Save Project
+            </button>
+
+            <button class="btn" onclick="publishWebsite()">
+              Publish Website
+            </button>
+          </div>
         </div>
 
-        <div class="about-item">
-          <strong>💻 Website Creation</strong>
-          <span>
-            Building modern websites and digital experiences for brands and businesses.
-          </span>
-        </div>
+        <div class="preview-panel">
+          <h3 style="margin-bottom:10px;">Live Preview</h3>
 
-        <div class="about-item">
-          <strong>🤖 AI & Creative Technology</strong>
-          <span>
-            Helping creatives understand and use modern AI tools effectively.
-          </span>
-        </div>
-
-        <div class="about-item">
-          <strong>🎓 Training & Mentorship</strong>
-          <span>
-            Practical training designed to help students develop useful creative skills.
-          </span>
-        </div>
-
-        <div class="about-item">
-          <strong>🏆 Branding</strong>
-          <span>
-            Creating strong visual identities that help businesses stand out.
-          </span>
-        </div>
-
-        <div class="about-item">
-          <strong>🚀 Digital Creativity</strong>
-          <span>
-            Turning ideas into practical digital products and creative solutions.
-          </span>
+          <iframe
+            id="previewFrame"
+            class="preview-frame"
+            sandbox="allow-scripts allow-forms allow-modals"
+          ></iframe>
         </div>
 
       </div>
+    </section>
 
+    <section class="section container" id="projects">
+      <div class="section-title">
+        <h2>📁 My Projects</h2>
+        <p>Manage your saved websites.</p>
+      </div>
 
-      <h2 style="margin-top:30px;">
-        OTG Graphic Academy
-      </h2>
+      <div class="projects-toolbar">
+        <input
+          id="projectSearch"
+          placeholder="Search projects..."
+          oninput="renderProjects()"
+        />
 
-      <p>
-        OTG Graphic Academy is focused on helping students build practical
-        creative skills they can use in the real world.
-      </p>
+        <button class="btn btn-primary" onclick="newWebsite()">
+          + New Project
+        </button>
+      </div>
 
-      <p>
-        Students are encouraged to learn, practice, create portfolios,
-        work with clients and understand how technology can support —
-        not replace — their creativity.
-      </p>
+      <div class="project-grid" id="projectGrid"></div>
+    </section>
 
-      <button
-        class="btn btn-blue"
-        onclick="scrollToSection('builder')"
-        style="margin-top:10px;"
-      >
-        🚀 Start Building
-      </button>
+    <section class="section container" id="about">
+      <div class="about">
 
-    </div>
+        <h2>About OTG</h2>
 
-  </section>
+        <p>
+          OTG AI Website Builder is a creative platform designed to help
+          students, designers, entrepreneurs and creators turn their ideas
+          into beautiful websites using AI and practical digital skills.
+        </p>
 
+        <h2 style="margin-top:25px;">OTG</h2>
 
-  <!-- =========================
-       FOOTER
-  ========================= -->
+        <p>
+          <strong>Prince OnaJb</strong><br>
+          CEO & Founder, OTG Graphic Academy
+        </p>
+
+        <p>
+          Prince OnaJb is a graphic designer, creative educator and digital
+          creator passionate about helping people turn ordinary ideas into
+          professional visual and digital experiences.
+        </p>
+
+        <p>
+          Through OTG Graphic Academy, he teaches students practical creative
+          skills while encouraging them to adapt to modern technology, AI and
+          the changing digital world.
+        </p>
+
+        <p>
+          <strong>“I turn ordinary ideas into visual reality.”</strong>
+        </p>
+
+        <h2 style="margin-top:25px;">What I Do</h2>
+
+        <div class="services-grid">
+
+          <div class="service">
+            <h3>🎨 Graphic Design</h3>
+            <p>
+              Professional visual designs, flyers, branding and creative communication.
+            </p>
+          </div>
+
+          <div class="service">
+            <h3>💻 Website Creation</h3>
+            <p>
+              Building modern websites and digital experiences for brands and businesses.
+            </p>
+          </div>
+
+          <div class="service">
+            <h3>🤖 AI & Creative Technology</h3>
+            <p>
+              Helping creatives understand and use modern AI tools effectively.
+            </p>
+          </div>
+
+          <div class="service">
+            <h3>🎓 Training & Mentorship</h3>
+            <p>
+              Practical training designed to help students develop useful creative skills.
+            </p>
+          </div>
+
+          <div class="service">
+            <h3>🏆 Branding</h3>
+            <p>
+              Creating strong visual identities that help businesses stand out.
+            </p>
+          </div>
+
+          <div class="service">
+            <h3>🚀 Digital Creativity</h3>
+            <p>
+              Turning ideas into practical digital products and creative solutions.
+            </p>
+          </div>
+
+        </div>
+
+        <h2 style="margin-top:30px;">OTG Graphic Academy</h2>
+
+        <p>
+          OTG Graphic Academy is focused on helping students build practical
+          creative skills they can use in the real world.
+        </p>
+
+        <p>
+          Students are encouraged to learn, practice, create portfolios,
+          work with clients and understand how technology can support—not
+          replace—their creativity.
+        </p>
+
+        <button class="btn btn-primary" onclick="scrollToSection('builder')">
+          🚀 Start Building
+        </button>
+
+      </div>
+    </section>
+
+  </main>
 
   <footer>
+    <strong>OTG AI Website Builder</strong>
 
-    <div class="footer-inner">
+    <p>
+      Built by Prince OnaJb — CEO & Founder, OTG Graphic Academy
+    </p>
 
-      <div>
-        <strong>OTG AI Website Builder</strong>
-
-        <p>
-          Built by Prince OnaJb — CEO & Founder, OTG Graphic Academy
-        </p>
-
-        <p>
-          Empowering creatives to turn ideas into digital reality.
-        </p>
-      </div>
-
-      <div>
-        <strong>OTG</strong>
-
-        <p>
-          Learn. Create. Build. Publish.
-        </p>
-      </div>
-
-    </div>
-
+    <p>
+      Empowering creatives to turn ideas into digital reality.
+    </p>
   </footer>
 
+</div>
 
-  <!-- =========================
-       NAME MODAL
-  ========================= -->
+<!-- AUTH MODAL -->
+<div class="modal" id="authModal">
+  <div class="modal-box">
 
-  <div
-    class="modal-backdrop"
-    id="nameModal"
-  >
+    <h3 id="authTitle">Login</h3>
 
-    <div class="modal">
+    <input
+      id="authEmail"
+      type="email"
+      autocomplete="email"
+      placeholder="Email"
+    />
 
-      <h3>Save Your Website</h3>
+    <input
+      id="authPassword"
+      type="password"
+      autocomplete="current-password"
+      placeholder="Password"
+    />
 
-      <p>
-        Give your website a name.
-      </p>
+    <div class="modal-actions">
+      <button class="btn btn-light" onclick="closeModal('authModal')">
+        Cancel
+      </button>
 
-      <input
-        id="projectNameInput"
-        type="text"
-        inputmode="text"
-        autocomplete="off"
-        autocapitalize="words"
-        spellcheck="false"
-        placeholder="Example: Prince Fashion"
-      />
+      <button class="btn btn-primary" onclick="submitAuth()">
+        Continue
+      </button>
+    </div>
 
-      <div class="modal-actions">
+    <p style="margin-top:13px;text-align:center;font-size:13px;">
+      <button
+        style="border:0;background:none;color:#7c3aed;font-weight:700;"
+        onclick="toggleAuthMode()"
+        id="authToggle"
+      >
+        Create account instead
+      </button>
+    </p>
 
-        <button
-          class="btn btn-light"
-          onclick="closeModal('nameModal')"
-        >
-          Cancel
-        </button>
+  </div>
+</div>
 
-        <button
-          class="btn btn-blue"
-          onclick="confirmSaveProject()"
-        >
-          Save
-        </button>
+<!-- NAME MODAL -->
+<div class="modal" id="nameModal">
+  <div class="modal-box">
 
-      </div>
+    <h3>Save Website</h3>
 
+    <input
+      id="projectNameInput"
+      type="text"
+      inputmode="text"
+      autocomplete="off"
+      autocapitalize="words"
+      spellcheck="false"
+      placeholder="Enter website name"
+    />
+
+    <div class="modal-actions">
+      <button class="btn btn-light" onclick="closeModal('nameModal')">
+        Cancel
+      </button>
+
+      <button class="btn btn-primary" onclick="confirmSaveProject()">
+        Save
+      </button>
     </div>
 
   </div>
+</div>
 
+<!-- RENAME MODAL -->
+<div class="modal" id="renameModal">
+  <div class="modal-box">
 
-  <!-- =========================
-       RENAME MODAL
-  ========================= -->
+    <h3>Rename Project</h3>
 
-  <div
-    class="modal-backdrop"
-    id="renameModal"
-  >
+    <input
+      id="renameInput"
+      type="text"
+      inputmode="text"
+      autocomplete="off"
+      autocapitalize="words"
+      spellcheck="false"
+      placeholder="New project name"
+    />
 
-    <div class="modal">
+    <div class="modal-actions">
+      <button class="btn btn-light" onclick="closeModal('renameModal')">
+        Cancel
+      </button>
 
-      <h3>Rename Project</h3>
-
-      <p>
-        Enter a new name for this website.
-      </p>
-
-      <input
-        id="renameInput"
-        type="text"
-        inputmode="text"
-        autocomplete="off"
-        autocapitalize="words"
-        spellcheck="false"
-        placeholder="New project name"
-      />
-
-      <div class="modal-actions">
-
-        <button
-          class="btn btn-light"
-          onclick="closeModal('renameModal')"
-        >
-          Cancel
-        </button>
-
-        <button
-          class="btn btn-blue"
-          onclick="confirmRename()"
-        >
-          Rename
-        </button>
-
-      </div>
-
+      <button class="btn btn-primary" onclick="confirmRename()">
+        Rename
+      </button>
     </div>
 
   </div>
+</div>
 
+<div class="toast" id="toast"></div>
 
-  <!-- =========================
-       TOAST
-  ========================= -->
+<script>
+  const SUPABASE_URL =
+    "https://actwvvokfdemobgsfctx.supabase.co";
 
-  <div
-    class="toast"
-    id="toast"
-  ></div>
+  const SUPABASE_KEY =
+    "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
 
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
 
-  <!-- SUPABASE -->
+  let currentUser = null;
+  let selectedTemplate = null;
+  let currentEditor = "html";
+  let renameProjectId = null;
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  let website = {
+    html: "",
+    css: "",
+    js: ""
+  };
 
+  const templates = [
+    {
+      id: "graphic-design",
+      name: "Graphic Design Studio",
+      category: "design",
+      icon: "🎨",
+      description: "Professional website for graphic designers and creative studios.",
+      color: "linear-gradient(135deg,#111827,#7c3aed)",
+      prompt: "Create a premium Graphic Design Studio website with Home, About, Services, Design Portfolio, Pricing, Testimonials and Contact sections. Add a WhatsApp CTA."
+    },
+    {
+      id: "photography",
+      name: "Photography Studio",
+      category: "design",
+      icon: "📸",
+      description: "Showcase photography services and beautiful work.",
+      color: "linear-gradient(135deg,#0f172a,#475569)",
+      prompt: "Create a modern photography studio website with Home, About, Gallery, Services, Packages, Testimonials and Contact sections. Add WhatsApp."
+    },
+    {
+      id: "business",
+      name: "Business / Corporate",
+      category: "business",
+      icon: "🏢",
+      description: "Professional corporate website for a company.",
+      color: "linear-gradient(135deg,#0f172a,#2563eb)",
+      prompt: "Create a professional corporate business website with Home, About, Services, Why Choose Us, Testimonials and Contact sections. Add WhatsApp."
+    },
+    {
+      id: "fashion",
+      name: "Fashion & Clothing",
+      category: "fashion",
+      icon: "👗",
+      description: "Modern fashion brand and clothing store website.",
+      color: "linear-gradient(135deg,#be123c,#fb7185)",
+      prompt: "Create a stylish fashion and clothing website with hero section, collections, products, About, testimonials and Contact. Add WhatsApp shopping CTA."
+    },
+    {
+      id: "restaurant",
+      name: "Restaurant / Food",
+      category: "food",
+      icon: "🍽️",
+      description: "Restaurant, food business or catering website.",
+      color: "linear-gradient(135deg,#7c2d12,#f97316)",
+      prompt: "Create a beautiful restaurant website with menu, food categories, About, gallery, testimonials, location and WhatsApp order button."
+    },
+    {
+      id: "salon",
+      name: "Salon / Barbershop",
+      category: "service",
+      icon: "💈",
+      description: "Professional beauty salon or barbershop website.",
+      color: "linear-gradient(135deg,#581c87,#c084fc)",
+      prompt: "Create a premium salon and barbershop website with services, pricing, gallery, team, testimonials, booking and WhatsApp CTA."
+    },
+    {
+      id: "real-estate",
+      name: "Real Estate",
+      category: "business",
+      icon: "🏠",
+      description: "Property and real estate business website.",
+      color: "linear-gradient(135deg,#064e3b,#10b981)",
+      prompt: "Create a modern real estate website with properties, property details, services, About, testimonials and contact. Add WhatsApp inquiry buttons."
+    },
+    {
+      id: "school",
+      name: "School / Academy",
+      category: "education",
+      icon: "🎓",
+      description: "School, training center or academy website.",
+      color: "linear-gradient(135deg,#1e3a8a,#3b82f6)",
+      prompt: "Create a professional school or academy website with About, courses, programs, teachers, testimonials, admission information and contact. Add WhatsApp."
+    },
+    {
+      id: "online-store",
+      name: "Online Store",
+      category: "store",
+      icon: "🛒",
+      description: "Modern ecommerce-style business website.",
+      color: "linear-gradient(135deg,#111827,#059669)",
+      prompt: "Create a modern online store website with hero, products, categories, featured products, About, testimonials and WhatsApp ordering."
+    },
+    {
+      id: "clinic",
+      name: "Clinic / Healthcare",
+      category: "health",
+      icon: "🏥",
+      description: "Professional clinic or healthcare website.",
+      color: "linear-gradient(135deg,#075985,#06b6d4)",
+      prompt: "Create a clean professional healthcare clinic website with services, doctors, About, patient information, testimonials and contact. Add WhatsApp."
+    },
+    {
+      id: "portfolio",
+      name: "Personal Portfolio",
+      category: "personal",
+      icon: "👤",
+      description: "Personal portfolio for a creator or professional.",
+      color: "linear-gradient(135deg,#312e81,#8b5cf6)",
+      prompt: "Create a premium personal portfolio website with hero, About, skills, services, portfolio, testimonials and contact. Add WhatsApp."
+    },
+    {
+      id: "event",
+      name: "Event / Entertainment",
+      category: "event",
+      icon: "🎉",
+      description: "Event, entertainment, artist or campaign website.",
+      color: "linear-gradient(135deg,#9f1239,#f43f5e)",
+      prompt: "Create an exciting event and entertainment website with hero, event details, schedule, gallery, speakers or performers, tickets and contact. Add WhatsApp."
+    }
+  ];
 
-  <script>
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
 
-    /* =========================================================
-       SUPABASE
-    ========================================================= */
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 3000);
+  }
 
-    const SUPABASE_URL =
-      "https://actwvvokfdemobgsfctx.supabase.co";
+  function scrollToSection(id) {
+    document.getElementById(id)?.scrollIntoView({
+      behavior: "smooth"
+    });
+  }
 
-    const SUPABASE_KEY =
-      "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
+  function closeModal(id) {
+    document.getElementById(id).classList.remove("show");
+  }
 
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-      );
+  function showModal(id) {
+    document.getElementById(id).classList.add("show");
+  }
 
+  function renderTemplates() {
+    const grid = document.getElementById("templateGrid");
 
-    /* =========================================================
-       STATE
-    ========================================================= */
+    const search =
+      document.getElementById("templateSearch").value
+        .toLowerCase()
+        .trim();
 
-    let currentUser = null;
-    let currentProjectId = null;
-    let currentRenameId = null;
+    const category =
+      document.getElementById("templateCategory").value;
 
+    const filtered = templates.filter(t => {
 
-    /* =========================================================
-       ELEMENTS
-    ========================================================= */
+      const matchesSearch =
+        !search ||
+        t.name.toLowerCase().includes(search) ||
+        t.description.toLowerCase().includes(search);
 
-    const htmlCode =
-      document.getElementById("htmlCode");
+      const matchesCategory =
+        category === "all" ||
+        t.category === category;
 
-    const cssCode =
-      document.getElementById("cssCode");
+      return matchesSearch && matchesCategory;
+    });
 
-    const jsCode =
-      document.getElementById("jsCode");
+    grid.innerHTML = filtered.map(t => `
+      <div class="template-card">
 
-    const previewFrame =
-      document.getElementById("previewFrame");
+        <div
+          class="template-preview"
+          style="background:${t.color}"
+        >
+          ${t.icon} ${t.name}
+        </div>
 
+        <div class="template-content">
 
-    /* =========================================================
-       NAVIGATION
-    ========================================================= */
+          <h3>${t.name}</h3>
 
-    function scrollToSection(id) {
+          <p>${t.description}</p>
 
-      const el =
-        document.getElementById(id);
+          <div class="template-meta">
 
-      if (el) {
-        el.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-      }
+            <span class="category">
+              ${getCategoryName(t.category)}
+            </span>
 
+            <button
+              class="btn btn-primary"
+              onclick="selectTemplate('${t.id}')"
+            >
+              Use Template
+            </button>
+
+          </div>
+
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function getCategoryName(category) {
+    const names = {
+      design: "Creative",
+      business: "Business",
+      fashion: "Fashion",
+      food: "Food",
+      service: "Services",
+      education: "Education",
+      store: "Store",
+      health: "Healthcare",
+      personal: "Personal",
+      event: "Event"
+    };
+
+    return names[category] || "Website";
+  }
+
+  function selectTemplate(id) {
+    const template = templates.find(t => t.id === id);
+
+    if (!template) return;
+
+    selectedTemplate = template;
+
+    document.getElementById("aiPrompt").value =
+      template.prompt;
+
+    showToast(
+      `${template.name} selected. You can now customize it with AI.`
+    );
+
+    scrollToSection("builder");
+  }
+
+  function useSelectedTemplate() {
+    if (!selectedTemplate) {
+      showToast("Please choose a template first.");
+      scrollToSection("templates");
+      return;
     }
 
+    document.getElementById("aiPrompt").value =
+      selectedTemplate.prompt;
 
-    /* =========================================================
-       TOAST
-    ========================================================= */
+    generateWithAI();
+  }
 
-    let toastTimer;
+  async function generateWithAI() {
+    const prompt =
+      document.getElementById("aiPrompt").value.trim();
 
-    function showToast(message) {
-
-      const toast =
-        document.getElementById("toast");
-
-      toast.textContent = message;
-
-      toast.classList.add("show");
-
-      clearTimeout(toastTimer);
-
-      toastTimer =
-        setTimeout(() => {
-          toast.classList.remove("show");
-        }, 3000);
-
+    if (!prompt) {
+      showToast("Tell OTG AI what you want to build.");
+      return;
     }
 
+    const today = new Date().toISOString().slice(0,10);
 
-    /* =========================================================
-       MODALS
-    ========================================================= */
+    const usage =
+      JSON.parse(localStorage.getItem("otg_ai_usage") || "{}");
 
-    function openModal(id) {
-
-      document
-        .getElementById(id)
-        .classList.add("show");
-
+    if (usage.date !== today) {
+      usage.date = today;
+      usage.count = 0;
     }
 
-
-    function closeModal(id) {
-
-      document
-        .getElementById(id)
-        .classList.remove("show");
-
+    if (usage.count >= 5) {
+      showToast("You have used your 5 free AI generations for today.");
+      return;
     }
 
-
-    /* =========================================================
-       LOGIN
-    ========================================================= */
-
-    async function login() {
-
-      const email =
-        prompt("Enter your email:");
-
-      if (!email) return;
-
-      const password =
-        prompt("Enter your password:");
-
-      if (!password) return;
-
-      const {
-        error
-      } =
-        await supabaseClient.auth.signInWithPassword({
-          email,
-          password
-        });
-
-      if (error) {
-
-        showToast(error.message);
-
-        return;
-
-      }
-
-      showToast("Login successful.");
-
-      await refreshUser();
-
-    }
-
-
-    /* =========================================================
-       LOGOUT
-    ========================================================= */
-
-    async function logout() {
-
-      await supabaseClient.auth.signOut();
-
-      currentUser = null;
-
-      updateAuthUI();
-
-      showToast("Logged out.");
-
-    }
-
-
-    /* =========================================================
-       AUTH STATE
-    ========================================================= */
-
-    async function refreshUser() {
-
-      const {
-        data
-      } =
-        await supabaseClient.auth.getUser();
-
-      currentUser =
-        data?.user || null;
-
-      updateAuthUI();
-
-      await renderProjects();
-
-      updateDashboard();
-
-    }
-
-
-    function updateAuthUI() {
-
-      const loginBtn =
-        document.getElementById("loginBtn");
-
-      const logoutBtn =
-        document.getElementById("logoutBtn");
-
-      const statAccount =
-        document.getElementById("statAccount");
-
-      const dashboardMessage =
-        document.getElementById("dashboardMessage");
-
-      if (currentUser) {
-
-        loginBtn.classList.add("hidden");
-
-        logoutBtn.classList.remove("hidden");
-
-        statAccount.textContent = "Student";
-
-        dashboardMessage.textContent =
-          "Welcome back to your OTG creative workspace.";
-
-      } else {
-
-        loginBtn.classList.remove("hidden");
-
-        logoutBtn.classList.add("hidden");
-
-        statAccount.textContent = "Guest";
-
-        dashboardMessage.textContent =
-          "Login to save and manage your websites.";
-
-      }
-
-    }
-
-
-    /* =========================================================
-       GENERATION COUNTER
-    ========================================================= */
-
-    function getGenerationData() {
-
-      const today =
-        new Date().toISOString().slice(0,10);
-
-      let data =
-        JSON.parse(
-          localStorage.getItem("otg_ai_generations") || "{}"
-        );
-
-      if (data.date !== today) {
-
-        data = {
-          date: today,
-          count: 0
-        };
-
-        localStorage.setItem(
-          "otg_ai_generations",
-          JSON.stringify(data)
-        );
-
-      }
-
-      return data;
-
-    }
-
-
-    function getGenerationsLeft() {
-
-      const data =
-        getGenerationData();
-
-      return Math.max(
-        0,
-        5 - data.count
-      );
-
-    }
-
-
-    function updateGenerationUI() {
-
-      const left =
-        getGenerationsLeft();
-
-      document.getElementById(
-        "generationCount"
-      ).textContent = left;
-
-      document.getElementById(
-        "statGenerations"
-      ).textContent = left;
-
-    }
-
-
-    function useOneGeneration() {
-
-      const data =
-        getGenerationData();
-
-      if (data.count >= 5) {
-
-        showToast(
-          "You have used all 5 free AI generations today."
-        );
-
-        return false;
-
-      }
-
-      data.count++;
-
-      localStorage.setItem(
-        "otg_ai_generations",
-        JSON.stringify(data)
-      );
-
-      updateGenerationUI();
-
-      return true;
-
-    }
-
-
-    /* =========================================================
-       AI GENERATOR
-    ========================================================= */
-
-    async function generateWebsite() {
-
-      const prompt =
-        document
-          .getElementById("websitePrompt")
-          .value
-          .trim();
-
-      const whatsapp =
-        document
-          .getElementById("whatsappNumber")
-          .value
-          .trim();
-
-      const style =
-        document
-          .getElementById("designStyle")
-          .value;
-
-      if (!prompt) {
-
-        showToast(
-          "Please describe the website you want."
-        );
-
-        return;
-
-      }
-
-      if (!useOneGeneration()) return;
-
-      const btn =
-        document.getElementById("generateBtn");
-
-      btn.disabled = true;
-
-      btn.textContent =
-        "🤖 Creating...";
-
-      try {
-
-        const response =
-          await fetch("/api/generate", {
-
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body: JSON.stringify({
-
-              prompt: `
-Create a professional responsive website.
-
-User request:
-${prompt}
-
-Design style:
-${style}
-
-WhatsApp number:
-${whatsapp || "Not provided"}
-
-Important requirements:
-- Make the website mobile friendly.
-- Use a professional modern layout.
-- Include a strong hero section.
-- Include navigation.
-- Include relevant sections based on the business.
-- Include clear call-to-action buttons.
-- If WhatsApp is provided, include a WhatsApp contact/order button.
-- Use clean typography.
-- Make the website visually attractive.
-- Do not use external images that require a paid service.
-- Use placeholder image areas when necessary.
-- Return complete HTML, CSS and JavaScript.
-              `,
-
-              html:
-                htmlCode.value,
-
-              css:
-                cssCode.value,
-
-              js:
-                jsCode.value
-
-            })
-
-          });
-
-
-        const data =
-          await response.json();
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            data.error ||
-            "AI generation failed."
-          );
-
-        }
-
-
-        htmlCode.value =
-          data.html || "";
-
-        cssCode.value =
-          data.css || "";
-
-        jsCode.value =
-          data.js || "";
-
-
-        updatePreview();
-
-        showToast(
-          "Website generated successfully."
-        );
-
-
-      } catch (error) {
-
-        showToast(
-          error.message ||
-          "Something went wrong."
-        );
-
-      } finally {
-
-        btn.disabled = false;
-
-        btn.textContent =
-          "🤖 Generate Website";
-
-      }
-
-    }
-
-
-    /* =========================================================
-       TEMPLATE PROMPT
-    ========================================================= */
-
-    function useTemplate(template) {
-
-      const prompts = {
-
-        "Graphic Design Studio":
-        `Create a premium graphic design studio website for a professional graphic designer. Include Home, About, Services, Design Portfolio, Branding, Flyer Design, Social Media Design, Logo Design, Pricing, Testimonials and Contact/WhatsApp sections. Make the portfolio visually strong and modern. Use a creative professional style.`,
-
-        "Photography":
-        `Create a professional photography portfolio website with Home, About, Photography Portfolio, Gallery, Services, Packages, Booking, Testimonials and Contact sections. Use a premium visual photography style.`,
-
-        "Personal Portfolio":
-        `Create a modern personal portfolio website with Hero, About Me, Skills, Services, Projects, Experience, Testimonials and Contact sections.`,
-
-        "Fashion & Clothing":
-        `Create a modern fashion and clothing website selling men's and women's clothing. Include collections, products, prices, About, testimonials and WhatsApp ordering.`,
-
-        "Business / Corporate":
-        `Create a professional corporate business website with Home, About, Services, Why Choose Us, Team, Testimonials, FAQ and Contact sections.`,
-
-        "Restaurant & Food":
-        `Create a modern restaurant website with Hero, Menu, Popular Meals, About, Gallery, Opening Hours, Location, Reservations and WhatsApp ordering.`,
-
-        "Salon & Barbershop":
-        `Create a premium salon and barbershop website with Services, Pricing, Gallery, About, Team, Booking, Testimonials and WhatsApp contact.`,
-
-        "Real Estate":
-        `Create a professional real estate website with property listings, property details, prices, locations, services, agent information and contact buttons.`,
-
-        "School / Academy":
-        `Create a modern school or academy website with About, Programs, Courses, Admissions, Teachers, Facilities, News, FAQ and Contact sections.`,
-
-        "Online Store":
-        `Create a professional online store website with product cards, prices, categories, featured products, shopping sections and WhatsApp ordering.`,
-
-        "Clinic / Healthcare":
-        `Create a professional clinic website with medical services, doctors, opening hours, appointment section, health information and contact details.`,
-
-        "Event & Entertainment":
-        `Create a modern event and entertainment website with event details, speakers or performers, gallery, schedule, venue, tickets or registration and contact information.`
-
-      };
-
-
-      document.getElementById(
-        "websitePrompt"
-      ).value =
-        prompts[template] ||
-        `Create a professional ${template} website.`;
-
-      scrollToSection("builder");
-
-      showToast(
-        `${template} template selected.`
-      );
-
-    }
-
-
-    /* =========================================================
-       NEW WEBSITE
-    ========================================================= */
-
-    function newWebsite() {
-
-      currentProjectId = null;
-
-      htmlCode.value = `
-<section style="padding:80px 20px;text-align:center;font-family:Arial">
-  <h1>Welcome to My Website</h1>
-  <p>Start building your website with OTG AI.</p>
-  <button onclick="alert('Welcome!')">
-    Get Started
-  </button>
-</section>
-`;
-
-      cssCode.value = `
-body {
-  margin: 0;
-  background: #f5f5f5;
-  color: #111;
-}
-`;
-
-      jsCode.value = "";
-
-      updatePreview();
-
-      scrollToSection("builder");
-
-      showToast(
-        "New website started."
-      );
-
-    }
-
-
-    /* =========================================================
-       EDITOR TABS
-    ========================================================= */
-
-    function switchEditor(type) {
-
-      const areas = {
-        html: htmlCode,
-        css: cssCode,
-        js: jsCode
-      };
-
-      Object.keys(areas).forEach(key => {
-
-        areas[key].classList.toggle(
-          "hidden",
-          key !== type
-        );
-
+    showToast("OTG AI is building your website...");
+
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          prompt:
+            prompt +
+            `
+
+IMPORTANT:
+Create a complete responsive website.
+Include a clear WhatsApp contact button.
+Use a professional modern design.
+Make the website mobile friendly.
+Do not use external JavaScript libraries.
+Return complete HTML, CSS and JavaScript.`,
+          html: website.html,
+          css: website.css,
+          js: website.js
+        })
       });
 
+      const data = await response.json();
 
-      document
-        .getElementById("tabHTML")
-        .classList.toggle(
-          "active",
-          type === "html"
+      if (!response.ok) {
+        throw new Error(
+          data.error || "AI generation failed."
         );
+      }
 
-      document
-        .getElementById("tabCSS")
-        .classList.toggle(
-          "active",
-          type === "css"
-        );
+      website.html = data.html || "";
+      website.css = data.css || "";
+      website.js = data.js || "";
 
-      document
-        .getElementById("tabJS")
-        .classList.toggle(
-          "active",
-          type === "js"
-        );
+      usage.count++;
+      localStorage.setItem(
+        "otg_ai_usage",
+        JSON.stringify(usage)
+      );
 
+      updateAIStat();
+      loadEditor();
+      updatePreview();
+
+      showToast("Website generated successfully.");
+
+      scrollToSection("editor");
+
+    } catch (error) {
+      showToast(error.message || "AI generation failed.");
     }
+  }
 
+  function updateAIStat() {
+    const today = new Date().toISOString().slice(0,10);
 
-    /* =========================================================
-       PREVIEW
-    ========================================================= */
+    const usage =
+      JSON.parse(localStorage.getItem("otg_ai_usage") || "{}");
 
-    function updatePreview() {
+    const count =
+      usage.date === today ? usage.count || 0 : 0;
 
-      const html =
-        htmlCode.value || "";
+    document.getElementById("statAI").textContent =
+      `${count}/5`;
+  }
 
-      const css =
-        cssCode.value || "";
+  function switchEditor(type) {
+    currentEditor = type;
 
-      const js =
-        jsCode.value || "";
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.classList.remove("active");
+    });
 
+    document.getElementById(
+      type === "html"
+        ? "htmlTab"
+        : type === "css"
+          ? "cssTab"
+          : "jsTab"
+    ).classList.add("active");
 
-      const documentContent = `
+    loadEditor();
+  }
+
+  function loadEditor() {
+    const editor =
+      document.getElementById("codeEditor");
+
+    editor.value = website[currentEditor] || "";
+  }
+
+  function updateEditor() {
+    website[currentEditor] =
+      document.getElementById("codeEditor").value;
+
+    updatePreview();
+
+    showToast("Changes applied.");
+  }
+
+  function updatePreview() {
+    const frame =
+      document.getElementById("previewFrame");
+
+    const source = `
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
-${css}
+${website.css}
 </style>
 </head>
 <body>
-
-${html}
+${website.html}
 
 <script>
-${js}
+${website.js}
 <\/script>
-
 </body>
 </html>
 `;
 
+    frame.srcdoc = source;
+  }
 
-      previewFrame.srcdoc =
-        documentContent;
+  function newWebsite() {
+    website = {
+      html: `
+<section style="padding:80px 20px;text-align:center;font-family:Arial">
+  <h1>Welcome to My Website</h1>
+  <p>Tell OTG AI what you want to create.</p>
+  <a href="#contact"
+     style="display:inline-block;padding:14px 20px;background:#111;color:white;border-radius:8px;text-decoration:none">
+     Get Started
+  </a>
+</section>
+`,
+      css: `
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f8fafc;
+  color:#111827;
+}
+`,
+      js: ``
+    };
 
+    selectedTemplate = null;
+
+    loadEditor();
+    updatePreview();
+
+    scrollToSection("editor");
+
+    showToast("New website started.");
+  }
+
+  function resetBuilder() {
+    if (!confirm("Reset your current website?")) {
+      return;
     }
 
+    newWebsite();
+  }
 
-    /* =========================================================
-       SAVE PROJECT
-    ========================================================= */
+  function showAuth() {
+    if (currentUser) {
+      logout();
+      return;
+    }
 
-    async function saveProject() {
+    document.getElementById("authTitle").textContent = "Login";
+    document.getElementById("authToggle").textContent =
+      "Create account instead";
 
-      if (!currentUser) {
+    authSignup = false;
 
-        showToast(
-          "Please login before saving a project."
-        );
+    showModal("authModal");
+  }
 
-        return;
+  let authSignup = false;
 
+  function toggleAuthMode() {
+    authSignup = !authSignup;
+
+    document.getElementById("authTitle").textContent =
+      authSignup ? "Create Account" : "Login";
+
+    document.getElementById("authToggle").textContent =
+      authSignup
+        ? "Login instead"
+        : "Create account instead";
+  }
+
+  async function submitAuth() {
+    const email =
+      document.getElementById("authEmail").value.trim();
+
+    const password =
+      document.getElementById("authPassword").value;
+
+    if (!email || !password) {
+      showToast("Enter your email and password.");
+      return;
+    }
+
+    try {
+      let result;
+
+      if (authSignup) {
+        result =
+          await supabaseClient.auth.signUp({
+            email,
+            password
+          });
+      } else {
+        result =
+          await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+          });
       }
 
-      openModal("nameModal");
+      if (result.error) {
+        throw result.error;
+      }
+
+      closeModal("authModal");
+
+      if (authSignup) {
+        showToast(
+          "Account created. Check your email if confirmation is required."
+        );
+      } else {
+        showToast("Welcome back.");
+      }
+
+      await loadUser();
+
+    } catch (error) {
+      showToast(error.message);
+    }
+  }
+
+  async function logout() {
+    await supabaseClient.auth.signOut();
+
+    currentUser = null;
+
+    updateAuthButton();
+
+    renderProjects();
+
+    showToast("Logged out.");
+  }
+
+  async function loadUser() {
+    const {
+      data
+    } = await supabaseClient.auth.getUser();
+
+    currentUser = data?.user || null;
+
+    updateAuthButton();
+
+    renderProjects();
+  }
+
+  function updateAuthButton() {
+    const button =
+      document.getElementById("authButton");
+
+    button.textContent =
+      currentUser ? "Logout" : "Login";
+  }
+
+  function openNameModal() {
+    const input =
+      document.getElementById("projectNameInput");
+
+    input.value = "";
+
+    showModal("nameModal");
+
+    requestAnimationFrame(() => {
+      input.focus();
 
       setTimeout(() => {
-
-        const input =
-          document.getElementById(
-            "projectNameInput"
-          );
-
         input.focus();
+      }, 200);
+    });
+  }
 
-      }, 100);
-
+  function saveProject() {
+    if (!currentUser) {
+      showToast("Please login before saving a project.");
+      showAuth();
+      return;
     }
 
+    openNameModal();
+  }
 
-    async function confirmSaveProject() {
+  async function confirmSaveProject() {
+    const title =
+      document.getElementById("projectNameInput")
+        .value
+        .trim();
 
-      const input =
-        document.getElementById(
-          "projectNameInput"
-        );
+    if (!title) {
+      showToast("Enter a project name.");
+      return;
+    }
 
-      const title =
-        input.value.trim();
-
-      if (!title) {
-
-        showToast(
-          "Please enter a project name."
-        );
-
-        input.focus();
-
-        return;
-
-      }
-
-
-      closeModal("nameModal");
-
+    try {
       const slug =
         createSlug(title) +
         "-" +
         Math.random()
           .toString(36)
-          .substring(2,7);
-
-
-      const project = {
-
-        user_id:
-          currentUser.id,
-
-        title,
-
-        html:
-          htmlCode.value,
-
-        css:
-          cssCode.value,
-
-        js:
-          jsCode.value,
-
-        slug,
-
-        is_published:
-          false,
-
-        updated_at:
-          new Date().toISOString()
-
-      };
-
-
-      try {
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient
-            .from("projects")
-            .insert(project)
-            .select()
-            .single();
-
-
-        if (error)
-          throw error;
-
-
-        currentProjectId =
-          data.id;
-
-
-        showToast(
-          "Project saved successfully."
-        );
-
-
-        await renderProjects();
-
-        updateDashboard();
-
-
-      } catch (error) {
-
-        showToast(
-          error.message ||
-          "Unable to save project."
-        );
-
-      }
-
-    }
-
-
-    /* =========================================================
-       LOAD PROJECT
-    ========================================================= */
-
-    async function loadProject(id) {
-
-      if (!currentUser) return;
-
+          .substring(2,8);
 
       const {
         data,
         error
-      } =
-        await supabaseClient
-          .from("projects")
-          .select("*")
-          .eq("id", id)
-          .single();
-
-
-      if (error) {
-
-        showToast(error.message);
-
-        return;
-
-      }
-
-
-      currentProjectId =
-        data.id;
-
-      htmlCode.value =
-        data.html || "";
-
-      cssCode.value =
-        data.css || "";
-
-      jsCode.value =
-        data.js || "";
-
-
-      updatePreview();
-
-      scrollToSection("builder");
-
-      showToast(
-        "Project loaded."
-      );
-
-    }
-
-
-    /* =========================================================
-       PUBLISH
-    ========================================================= */
-
-    async function publishWebsite() {
-
-      if (!currentUser) {
-
-        showToast(
-          "Please login before publishing."
-        );
-
-        return;
-
-      }
-
-
-      if (!currentProjectId) {
-
-        showToast(
-          "Save your project first."
-        );
-
-        return;
-
-      }
-
-
-      try {
-
-        const {
-          error
-        } =
-          await supabaseClient
-            .from("projects")
-            .update({
-
-              html:
-                htmlCode.value,
-
-              css:
-                cssCode.value,
-
-              js:
-                jsCode.value,
-
-              is_published:
-                true,
-
-              updated_at:
-                new Date().toISOString()
-
-            })
-            .eq(
-              "id",
-              currentProjectId
-            );
-
-
-        if (error)
-          throw error;
-
-
-        const {
-          data
-        } =
-          await supabaseClient
-            .from("projects")
-            .select("slug")
-            .eq("id", currentProjectId)
-            .single();
-
-
-        const url =
-          `${location.origin}/?site=${encodeURIComponent(data.slug)}`;
-
-
-        await navigator.clipboard
-          .writeText(url)
-          .catch(() => {});
-
-
-        showToast(
-          "Website published! Link copied."
-        );
-
-
-        await renderProjects();
-
-        updateDashboard();
-
-
-      } catch (error) {
-
-        showToast(
-          error.message ||
-          "Publishing failed."
-        );
-
-      }
-
-    }
-
-
-    /* =========================================================
-       PUBLISH EXISTING
-    ========================================================= */
-
-    async function publishExisting(id) {
-
-      if (!currentUser) return;
-
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .from("projects")
-          .update({
-            is_published: true,
-            updated_at:
-              new Date().toISOString()
-          })
-          .eq("id", id)
-          .select()
-          .single();
-
+      } = await supabaseClient
+        .from("projects")
+        .insert({
+          user_id: currentUser.id,
+          title,
+          html: website.html,
+          css: website.css,
+          js: website.js,
+          slug,
+          is_published: false
+        })
+        .select()
+        .single();
 
       if (error) {
-
-        showToast(error.message);
-
-        return;
-
+        throw error;
       }
 
+      closeModal("nameModal");
 
-      const url =
-        `${location.origin}/?site=${encodeURIComponent(data.slug)}`;
-
-
-      await navigator.clipboard
-        .writeText(url)
-        .catch(() => {});
-
-
-      showToast(
-        "Published link copied."
-      );
-
+      showToast("Project saved successfully.");
 
       await renderProjects();
 
-      updateDashboard();
-
+    } catch (error) {
+      showToast(error.message);
     }
-
-
-    /* =========================================================
-       VIEW PROJECT
-    ========================================================= */
-
-    function viewProject(slug) {
-
-      const url =
-        `${location.origin}/?site=${encodeURIComponent(slug)}`;
-
-      window.open(
-        url,
-        "_blank"
-      );
-
-    }
-
-
-    /* =========================================================
-       COPY LINK
-    ========================================================= */
-
-    async function copyProjectLink(slug) {
-
-      const url =
-        `${location.origin}/?site=${encodeURIComponent(slug)}`;
-
-      try {
-
-        await navigator.clipboard.writeText(url);
-
-        showToast(
-          "Website link copied."
-        );
-
-      } catch {
-
-        showToast(
-          url
-        );
-
-      }
-
-    }
-
-
-    /* =========================================================
-       RENAME
-    ========================================================= */
-
-    function renameProject(id, oldName) {
-
-      currentRenameId =
-        id;
-
-      const input =
-        document.getElementById(
-          "renameInput"
-        );
-
-      input.value =
-        oldName || "";
-
-      openModal("renameModal");
-
-
-      requestAnimationFrame(() => {
-
-        input.focus();
-
-        input.select();
-
-      });
-
-      setTimeout(() => {
-
-        input.focus();
-
-      }, 150);
-
-    }
-
-
-    async function confirmRename() {
-
-      const input =
-        document.getElementById(
-          "renameInput"
-        );
-
-      const name =
-        input.value.trim();
-
-
-      if (!name) {
-
-        showToast(
-          "Please enter a name."
-        );
-
-        input.focus();
-
-        return;
-
-      }
-
-
-      if (!currentRenameId)
-        return;
-
-
-      const {
-        error
-      } =
-        await supabaseClient
-          .from("projects")
-          .update({
-            title: name,
-            updated_at:
-              new Date().toISOString()
-          })
-          .eq(
-            "id",
-            currentRenameId
-          );
-
-
-      if (error) {
-
-        showToast(
-          error.message
-        );
-
-        return;
-
-      }
-
-
-      closeModal(
-        "renameModal"
-      );
-
-
-      showToast(
-        "Project renamed."
-      );
-
-
-      currentRenameId =
-        null;
-
-
-      await renderProjects();
-
-    }
-
-
-    /* =========================================================
-       DELETE
-    ========================================================= */
-
-    async function deleteProject(id) {
-
-      if (!confirm(
-        "Delete this project?"
-      )) return;
-
-
-      const {
-        error
-      } =
-        await supabaseClient
-          .from("projects")
-          .delete()
-          .eq("id", id);
-
-
-      if (error) {
-
-        showToast(
-          error.message
-        );
-
-        return;
-
-      }
-
-
-      if (
-        currentProjectId === id
-      ) {
-
-        currentProjectId =
-          null;
-
-      }
-
-
-      showToast(
-        "Project deleted."
-      );
-
-
-      await renderProjects();
-
-      updateDashboard();
-
-    }
-
-
-    /* =========================================================
-       RENDER PROJECTS
-    ========================================================= */
-
-    async function renderProjects() {
-
-      const grid =
-        document.getElementById(
-          "projectsGrid"
-        );
-
-
-      if (!currentUser) {
-
-        grid.innerHTML = `
-          <div class="project-card">
-            <h3>Login to see your projects</h3>
-            <p>
-              Your saved websites will appear here after you log in.
-            </p>
-          </div>
-        `;
-
-        updateDashboard();
-
-        return;
-
-      }
-
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .from("projects")
-          .select("*")
-          .eq(
-            "user_id",
-            currentUser.id
-          )
-          .order(
-            "updated_at",
-            { ascending:false }
-          );
-
-
-      if (error) {
-
-        grid.innerHTML = `
-          <div class="project-card">
-            <h3>Unable to load projects</h3>
-            <p>${escapeHtml(error.message)}</p>
-          </div>
-        `;
-
-        return;
-
-      }
-
-
-      const search =
-        document
-          .getElementById(
-            "projectSearch"
-          )
-          .value
-          .toLowerCase()
-          .trim();
-
-
-      const projects =
-        (data || [])
-          .filter(project =>
-            project.title
-              .toLowerCase()
-              .includes(search)
-          );
-
-
-      if (!projects.length) {
-
-        grid.innerHTML = `
-          <div class="project-card">
-            <h3>No projects found</h3>
-            <p>
-              Create a website and save it to see it here.
-            </p>
-          </div>
-        `;
-
-        updateDashboard(data || []);
-
-        return;
-
-      }
-
-
-      grid.innerHTML =
-        projects
-          .map(project => {
-
-            return `
-
-              <div class="project-card">
-
-                <h3>
-                  ${escapeHtml(project.title)}
-                </h3>
-
-                <p>
-                  ${
-                    project.is_published
-                    ? "🟢 Published"
-                    : "⚪ Saved"
-                  }
-                  ·
-                  ${formatDate(project.updated_at)}
-                </p>
-
-
-                <div class="project-actions">
-
-                  <button
-                    onclick="loadProject('${project.id}')"
-                  >
-                    Edit
-                  </button>
-
-                  ${
-                    project.is_published
-                    ? `
-                      <button
-                        onclick="viewProject('${escapeAttribute(project.slug)}')"
-                      >
-                        View
-                      </button>
-
-                      <button
-                        onclick="copyProjectLink('${escapeAttribute(project.slug)}')"
-                      >
-                        Copy Link
-                      </button>
-                    `
-                    : `
-                      <button
-                        class="publish"
-                        onclick="publishExisting('${project.id}')"
-                      >
-                        Publish
-                      </button>
-                    `
-                  }
-
-                  <button
-                    onclick="renameProject(
-                      '${project.id}',
-                      '${escapeAttribute(project.title)}'
-                    )"
-                  >
-                    Rename
-                  </button>
-
-                  <button
-                    class="delete"
-                    onclick="deleteProject('${project.id}')"
-                  >
-                    Delete
-                  </button>
-
-                </div>
-
-              </div>
-
-            `;
-
-          })
-          .join("");
-
-
-      updateDashboard(
-        data || []
-      );
-
-    }
-
-
-    /* =========================================================
-       DASHBOARD STATS
-    ========================================================= */
-
-    function updateDashboard(projects) {
-
-      if (!projects) {
-
-        if (!currentUser) {
-
-          document.getElementById(
-            "statProjects"
-          ).textContent = "0";
-
-          document.getElementById(
-            "statPublished"
-          ).textContent = "0";
-
-          updateGenerationUI();
-
-          return;
-
-        }
-
-        return;
-
-      }
-
-
-      document.getElementById(
-        "statProjects"
-      ).textContent =
-        projects.length;
-
-
-      document.getElementById(
-        "statPublished"
-      ).textContent =
-        projects.filter(
-          project =>
-            project.is_published
-        ).length;
-
-
-      updateGenerationUI();
-
-    }
-
-
-    /* =========================================================
-       TEMPLATE FILTER
-    ========================================================= */
-
-    function filterTemplates(
-      category,
-      button
-    ) {
-
-      document
-        .querySelectorAll(".filter-btn")
-        .forEach(btn =>
-          btn.classList.remove("active")
-        );
-
-
-      button.classList.add("active");
-
-
-      document
-        .querySelectorAll(".template-card")
-        .forEach(card => {
-
-          if (
-            category === "all" ||
-            card.dataset.category === category
-          ) {
-
-            card.style.display =
-              "";
-
-          } else {
-
-            card.style.display =
-              "none";
-
-          }
-
-        });
-
-    }
-
-
-    /* =========================================================
-       PUBLIC SITE RENDER
-    ========================================================= */
-
-    async function renderPublicSite(project) {
-
-      document.body.innerHTML = `
-
-        <style>
-
-          body {
-            margin:0;
-            padding:0;
-            font-family:Arial,Helvetica,sans-serif;
-          }
-
-          #publicSite {
-            min-height:100vh;
-          }
-
-        </style>
-
-        <div id="publicSite"></div>
-
+  }
+
+  function createSlug(text) {
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g,"-")
+      .replace(/^-+|-+$/g,"")
+      .substring(0,40);
+  }
+
+  async function renderProjects() {
+    const grid =
+      document.getElementById("projectGrid");
+
+    if (!currentUser) {
+      grid.innerHTML = `
+        <div style="grid-column:1/-1;background:white;padding:30px;border-radius:15px;text-align:center;">
+          <h3>Login to see your projects</h3>
+          <p style="color:#64748b;margin:8px 0 15px;">
+            Your saved websites will appear here.
+          </p>
+          <button class="btn btn-primary" onclick="showAuth()">
+            Login
+          </button>
+        </div>
       `;
 
+      updateStats([]);
 
-      const style =
-        document.createElement(
-          "style"
-        );
-
-      style.textContent =
-        project.css || "";
-
-      document.head.appendChild(
-        style
-      );
-
-
-      document.getElementById(
-        "publicSite"
-      ).innerHTML =
-        project.html || "";
-
-
-      if (project.js) {
-
-        try {
-
-          const script =
-            document.createElement(
-              "script"
-            );
-
-          script.textContent =
-            project.js;
-
-          document.body.appendChild(
-            script
-          );
-
-        } catch(error) {
-
-          console.error(error);
-
-        }
-
-      }
-
+      return;
     }
 
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("projects")
+      .select("*")
+      .eq("user_id", currentUser.id)
+      .order("updated_at", {
+        ascending:false
+      });
 
-    /* =========================================================
-       PUBLIC SITE LOADING
-    ========================================================= */
+    if (error) {
+      grid.innerHTML = `
+        <p>Unable to load projects.</p>
+      `;
 
-    async function checkPublicSite() {
+      return;
+    }
 
-      const params =
-        new URLSearchParams(
-          window.location.search
-        );
+    window.otgProjects = data || [];
 
-      const slug =
-        params.get("site");
+    const search =
+      document.getElementById("projectSearch")
+        .value
+        .toLowerCase()
+        .trim();
 
+    const projects =
+      window.otgProjects.filter(project =>
+        project.title
+          .toLowerCase()
+          .includes(search)
+      );
 
-      if (!slug)
-        return false;
+    if (!projects.length) {
+      grid.innerHTML = `
+        <div style="grid-column:1/-1;background:white;padding:30px;border-radius:15px;text-align:center;">
+          <h3>No projects yet</h3>
+          <p style="color:#64748b;margin:8px 0 15px;">
+            Create your first website.
+          </p>
+          <button class="btn btn-primary" onclick="newWebsite()">
+            Create Website
+          </button>
+        </div>
+      `;
+    } else {
+      grid.innerHTML =
+        projects.map(project => `
+          <div class="project-card">
 
+            <span class="project-status ${
+              project.is_published
+                ? "published"
+                : "draft"
+            }">
+              ${
+                project.is_published
+                  ? "PUBLISHED"
+                  : "DRAFT"
+              }
+            </span>
 
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .from("projects")
-          .select("*")
-          .eq(
-            "slug",
-            slug
-          )
-          .eq(
-            "is_published",
-            true
-          )
-          .single();
+            <h3>${escapeHtml(project.title)}</h3>
 
+            <p>
+              Updated ${new Date(
+                project.updated_at
+              ).toLocaleDateString()}
+            </p>
 
-      if (
-        error ||
-        !data
-      ) {
+            <div class="project-actions">
 
-        document.body.innerHTML = `
-          <div style="
-            min-height:100vh;
-            display:grid;
-            place-items:center;
-            padding:30px;
-            font-family:Arial;
-            background:#f5f7fa;
-          ">
-
-            <div style="
-              background:white;
-              padding:30px;
-              border-radius:20px;
-              max-width:500px;
-              text-align:center;
-              box-shadow:0 20px 50px rgba(0,0,0,.08);
-            ">
-
-              <h1>Website not found</h1>
-
-              <p style="color:#6b7280;">
-                This website may have been removed
-                or is not published.
-              </p>
-
-              <a
-                href="/"
-                style="
-                  display:inline-block;
-                  margin-top:15px;
-                  padding:12px 18px;
-                  border-radius:10px;
-                  background:#111827;
-                  color:white;
-                  text-decoration:none;
-                  font-weight:bold;
-                "
+              <button
+                class="btn btn-light"
+                onclick="editProject('${project.id}')"
               >
-                Go to OTG Builder
-              </a>
+                Edit
+              </button>
+
+              <button
+                class="btn btn-light"
+                onclick="viewProject('${project.slug}')"
+              >
+                View
+              </button>
+
+              ${
+                project.is_published
+                ? `
+                  <button
+                    class="btn btn-success"
+                    onclick="copyProjectLink('${project.slug}')"
+                  >
+                    Copy Link
+                  </button>
+                `
+                : `
+                  <button
+                    class="btn"
+                    onclick="publishExisting('${project.id}')"
+                  >
+                    Publish
+                  </button>
+                `
+              }
+
+              <button
+                class="btn btn-light"
+                onclick="renameProject('${project.id}')"
+              >
+                Rename
+              </button>
+
+              <button
+                class="btn btn-danger"
+                onclick="deleteProject('${project.id}')"
+              >
+                Delete
+              </button>
 
             </div>
 
           </div>
-        `;
+        `).join("");
+    }
 
-        return true;
+    updateStats(window.otgProjects);
+  }
 
-      }
+  function updateStats(projects) {
+    document.getElementById("statProjects")
+      .textContent = projects.length;
 
+    document.getElementById("statPublished")
+      .textContent =
+        projects.filter(p => p.is_published).length;
+  }
 
-      await renderPublicSite(
-        data
+  function escapeHtml(text) {
+    const div =
+      document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+  }
+
+  async function editProject(id) {
+    const project =
+      window.otgProjects.find(
+        p => p.id === id
       );
 
-      return true;
+    if (!project) return;
 
+    website = {
+      html: project.html || "",
+      css: project.css || "",
+      js: project.js || ""
+    };
+
+    loadEditor();
+    updatePreview();
+
+    scrollToSection("editor");
+
+    showToast(
+      `${project.title} loaded.`
+    );
+  }
+
+  function viewProject(slug) {
+    window.open(
+      `${window.location.origin}/?site=${encodeURIComponent(slug)}`,
+      "_blank"
+    );
+  }
+
+  async function copyProjectLink(slug) {
+    const url =
+      `${window.location.origin}/?site=${encodeURIComponent(slug)}`;
+
+    try {
+      await navigator.clipboard.writeText(url);
+
+      showToast("Website link copied.");
+    } catch {
+      showToast(url);
+    }
+  }
+
+  async function publishWebsite() {
+    if (!currentUser) {
+      showToast("Please login before publishing.");
+      showAuth();
+      return;
     }
 
+    openNameModalForPublish();
+  }
 
-    /* =========================================================
-       UTILITIES
-    ========================================================= */
+  function openNameModalForPublish() {
+    const input =
+      document.getElementById("projectNameInput");
 
-    function createSlug(text) {
+    input.value = "My Published Website";
 
-      return text
-        .toLowerCase()
-        .trim()
-        .replace(
-          /[^a-z0-9]+/g,
-          "-"
-        )
-        .replace(
-          /^-+|-+$/g,
-          ""
-        );
+    showModal("nameModal");
 
+    const button =
+      document.querySelector(
+        "#nameModal .btn-primary"
+      );
+
+    button.textContent = "Publish";
+
+    button.onclick = confirmPublishProject;
+
+    requestAnimationFrame(() => {
+      input.focus();
+      input.select();
+    });
+  }
+
+  async function confirmPublishProject() {
+    const title =
+      document.getElementById("projectNameInput")
+        .value
+        .trim();
+
+    if (!title) {
+      showToast("Enter a website name.");
+      return;
     }
 
+    try {
+      const slug =
+        createSlug(title) +
+        "-" +
+        Math.random()
+          .toString(36)
+          .substring(2,8);
 
-    function escapeHtml(text) {
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("projects")
+        .insert({
+          user_id: currentUser.id,
+          title,
+          html: website.html,
+          css: website.css,
+          js: website.js,
+          slug,
+          is_published: true
+        })
+        .select()
+        .single();
 
-      return String(text)
-        .replace(
-          /&/g,
-          "&amp;"
-        )
-        .replace(
-          /</g,
-          "&lt;"
-        )
-        .replace(
-          />/g,
-          "&gt;"
-        )
-        .replace(
-          /"/g,
-          "&quot;"
-        )
-        .replace(
-          /'/g,
-          "&#039;"
-        );
-
-    }
-
-
-    function escapeAttribute(text) {
-
-      return String(text)
-        .replace(
-          /\\/g,
-          "\\\\"
-        )
-        .replace(
-          /'/g,
-          "\\'"
-        )
-        .replace(
-          /"/g,
-          "&quot;"
-        );
-
-    }
-
-
-    function formatDate(date) {
-
-      if (!date)
-        return "";
-
-      return new Date(date)
-        .toLocaleDateString();
-
-    }
-
-
-    /* =========================================================
-       SERVICE WORKER
-    ========================================================= */
-
-    function registerPWA() {
-
-      if (
-        "serviceWorker"
-        in navigator
-      ) {
-
-        navigator.serviceWorker
-          .register("/sw.js")
-          .catch(error =>
-            console.log(
-              "Service worker:",
-              error
-            )
-          );
-
+      if (error) {
+        throw error;
       }
 
+      closeModal("nameModal");
+
+      resetNameModalButton();
+
+      const url =
+        `${window.location.origin}/?site=${encodeURIComponent(slug)}`;
+
+      showToast("Website published successfully.");
+
+      await renderProjects();
+
+      setTimeout(async () => {
+        try {
+          await navigator.clipboard.writeText(url);
+          showToast(
+            "Published! Your website link has been copied."
+          );
+        } catch {}
+      }, 500);
+
+    } catch (error) {
+      showToast(error.message);
+      resetNameModalButton();
+    }
+  }
+
+  function resetNameModalButton() {
+    const button =
+      document.querySelector(
+        "#nameModal .btn-primary"
+      );
+
+    button.textContent = "Save";
+    button.onclick = confirmSaveProject;
+  }
+
+  async function publishExisting(id) {
+    try {
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("projects")
+        .update({
+          is_published:true,
+          updated_at:new Date().toISOString()
+        })
+        .eq("id",id)
+        .eq("user_id",currentUser.id)
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      showToast("Website published.");
+
+      await renderProjects();
+
+    } catch(error) {
+      showToast(error.message);
+    }
+  }
+
+  function renameProject(id) {
+    renameProjectId = id;
+
+    const project =
+      window.otgProjects.find(
+        p => p.id === id
+      );
+
+    if (!project) return;
+
+    const input =
+      document.getElementById("renameInput");
+
+    input.value = project.title;
+
+    showModal("renameModal");
+
+    requestAnimationFrame(() => {
+      input.focus();
+      input.select();
+
+      setTimeout(() => {
+        input.focus();
+      },200);
+    });
+  }
+
+  async function confirmRename() {
+    if (!renameProjectId) return;
+
+    const title =
+      document.getElementById("renameInput")
+        .value
+        .trim();
+
+    if (!title) {
+      showToast("Enter a project name.");
+      return;
     }
 
+    try {
+      const {
+        error
+      } = await supabaseClient
+        .from("projects")
+        .update({
+          title,
+          updated_at:new Date().toISOString()
+        })
+        .eq("id",renameProjectId)
+        .eq("user_id",currentUser.id);
 
-    /* =========================================================
-       INITIALIZATION
-    ========================================================= */
+      if (error) {
+        throw error;
+      }
 
-    async function init() {
+      closeModal("renameModal");
+
+      renameProjectId = null;
+
+      showToast("Project renamed.");
+
+      await renderProjects();
+
+    } catch(error) {
+      showToast(error.message);
+    }
+  }
+
+  async function deleteProject(id) {
+    if (!confirm(
+      "Delete this project permanently?"
+    )) {
+      return;
+    }
+
+    try {
+      const {
+        error
+      } = await supabaseClient
+        .from("projects")
+        .delete()
+        .eq("id",id)
+        .eq("user_id",currentUser.id);
+
+      if (error) {
+        throw error;
+      }
+
+      showToast("Project deleted.");
+
+      await renderProjects();
+
+    } catch(error) {
+      showToast(error.message);
+    }
+  }
+
+  async function renderPublicSite(project) {
+    document.body.innerHTML = `
+      <style>
+        ${project.css || ""}
+      </style>
+
+      ${project.html || ""}
+
+      <script>
+        ${project.js || ""}
+      <\/script>
+    `;
+  }
+
+  async function checkPublicSite() {
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const slug =
+      params.get("site");
+
+    if (!slug) {
+      return false;
+    }
+
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("projects")
+      .select("*")
+      .eq("slug",slug)
+      .eq("is_published",true)
+      .single();
+
+    if (error || !data) {
+      document.body.innerHTML = `
+        <div style="
+          min-height:100vh;
+          display:grid;
+          place-items:center;
+          padding:30px;
+          text-align:center;
+          font-family:Arial;
+        ">
+          <div>
+            <h1>Website not found</h1>
+            <p style="color:#64748b;">
+              This website may have been removed or unpublished.
+            </p>
+          </div>
+        </div>
+      `;
+
+      return true;
+    }
+
+    await renderPublicSite(data);
+
+    return true;
+  }
+
+  function initializeDefaultWebsite() {
+    if (
+      website.html ||
+      website.css ||
+      website.js
+    ) {
+      return;
+    }
+
+    newWebsite();
+  }
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
 
       const publicSite =
         await checkPublicSite();
 
-
-      if (publicSite)
+      if (publicSite) {
         return;
-
-
-      updateGenerationUI();
-
-      await refreshUser();
-
-      registerPWA();
-
-
-      supabaseClient.auth
-        .onAuthStateChange(
-          async () => {
-
-            await refreshUser();
-
-          }
-        );
-
-
-      if (
-        !htmlCode.value
-      ) {
-
-        newWebsite();
-
       }
 
+      renderTemplates();
+
+      initializeDefaultWebsite();
+
+      updateAIStat();
+
+      await loadUser();
+
+      supabaseClient.auth.onAuthStateChange(
+        async () => {
+          await loadUser();
+        }
+      );
+
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("/sw.js")
+          .catch(() => {});
+      }
     }
+  );
 
-
-    init();
-
-  </script>
+  document
+    .getElementById("codeEditor")
+    ?.addEventListener("input", () => {
+      website[currentEditor] =
+        document.getElementById("codeEditor").value;
+    });
+</script>
 
 </body>
 </html>
