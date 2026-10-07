@@ -4,11 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#111111" />
-  <meta name="description" content="OTG AI Website Builder — create beautiful websites with AI." />
-
-  <title>OTG AI Website Builder</title>
-
+  <meta name="description" content="OTG AI Website Builder — create, edit, save and publish websites with AI." />
   <link rel="manifest" href="/manifest.json" />
+  <title>OTG AI Website Builder</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -19,14 +17,24 @@
       padding: 0;
     }
 
-    html {
-      scroll-behavior: smooth;
+    :root {
+      --dark: #111111;
+      --dark2: #1b1b1b;
+      --green: #0b7a45;
+      --green2: #0f9d58;
+      --light: #f5f7f6;
+      --white: #ffffff;
+      --border: #e4e7e5;
+      --muted: #6b7280;
+      --danger: #dc2626;
+      --shadow: 0 10px 35px rgba(0,0,0,.07);
+      --radius: 18px;
     }
 
     body {
       font-family: Arial, Helvetica, sans-serif;
-      background: #f4f6f8;
-      color: #111827;
+      background: var(--light);
+      color: #111;
       line-height: 1.5;
     }
 
@@ -41,1002 +49,622 @@
       cursor: pointer;
     }
 
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
     .hidden {
       display: none !important;
     }
-
-    /* =========================
-       TOPBAR
-    ========================= */
 
     .topbar {
       position: sticky;
       top: 0;
       z-index: 1000;
-      min-height: 70px;
-      padding: 12px 22px;
-      background: rgba(17, 17, 17, 0.96);
-      color: white;
+      background: rgba(255,255,255,.96);
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 18px;
+    }
+
+    .topbar-inner {
+      max-width: 1250px;
+      margin: auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 18px;
-      box-shadow: 0 5px 25px rgba(0,0,0,.12);
-      backdrop-filter: blur(12px);
+      gap: 15px;
     }
 
-    .brand-wrap {
+    .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
-      min-width: 0;
+      gap: 10px;
+      font-weight: 800;
     }
 
     .otg-logo {
       width: 42px;
       height: 42px;
-      border-radius: 12px;
+      border-radius: 13px;
       display: grid;
       place-items: center;
+      color: white;
+      background:
+        linear-gradient(135deg,#111,#333 45%,#0b7a45);
+      box-shadow: 0 6px 18px rgba(0,0,0,.18);
       font-weight: 900;
-      font-size: 14px;
-      letter-spacing: -1px;
-      color: #111;
-      background: linear-gradient(135deg, #ffd400, #fff16a);
-      box-shadow: 0 5px 20px rgba(255,212,0,.2);
-      transform: rotate(-3deg);
+      letter-spacing: -2px;
     }
 
-    .brand {
-      font-size: 16px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .brand span {
-      color: #ffd400;
-      font-weight: 900;
-    }
-
-    .main-nav {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .main-nav button {
-      border: 0;
-      background: transparent;
-      color: #ddd;
-      padding: 9px 12px;
-      border-radius: 9px;
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
       font-weight: 600;
     }
 
-    .main-nav button:hover {
-      background: #252525;
-      color: white;
-    }
-
-    .user-area {
+    .nav {
       display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .small {
-      font-size: 12px;
-      color: #bbb;
-    }
-
-    /* =========================
-       BUTTONS
-    ========================= */
-
-    .btn {
-      border: 0;
-      border-radius: 10px;
-      padding: 11px 16px;
-      font-weight: 800;
-      transition: .2s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-    }
-
-    .btn.dark {
-      background: #111;
-      color: white;
-    }
-
-    .btn.yellow {
-      background: #ffd400;
-      color: #111;
-    }
-
-    .btn.light {
-      background: #fff;
-      color: #111;
-      border: 1px solid #ddd;
-    }
-
-    .btn.green {
-      background: #118a45;
-      color: white;
-    }
-
-    .btn.blue {
-      background: #2563eb;
-      color: white;
-    }
-
-    .btn.danger {
-      background: #dc2626;
-      color: white;
-    }
-
-    .btn.full {
-      width: 100%;
-    }
-
-    /* =========================
-       MAIN
-    ========================= */
-
-    .page {
-      width: min(1400px, calc(100% - 28px));
-      margin: 0 auto;
-    }
-
-    .section {
-      padding: 28px 0;
-    }
-
-    .section-title {
-      margin-bottom: 18px;
-    }
-
-    .section-title h2 {
-      font-size: 24px;
-      margin-bottom: 4px;
-    }
-
-    .section-title p {
-      color: #667085;
-      font-size: 14px;
-    }
-
-    /* =========================
-       BUILDER HERO
-    ========================= */
-
-    .builder-hero {
-      margin-top: 22px;
-      border-radius: 24px;
-      padding: 30px;
-      color: white;
-      background:
-        radial-gradient(circle at 90% 20%, rgba(255,212,0,.22), transparent 28%),
-        radial-gradient(circle at 10% 90%, rgba(37,99,235,.22), transparent 28%),
-        linear-gradient(135deg, #111827, #080b12);
-      box-shadow: 0 18px 50px rgba(0,0,0,.15);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .builder-hero-content {
-      position: relative;
-      z-index: 2;
-      max-width: 780px;
-    }
-
-    .eyebrow {
-      display: inline-flex;
       align-items: center;
       gap: 7px;
-      padding: 7px 11px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.09);
-      border: 1px solid rgba(255,255,255,.12);
-      color: #ffd400;
-      font-size: 12px;
-      font-weight: 800;
-      margin-bottom: 14px;
-    }
-
-    .builder-hero h1 {
-      font-size: clamp(30px, 5vw, 50px);
-      line-height: 1.05;
-      margin-bottom: 12px;
-    }
-
-    .builder-hero p {
-      color: #cbd5e1;
-      max-width: 680px;
-      font-size: 15px;
-    }
-
-    .hero-actions {
-      display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 20px;
+      justify-content: flex-end;
     }
 
-    /* =========================
-       WORKFLOW
-    ========================= */
+    .nav button {
+      border: 0;
+      background: transparent;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .nav button:hover {
+      background: #f0f2f1;
+    }
+
+    .container {
+      max-width: 1250px;
+      margin: auto;
+      padding: 25px 18px 60px;
+    }
+
+    .hero {
+      background:
+        radial-gradient(circle at 90% 20%, rgba(15,157,88,.25), transparent 30%),
+        linear-gradient(135deg,#111,#202525);
+      color: white;
+      border-radius: 28px;
+      padding: 38px 30px;
+      margin-bottom: 22px;
+      overflow: hidden;
+    }
+
+    .hero h1 {
+      font-size: clamp(30px,5vw,56px);
+      line-height: 1;
+      max-width: 750px;
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      color: #d9dfdc;
+      max-width: 680px;
+      font-size: 16px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.14);
+      padding: 7px 12px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      font-weight: 700;
+    }
 
     .workflow {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(5,1fr);
       gap: 10px;
-      margin-top: 18px;
+      margin: 20px 0;
     }
 
-    .workflow-step {
+    .workflow div {
       background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 13px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
     }
 
-    .workflow-number {
-      width: 32px;
-      height: 32px;
-      min-width: 32px;
-      border-radius: 50%;
-      background: #111;
-      color: #ffd400;
+    .workflow span {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .grid {
       display: grid;
-      place-items: center;
-      font-weight: 900;
-      font-size: 13px;
+      grid-template-columns: repeat(12,1fr);
+      gap: 18px;
     }
-
-    .workflow-step strong {
-      display: block;
-      font-size: 13px;
-    }
-
-    .workflow-step span {
-      display: block;
-      color: #667085;
-      font-size: 11px;
-    }
-
-    /* =========================
-       CARDS
-    ========================= */
 
     .card {
       background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       padding: 20px;
-      box-shadow: 0 8px 25px rgba(15,23,42,.05);
     }
 
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: 1.5fr .8fr;
-      gap: 18px;
-      align-items: start;
-    }
+    .col-12 { grid-column: span 12; }
+    .col-8 { grid-column: span 8; }
+    .col-6 { grid-column: span 6; }
+    .col-4 { grid-column: span 4; }
 
-    /* =========================
-       AI
-    ========================= */
-
-    .ai-card {
-      background:
-        linear-gradient(145deg, #fff, #fafafa);
-    }
-
-    .card-heading {
+    .card-title {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: flex-start;
-      gap: 15px;
-      margin-bottom: 14px;
+      gap: 12px;
+      margin-bottom: 15px;
     }
 
-    .card-heading h3 {
-      font-size: 18px;
+    .card-title h2,
+    .card-title h3 {
+      font-size: 19px;
     }
 
-    .card-heading p {
-      font-size: 12px;
-      color: #667085;
-      margin-top: 3px;
-    }
-
-    .ai-badge {
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: #fff7c7;
-      color: #6b5700;
-      font-size: 11px;
-      font-weight: 800;
-      white-space: nowrap;
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
     }
 
     textarea,
     input,
     select {
       width: 100%;
-      border: 1px solid #d8dee7;
-      border-radius: 11px;
-      padding: 13px;
+      border: 1px solid var(--border);
+      background: #fbfcfc;
+      border-radius: 12px;
+      padding: 12px 13px;
       outline: none;
-      background: #fff;
-      color: #111827;
     }
 
     textarea:focus,
     input:focus,
     select:focus {
-      border-color: #111;
-      box-shadow: 0 0 0 3px rgba(17,17,17,.06);
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(11,122,69,.1);
     }
 
-    #prompt {
-      min-height: 130px;
+    textarea {
       resize: vertical;
+      min-height: 125px;
     }
 
-    .ai-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
-
-    .usage {
-      color: #667085;
-      font-size: 12px;
-    }
-
-    /* =========================
-       QUICK ACTIONS
-    ========================= */
-
-    .quick-actions {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    .quick-action {
-      border: 1px solid #e5e7eb;
-      background: #fafafa;
-      border-radius: 14px;
-      padding: 15px;
-      text-align: left;
-      transition: .2s;
-    }
-
-    .quick-action:hover {
-      background: #fff;
-      border-color: #cfd5dd;
-      transform: translateY(-2px);
-    }
-
-    .quick-action-icon {
-      font-size: 22px;
-      margin-bottom: 7px;
-    }
-
-    .quick-action strong {
+    label {
       display: block;
+      font-weight: 700;
       font-size: 13px;
+      margin: 12px 0 6px;
     }
 
-    .quick-action span {
-      color: #667085;
-      font-size: 11px;
-    }
-
-    /* =========================
-       TEMPLATES
-    ========================= */
-
-    .template-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-    }
-
-    .template-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(15,23,42,.05);
+    .btn {
+      border: 0;
+      border-radius: 11px;
+      padding: 11px 15px;
+      font-weight: 800;
       transition: .2s;
     }
 
-    .template-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 15px 30px rgba(15,23,42,.09);
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--dark);
+      color: white;
+    }
+
+    .btn-green {
+      background: var(--green);
+      color: white;
+    }
+
+    .btn-light {
+      background: #f0f2f1;
+      color: #111;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .btn-outline {
+      background: white;
+      border: 1px solid var(--border);
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .counter {
+      padding: 10px 12px;
+      background: #effaf4;
+      color: #086b3c;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      display: inline-block;
+    }
+
+    .templates {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 12px;
+    }
+
+    .template {
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      overflow: hidden;
+      background: white;
     }
 
     .template-cover {
-      height: 145px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 46px;
-      font-weight: 900;
-    }
-
-    .fashion-cover {
-      background: linear-gradient(135deg, #111, #343434);
-      color: #ffd400;
-    }
-
-    .restaurant-cover {
-      background: linear-gradient(135deg, #7c2d12, #ea580c);
+      height: 110px;
+      display: grid;
+      place-items: center;
+      font-size: 38px;
+      background: linear-gradient(135deg,#111,#555);
       color: white;
     }
 
-    .portfolio-cover {
-      background: linear-gradient(135deg, #172554, #2563eb);
-      color: white;
+    .template-body {
+      padding: 13px;
     }
 
-    .template-content {
-      padding: 16px;
-    }
-
-    .template-content h3 {
-      font-size: 16px;
+    .template-body strong {
+      display: block;
       margin-bottom: 4px;
     }
 
-    .template-content p {
-      color: #667085;
-      font-size: 12px;
-      min-height: 36px;
-    }
-
-    .template-content .btn {
-      margin-top: 12px;
+    .template-body button {
       width: 100%;
-    }
-
-    /* =========================
-       WORKSPACE
-    ========================= */
-
-    .workspace {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .workspace-card {
-      min-width: 0;
+      margin-top: 9px;
     }
 
     .editor-tabs {
       display: flex;
-      gap: 7px;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
+      gap: 5px;
+      margin-bottom: 8px;
     }
 
-    .editor-tab {
-      border: 1px solid #ddd;
-      background: #f8fafc;
-      padding: 8px 12px;
+    .editor-tabs button {
+      border: 0;
+      padding: 9px 13px;
       border-radius: 9px;
-      font-size: 12px;
+      background: #f0f2f1;
       font-weight: 800;
     }
 
-    .editor-tab.active {
+    .editor-tabs button.active {
       background: #111;
-      color: #ffd400;
-      border-color: #111;
+      color: white;
     }
 
     .editor {
-      width: 100%;
-      min-height: 380px;
-      resize: vertical;
-      background: #111827;
-      color: #e5e7eb;
-      border: 0;
-      border-radius: 12px;
-      padding: 15px;
+      min-height: 360px;
       font-family: Consolas, Monaco, monospace;
-      font-size: 12px;
-      line-height: 1.6;
+      font-size: 13px;
+      line-height: 1.55;
+      background: #101414;
+      color: #e9fff2;
+      border: 0;
+      border-radius: 13px;
     }
 
     .preview-wrap {
-      background: #f1f5f9;
-      border-radius: 12px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
       overflow: hidden;
-      border: 1px solid #e2e8f0;
-    }
-
-    .preview-top {
-      background: #e2e8f0;
-      padding: 8px 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .preview-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: #94a3b8;
+      background: #ddd;
     }
 
     #preview {
       width: 100%;
-      height: 380px;
+      height: 550px;
       border: 0;
-      background: white;
-    }
-
-    .workspace-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    /* =========================
-       PRODUCT MANAGER
-    ========================= */
-
-    .product-manager {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    .product-list {
-      display: grid;
-      gap: 8px;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .product-item {
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 12px;
-      background: #fafafa;
-    }
-
-    .product-item strong {
-      font-size: 13px;
-    }
-
-    .product-item small {
       display: block;
-      color: #667085;
-      margin-top: 2px;
+      background: white;
     }
 
-    .product-item button {
-      margin-top: 8px;
-    }
-
-    /* =========================
-       PROJECTS
-    ========================= */
-
-    .projects-grid {
+    .project-list {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .project {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       gap: 15px;
     }
 
-    .project-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 7px 22px rgba(15,23,42,.04);
+    .project-info {
+      min-width: 0;
     }
 
-    .project-card h3 {
-      font-size: 15px;
-      margin-bottom: 4px;
-      word-break: break-word;
+    .project-name {
+      font-weight: 800;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .project-meta {
-      color: #667085;
-      font-size: 11px;
-      margin-bottom: 12px;
-    }
-
-    .project-status {
+    .status {
       display: inline-block;
-      padding: 5px 8px;
+      padding: 4px 8px;
       border-radius: 999px;
+      font-size: 10px;
+      font-weight: 900;
+      margin-top: 4px;
+    }
+
+    .published {
       background: #dcfce7;
       color: #166534;
-      font-size: 10px;
-      font-weight: 800;
-      margin-bottom: 10px;
+    }
+
+    .saved {
+      background: #f3f4f6;
+      color: #374151;
     }
 
     .project-actions {
       display: flex;
-      gap: 7px;
+      gap: 6px;
       flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
-    .project-actions .btn {
-      padding: 8px 10px;
-      font-size: 11px;
+    .project-actions button {
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 8px;
+      padding: 7px 9px;
+      font-size: 12px;
+      font-weight: 700;
     }
 
-    /* =========================
-       AUTH
-    ========================= */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 10px;
+      margin-top: 15px;
+    }
 
-    .auth-page {
-      min-height: calc(100vh - 70px);
+    .product-item {
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 12px;
+    }
+
+    .product-item strong {
+      display: block;
+    }
+
+    .about {
+      background: #111;
+      color: white;
+      border-radius: 25px;
+      padding: 35px;
+    }
+
+    .about p {
+      color: #d6ddda;
+      margin: 10px 0;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .about-box {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.09);
+      padding: 17px;
+      border-radius: 15px;
+    }
+
+    .about-box h3 {
+      margin-bottom: 7px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 35px 15px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      z-index: 3000;
       display: grid;
       place-items: center;
-      padding: 35px 0;
+      padding: 18px;
     }
 
-    .auth-card {
-      width: min(450px, 100%);
+    .modal-box {
+      width: min(460px,100%);
+      max-height: 90vh;
+      overflow-y: auto;
       background: white;
       border-radius: 20px;
-      border: 1px solid #e5e7eb;
-      padding: 25px;
-      box-shadow: 0 20px 50px rgba(15,23,42,.1);
+      padding: 22px;
     }
 
-    .auth-card h2 {
+    .modal-box h2 {
       margin-bottom: 5px;
     }
 
-    .auth-card p {
-      color: #667085;
-      font-size: 13px;
-      margin-bottom: 18px;
-    }
-
-    .form-group {
-      margin-bottom: 12px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 12px;
-      font-weight: 800;
-      margin-bottom: 5px;
-    }
-
-    .auth-switch {
-      margin-top: 14px;
-      text-align: center;
-      font-size: 12px;
-      color: #667085;
-    }
-
-    .auth-switch button {
-      border: 0;
-      background: transparent;
-      color: #2563eb;
-      font-weight: 800;
-    }
-
-    /* =========================
-       ABOUT
-    ========================= */
-
-    #aboutSection {
-      padding-bottom: 50px;
-    }
-
-    .about-hero {
-      margin-top: 25px;
-      border-radius: 26px;
-      padding: 50px 30px;
-      color: white;
-      text-align: center;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(255,212,0,.18), transparent 25%),
-        radial-gradient(circle at 80% 80%, rgba(37,99,235,.18), transparent 25%),
-        #111827;
-    }
-
-    .about-hero h1 {
-      font-size: clamp(30px, 6vw, 56px);
-      margin-bottom: 12px;
-    }
-
-    .about-hero p {
-      max-width: 750px;
-      margin: auto;
-      color: #cbd5e1;
-      font-size: 15px;
-    }
-
-    .founder-card {
-      margin-top: 20px;
-      background: white;
-      border-radius: 22px;
-      padding: 28px;
-      border: 1px solid #e5e7eb;
-      display: grid;
-      grid-template-columns: 180px 1fr;
-      gap: 25px;
+    .close-row {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
     }
 
-    .founder-logo {
-      width: 150px;
-      height: 150px;
-      border-radius: 35px;
-      background: linear-gradient(135deg,#111,#292929);
-      color: #ffd400;
+    .close {
+      border: 0;
+      background: #f0f2f1;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      font-size: 20px;
+    }
+
+    .auth-tabs {
       display: grid;
-      place-items: center;
-      font-size: 40px;
-      font-weight: 900;
-      box-shadow: 0 15px 35px rgba(0,0,0,.15);
-    }
-
-    .founder-card h2 {
-      margin-bottom: 3px;
-    }
-
-    .founder-title {
-      color: #2563eb;
-      font-size: 13px;
-      font-weight: 800;
-      margin-bottom: 12px;
-    }
-
-    .founder-card p {
-      color: #667085;
-      font-size: 14px;
-      margin-bottom: 12px;
-    }
-
-    .quote {
-      padding: 14px;
-      border-left: 4px solid #ffd400;
-      background: #fffbea;
-      border-radius: 8px;
-      font-weight: 800;
-    }
-
-    .expertise-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      margin-top: 20px;
-    }
-
-    .expertise-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 17px;
-      padding: 20px;
-    }
-
-    .expertise-card .icon {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-
-    .expertise-card h3 {
-      font-size: 15px;
-      margin-bottom: 5px;
-    }
-
-    .expertise-card p {
-      color: #667085;
-      font-size: 12px;
-    }
-
-    .about-block {
-      margin-top: 20px;
-      border-radius: 22px;
-      padding: 28px;
-      color: white;
-      background: linear-gradient(135deg,#111827,#1f2937);
-    }
-
-    .about-block h2 {
-      margin-bottom: 10px;
-    }
-
-    .about-block p {
-      color: #cbd5e1;
-      max-width: 850px;
-    }
-
-    /* =========================
-       FOOTER
-    ========================= */
-
-    footer {
-      margin-top: 35px;
-      background: #111;
-      color: white;
-      padding: 30px 20px;
-      text-align: center;
-    }
-
-    footer strong {
-      color: #ffd400;
-    }
-
-    footer p {
-      color: #aaa;
-      font-size: 12px;
-      margin-top: 4px;
-    }
-
-    /* =========================
-       NOTIFICATION
-    ========================= */
-
-    #toast {
-      position: fixed;
-      left: 50%;
-      bottom: 22px;
-      transform: translate(-50%, 120px);
-      z-index: 9999;
-      max-width: min(500px, calc(100% - 30px));
-      background: #111;
-      color: white;
-      padding: 13px 18px;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      background: #f1f3f2;
+      padding: 5px;
       border-radius: 12px;
+      margin: 15px 0;
+    }
+
+    .auth-tabs button {
+      border: 0;
+      background: transparent;
+      padding: 10px;
+      border-radius: 9px;
+      font-weight: 800;
+    }
+
+    .auth-tabs button.active {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #111;
+      color: white;
+      padding: 12px 17px;
+      border-radius: 12px;
+      z-index: 5000;
+      font-weight: 700;
       font-size: 13px;
-      box-shadow: 0 15px 40px rgba(0,0,0,.25);
-      transition: .3s ease;
+      transition: .25s;
+      max-width: 90%;
       text-align: center;
     }
 
-    #toast.show {
-      transform: translate(-50%, 0);
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
     }
 
-    /* =========================
-       RESPONSIVE
-    ========================= */
+    .loading {
+      opacity: .6;
+      pointer-events: none;
+    }
 
-    @media (max-width: 1000px) {
-      .dashboard-grid {
-        grid-template-columns: 1fr;
-      }
+    .empty {
+      text-align: center;
+      padding: 25px;
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      border-radius: 13px;
+    }
 
-      .projects-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
+    .section-space {
+      margin-top: 20px;
+    }
 
-      .expertise-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
+    @media(max-width:900px) {
       .workflow {
-        grid-template-columns: repeat(5, minmax(130px, 1fr));
-        overflow-x: auto;
+        grid-template-columns: repeat(3,1fr);
+      }
+
+      .col-8,
+      .col-6,
+      .col-4 {
+        grid-column: span 12;
+      }
+
+      .templates,
+      .product-grid,
+      .about-grid {
+        grid-template-columns: 1fr;
       }
     }
 
-    @media (max-width: 750px) {
+    @media(max-width:600px) {
       .topbar {
-        flex-wrap: wrap;
-        padding: 10px 14px;
+        padding: 10px;
       }
 
-      .main-nav {
-        order: 3;
-        width: 100%;
-        justify-content: center;
-      }
-
-      .user-area {
-        margin-left: auto;
-      }
-
-      .brand {
-        font-size: 13px;
-      }
-
-      .builder-hero {
-        padding: 25px 20px;
-      }
-
-      .workspace {
-        grid-template-columns: 1fr;
-      }
-
-      .template-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .projects-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .product-manager {
-        grid-template-columns: 1fr;
-      }
-
-      .founder-card {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
-
-      .founder-logo {
-        margin: auto;
-      }
-
-      .expertise-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .quick-actions {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .page {
-        width: min(100% - 18px, 1400px);
-      }
-
-      .topbar {
-        gap: 8px;
-      }
-
-      .user-area .small {
+      .brand > div:last-child {
         display: none;
       }
 
-      .main-nav button {
+      .nav button {
+        padding: 7px 8px;
         font-size: 12px;
+      }
+
+      .container {
+        padding: 15px 10px 40px;
+      }
+
+      .hero {
+        padding: 27px 20px;
+        border-radius: 20px;
+      }
+
+      .workflow {
+        grid-template-columns: repeat(2,1fr);
       }
 
       .card {
         padding: 15px;
       }
 
-      .workflow {
-        margin-left: -2px;
-        margin-right: -2px;
+      #preview {
+        height: 500px;
       }
 
-      .hero-actions,
-      .workspace-actions {
+      .project {
+        align-items: flex-start;
         flex-direction: column;
       }
 
-      .hero-actions .btn,
-      .workspace-actions .btn {
-        width: 100%;
-      }
-
-      .quick-actions {
-        grid-template-columns: 1fr;
+      .project-actions {
+        justify-content: flex-start;
       }
     }
   </style>
@@ -1044,651 +672,223 @@
 
 <body>
 
-  <!-- =========================
-       TOPBAR
-  ========================= -->
-
-  <header class="topbar">
-    <div class="brand-wrap">
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
       <div class="otg-logo">OTG</div>
-
-      <div class="brand">
-        <span>OTG</span> AI Website Builder
+      <div>
+        <div>OTG AI Website Builder</div>
+        <small>Creative digital workspace</small>
       </div>
     </div>
 
-    <nav class="main-nav">
-      <button onclick="showBuilder()">Builder</button>
-      <button onclick="showAbout()">About OTG</button>
+    <nav class="nav">
+      <button onclick="scrollToSection('builder')">Builder</button>
+      <button onclick="scrollToSection('about')">About OTG</button>
+      <button id="authButton" onclick="openAuth()">Sign in</button>
+      <button id="logoutButton" class="hidden" onclick="logout()">Logout</button>
     </nav>
+  </div>
+</header>
 
-    <div class="user-area">
-      <span id="userEmail" class="small"></span>
+<main class="container">
 
-      <button
-        id="loginBtn"
-        class="btn yellow"
-        onclick="showAuth()">
-        Login / Sign Up
-      </button>
+  <section class="hero" id="builder">
+    <div class="hero-badge">⚡ OTG CREATIVE WORKSPACE</div>
+    <h1>Turn your ideas into digital reality.</h1>
+    <p>
+      Create beautiful websites with AI, customize them yourself,
+      save your projects and publish your work online.
+    </p>
 
-      <button
-        id="logoutBtn"
-        class="btn light hidden"
-        onclick="logout()">
-        Logout
-      </button>
-    </div>
-  </header>
-
-  <!-- =========================
-       AUTH
-  ========================= -->
-
-  <section id="authSection" class="auth-page hidden">
-    <div class="auth-card">
-
-      <h2 id="authTitle">Welcome to OTG</h2>
-
-      <p id="authSubtitle">
-        Sign in or create your student account.
-      </p>
-
-      <div class="form-group">
-        <label>Email</label>
-        <input
-          id="authEmail"
-          type="email"
-          placeholder="Enter your email" />
-      </div>
-
-      <div class="form-group">
-        <label>Password</label>
-        <input
-          id="authPassword"
-          type="password"
-          placeholder="Enter your password" />
-      </div>
-
-      <button
-        id="authActionBtn"
-        class="btn dark full"
-        onclick="handleAuth()">
-        Login
-      </button>
-
-      <div class="auth-switch">
-        <span id="authSwitchText">
-          Don't have an account?
-        </span>
-
-        <button onclick="toggleAuthMode()">
-          <span id="authSwitchBtn">Sign Up</span>
-        </button>
-      </div>
-
-      <button
-        class="btn light full"
-        style="margin-top:10px"
-        onclick="showBuilder()">
-        Back to Builder
-      </button>
-
+    <div class="actions">
+      <button class="btn btn-green" onclick="focusGenerator()">🚀 Start Building</button>
+      <button class="btn btn-light" onclick="openAuth()">👤 Student Account</button>
     </div>
   </section>
 
-  <!-- =========================
-       BUILDER
-  ========================= -->
+  <div class="workflow">
+    <div><span>✨</span>Create</div>
+    <div><span>🎨</span>Customize</div>
+    <div><span>👀</span>Preview</div>
+    <div><span>💾</span>Save</div>
+    <div><span>🚀</span>Publish</div>
+  </div>
 
-  <main id="builderSection" class="page">
+  <div class="grid">
 
-    <section class="builder-hero">
-
-      <div class="builder-hero-content">
-
-        <div class="eyebrow">
-          ⚡ OTG CREATIVE WORKSPACE
-        </div>
-
-        <h1>
-          Turn your ideas into digital reality.
-        </h1>
-
-        <p>
-          Create beautiful websites with AI, customize the code,
-          preview your work, save your projects and publish them online.
-        </p>
-
-        <div class="hero-actions">
-
-          <button
-            class="btn yellow"
-            onclick="focusAI()">
-            ✨ Start With AI
-          </button>
-
-          <button
-            class="btn light"
-            onclick="resetBuilder()">
-            ＋ Start New Website
-          </button>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- WORKFLOW -->
-
-    <section class="workflow">
-
-      <div class="workflow-step">
-        <div class="workflow-number">1</div>
+    <section class="card col-8" id="generator">
+      <div class="card-title">
         <div>
-          <strong>Create</strong>
-          <span>AI or template</span>
+          <h2>🤖 AI Website Generator</h2>
+          <div class="muted">Describe what you want and let OTG AI build it.</div>
         </div>
+        <span class="counter" id="generationCounter">5 AI generations available today.</span>
       </div>
 
-      <div class="workflow-step">
-        <div class="workflow-number">2</div>
+      <label>What website do you want?</label>
+
+      <textarea id="aiPrompt"
+        placeholder="Example: Create a modern fashion store called Prince Fashion. Include men's and women's clothing, product cards, prices, a WhatsApp order button and a professional mobile design."></textarea>
+
+      <label>WhatsApp number (optional)</label>
+      <input id="whatsappNumber" placeholder="Example: 2348012345678" />
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="generateWebsite()">✨ Generate Website</button>
+        <button class="btn btn-light" onclick="clearGenerator()">Clear</button>
+      </div>
+
+      <div class="muted section-space">
+        Tip: The more details you provide, the better the result.
+      </div>
+    </section>
+
+    <section class="card col-4">
+      <div class="card-title">
+        <h3>⚡ Quick Actions</h3>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-light" onclick="newWebsite()">➕ New Website</button>
+        <button class="btn btn-light" onclick="updatePreview()">🔄 Update Preview</button>
+        <button class="btn btn-green" onclick="saveProject()">💾 Save Project</button>
+        <button class="btn btn-primary" onclick="publishProject()">🚀 Publish Website</button>
+      </div>
+
+      <div class="section-space muted">
+        You can create a website, edit the code, preview it, save it and publish it.
+      </div>
+    </section>
+
+    <section class="card col-12">
+      <div class="card-title">
         <div>
-          <strong>Customize</strong>
-          <span>Edit your website</span>
+          <h2>🎨 Quick Templates</h2>
+          <div class="muted">Start with a professional structure and customize it.</div>
         </div>
       </div>
 
-      <div class="workflow-step">
-        <div class="workflow-number">3</div>
+      <div class="templates">
+
+        <div class="template">
+          <div class="template-cover">👗</div>
+          <div class="template-body">
+            <strong>Fashion Store</strong>
+            <span class="muted">Clothing and fashion business.</span>
+            <button class="btn btn-primary" onclick="useTemplate('fashion')">Use Template</button>
+          </div>
+        </div>
+
+        <div class="template">
+          <div class="template-cover">🍽️</div>
+          <div class="template-body">
+            <strong>Restaurant</strong>
+            <span class="muted">Restaurant and food business.</span>
+            <button class="btn btn-primary" onclick="useTemplate('restaurant')">Use Template</button>
+          </div>
+        </div>
+
+        <div class="template">
+          <div class="template-cover">💼</div>
+          <div class="template-body">
+            <strong>Portfolio</strong>
+            <span class="muted">Personal or creative portfolio.</span>
+            <button class="btn btn-primary" onclick="useTemplate('portfolio')">Use Template</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="card col-12">
+      <div class="card-title">
         <div>
-          <strong>Preview</strong>
-          <span>Check your design</span>
+          <h2>🛍️ Product Manager</h2>
+          <div class="muted">Add products that your AI-generated website can use.</div>
         </div>
       </div>
 
-      <div class="workflow-step">
-        <div class="workflow-number">4</div>
+      <div class="grid">
+        <div class="col-4">
+          <label>Product name</label>
+          <input id="productName" placeholder="Example: Classic Shirt" />
+        </div>
+
+        <div class="col-4">
+          <label>Price</label>
+          <input id="productPrice" placeholder="₦25,000" />
+        </div>
+
+        <div class="col-4">
+          <label>Image URL (optional)</label>
+          <input id="productImage" placeholder="https://..." />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-green" onclick="addProduct()">Add Product</button>
+        <button class="btn btn-light" onclick="clearProducts()">Clear Products</button>
+      </div>
+
+      <div id="productList" class="product-grid"></div>
+    </section>
+
+    <section class="card col-12">
+      <div class="card-title">
         <div>
-          <strong>Save</strong>
-          <span>Keep your project</span>
+          <h2>💻 Website Editor</h2>
+          <div class="muted">Edit HTML, CSS and JavaScript directly.</div>
         </div>
       </div>
 
-      <div class="workflow-step">
-        <div class="workflow-number">5</div>
+      <div class="editor-tabs">
+        <button id="tabHtml" class="active" onclick="showEditor('html')">HTML</button>
+        <button id="tabCss" onclick="showEditor('css')">CSS</button>
+        <button id="tabJs" onclick="showEditor('js')">JavaScript</button>
+      </div>
+
+      <textarea id="htmlEditor" class="editor"></textarea>
+      <textarea id="cssEditor" class="editor hidden"></textarea>
+      <textarea id="jsEditor" class="editor hidden"></textarea>
+
+      <div class="actions">
+        <button class="btn btn-green" onclick="updatePreview()">👀 Live Preview</button>
+        <button class="btn btn-light" onclick="resetBuilder()">↩ Reset Builder</button>
+      </div>
+    </section>
+
+    <section class="card col-12">
+      <div class="card-title">
         <div>
-          <strong>Publish</strong>
-          <span>Share online</span>
+          <h2>👀 Live Preview</h2>
+          <div class="muted">This is how your website currently looks.</div>
         </div>
       </div>
 
+      <div class="preview-wrap">
+        <iframe id="preview" title="Website Preview"></iframe>
+      </div>
     </section>
 
-    <!-- AI + QUICK ACTIONS -->
-
-    <section class="section">
-
-      <div class="dashboard-grid">
-
-        <div class="card ai-card">
-
-          <div class="card-heading">
-
-            <div>
-              <h3>✨ AI Website Generator</h3>
-              <p>
-                Tell OTG AI what you want to build or change.
-              </p>
-            </div>
-
-            <div class="ai-badge">
-              5 FREE / DAY
-            </div>
-
-          </div>
-
-          <textarea
-            id="prompt"
-            placeholder="Example: Create a modern fashion website for Prince Fashion with men's and women's clothing, product cards, WhatsApp ordering and a premium black and gold design."></textarea>
-
-          <div class="ai-bottom">
-
-            <div class="usage">
-              <span id="usageText">
-                5 AI generations available today.
-              </span>
-            </div>
-
-            <button
-              id="generateBtn"
-              class="btn dark"
-              onclick="generateWebsite()">
-              ✨ Generate Website
-            </button>
-
-          </div>
-
+    <section class="card col-12">
+      <div class="card-title">
+        <div>
+          <h2>📁 My Projects</h2>
+          <div class="muted">Save, open, rename, publish and manage your websites.</div>
         </div>
 
-        <div class="card">
-
-          <div class="card-heading">
-            <div>
-              <h3>Quick Actions</h3>
-              <p>Jump straight into your workflow.</p>
-            </div>
-          </div>
-
-          <div class="quick-actions">
-
-            <button
-              class="quick-action"
-              onclick="focusAI()">
-
-              <div class="quick-action-icon">🤖</div>
-
-              <strong>Ask AI</strong>
-
-              <span>Create or improve your site.</span>
-
-            </button>
-
-            <button
-              class="quick-action"
-              onclick="scrollToTemplates()">
-
-              <div class="quick-action-icon">🎨</div>
-
-              <strong>Templates</strong>
-
-              <span>Start from a ready-made design.</span>
-
-            </button>
-
-            <button
-              class="quick-action"
-              onclick="scrollToWorkspace()">
-
-              <div class="quick-action-icon">💻</div>
-
-              <strong>Code Editor</strong>
-
-              <span>Customize HTML, CSS and JS.</span>
-
-            </button>
-
-            <button
-              class="quick-action"
-              onclick="scrollToProjects()">
-
-              <div class="quick-action-icon">📁</div>
-
-              <strong>My Projects</strong>
-
-              <span>Open your saved websites.</span>
-
-            </button>
-
-          </div>
-
-        </div>
-
+        <button class="btn btn-light" onclick="loadProjects()">🔄 Refresh</button>
       </div>
 
+      <div id="projectsList" class="project-list">
+        <div class="empty">Sign in to see your saved projects.</div>
+      </div>
     </section>
 
-    <!-- =========================
-         TEMPLATES
-    ========================= -->
+    <section class="about col-12" id="about">
 
-    <section
-      id="templatesSection"
-      class="section">
-
-      <div class="section-title">
-        <h2>Start From a Template</h2>
-        <p>
-          Choose a starting point and customize it for your project.
-        </p>
-      </div>
-
-      <div class="template-grid">
-
-        <div class="template-card">
-
-          <div class="template-cover fashion-cover">
-            👗
-          </div>
-
-          <div class="template-content">
-
-            <h3>Fashion Store</h3>
-
-            <p>
-              A stylish clothing store with products and WhatsApp ordering.
-            </p>
-
-            <button
-              class="btn dark"
-              onclick="useFashionTemplate()">
-              Use Fashion Template
-            </button>
-
-          </div>
-
-        </div>
-
-        <div class="template-card">
-
-          <div class="template-cover restaurant-cover">
-            🍽️
-          </div>
-
-          <div class="template-content">
-
-            <h3>Restaurant</h3>
-
-            <p>
-              A modern restaurant website for menus, services and contact.
-            </p>
-
-            <button
-              class="btn dark"
-              onclick="useRestaurantTemplate()">
-              Use Restaurant Template
-            </button>
-
-          </div>
-
-        </div>
-
-        <div class="template-card">
-
-          <div class="template-cover portfolio-cover">
-            💼
-          </div>
-
-          <div class="template-content">
-
-            <h3>Portfolio</h3>
-
-            <p>
-              Showcase your skills, projects, services and contact details.
-            </p>
-
-            <button
-              class="btn dark"
-              onclick="usePortfolioTemplate()">
-              Use Portfolio Template
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- =========================
-         PRODUCT MANAGER
-    ========================= -->
-
-    <section class="section">
-
-      <div class="section-title">
-        <h2>Product Manager</h2>
-        <p>
-          Add products to your current website.
-        </p>
-      </div>
-
-      <div class="card">
-
-        <div class="product-manager">
-
-          <div>
-
-            <div class="form-group">
-              <label>Product Name</label>
-              <input
-                id="productName"
-                placeholder="Example: Premium Sneakers" />
-            </div>
-
-            <div class="form-group">
-              <label>Price</label>
-              <input
-                id="productPrice"
-                placeholder="Example: ₦45,000" />
-            </div>
-
-            <div class="form-group">
-              <label>Image URL</label>
-              <input
-                id="productImage"
-                placeholder="https://..." />
-            </div>
-
-            <button
-              class="btn dark"
-              onclick="addProduct()">
-              + Add Product
-            </button>
-
-          </div>
-
-          <div>
-
-            <h3 style="margin-bottom:10px">
-              Current Products
-            </h3>
-
-            <div
-              id="productList"
-              class="product-list">
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- =========================
-         WORKSPACE
-    ========================= -->
-
-    <section
-      id="workspaceSection"
-      class="section">
-
-      <div class="section-title">
-        <h2>Website Workspace</h2>
-        <p>
-          Customize your website, preview it and prepare it for publishing.
-        </p>
-      </div>
-
-      <div class="workspace">
-
-        <!-- EDITOR -->
-
-        <div class="card workspace-card">
-
-          <div class="card-heading">
-
-            <div>
-              <h3>💻 Code Editor</h3>
-              <p>Edit your website directly.</p>
-            </div>
-
-          </div>
-
-          <div class="editor-tabs">
-
-            <button
-              id="htmlTab"
-              class="editor-tab active"
-              onclick="switchEditor('html')">
-              HTML
-            </button>
-
-            <button
-              id="cssTab"
-              class="editor-tab"
-              onclick="switchEditor('css')">
-              CSS
-            </button>
-
-            <button
-              id="jsTab"
-              class="editor-tab"
-              onclick="switchEditor('js')">
-              JavaScript
-            </button>
-
-          </div>
-
-          <textarea
-            id="htmlEditor"
-            class="editor"
-            spellcheck="false"
-            oninput="updatePreview()"></textarea>
-
-          <textarea
-            id="cssEditor"
-            class="editor hidden"
-            spellcheck="false"
-            oninput="updatePreview()"></textarea>
-
-          <textarea
-            id="jsEditor"
-            class="editor hidden"
-            spellcheck="false"
-            oninput="updatePreview()"></textarea>
-
-        </div>
-
-        <!-- PREVIEW -->
-
-        <div class="card workspace-card">
-
-          <div class="card-heading">
-
-            <div>
-              <h3>👁️ Live Preview</h3>
-              <p>
-                See your website before publishing.
-              </p>
-            </div>
-
-          </div>
-
-          <div class="preview-wrap">
-
-            <div class="preview-top">
-              <div class="preview-dot"></div>
-              <div class="preview-dot"></div>
-              <div class="preview-dot"></div>
-            </div>
-
-            <iframe
-              id="preview"
-              title="Website Preview">
-            </iframe>
-
-          </div>
-
-          <div class="workspace-actions">
-
-            <button
-              class="btn blue"
-              onclick="updatePreview()">
-              ↻ Refresh Preview
-            </button>
-
-            <button
-              class="btn dark"
-              onclick="saveProject()">
-              💾 Save Project
-            </button>
-
-            <button
-              class="btn green"
-              onclick="publishWebsite()">
-              🚀 Publish Website
-            </button>
-
-            <button
-              class="btn light"
-              onclick="openPreviewNewTab()">
-              ↗ Open Preview
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- =========================
-         MY PROJECTS
-    ========================= -->
-
-    <section
-      id="projectsSection"
-      class="section">
-
-      <div class="section-title">
-
-        <h2>My Projects</h2>
-
-        <p>
-          Your saved websites appear here.
-        </p>
-
-      </div>
-
-      <div
-        id="projectsList"
-        class="projects-grid">
-
-        <div class="card">
-          <p style="color:#667085;font-size:13px">
-            Login to view your saved projects.
-          </p>
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
-
-  <!-- =========================
-       ABOUT OTG
-  ========================= -->
-
-  <main
-    id="aboutSection"
-    class="page hidden">
-
-    <section class="about-hero">
-
-      <div class="eyebrow">
-        ABOUT OTG
-      </div>
-
-      <h1>
-        Turn Your Ideas Into Digital Reality
-      </h1>
+      <h2>About OTG</h2>
 
       <p>
         OTG AI Website Builder is a creative platform designed to help
@@ -1696,23 +896,10 @@
         into beautiful websites using AI and practical digital skills.
       </p>
 
-    </section>
-
-    <section class="founder-card">
-
-      <div class="founder-logo">
-        OTG
-      </div>
-
-      <div>
-
-        <h2>
-          Prince OnaJb
-        </h2>
-
-        <div class="founder-title">
-          CEO & Founder, OTG Graphic Academy
-        </div>
+      <div class="about-box" style="margin-top:22px;">
+        <h2>OTG</h2>
+        <h3>Prince OnaJb</h3>
+        <p>CEO & Founder, OTG Graphic Academy</p>
 
         <p>
           Prince OnaJb is a graphic designer, creative educator and digital
@@ -1721,828 +908,521 @@
         </p>
 
         <p>
-          Through OTG Graphic Academy, he teaches students practical
-          creative skills while encouraging them to adapt to modern
-          technology, AI and the changing digital world.
+          Through OTG Graphic Academy, he teaches students practical creative
+          skills while encouraging them to adapt to modern technology, AI and
+          the changing digital world.
         </p>
 
-        <div class="quote">
-          “I turn ordinary ideas into visual reality.”
+        <p><strong>“I turn ordinary ideas into visual reality.”</strong></p>
+      </div>
+
+      <div class="about-grid">
+
+        <div class="about-box">
+          <h3>🎨 Graphic Design</h3>
+          <p>Professional visual designs, flyers, branding and creative communication.</p>
+        </div>
+
+        <div class="about-box">
+          <h3>💻 Website Creation</h3>
+          <p>Building modern websites and digital experiences for brands and businesses.</p>
+        </div>
+
+        <div class="about-box">
+          <h3>🤖 AI & Creative Technology</h3>
+          <p>Helping creatives understand and use modern AI tools effectively.</p>
+        </div>
+
+        <div class="about-box">
+          <h3>🎓 Training & Mentorship</h3>
+          <p>Practical training designed to help students develop useful creative skills.</p>
+        </div>
+
+        <div class="about-box">
+          <h3>🏆 Branding</h3>
+          <p>Creating strong visual identities that help businesses stand out.</p>
+        </div>
+
+        <div class="about-box">
+          <h3>🚀 Digital Creativity</h3>
+          <p>Turning ideas into practical digital products and creative solutions.</p>
         </div>
 
       </div>
 
-    </section>
-
-    <section class="section">
-
-      <div class="section-title">
-
-        <h2>What I Do</h2>
+      <div class="about-box section-space">
+        <h2>OTG Graphic Academy</h2>
 
         <p>
-          Creative and digital services built around practical skills,
-          technology and visual communication.
+          OTG Graphic Academy is focused on helping students build practical
+          creative skills they can use in the real world.
         </p>
 
+        <p>
+          Students are encouraged to learn, practice, create portfolios,
+          work with clients and understand how technology can support—not
+          replace—their creativity.
+        </p>
       </div>
 
-      <div class="expertise-grid">
+      <div class="about-box section-space">
+        <h2>For OTG Students</h2>
 
-        <div class="expertise-card">
-          <div class="icon">🎨</div>
-          <h3>Graphic Design</h3>
-          <p>
-            Professional visual designs, flyers, branding and creative communication.
-          </p>
-        </div>
+        <p>
+          This platform is part of the bigger OTG vision: giving creatives
+          practical tools to learn, experiment, build projects and turn their
+          skills into opportunities.
+        </p>
 
-        <div class="expertise-card">
-          <div class="icon">💻</div>
-          <h3>Website Creation</h3>
-          <p>
-            Building modern websites and digital experiences for brands and businesses.
-          </p>
-        </div>
-
-        <div class="expertise-card">
-          <div class="icon">🤖</div>
-          <h3>AI & Creative Technology</h3>
-          <p>
-            Helping creatives understand and use modern AI tools effectively.
-          </p>
-        </div>
-
-        <div class="expertise-card">
-          <div class="icon">🎓</div>
-          <h3>Training & Mentorship</h3>
-          <p>
-            Practical training designed to help students develop useful creative skills.
-          </p>
-        </div>
-
-        <div class="expertise-card">
-          <div class="icon">🏆</div>
-          <h3>Branding</h3>
-          <p>
-            Creating strong visual identities that help businesses stand out.
-          </p>
-        </div>
-
-        <div class="expertise-card">
-          <div class="icon">🚀</div>
-          <h3>Digital Creativity</h3>
-          <p>
-            Turning ideas into practical digital products and creative solutions.
-          </p>
-        </div>
-
+        <p>
+          Create your website, save your projects, publish your work and
+          continue improving your digital skills.
+        </p>
       </div>
 
     </section>
 
-    <section class="about-block">
+  </div>
+</main>
 
-      <h2>
-        OTG Graphic Academy
-      </h2>
+<footer>
+  <strong>OTG AI Website Builder</strong><br />
+  Built by Prince OnaJb — CEO & Founder, OTG Graphic Academy<br />
+  Empowering creatives to turn ideas into digital reality.
+</footer>
 
-      <p>
-        OTG Graphic Academy is focused on helping students build practical
-        creative skills they can use in the real world.
-      </p>
 
-      <p style="margin-top:10px">
-        Students are encouraged to learn, practice, create portfolios,
-        work with clients and understand how technology can support—not
-        replace—their creativity.
-      </p>
+<!-- AUTH MODAL -->
 
-    </section>
+<div id="authModal" class="modal hidden">
+  <div class="modal-box">
 
-    <section class="about-block">
+    <div class="close-row">
+      <div>
+        <h2 id="authTitle">Student Sign In</h2>
+        <div class="muted">Access your OTG projects.</div>
+      </div>
 
-      <h2>
-        For OTG Students
-      </h2>
-
-      <p>
-        This platform is part of the bigger OTG vision: giving creatives
-        practical tools to learn, experiment, build projects and turn
-        their skills into opportunities.
-      </p>
-
-      <p style="margin-top:10px">
-        Create your website, save your projects, publish your work and
-        continue improving your digital skills.
-      </p>
-
-    </section>
-
-    <section class="about-block">
-
-      <h2>
-        Connect With OTG
-      </h2>
-
-      <p>
-        Follow the OTG journey and discover more creative work, training
-        and digital projects.
-      </p>
-
-    </section>
-
-    <div style="text-align:center;margin-top:20px">
-
-      <button
-        class="btn dark"
-        onclick="showBuilder()">
-        🚀 Start Building
-      </button>
-
+      <button class="close" onclick="closeAuth()">×</button>
     </div>
 
-  </main>
+    <div class="auth-tabs">
+      <button id="loginTab" class="active" onclick="switchAuth('login')">Sign In</button>
+      <button id="signupTab" onclick="switchAuth('signup')">Create Account</button>
+    </div>
 
-  <!-- =========================
-       FOOTER
-  ========================= -->
+    <label>Email</label>
+    <input id="authEmail" type="email" placeholder="you@example.com" />
 
-  <footer>
+    <label>Password</label>
+    <input id="authPassword" type="password" placeholder="Minimum 6 characters" />
 
-    <strong>
-      OTG AI Website Builder
-    </strong>
+    <div id="signupExtra" class="hidden">
+      <label>Full name</label>
+      <input id="authName" placeholder="Your name" />
+    </div>
 
+    <button id="authSubmit" class="btn btn-primary" style="width:100%;margin-top:16px;" onclick="submitAuth()">
+      Sign In
+    </button>
+
+    <div class="muted" style="text-align:center;margin-top:12px;">
+      Your account is secured by Supabase.
+    </div>
+
+  </div>
+</div>
+
+
+<!-- RENAME MODAL -->
+
+<div id="renameModal" class="modal hidden">
+  <div class="modal-box">
+
+    <div class="close-row">
+      <h2>Rename Project</h2>
+      <button class="close" onclick="closeRename()">×</button>
+    </div>
+
+    <label>Project name</label>
+    <input id="renameInput" />
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="confirmRename()">Save Name</button>
+      <button class="btn btn-light" onclick="closeRename()">Cancel</button>
+    </div>
+
+  </div>
+</div>
+
+
+<div id="toast" class="toast"></div>
+
+
+<script>
+  const SUPABASE_URL = "https://actwvvokfdemobgsfctx.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
+
+  const supabaseClient =
+    window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+  let currentUser = null;
+  let currentProjectId = null;
+  let renameProjectId = null;
+
+  let products = [];
+
+  let currentEditor = "html";
+
+
+  const DEFAULT_HTML = `
+<div class="site">
+  <nav class="nav">
+    <strong>My Website</strong>
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <section id="home" class="hero">
+    <div>
+      <span class="tag">WELCOME</span>
+      <h1>Build something amazing.</h1>
+      <p>
+        This website was created with OTG AI Website Builder.
+      </p>
+      <a class="cta" href="#about">Explore</a>
+    </div>
+  </section>
+
+  <section id="about" class="section">
+    <h2>About Us</h2>
     <p>
-      Built by Prince OnaJb — CEO & Founder, OTG Graphic Academy
+      Tell your visitors about your business, brand or creative work.
     </p>
+  </section>
 
-    <p>
-      Empowering creatives to turn ideas into digital reality.
-    </p>
-
-  </footer>
-
-  <div id="toast"></div>
-
-  <script>
-
-    /* =========================================================
-       SUPABASE
-    ========================================================= */
-
-    const SUPABASE_URL =
-      "https://actwvvokfdemobgsfctx.supabase.co";
-
-    const SUPABASE_KEY =
-      "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
-
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-      );
+  <section id="contact" class="section dark">
+    <h2>Contact Us</h2>
+    <p>We would love to hear from you.</p>
+  </section>
+</div>
+`;
 
 
-    /* =========================================================
-       STATE
-    ========================================================= */
+  const DEFAULT_CSS = `
+*{
+  box-sizing:border-box;
+}
 
-    let currentUser = null;
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  color:#111;
+  background:#f5f7f6;
+}
 
-    let authMode = "login";
+.nav{
+  position:sticky;
+  top:0;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  padding:16px 7%;
+  background:white;
+  border-bottom:1px solid #eee;
+}
 
-    let currentProjectId = null;
+.nav strong{
+  margin-right:auto;
+  font-size:20px;
+}
 
-    let currentProjectSlug = null;
+.nav a{
+  color:#111;
+  text-decoration:none;
+}
 
-    let currentEditor = "html";
+.hero{
+  min-height:75vh;
+  display:grid;
+  place-items:center;
+  padding:60px 7%;
+  color:white;
+  background:
+    linear-gradient(135deg,rgba(0,0,0,.78),rgba(8,95,52,.75)),
+    linear-gradient(135deg,#222,#0a7a45);
+}
 
-    let products = [];
+.hero h1{
+  font-size:clamp(40px,7vw,80px);
+  line-height:1;
+  margin:15px 0;
+}
+
+.hero p{
+  max-width:650px;
+  font-size:18px;
+  color:#e8eee9;
+}
+
+.tag{
+  display:inline-block;
+  padding:7px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+}
+
+.cta{
+  display:inline-block;
+  margin-top:15px;
+  padding:13px 18px;
+  background:white;
+  color:#111;
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.section{
+  padding:80px 7%;
+  max-width:1000px;
+  margin:auto;
+}
+
+.section h2{
+  font-size:38px;
+}
+
+.dark{
+  max-width:none;
+  background:#111;
+  color:white;
+}
+`;
 
 
-    /* =========================================================
-       ELEMENTS
-    ========================================================= */
-
-    const htmlEditor =
-      document.getElementById("htmlEditor");
-
-    const cssEditor =
-      document.getElementById("cssEditor");
-
-    const jsEditor =
-      document.getElementById("jsEditor");
-
-    const preview =
-      document.getElementById("preview");
+  const DEFAULT_JS = `
+document.querySelectorAll('a[href^="#"]').forEach(function(link){
+  link.addEventListener('click',function(e){
+    const target=document.querySelector(this.getAttribute('href'));
+    if(target){
+      e.preventDefault();
+      target.scrollIntoView({behavior:'smooth'});
+    }
+  });
+});
+`;
 
 
-    /* =========================================================
-       TOAST
-    ========================================================= */
+  function toast(message) {
+    const el = document.getElementById("toast");
+    el.textContent = message;
+    el.classList.add("show");
 
-    function showToast(message) {
+    clearTimeout(window.toastTimer);
 
-      const toast =
-        document.getElementById("toast");
+    window.toastTimer = setTimeout(() => {
+      el.classList.remove("show");
+    }, 3000);
+  }
 
-      toast.textContent = message;
 
-      toast.classList.add("show");
+  function scrollToSection(id) {
+    document.getElementById(id)?.scrollIntoView({
+      behavior: "smooth"
+    });
+  }
 
-      setTimeout(() => {
-        toast.classList.remove("show");
-      }, 3000);
+
+  function focusGenerator() {
+    scrollToSection("generator");
+    setTimeout(() => {
+      document.getElementById("aiPrompt")?.focus();
+    }, 400);
+  }
+
+
+  function openAuth() {
+    document.getElementById("authModal").classList.remove("hidden");
+  }
+
+
+  function closeAuth() {
+    document.getElementById("authModal").classList.add("hidden");
+  }
+
+
+  function closeRename() {
+    document.getElementById("renameModal").classList.add("hidden");
+    renameProjectId = null;
+  }
+
+
+  function switchAuth(type) {
+
+    const login = type === "login";
+
+    document.getElementById("loginTab").classList.toggle("active", login);
+    document.getElementById("signupTab").classList.toggle("active", !login);
+
+    document.getElementById("signupExtra").classList.toggle("hidden", login);
+
+    document.getElementById("authTitle").textContent =
+      login ? "Student Sign In" : "Create Student Account";
+
+    document.getElementById("authSubmit").textContent =
+      login ? "Sign In" : "Create Account";
+  }
+
+
+  async function submitAuth() {
+
+    const email =
+      document.getElementById("authEmail").value.trim();
+
+    const password =
+      document.getElementById("authPassword").value;
+
+    const signup =
+      !document.getElementById("signupExtra").classList.contains("hidden");
+
+    if (!email || !password) {
+      toast("Enter your email and password.");
+      return;
     }
 
+    try {
 
-    /* =========================================================
-       NAVIGATION
-    ========================================================= */
+      if (signup) {
 
-    function showBuilder() {
+        const name =
+          document.getElementById("authName").value.trim();
 
-      document
-        .getElementById("builderSection")
-        .classList.remove("hidden");
-
-      document
-        .getElementById("aboutSection")
-        .classList.add("hidden");
-
-      document
-        .getElementById("authSection")
-        .classList.add("hidden");
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    }
-
-
-    function showAbout() {
-
-      document
-        .getElementById("builderSection")
-        .classList.add("hidden");
-
-      document
-        .getElementById("aboutSection")
-        .classList.remove("hidden");
-
-      document
-        .getElementById("authSection")
-        .classList.add("hidden");
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    }
-
-
-    function showAuth() {
-
-      document
-        .getElementById("builderSection")
-        .classList.add("hidden");
-
-      document
-        .getElementById("aboutSection")
-        .classList.add("hidden");
-
-      document
-        .getElementById("authSection")
-        .classList.remove("hidden");
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    }
-
-
-    function focusAI() {
-
-      showBuilder();
-
-      setTimeout(() => {
-
-        const prompt =
-          document.getElementById("prompt");
-
-        prompt.focus();
-
-        prompt.scrollIntoView({
-          behavior: "smooth",
-          block: "center"
-        });
-
-      }, 100);
-
-    }
-
-
-    function scrollToTemplates() {
-
-      showBuilder();
-
-      setTimeout(() => {
-
-        document
-          .getElementById("templatesSection")
-          .scrollIntoView({
-            behavior: "smooth"
+        const { data, error } =
+          await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                full_name: name
+              }
+            }
           });
 
-      }, 100);
-    }
+        if (error) throw error;
 
-
-    function scrollToWorkspace() {
-
-      showBuilder();
-
-      setTimeout(() => {
-
-        document
-          .getElementById("workspaceSection")
-          .scrollIntoView({
-            behavior: "smooth"
-          });
-
-      }, 100);
-    }
-
-
-    function scrollToProjects() {
-
-      showBuilder();
-
-      setTimeout(() => {
-
-        document
-          .getElementById("projectsSection")
-          .scrollIntoView({
-            behavior: "smooth"
-          });
-
-      }, 100);
-    }
-
-
-    /* =========================================================
-       AUTH
-    ========================================================= */
-
-    function toggleAuthMode() {
-
-      authMode =
-        authMode === "login"
-          ? "signup"
-          : "login";
-
-      const title =
-        document.getElementById("authTitle");
-
-      const subtitle =
-        document.getElementById("authSubtitle");
-
-      const action =
-        document.getElementById("authActionBtn");
-
-      const switchText =
-        document.getElementById("authSwitchText");
-
-      const switchBtn =
-        document.getElementById("authSwitchBtn");
-
-      if (authMode === "login") {
-
-        title.textContent =
-          "Welcome Back";
-
-        subtitle.textContent =
-          "Login to access your OTG projects.";
-
-        action.textContent =
-          "Login";
-
-        switchText.textContent =
-          "Don't have an account?";
-
-        switchBtn.textContent =
-          "Sign Up";
-
-      } else {
-
-        title.textContent =
-          "Create Your OTG Account";
-
-        subtitle.textContent =
-          "Create an account and start building.";
-
-        action.textContent =
-          "Create Account";
-
-        switchText.textContent =
-          "Already have an account?";
-
-        switchBtn.textContent =
-          "Login";
-      }
-    }
-
-
-    async function handleAuth() {
-
-      const email =
-        document
-          .getElementById("authEmail")
-          .value
-          .trim();
-
-      const password =
-        document
-          .getElementById("authPassword")
-          .value;
-
-      if (!email || !password) {
-
-        showToast(
-          "Please enter your email and password."
-        );
-
-        return;
-      }
-
-      try {
-
-        if (authMode === "signup") {
-
-          const {
-            data,
-            error
-          } =
-            await supabaseClient.auth.signUp({
-              email,
-              password
-            });
-
-          if (error) {
-            throw error;
-          }
-
-          if (data.user && !data.session) {
-
-            showToast(
-              "Account created. Check your email to confirm your account."
-            );
-
-          } else {
-
-            showToast(
-              "Account created successfully."
-            );
-          }
-
+        if (!data.session) {
+          toast("Account created. Check your email if confirmation is required.");
         } else {
-
-          const {
-            error
-          } =
-            await supabaseClient.auth.signInWithPassword({
-              email,
-              password
-            });
-
-          if (error) {
-            throw error;
-          }
-
-          showToast(
-            "Login successful."
-          );
-
-          showBuilder();
+          toast("Account created successfully.");
         }
-
-      } catch (error) {
-
-        showToast(
-          error.message || "Authentication failed."
-        );
-      }
-    }
-
-
-    async function logout() {
-
-      await supabaseClient.auth.signOut();
-
-      currentUser = null;
-
-      currentProjectId = null;
-
-      currentProjectSlug = null;
-
-      updateAuthUI();
-
-      showToast("You have been logged out.");
-
-      showBuilder();
-
-      loadProjects();
-    }
-
-
-    function updateAuthUI() {
-
-      const userEmail =
-        document.getElementById("userEmail");
-
-      const loginBtn =
-        document.getElementById("loginBtn");
-
-      const logoutBtn =
-        document.getElementById("logoutBtn");
-
-      if (currentUser) {
-
-        userEmail.textContent =
-          currentUser.email || "";
-
-        loginBtn.classList.add("hidden");
-
-        logoutBtn.classList.remove("hidden");
 
       } else {
 
-        userEmail.textContent = "";
-
-        loginBtn.classList.remove("hidden");
-
-        logoutBtn.classList.add("hidden");
-      }
-    }
-
-
-    /* =========================================================
-       AI DAILY LIMIT
-    ========================================================= */
-
-    function getUsageData() {
-
-      const today =
-        new Date()
-          .toISOString()
-          .slice(0, 10);
-
-      const saved =
-        JSON.parse(
-          localStorage.getItem("otg_ai_usage") ||
-          "null"
-        );
-
-      if (!saved || saved.date !== today) {
-
-        return {
-          date: today,
-          count: 0
-        };
-      }
-
-      return saved;
-    }
-
-
-    function updateUsageUI() {
-
-      const usage =
-        getUsageData();
-
-      const remaining =
-        Math.max(0, 5 - usage.count);
-
-      const usageText =
-        document.getElementById("usageText");
-
-      usageText.textContent =
-        `${remaining} AI generation${remaining === 1 ? "" : "s"} available today.`;
-    }
-
-
-    function increaseUsage() {
-
-      const usage =
-        getUsageData();
-
-      usage.count++;
-
-      localStorage.setItem(
-        "otg_ai_usage",
-        JSON.stringify(usage)
-      );
-
-      updateUsageUI();
-    }
-
-
-    /* =========================================================
-       AI GENERATION
-    ========================================================= */
-
-    async function generateWebsite() {
-
-      const prompt =
-        document
-          .getElementById("prompt")
-          .value
-          .trim();
-
-      if (!prompt) {
-
-        showToast(
-          "Tell the AI what website you want to create."
-        );
-
-        return;
-      }
-
-      const usage =
-        getUsageData();
-
-      if (usage.count >= 5) {
-
-        showToast(
-          "You have used your 5 free AI generations for today."
-        );
-
-        return;
-      }
-
-      const button =
-        document.getElementById("generateBtn");
-
-      button.disabled = true;
-
-      button.textContent =
-        "⏳ Building...";
-
-      try {
-
-        const response =
-          await fetch("/api/generate", {
-
-            method: "POST",
-
-            headers: {
-              "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-
-              prompt,
-
-              html:
-                htmlEditor.value,
-
-              css:
-                cssEditor.value,
-
-              js:
-                jsEditor.value
-            })
+        const { error } =
+          await supabaseClient.auth.signInWithPassword({
+            email,
+            password
           });
 
+        if (error) throw error;
 
-        const data =
-          await response.json();
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            data.error ||
-            "AI generation failed."
-          );
-        }
-
-
-        htmlEditor.value =
-          data.html || "";
-
-        cssEditor.value =
-          data.css || "";
-
-        jsEditor.value =
-          data.js || "";
-
-
-        increaseUsage();
-
-        updatePreview();
-
-        switchEditor("html");
-
-        showToast(
-          "Website generated successfully."
-        );
-
-        scrollToWorkspace();
-
-      } catch (error) {
-
-        showToast(
-          error.message ||
-          "Something went wrong."
-        );
-
-      } finally {
-
-        button.disabled = false;
-
-        button.textContent =
-          "✨ Generate Website";
+        toast("Welcome back.");
       }
+
+      closeAuth();
+
+    } catch (error) {
+      toast(error.message || "Authentication failed.");
     }
+  }
 
 
-    /* =========================================================
-       EDITOR
-    ========================================================= */
+  async function logout() {
 
-    function switchEditor(type) {
+    await supabaseClient.auth.signOut();
 
-      currentEditor = type;
+    currentUser = null;
 
-      htmlEditor.classList.add("hidden");
+    updateAuthUI();
 
-      cssEditor.classList.add("hidden");
+    document.getElementById("projectsList").innerHTML =
+      '<div class="empty">Sign in to see your saved projects.</div>';
 
-      jsEditor.classList.add("hidden");
-
-      document
-        .getElementById("htmlTab")
-        .classList.remove("active");
-
-      document
-        .getElementById("cssTab")
-        .classList.remove("active");
-
-      document
-        .getElementById("jsTab")
-        .classList.remove("active");
+    toast("Logged out.");
+  }
 
 
-      if (type === "html") {
+  function updateAuthUI() {
 
-        htmlEditor.classList.remove("hidden");
+    const authButton =
+      document.getElementById("authButton");
 
-        document
-          .getElementById("htmlTab")
-          .classList.add("active");
+    const logoutButton =
+      document.getElementById("logoutButton");
 
-      }
+    if (currentUser) {
 
-      if (type === "css") {
+      authButton.textContent =
+        currentUser.email || "Account";
 
-        cssEditor.classList.remove("hidden");
+      authButton.onclick = () => {
+        toast("Signed in as " + currentUser.email);
+      };
 
-        document
-          .getElementById("cssTab")
-          .classList.add("active");
+      logoutButton.classList.remove("hidden");
 
-      }
+    } else {
 
-      if (type === "js") {
+      authButton.textContent = "Sign in";
+      authButton.onclick = openAuth;
 
-        jsEditor.classList.remove("hidden");
-
-        document
-          .getElementById("jsTab")
-          .classList.add("active");
-
-      }
+      logoutButton.classList.add("hidden");
     }
+  }
 
 
-    function updatePreview() {
+  function readEditor() {
 
-      const html =
-        htmlEditor.value;
-
-      const css =
-        cssEditor.value;
-
-      const js =
-        jsEditor.value;
+    return {
+      html: document.getElementById("htmlEditor").value,
+      css: document.getElementById("cssEditor").value,
+      js: document.getElementById("jsEditor").value
+    };
+  }
 
 
-      const documentContent = `
+  function writeEditor(data) {
+
+    document.getElementById("htmlEditor").value =
+      data.html || "";
+
+    document.getElementById("cssEditor").value =
+      data.css || "";
+
+    document.getElementById("jsEditor").value =
+      data.js || "";
+
+    updatePreview();
+  }
+
+
+  function updatePreview() {
+
+    const data = readEditor();
+
+    const html = data.html || "";
+
+    const css = data.css || "";
+
+    const js = data.js || "";
+
+    const documentContent = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -2553,2016 +1433,903 @@ ${css}
 </style>
 </head>
 <body>
+
 ${html}
 
 <script>
-${js.replace(/<\/script>/gi, "<\\/script>")}
+try{
+${js}
+}catch(error){
+console.error(error);
+}
 <\/script>
 
 </body>
 </html>
 `;
 
+    document.getElementById("preview").srcdoc =
+      documentContent;
+  }
 
-      preview.srcdoc =
-        documentContent;
+
+  function showEditor(type) {
+
+    currentEditor = type;
+
+    const html = document.getElementById("htmlEditor");
+    const css = document.getElementById("cssEditor");
+    const js = document.getElementById("jsEditor");
+
+    html.classList.toggle("hidden", type !== "html");
+    css.classList.toggle("hidden", type !== "css");
+    js.classList.toggle("hidden", type !== "js");
+
+    document.getElementById("tabHtml")
+      .classList.toggle("active", type === "html");
+
+    document.getElementById("tabCss")
+      .classList.toggle("active", type === "css");
+
+    document.getElementById("tabJs")
+      .classList.toggle("active", type === "js");
+  }
+
+
+  function clearGenerator() {
+
+    document.getElementById("aiPrompt").value = "";
+
+    document.getElementById("whatsappNumber").value = "";
+  }
+
+
+  function newWebsite() {
+
+    currentProjectId = null;
+
+    products = [];
+
+    renderProducts();
+
+    document.getElementById("aiPrompt").value = "";
+
+    writeEditor({
+      html: DEFAULT_HTML,
+      css: DEFAULT_CSS,
+      js: DEFAULT_JS
+    });
+
+    toast("New website started.");
+  }
+
+
+  function resetBuilder() {
+
+    if (!confirm("Reset the current website? Unsaved changes will be lost.")) {
+      return;
     }
 
+    currentProjectId = null;
 
-    function openPreviewNewTab() {
+    writeEditor({
+      html: DEFAULT_HTML,
+      css: DEFAULT_CSS,
+      js: DEFAULT_JS
+    });
 
-      const html =
-        htmlEditor.value;
-
-      const css =
-        cssEditor.value;
-
-      const js =
-        jsEditor.value;
+    toast("Builder reset.");
+  }
 
 
-      const page = `
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>${css}</style>
-</head>
-<body>
-${html}
-<script>
-${js.replace(/<\/script>/gi, "<\\/script>")}
-<\/script>
-</body>
-</html>
+  const TEMPLATES = {
+
+    fashion: {
+      prompt:
+        "Create a professional modern fashion store website called Prince Fashion selling men's and women's clothing. Include a beautiful hero section, product collection, categories, prices, responsive mobile layout and WhatsApp order buttons."
+    },
+
+    restaurant: {
+      prompt:
+        "Create a premium restaurant website with a beautiful hero section, menu categories, food cards, prices, about section, location, contact section and WhatsApp reservation button."
+    },
+
+    portfolio: {
+      prompt:
+        "Create a professional graphic designer portfolio website with hero section, about me, services, portfolio gallery, skills, testimonials, contact section and WhatsApp contact button."
+    }
+
+  };
+
+
+  function useTemplate(type) {
+
+    const template = TEMPLATES[type];
+
+    if (!template) return;
+
+    document.getElementById("aiPrompt").value =
+      template.prompt;
+
+    focusGenerator();
+
+    toast("Template loaded. Tap Generate Website.");
+  }
+
+
+  function getGenerationKey() {
+
+    const date =
+      new Date().toISOString().slice(0,10);
+
+    return "otg_ai_generations_" + date;
+  }
+
+
+  function getGenerationsUsed() {
+
+    return parseInt(
+      localStorage.getItem(getGenerationKey()) || "0",
+      10
+    );
+  }
+
+
+  function updateGenerationCounter() {
+
+    const used = getGenerationsUsed();
+
+    const remaining =
+      Math.max(0, 5 - used);
+
+    document.getElementById("generationCounter").textContent =
+      remaining + " AI generations available today.";
+  }
+
+
+  async function generateWebsite() {
+
+    const prompt =
+      document.getElementById("aiPrompt").value.trim();
+
+    const whatsapp =
+      document.getElementById("whatsappNumber").value.trim();
+
+    if (!prompt) {
+      toast("Describe the website you want first.");
+      return;
+    }
+
+    const used = getGenerationsUsed();
+
+    if (used >= 5) {
+      toast("You have used your 5 free AI generations for today.");
+      return;
+    }
+
+    const button =
+      document.querySelector('[onclick="generateWebsite()"]');
+
+    button.disabled = true;
+    button.textContent = "Generating...";
+
+    try {
+
+      let finalPrompt = prompt;
+
+      if (whatsapp) {
+
+        finalPrompt += `
+
+IMPORTANT:
+Use this WhatsApp number for contact/order buttons:
+${whatsapp}
+
+Create WhatsApp links using:
+https://wa.me/${whatsapp}
 `;
-
-
-      const blob =
-        new Blob(
-          [page],
-          { type: "text/html" }
-        );
-
-      const url =
-        URL.createObjectURL(blob);
-
-      window.open(
-        url,
-        "_blank"
-      );
-    }
-
-
-    /* =========================================================
-       RESET
-    ========================================================= */
-
-    function resetBuilder() {
-
-      const confirmReset =
-        confirm(
-          "Start a new website? Your current unsaved work will be replaced."
-        );
-
-      if (!confirmReset) {
-        return;
       }
 
-      currentProjectId = null;
+      if (products.length) {
 
-      currentProjectSlug = null;
+        finalPrompt += `
 
-      htmlEditor.value = "";
+Use these products in the website:
 
-      cssEditor.value = "";
-
-      jsEditor.value = "";
-
-      document.getElementById("prompt").value = "";
-
-      products = [];
-
-      renderProducts();
-
-      updatePreview();
-
-      showToast(
-        "New website workspace ready."
-      );
-
-      scrollToWorkspace();
-    }
-
-
-    /* =========================================================
-       PRODUCTS
-    ========================================================= */
-
-    function addProduct() {
-
-      const name =
-        document
-          .getElementById("productName")
-          .value
-          .trim();
-
-      const price =
-        document
-          .getElementById("productPrice")
-          .value
-          .trim();
-
-      const image =
-        document
-          .getElementById("productImage")
-          .value
-          .trim();
-
-
-      if (!name || !price) {
-
-        showToast(
-          "Enter the product name and price."
-        );
-
-        return;
+${products.map(p =>
+  `- ${p.name}: ${p.price}${p.image ? " — " + p.image : ""}`
+).join("\n")}
+`;
       }
 
+      const existing = readEditor();
 
-      products.push({
-        name,
-        price,
-        image
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          prompt: finalPrompt,
+          html: existing.html,
+          css: existing.css,
+          js: existing.js
+        })
       });
 
+      const data = await response.json();
 
-      document.getElementById("productName").value = "";
-
-      document.getElementById("productPrice").value = "";
-
-      document.getElementById("productImage").value = "";
-
-
-      renderProducts();
-
-      updateFashionProducts();
-
-      showToast(
-        "Product added."
-      );
-    }
-
-
-    function removeProduct(index) {
-
-      products.splice(index, 1);
-
-      renderProducts();
-
-      updateFashionProducts();
-    }
-
-
-    function renderProducts() {
-
-      const list =
-        document.getElementById("productList");
-
-      if (!products.length) {
-
-        list.innerHTML = `
-          <div style="
-            padding:15px;
-            background:#f8fafc;
-            border-radius:12px;
-            color:#667085;
-            font-size:12px;
-          ">
-            No products added yet.
-          </div>
-        `;
-
-        return;
+      if (!response.ok) {
+        throw new Error(
+          data.error || "AI generation failed."
+        );
       }
 
+      writeEditor({
+        html: data.html,
+        css: data.css,
+        js: data.js
+      });
+
+      localStorage.setItem(
+        getGenerationKey(),
+        String(used + 1)
+      );
+
+      updateGenerationCounter();
+
+      toast("Website generated successfully.");
+
+      scrollToSection("generator");
+
+    } catch (error) {
+
+      toast(
+        error.message ||
+        "Something went wrong while generating."
+      );
+
+    } finally {
+
+      button.disabled = false;
+      button.textContent = "✨ Generate Website";
+    }
+  }
+
+
+  function addProduct() {
+
+    const name =
+      document.getElementById("productName").value.trim();
+
+    const price =
+      document.getElementById("productPrice").value.trim();
+
+    const image =
+      document.getElementById("productImage").value.trim();
+
+    if (!name || !price) {
+      toast("Enter a product name and price.");
+      return;
+    }
+
+    products.push({
+      name,
+      price,
+      image
+    });
+
+    document.getElementById("productName").value = "";
+    document.getElementById("productPrice").value = "";
+    document.getElementById("productImage").value = "";
+
+    renderProducts();
+
+    toast("Product added.");
+  }
+
+
+  function renderProducts() {
+
+    const list =
+      document.getElementById("productList");
+
+    if (!products.length) {
 
       list.innerHTML =
-        products
-          .map((product, index) => {
+        '<div class="empty" style="grid-column:1/-1;">No products added yet.</div>';
 
-            return `
-              <div class="product-item">
-
-                <strong>
-                  ${escapeHtml(product.name)}
-                </strong>
-
-                <small>
-                  ${escapeHtml(product.price)}
-                </small>
-
-                <button
-                  class="btn danger"
-                  style="padding:7px 10px;font-size:11px"
-                  onclick="removeProduct(${index})">
-                  Remove
-                </button>
-
-              </div>
-            `;
-
-          })
-          .join("");
+      return;
     }
 
-
-    function updateFashionProducts() {
-
-      if (!htmlEditor.value.includes("otg-products")) {
-        return;
-      }
-
-
-      const container =
-        document.getElementById("otg-products");
-
-      if (!container) {
-        return;
-      }
-
-
-      container.innerHTML =
-        products
-          .map(product => {
-
-            return `
-              <div class="product">
-                ${
-                  product.image
-                    ? `<img src="${escapeAttribute(product.image)}" alt="${escapeAttribute(product.name)}">`
-                    : ""
-                }
-
-                <h3>
-                  ${escapeHtml(product.name)}
-                </h3>
-
-                <p>
-                  ${escapeHtml(product.price)}
-                </p>
-
-                <button
-                  onclick="orderProduct('${escapeAttribute(product.name)}','${escapeAttribute(product.price)}')">
-                  Order on WhatsApp
-                </button>
-              </div>
-            `;
-
-          })
-          .join("");
-
-      updatePreview();
-    }
-
-
-    /* =========================================================
-       TEMPLATES
-    ========================================================= */
-
-    function useFashionTemplate() {
-
-      currentProjectId = null;
-
-      currentProjectSlug = null;
-
-      products = [
-        {
-          name: "Classic Sneakers",
-          price: "₦45,000",
-          image: ""
-        },
-        {
-          name: "Premium Shirt",
-          price: "₦30,000",
-          image: ""
-        },
-        {
-          name: "Luxury Handbag",
-          price: "₦65,000",
-          image: ""
-        }
-      ];
-
-      htmlEditor.value = fashionHTML();
-
-      cssEditor.value = fashionCSS();
-
-      jsEditor.value = fashionJS();
-
-      renderProducts();
-
-      updatePreview();
-
-      switchEditor("html");
-
-      showToast(
-        "Fashion template loaded."
-      );
-
-      scrollToWorkspace();
-    }
-
-
-    function useRestaurantTemplate() {
-
-      currentProjectId = null;
-
-      currentProjectSlug = null;
-
-      htmlEditor.value = restaurantHTML();
-
-      cssEditor.value = restaurantCSS();
-
-      jsEditor.value = restaurantJS();
-
-      products = [];
-
-      renderProducts();
-
-      updatePreview();
-
-      switchEditor("html");
-
-      showToast(
-        "Restaurant template loaded."
-      );
-
-      scrollToWorkspace();
-    }
-
-
-    function usePortfolioTemplate() {
-
-      currentProjectId = null;
-
-      currentProjectSlug = null;
-
-      htmlEditor.value = portfolioHTML();
-
-      cssEditor.value = portfolioCSS();
-
-      jsEditor.value = portfolioJS();
-
-      products = [];
-
-      renderProducts();
-
-      updatePreview();
-
-      switchEditor("html");
-
-      showToast(
-        "Portfolio template loaded."
-      );
-
-      scrollToWorkspace();
-    }
-
-
-    /* =========================================================
-       FASHION TEMPLATE
-    ========================================================= */
-
-    function fashionHTML() {
-
-      return `
-<div class="site">
-
-  <header class="nav">
-    <div class="logo">PRINCE FASHION</div>
-
-    <nav>
-      <a href="#home">Home</a>
-      <a href="#collection">Collection</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </header>
-
-  <section id="home" class="hero">
-
-    <div class="hero-content">
-
-      <span>NEW COLLECTION</span>
-
-      <h1>
-        Style That Speaks For You.
-      </h1>
-
-      <p>
-        Discover premium men's and women's fashion
-        designed to make every moment memorable.
-      </p>
-
-      <a href="#collection" class="hero-btn">
-        Shop Now
-      </a>
-
-    </div>
-
-  </section>
-
-  <section id="collection" class="section">
-
-    <div class="section-title">
-      <span>OUR COLLECTION</span>
-      <h2>Featured Products</h2>
-    </div>
-
-    <div
-      id="otg-products"
-      class="products">
-
-      ${products.map(product => `
-        <div class="product">
+    list.innerHTML =
+      products.map((p,index) => `
+        <div class="product-item">
 
           ${
-            product.image
-              ? `<img
-                   src="${escapeAttribute(product.image)}"
-                   alt="${escapeAttribute(product.name)}">`
+            p.image
+              ? `<img src="${escapeHtml(p.image)}"
+                   style="width:100%;height:130px;object-fit:cover;border-radius:10px;margin-bottom:8px;">`
               : ""
           }
 
-          <h3>
-            ${escapeHtml(product.name)}
-          </h3>
+          <strong>${escapeHtml(p.name)}</strong>
 
-          <p>
-            ${escapeHtml(product.price)}
-          </p>
+          <span class="muted">
+            ${escapeHtml(p.price)}
+          </span>
 
           <button
-            onclick="orderProduct('${escapeAttribute(product.name)}','${escapeAttribute(product.price)}')">
-            Order on WhatsApp
+            class="btn btn-danger"
+            style="margin-top:8px;width:100%;"
+            onclick="removeProduct(${index})">
+            Remove
           </button>
 
         </div>
-      `).join("")}
-
-    </div>
-
-  </section>
-
-  <section id="about" class="about">
-
-    <div>
-      <span>ABOUT US</span>
-
-      <h2>
-        Fashion Made With Confidence.
-      </h2>
-
-      <p>
-        Prince Fashion brings together modern style,
-        quality and confidence for men and women.
-      </p>
-    </div>
-
-  </section>
-
-  <section id="contact" class="contact">
-
-    <h2>
-      Ready To Upgrade Your Style?
-    </h2>
-
-    <p>
-      Contact us today to place your order.
-    </p>
-
-    <a
-      href="https://wa.me/"
-      target="_blank">
-      Chat on WhatsApp
-    </a>
-
-  </section>
-
-  <footer>
-    © 2026 Prince Fashion. All rights reserved.
-  </footer>
-
-</div>
-`;
-    }
-
-
-    function fashionCSS() {
-
-      return `
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  font-family:Arial,Helvetica,sans-serif;
-  color:#111;
-  background:#fff;
-}
-
-.nav{
-  position:sticky;
-  top:0;
-  z-index:20;
-  padding:18px 7%;
-  background:#111;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:20px;
-}
-
-.logo{
-  font-weight:900;
-  color:#ffd400;
-}
-
-.nav nav{
-  display:flex;
-  gap:18px;
-  flex-wrap:wrap;
-}
-
-.nav a{
-  color:#fff;
-  text-decoration:none;
-  font-size:14px;
-}
-
-.hero{
-  min-height:75vh;
-  display:flex;
-  align-items:center;
-  padding:70px 7%;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(0,0,0,.85),
-      rgba(0,0,0,.35)
-    ),
-    linear-gradient(
-      135deg,
-      #111,
-      #444
-    );
-  color:#fff;
-}
-
-.hero-content{
-  max-width:650px;
-}
-
-.hero-content span,
-.section-title span,
-.about span{
-  color:#ffd400;
-  font-weight:800;
-  letter-spacing:2px;
-  font-size:12px;
-}
-
-.hero h1{
-  font-size:clamp(42px,7vw,80px);
-  line-height:1;
-  margin:15px 0;
-}
-
-.hero p{
-  color:#ddd;
-  font-size:17px;
-  max-width:550px;
-}
-
-.hero-btn,
-.contact a{
-  display:inline-block;
-  margin-top:25px;
-  background:#ffd400;
-  color:#111;
-  padding:13px 20px;
-  border-radius:8px;
-  text-decoration:none;
-  font-weight:800;
-}
-
-.section{
-  padding:80px 7%;
-}
-
-.section-title h2{
-  font-size:40px;
-  margin-top:8px;
-}
-
-.products{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
-  margin-top:30px;
-}
-
-.product{
-  border:1px solid #ddd;
-  border-radius:15px;
-  padding:20px;
-  background:#fff;
-}
-
-.product img{
-  width:100%;
-  height:230px;
-  object-fit:cover;
-  border-radius:10px;
-  margin-bottom:15px;
-}
-
-.product h3{
-  margin-bottom:5px;
-}
-
-.product p{
-  font-weight:800;
-  margin-bottom:15px;
-}
-
-.product button{
-  width:100%;
-  padding:12px;
-  border:0;
-  border-radius:8px;
-  background:#111;
-  color:#fff;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.about{
-  padding:80px 7%;
-  background:#f5f5f5;
-}
-
-.about h2{
-  font-size:45px;
-  max-width:650px;
-  margin:10px 0;
-}
-
-.about p{
-  max-width:600px;
-  color:#555;
-}
-
-.contact{
-  text-align:center;
-  padding:80px 7%;
-  background:#111;
-  color:#fff;
-}
-
-.contact p{
-  color:#ccc;
-  margin-top:8px;
-}
-
-.contact a{
-  color:#111;
-}
-
-.site footer{
-  background:#000;
-  color:#aaa;
-  padding:25px;
-  text-align:center;
-}
-
-@media(max-width:700px){
-
-  .nav{
-    flex-direction:column;
-    align-items:flex-start;
+      `).join("");
   }
 
-  .products{
-    grid-template-columns:1fr;
+
+  function removeProduct(index) {
+
+    products.splice(index,1);
+
+    renderProducts();
   }
 
-  .hero{
-    min-height:70vh;
+
+  function clearProducts() {
+
+    products = [];
+
+    renderProducts();
+
+    toast("Products cleared.");
   }
 
-  .section-title h2{
-    font-size:32px;
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
   }
 
-}
-`;
-    }
 
-
-    function fashionJS() {
-
-      return `
-function orderProduct(name, price){
-
-  const message =
-    "Hello Prince Fashion, I want to order " +
-    name +
-    " for " +
-    price +
-    ".";
-
-  window.open(
-    "https://wa.me/?text=" +
-    encodeURIComponent(message),
-    "_blank"
-  );
-}
-`;
-    }
-
-
-    /* =========================================================
-       RESTAURANT TEMPLATE
-    ========================================================= */
-
-    function restaurantHTML() {
-
-      return `
-<div class="restaurant-site">
-
-  <header class="r-nav">
-
-    <div class="r-logo">
-      TASTE HOUSE
-    </div>
-
-    <nav>
-      <a href="#home">Home</a>
-      <a href="#menu">Menu</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-    </nav>
-
-  </header>
-
-  <section id="home" class="r-hero">
-
-    <div>
-
-      <span>WELCOME TO</span>
-
-      <h1>
-        Taste House
-      </h1>
-
-      <p>
-        Delicious meals. Beautiful moments.
-      </p>
-
-      <a href="#menu">
-        Explore Our Menu
-      </a>
-
-    </div>
-
-  </section>
-
-  <section id="menu" class="r-menu">
-
-    <span>OUR MENU</span>
-
-    <h2>
-      Popular Dishes
-    </h2>
-
-    <div class="r-grid">
-
-      <article>
-        <div>🍗</div>
-        <h3>Grilled Chicken</h3>
-        <p>₦8,500</p>
-      </article>
-
-      <article>
-        <div>🍝</div>
-        <h3>Special Pasta</h3>
-        <p>₦7,000</p>
-      </article>
-
-      <article>
-        <div>🍔</div>
-        <h3>Classic Burger</h3>
-        <p>₦6,500</p>
-      </article>
-
-    </div>
-
-  </section>
-
-  <section id="about" class="r-about">
-
-    <h2>
-      Good Food. Great Experience.
-    </h2>
-
-    <p>
-      We create delicious meals using quality ingredients
-      and a passion for great hospitality.
-    </p>
-
-  </section>
-
-  <section id="contact" class="r-contact">
-
-    <h2>
-      Visit Us Today
-    </h2>
-
-    <p>
-      Call or message us to make a reservation.
-    </p>
-
-  </section>
-
-</div>
-`;
-    }
-
-
-    function restaurantCSS() {
-
-      return `
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-body{
-  font-family:Arial,sans-serif;
-  color:#221;
-}
-
-.r-nav{
-  background:#2a1008;
-  color:#fff;
-  padding:18px 7%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:20px;
-}
-
-.r-logo{
-  font-weight:900;
-  color:#ffb703;
-}
-
-.r-nav nav{
-  display:flex;
-  gap:18px;
-}
-
-.r-nav a{
-  color:#fff;
-  text-decoration:none;
-}
-
-.r-hero{
-  min-height:70vh;
-  padding:80px 7%;
-  display:flex;
-  align-items:center;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(30,10,3,.8),
-      rgba(30,10,3,.2)
-    ),
-    linear-gradient(135deg,#ea580c,#7c2d12);
-  color:#fff;
-}
-
-.r-hero span,
-.r-menu>span{
-  color:#ffb703;
-  font-weight:900;
-  letter-spacing:2px;
-}
-
-.r-hero h1{
-  font-size:clamp(50px,8vw,90px);
-  margin:10px 0;
-}
-
-.r-hero p{
-  font-size:20px;
-}
-
-.r-hero a{
-  display:inline-block;
-  margin-top:25px;
-  padding:13px 20px;
-  background:#ffb703;
-  color:#211;
-  border-radius:8px;
-  text-decoration:none;
-  font-weight:900;
-}
-
-.r-menu{
-  padding:80px 7%;
-  text-align:center;
-}
-
-.r-menu h2{
-  font-size:42px;
-  margin:10px 0 30px;
-}
-
-.r-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
-}
-
-.r-grid article{
-  background:#fff7ed;
-  padding:30px;
-  border-radius:15px;
-}
-
-.r-grid article>div{
-  font-size:60px;
-}
-
-.r-grid h3{
-  margin-top:10px;
-}
-
-.r-grid p{
-  margin-top:7px;
-  font-weight:900;
-  color:#c2410c;
-}
-
-.r-about{
-  padding:80px 7%;
-  background:#2a1008;
-  color:#fff;
-  text-align:center;
-}
-
-.r-about h2{
-  font-size:42px;
-}
-
-.r-about p{
-  color:#ddd;
-  max-width:600px;
-  margin:12px auto 0;
-}
-
-.r-contact{
-  padding:70px 7%;
-  text-align:center;
-}
-
-.r-contact h2{
-  font-size:35px;
-}
-
-.r-contact p{
-  color:#666;
-  margin-top:8px;
-}
-
-@media(max-width:700px){
-
-  .r-nav{
-    flex-direction:column;
-    align-items:flex-start;
+  function createSlug(title) {
+
+    const random =
+      Math.random()
+        .toString(36)
+        .slice(2,7);
+
+    return (
+      title
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g,"-")
+        .replace(/^-+|-+$/g,"")
+        .slice(0,45)
+      || "website"
+    ) + "-" + random;
   }
 
-  .r-grid{
-    grid-template-columns:1fr;
+
+  async function saveProject() {
+
+    if (!currentUser) {
+
+      toast("Please sign in before saving a project.");
+
+      openAuth();
+
+      return;
+    }
+
+    const data = readEditor();
+
+    const defaultTitle =
+      "My Website";
+
+    let title =
+      prompt(
+        "Enter a name for your website:",
+        currentProjectId
+          ? "My Website"
+          : defaultTitle
+      );
+
+    if (title === null) return;
+
+    title =
+      title.trim() || defaultTitle;
+
+    try {
+
+      if (currentProjectId) {
+
+        const { data: existing, error: findError } =
+          await supabaseClient
+            .from("projects")
+            .select("*")
+            .eq("id", currentProjectId)
+            .eq("user_id", currentUser.id)
+            .single();
+
+        if (findError) throw findError;
+
+        const { error } =
+          await supabaseClient
+            .from("projects")
+            .update({
+              title,
+              html: data.html,
+              css: data.css,
+              js: data.js,
+              updated_at: new Date().toISOString()
+            })
+            .eq("id", existing.id)
+            .eq("user_id", currentUser.id);
+
+        if (error) throw error;
+
+      } else {
+
+        const slug =
+          createSlug(title);
+
+        const { data: inserted, error } =
+          await supabaseClient
+            .from("projects")
+            .insert({
+              user_id: currentUser.id,
+              title,
+              html: data.html,
+              css: data.css,
+              js: data.js,
+              slug,
+              is_published: false
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        currentProjectId = inserted.id;
+      }
+
+      toast("Project saved successfully.");
+
+      await loadProjects();
+
+    } catch (error) {
+
+      toast(
+        error.message ||
+        "Could not save project."
+      );
+    }
   }
 
-}
-`;
+
+  async function loadProjects() {
+
+    if (!currentUser) {
+
+      document.getElementById("projectsList").innerHTML =
+        '<div class="empty">Sign in to see your saved projects.</div>';
+
+      return;
     }
 
-
-    function restaurantJS() {
-
-      return `
-document.querySelectorAll(".r-grid article")
-.forEach(card => {
-
-  card.addEventListener("click", () => {
-
-    const name =
-      card.querySelector("h3")?.textContent ||
-      "meal";
-
-    alert(
-      "You selected " + name
-    );
-
-  });
-
-});
-`;
-    }
-
-
-    /* =========================================================
-       PORTFOLIO TEMPLATE
-    ========================================================= */
-
-    function portfolioHTML() {
-
-      return `
-<div class="portfolio-site">
-
-  <header class="p-nav">
-
-    <div class="p-logo">
-      YOUR NAME
-    </div>
-
-    <nav>
-      <a href="#home">Home</a>
-      <a href="#work">Work</a>
-      <a href="#services">Services</a>
-      <a href="#contact">Contact</a>
-    </nav>
-
-  </header>
-
-  <section id="home" class="p-hero">
-
-    <div>
-
-      <span>CREATIVE PROFESSIONAL</span>
-
-      <h1>
-        I create digital experiences that stand out.
-      </h1>
-
-      <p>
-        Graphic designer, creative and digital professional.
-      </p>
-
-      <a href="#work">
-        View My Work
-      </a>
-
-    </div>
-
-  </section>
-
-  <section id="work" class="p-work">
-
-    <span>MY WORK</span>
-
-    <h2>
-      Selected Projects
-    </h2>
-
-    <div class="p-grid">
-
-      <article>
-        <div>🎨</div>
-        <h3>Brand Identity</h3>
-        <p>Creative visual identity project.</p>
-      </article>
-
-      <article>
-        <div>💻</div>
-        <h3>Website Design</h3>
-        <p>Modern website design project.</p>
-      </article>
-
-      <article>
-        <div>📱</div>
-        <h3>Social Media Design</h3>
-        <p>Social media creative campaign.</p>
-      </article>
-
-    </div>
-
-  </section>
-
-  <section id="services" class="p-services">
-
-    <h2>
-      What I Do
-    </h2>
-
-    <div class="service-grid">
-
-      <div>Graphic Design</div>
-      <div>Branding</div>
-      <div>Website Design</div>
-      <div>Creative Direction</div>
-
-    </div>
-
-  </section>
-
-  <section id="contact" class="p-contact">
-
-    <h2>
-      Let's Work Together
-    </h2>
-
-    <p>
-      Have a project in mind? Let's create something great.
-    </p>
-
-    <button onclick="contactMe()">
-      Contact Me
-    </button>
-
-  </section>
-
-</div>
-`;
-    }
-
-
-    function portfolioCSS() {
-
-      return `
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-body{
-  font-family:Arial,sans-serif;
-  color:#111827;
-}
-
-.p-nav{
-  padding:18px 7%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:20px;
-  background:#fff;
-  border-bottom:1px solid #eee;
-}
-
-.p-logo{
-  font-weight:900;
-}
-
-.p-nav nav{
-  display:flex;
-  gap:18px;
-}
-
-.p-nav a{
-  text-decoration:none;
-  color:#111827;
-  font-size:14px;
-}
-
-.p-hero{
-  min-height:75vh;
-  display:flex;
-  align-items:center;
-  padding:80px 7%;
-  color:#fff;
-  background:
-    radial-gradient(circle at 80% 20%,#3b82f6,transparent 30%),
-    linear-gradient(135deg,#0f172a,#1e3a8a);
-}
-
-.p-hero>div{
-  max-width:800px;
-}
-
-.p-hero span,
-.p-work>span{
-  color:#93c5fd;
-  font-weight:900;
-  letter-spacing:2px;
-  font-size:12px;
-}
-
-.p-hero h1{
-  font-size:clamp(42px,7vw,78px);
-  line-height:1;
-  margin:15px 0;
-}
-
-.p-hero p{
-  color:#dbeafe;
-  font-size:18px;
-}
-
-.p-hero a{
-  display:inline-block;
-  margin-top:25px;
-  padding:13px 20px;
-  background:#fff;
-  color:#111827;
-  border-radius:8px;
-  text-decoration:none;
-  font-weight:900;
-}
-
-.p-work{
-  padding:80px 7%;
-}
-
-.p-work h2{
-  font-size:42px;
-  margin:8px 0 30px;
-}
-
-.p-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
-}
-
-.p-grid article{
-  padding:30px;
-  border:1px solid #e5e7eb;
-  border-radius:15px;
-}
-
-.p-grid article>div{
-  font-size:50px;
-}
-
-.p-grid h3{
-  margin-top:12px;
-}
-
-.p-grid p{
-  color:#667085;
-  margin-top:5px;
-}
-
-.p-services{
-  padding:80px 7%;
-  background:#f8fafc;
-}
-
-.p-services h2{
-  font-size:42px;
-  margin-bottom:25px;
-}
-
-.service-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-}
-
-.service-grid div{
-  padding:25px;
-  background:#fff;
-  border-radius:12px;
-  border:1px solid #e5e7eb;
-  font-weight:800;
-}
-
-.p-contact{
-  text-align:center;
-  padding:80px 7%;
-}
-
-.p-contact h2{
-  font-size:42px;
-}
-
-.p-contact p{
-  color:#667085;
-  margin-top:8px;
-}
-
-.p-contact button{
-  margin-top:20px;
-  padding:13px 20px;
-  border:0;
-  background:#111827;
-  color:#fff;
-  border-radius:8px;
-  font-weight:900;
-  cursor:pointer;
-}
-
-@media(max-width:700px){
-
-  .p-nav{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-
-  .p-grid,
-  .service-grid{
-    grid-template-columns:1fr;
-  }
-
-}
-`;
-    }
-
-
-    function portfolioJS() {
-
-      return `
-function contactMe(){
-
-  alert(
-    "Thank you for your interest. Please add your preferred contact details to this website."
-  );
-
-}
-`;
-    }
-
-
-    /* =========================================================
-       SAVE PROJECT
-    ========================================================= */
-
-    async function saveProject() {
-
-      if (!currentUser) {
-
-        showToast(
-          "Please login before saving your project."
-        );
-
-        showAuth();
+    try {
+
+      const { data, error } =
+        await supabaseClient
+          .from("projects")
+          .select("*")
+          .eq("user_id", currentUser.id)
+          .order("updated_at", {
+            ascending:false
+          });
+
+      if (error) throw error;
+
+      if (!data || !data.length) {
+
+        document.getElementById("projectsList").innerHTML =
+          '<div class="empty">You have no saved projects yet.</div>';
 
         return;
       }
 
+      document.getElementById("projectsList").innerHTML =
+        data.map(project => {
 
-      const title =
+          const liveUrl =
+            project.is_published
+              ? `${location.origin}/?site=${encodeURIComponent(project.slug)}`
+              : "";
+
+          return `
+            <div class="project">
+
+              <div class="project-info">
+
+                <div class="project-name">
+                  ${escapeHtml(project.title)}
+                </div>
+
+                <span class="status ${
+                  project.is_published
+                    ? "published"
+                    : "saved"
+                }">
+                  ${
+                    project.is_published
+                      ? "PUBLISHED"
+                      : "SAVED"
+                  }
+                </span>
+
+                <div class="muted">
+                  Updated ${new Date(project.updated_at).toLocaleString()}
+                </div>
+
+              </div>
+
+              <div class="project-actions">
+
+                <button onclick="openProject('${project.id}')">
+                  Open
+                </button>
+
+                <button onclick="renameProject('${project.id}')">
+                  Rename
+                </button>
+
+                ${
+                  project.is_published
+                    ? `
+                      <button onclick="viewLive('${project.slug}')">
+                        View Live
+                      </button>
+
+                      <button onclick="copyLiveLink('${project.slug}')">
+                        Copy Link
+                      </button>
+                    `
+                    : ""
+                }
+
+                <button
+                  style="color:#991b1b;"
+                  onclick="deleteProject('${project.id}')">
+                  Delete
+                </button>
+
+              </div>
+
+            </div>
+          `;
+        }).join("");
+
+    } catch (error) {
+
+      toast(
+        error.message ||
+        "Could not load projects."
+      );
+    }
+  }
+
+
+  async function openProject(id) {
+
+    try {
+
+      const { data, error } =
+        await supabaseClient
+          .from("projects")
+          .select("*")
+          .eq("id", id)
+          .eq("user_id", currentUser.id)
+          .single();
+
+      if (error) throw error;
+
+      currentProjectId = data.id;
+
+      writeEditor({
+        html: data.html,
+        css: data.css,
+        js: data.js
+      });
+
+      scrollToSection("generator");
+
+      toast("Project opened.");
+
+    } catch (error) {
+
+      toast(
+        error.message ||
+        "Could not open project."
+      );
+    }
+  }
+
+
+  function renameProject(id) {
+
+    renameProjectId = id;
+
+    document.getElementById("renameInput").value = "";
+
+    document.getElementById("renameModal")
+      .classList.remove("hidden");
+  }
+
+
+  async function confirmRename() {
+
+    const title =
+      document.getElementById("renameInput")
+        .value.trim();
+
+    if (!title) {
+      toast("Enter a project name.");
+      return;
+    }
+
+    if (!renameProjectId) return;
+
+    try {
+
+      const { error } =
+        await supabaseClient
+          .from("projects")
+          .update({
+            title,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", renameProjectId)
+          .eq("user_id", currentUser.id);
+
+      if (error) throw error;
+
+      closeRename();
+
+      toast("Project renamed.");
+
+      await loadProjects();
+
+    } catch (error) {
+
+      toast(
+        error.message ||
+        "Could not rename project."
+      );
+    }
+  }
+
+
+  async function deleteProject(id) {
+
+    if (!confirm(
+      "Delete this project permanently?"
+    )) {
+      return;
+    }
+
+    try {
+
+      const { error } =
+        await supabaseClient
+          .from("projects")
+          .delete()
+          .eq("id", id)
+          .eq("user_id", currentUser.id);
+
+      if (error) throw error;
+
+      if (currentProjectId === id) {
+        currentProjectId = null;
+      }
+
+      toast("Project deleted.");
+
+      await loadProjects();
+
+    } catch (error) {
+
+      toast(
+        error.message ||
+        "Could not delete project."
+      );
+    }
+  }
+
+
+  async function publishProject() {
+
+    if (!currentUser) {
+
+      toast("Please sign in before publishing.");
+
+      openAuth();
+
+      return;
+    }
+
+    const data = readEditor();
+
+    let title = "My Website";
+
+    if (currentProjectId) {
+
+      const { data: project } =
+        await supabaseClient
+          .from("projects")
+          .select("title")
+          .eq("id", currentProjectId)
+          .eq("user_id", currentUser.id)
+          .single();
+
+      if (project) {
+        title = project.title;
+      }
+
+    } else {
+
+      const entered =
         prompt(
           "Enter a name for your website:",
           "My Website"
         );
 
+      if (entered === null) return;
 
-      if (!title || !title.trim()) {
-        return;
-      }
-
-
-      const slug =
-        createSlug(title);
-
-
-      try {
-
-        let result;
-
-
-        if (currentProjectId) {
-
-          result =
-            await supabaseClient
-              .from("projects")
-              .update({
-
-                title:
-                  title.trim(),
-
-                html:
-                  htmlEditor.value,
-
-                css:
-                  cssEditor.value,
-
-                js:
-                  jsEditor.value,
-
-                updated_at:
-                  new Date().toISOString()
-
-              })
-              .eq(
-                "id",
-                currentProjectId
-              )
-              .eq(
-                "user_id",
-                currentUser.id
-              )
-              .select()
-              .single();
-
-        } else {
-
-          result =
-            await supabaseClient
-              .from("projects")
-              .insert({
-
-                user_id:
-                  currentUser.id,
-
-                title:
-                  title.trim(),
-
-                html:
-                  htmlEditor.value,
-
-                css:
-                  cssEditor.value,
-
-                js:
-                  jsEditor.value,
-
-                slug:
-                  slug,
-
-                is_published:
-                  false
-
-              })
-              .select()
-              .single();
-        }
-
-
-        if (result.error) {
-          throw result.error;
-        }
-
-
-        currentProjectId =
-          result.data.id;
-
-        currentProjectSlug =
-          result.data.slug;
-
-
-        showToast(
-          "Project saved successfully."
-        );
-
-        loadProjects();
-
-      } catch (error) {
-
-        showToast(
-          error.message ||
-          "Could not save project."
-        );
-      }
+      title =
+        entered.trim() || "My Website";
     }
 
+    try {
 
-    /* =========================================================
-       PUBLISH
-    ========================================================= */
+      if (currentProjectId) {
 
-    async function publishWebsite() {
+        const { error } =
+          await supabaseClient
+            .from("projects")
+            .update({
+              title,
+              html:data.html,
+              css:data.css,
+              js:data.js,
+              is_published:true,
+              updated_at:new Date().toISOString()
+            })
+            .eq("id",currentProjectId)
+            .eq("user_id",currentUser.id);
 
-      if (!currentUser) {
+        if (error) throw error;
 
-        showToast(
-          "Please login before publishing."
-        );
-
-        showAuth();
-
-        return;
-      }
-
-
-      if (!htmlEditor.value.trim()) {
-
-        showToast(
-          "Create a website before publishing."
-        );
-
-        return;
-      }
-
-
-      const title =
-        prompt(
-          "Enter the website name:",
-          "My Website"
-        );
-
-
-      if (!title || !title.trim()) {
-        return;
-      }
-
-
-      try {
+      } else {
 
         const slug =
           createSlug(title);
 
-
-        let result;
-
-
-        if (currentProjectId) {
-
-          result =
-            await supabaseClient
-              .from("projects")
-              .update({
-
-                title:
-                  title.trim(),
-
-                html:
-                  htmlEditor.value,
-
-                css:
-                  cssEditor.value,
-
-                js:
-                  jsEditor.value,
-
-                is_published:
-                  true,
-
-                updated_at:
-                  new Date().toISOString()
-
-              })
-              .eq(
-                "id",
-                currentProjectId
-              )
-              .eq(
-                "user_id",
-                currentUser.id
-              )
-              .select()
-              .single();
-
-        } else {
-
-          result =
-            await supabaseClient
-              .from("projects")
-              .insert({
-
-                user_id:
-                  currentUser.id,
-
-                title:
-                  title.trim(),
-
-                html:
-                  htmlEditor.value,
-
-                css:
-                  cssEditor.value,
-
-                js:
-                  jsEditor.value,
-
-                slug:
-                  slug,
-
-                is_published:
-                  true
-
-              })
-              .select()
-              .single();
-        }
-
-
-        if (result.error) {
-          throw result.error;
-        }
-
-
-        currentProjectId =
-          result.data.id;
-
-        currentProjectSlug =
-          result.data.slug;
-
-
-        const publicUrl =
-          `${window.location.origin}/?site=${encodeURIComponent(result.data.slug)}`;
-
-
-        showToast(
-          "Website published successfully."
-        );
-
-
-        setTimeout(() => {
-
-          const copy =
-            confirm(
-              "Your website is live!\n\n" +
-              publicUrl +
-              "\n\nPress OK to copy the link."
-            );
-
-          if (copy) {
-
-            navigator.clipboard
-              ?.writeText(publicUrl)
-              .then(() => {
-
-                showToast(
-                  "Public link copied."
-                );
-
-              })
-              .catch(() => {
-
-                prompt(
-                  "Copy your public website link:",
-                  publicUrl
-                );
-
-              });
-          }
-
-        }, 400);
-
-
-        loadProjects();
-
-      } catch (error) {
-
-        showToast(
-          error.message ||
-          "Could not publish website."
-        );
-      }
-    }
-
-
-    /* =========================================================
-       LOAD PROJECTS
-    ========================================================= */
-
-    async function loadProjects() {
-
-      const list =
-        document.getElementById("projectsList");
-
-
-      if (!currentUser) {
-
-        list.innerHTML = `
-          <div class="card">
-            <p style="color:#667085;font-size:13px">
-              Login to view your saved projects.
-            </p>
-          </div>
-        `;
-
-        return;
-      }
-
-
-      try {
-
-        const {
-          data,
-          error
-        } =
+        const { data: inserted, error } =
           await supabaseClient
             .from("projects")
-            .select("*")
-            .eq(
-              "user_id",
-              currentUser.id
-            )
-            .order(
-              "updated_at",
-              {
-                ascending: false
-              }
-            );
-
-
-        if (error) {
-          throw error;
-        }
-
-
-        if (!data || !data.length) {
-
-          list.innerHTML = `
-            <div class="card">
-
-              <h3>
-                No projects yet.
-              </h3>
-
-              <p style="
-                color:#667085;
-                font-size:12px;
-                margin-top:5px;
-              ">
-                Create your first website using AI or a template.
-              </p>
-
-              <button
-                class="btn dark"
-                style="margin-top:12px"
-                onclick="focusAI()">
-                Create Website
-              </button>
-
-            </div>
-          `;
-
-          return;
-        }
-
-
-        list.innerHTML =
-          data
-            .map(project => {
-
-              const date =
-                project.updated_at
-                  ? new Date(
-                      project.updated_at
-                    ).toLocaleDateString()
-                  : "";
-
-
-              const publicUrl =
-                project.is_published
-                  ? `${window.location.origin}/?site=${encodeURIComponent(project.slug)}`
-                  : "";
-
-
-              return `
-                <div class="project-card">
-
-                  <span class="project-status">
-                    ${
-                      project.is_published
-                        ? "PUBLISHED"
-                        : "SAVED"
-                    }
-                  </span>
-
-                  <h3>
-                    ${escapeHtml(project.title || "Untitled Website")}
-                  </h3>
-
-                  <div class="project-meta">
-                    Last updated: ${date}
-                  </div>
-
-                  <div class="project-actions">
-
-                    <button
-                      class="btn dark"
-                      onclick="openProject('${project.id}')">
-                      Open
-                    </button>
-
-                    ${
-                      project.is_published
-                        ? `
-                          <button
-                            class="btn green"
-                            onclick="openPublicSite('${escapeAttribute(project.slug)}')">
-                            View Live
-                          </button>
-
-                          <button
-                            class="btn light"
-                            onclick="copyProjectLink('${escapeAttribute(project.slug)}')">
-                            Copy Link
-                          </button>
-                        `
-                        : ""
-                    }
-
-                  </div>
-
-                </div>
-              `;
-
+            .insert({
+              user_id:currentUser.id,
+              title,
+              html:data.html,
+              css:data.css,
+              js:data.js,
+              slug,
+              is_published:true
             })
-            .join("");
-
-      } catch (error) {
-
-        list.innerHTML = `
-          <div class="card">
-            <p style="color:#dc2626;font-size:13px">
-              Could not load projects.
-            </p>
-          </div>
-        `;
-
-        console.error(error);
-      }
-    }
-
-
-    async function openProject(id) {
-
-      if (!currentUser) {
-        return;
-      }
-
-
-      try {
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient
-            .from("projects")
-            .select("*")
-            .eq(
-              "id",
-              id
-            )
-            .eq(
-              "user_id",
-              currentUser.id
-            )
+            .select()
             .single();
 
-
-        if (error) {
-          throw error;
-        }
-
+        if (error) throw error;
 
         currentProjectId =
-          data.id;
+          inserted.id;
 
-        currentProjectSlug =
-          data.slug;
-
-        htmlEditor.value =
-          data.html || "";
-
-        cssEditor.value =
-          data.css || "";
-
-        jsEditor.value =
-          data.js || "";
-
-
-        updatePreview();
-
-        switchEditor("html");
-
-        showToast(
-          "Project opened."
-        );
-
-        scrollToWorkspace();
-
-      } catch (error) {
-
-        showToast(
-          error.message ||
-          "Could not open project."
-        );
       }
-    }
 
+      const { data: published } =
+        await supabaseClient
+          .from("projects")
+          .select("slug")
+          .eq("id",currentProjectId)
+          .eq("user_id",currentUser.id)
+          .single();
 
-    function openPublicSite(slug) {
+      if (published) {
 
-      window.open(
-        `${window.location.origin}/?site=${encodeURIComponent(slug)}`,
-        "_blank"
+        const url =
+          `${location.origin}/?site=${encodeURIComponent(published.slug)}`;
+
+        await navigator.clipboard
+          ?.writeText(url);
+
+        toast(
+          "Website published! Link copied."
+        );
+
+      }
+
+      await loadProjects();
+
+    } catch (error) {
+
+      toast(
+        error.message ||
+        "Could not publish website."
       );
     }
+  }
 
 
-    function copyProjectLink(slug) {
+  function viewLive(slug) {
 
-      const url =
-        `${window.location.origin}/?site=${encodeURIComponent(slug)}`;
+    const url =
+      `${location.origin}/?site=${encodeURIComponent(slug)}`;
+
+    window.open(url,"_blank");
+  }
 
 
-      navigator.clipboard
-        ?.writeText(url)
-        .then(() => {
+  async function copyLiveLink(slug) {
 
-          showToast(
-            "Public link copied."
-          );
+    const url =
+      `${location.origin}/?site=${encodeURIComponent(slug)}`;
 
-        })
-        .catch(() => {
+    try {
 
-          prompt(
-            "Copy this website link:",
-            url
-          );
+      await navigator.clipboard.writeText(url);
 
-        });
+      toast("Live link copied.");
+
+    } catch {
+
+      prompt(
+        "Copy your website link:",
+        url
+      );
     }
+  }
 
 
-    /* =========================================================
-       PUBLIC WEBSITE
-    ========================================================= */
+  async function renderPublicSite() {
 
-    async function loadPublicWebsite(slug) {
+    const params =
+      new URLSearchParams(location.search);
 
-      try {
+    const slug =
+      params.get("site");
 
-        const {
-          data,
-          error
-        } =
-          await supabaseClient
-            .from("projects")
-            .select(
-              "title,html,css,js,slug,is_published"
-            )
-            .eq(
-              "slug",
-              slug
-            )
-            .eq(
-              "is_published",
-              true
-            )
-            .single();
+    if (!slug) return false;
 
+    try {
 
-        if (error) {
-          throw error;
-        }
+      const { data, error } =
+        await supabaseClient
+          .from("projects")
+          .select("title,html,css,js,slug,is_published")
+          .eq("slug",slug)
+          .eq("is_published",true)
+          .single();
 
-
-        const html =
-          data.html || "";
-
-        const css =
-          data.css || "";
-
-        const js =
-          data.js || "";
-
-
-        document.title =
-          data.title ||
-          "OTG Website";
-
-
-        document.body.innerHTML = `
-          <style>
-            ${css}
-          </style>
-
-          ${html}
-
-          <script>
-            ${js.replace(/<\/script>/gi, "<\\/script>")}
-          <\/script>
-        `;
-
-
-      } catch (error) {
+      if (error || !data) {
 
         document.body.innerHTML = `
           <div style="
@@ -4570,219 +2337,143 @@ function contactMe(){
             display:grid;
             place-items:center;
             padding:30px;
-            background:#f4f6f8;
-            font-family:Arial,sans-serif;
+            font-family:Arial;
+            background:#f5f7f6;
           ">
-
             <div style="
               max-width:500px;
               text-align:center;
-              background:#fff;
+              background:white;
               padding:35px;
-              border-radius:18px;
-              box-shadow:0 15px 40px rgba(0,0,0,.08);
+              border-radius:20px;
+              box-shadow:0 10px 35px rgba(0,0,0,.08);
             ">
-
-              <div style="
-                font-size:50px;
-                margin-bottom:10px;
-              ">
-                🔍
-              </div>
-
-              <h2>
-                Website Not Found
-              </h2>
-
-              <p style="
-                color:#667085;
-                margin-top:8px;
-              ">
-                This website may not exist, may not be published,
-                or may have been removed.
+              <h1>Website not found</h1>
+              <p style="color:#666;margin:12px 0 20px;">
+                This website may have been deleted or is not published.
               </p>
-
-              <a
-                href="/"
-                style="
-                  display:inline-block;
-                  margin-top:20px;
-                  background:#111;
-                  color:#fff;
-                  padding:12px 18px;
-                  border-radius:9px;
-                  text-decoration:none;
-                  font-weight:800;
-                ">
-                Open OTG Builder
+              <a href="/" style="
+                display:inline-block;
+                background:#111;
+                color:white;
+                padding:12px 18px;
+                border-radius:10px;
+                text-decoration:none;
+                font-weight:bold;
+              ">
+                Open OTG AI Website Builder
               </a>
-
             </div>
-
           </div>
         `;
 
-        console.error(error);
+        return true;
       }
+
+      document.title =
+        data.title || "Website";
+
+      document.body.innerHTML = data.html || "";
+
+      const style =
+        document.createElement("style");
+
+      style.textContent =
+        data.css || "";
+
+      document.head.appendChild(style);
+
+      if (data.js) {
+
+        const script =
+          document.createElement("script");
+
+        script.textContent =
+          data.js;
+
+        document.body.appendChild(script);
+      }
+
+      return true;
+
+    } catch (error) {
+
+      document.body.innerHTML = `
+        <div style="
+          padding:40px;
+          font-family:Arial;
+          text-align:center;
+        ">
+          <h1>Unable to load website</h1>
+          <p>Please try again.</p>
+        </div>
+      `;
+
+      return true;
+    }
+  }
+
+
+  async function initialize() {
+
+    updateGenerationCounter();
+
+    renderProducts();
+
+    const publicSite =
+      await renderPublicSite();
+
+    if (publicSite) {
+      return;
     }
 
+    writeEditor({
+      html:DEFAULT_HTML,
+      css:DEFAULT_CSS,
+      js:DEFAULT_JS
+    });
 
-    /* =========================================================
-       HELPERS
-    ========================================================= */
+    const {
+      data
+    } =
+      await supabaseClient.auth.getSession();
 
-    function createSlug(title) {
+    currentUser =
+      data.session?.user || null;
 
-      const base =
-        title
-          .toLowerCase()
-          .trim()
-          .replace(
-            /[^a-z0-9]+/g,
-            "-"
-          )
-          .replace(
-            /^-+|-+$/g,
-            ""
-          );
+    updateAuthUI();
 
-
-      const random =
-        Math.random()
-          .toString(36)
-          .substring(2, 7);
-
-
-      return `${base || "website"}-${random}`;
+    if (currentUser) {
+      await loadProjects();
     }
-
-
-    function escapeHtml(value) {
-
-      return String(value)
-        .replace(
-          /&/g,
-          "&amp;"
-        )
-        .replace(
-          /</g,
-          "&lt;"
-        )
-        .replace(
-          />/g,
-          "&gt;"
-        )
-        .replace(
-          /"/g,
-          "&quot;"
-        )
-        .replace(
-          /'/g,
-          "&#039;"
-        );
-    }
-
-
-    function escapeAttribute(value) {
-
-      return String(value)
-        .replace(
-          /\\/g,
-          "\\\\"
-        )
-        .replace(
-          /'/g,
-          "\\'"
-        )
-        .replace(
-          /"/g,
-          "&quot;"
-        );
-    }
-
-
-    /* =========================================================
-       SESSION
-    ========================================================= */
-
-    async function checkSession() {
-
-      const {
-        data
-      } =
-        await supabaseClient.auth.getSession();
-
-
-      currentUser =
-        data?.session?.user ||
-        null;
-
-
-      updateAuthUI();
-
-      loadProjects();
-    }
-
 
     supabaseClient.auth.onAuthStateChange(
-      (_event, session) => {
+      async (_event, session) => {
 
         currentUser =
-          session?.user ||
-          null;
+          session?.user || null;
 
         updateAuthUI();
 
-        loadProjects();
+        if (currentUser) {
+          await loadProjects();
+        } else {
+          document.getElementById("projectsList").innerHTML =
+            '<div class="empty">Sign in to see your saved projects.</div>';
+        }
       }
     );
 
+    if ("serviceWorker" in navigator) {
 
-    /* =========================================================
-       INITIALIZE
-    ========================================================= */
-
-    async function initializeApp() {
-
-      updateUsageUI();
-
-      renderProducts();
-
-      /*
-        Important:
-        If ?site= exists, this page becomes the public website.
-        The normal builder should NOT appear.
-      */
-
-      const params =
-        new URLSearchParams(
-          window.location.search
-        );
-
-
-      const site =
-        params.get("site");
-
-
-      if (site) {
-
-        await loadPublicWebsite(site);
-
-        return;
-      }
-
-
-      await checkSession();
-
-      showBuilder();
-
-      updatePreview();
+      navigator.serviceWorker.register("/sw.js")
+        .catch(() => {});
     }
+  }
 
 
-    initializeApp();
-
-  </script>
+  initialize();
+</script>
 
 </body>
 </html>
