@@ -1166,6 +1166,7 @@
     );
 
   let currentUser = null;
+  let currentProjectId = null;
   let selectedTemplate = null;
   let currentEditor = "html";
   let renameProjectId = null;
@@ -1575,6 +1576,8 @@ ${website.js}
   }
 
   function newWebsite() {
+    currentProjectId = null;
+
     website = {
       html: `
 <section style="padding:80px 20px;text-align:center;font-family:Arial">
@@ -1698,6 +1701,7 @@ body{
     await supabaseClient.auth.signOut();
 
     currentUser = null;
+    currentProjectId = null;
 
     updateAuthButton();
 
@@ -1752,7 +1756,6 @@ body{
 
     openNameModal();
   }
-
   async function confirmSaveProject() {
     const title =
       document.getElementById("projectNameInput")
@@ -1765,29 +1768,48 @@ body{
     }
 
     try {
-      const slug =
-        createSlug(title) +
-        "-" +
-        Math.random()
-          .toString(36)
-          .substring(2,8);
+      let data, error;
 
-      const {
-        data,
-        error
-      } = await supabaseClient
-        .from("projects")
-        .insert({
-          user_id: currentUser.id,
-          title,
-          html: website.html,
-          css: website.css,
-          js: website.js,
-          slug,
-          is_published: false
-        })
-        .select()
-        .single();
+      if (currentProjectId) {
+        ({ data, error } = await supabaseClient
+          .from("projects")
+          .update({
+            title,
+            html: website.html,
+            css: website.css,
+            js: website.js,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", currentProjectId)
+          .eq("user_id", currentUser.id)
+          .select()
+          .single());
+      } else {
+        const slug =
+          createSlug(title) +
+          "-" +
+          Math.random()
+            .toString(36)
+            .substring(2, 8);
+
+        ({ data, error } = await supabaseClient
+          .from("projects")
+          .insert({
+            user_id: currentUser.id,
+            title,
+            html: website.html,
+            css: website.css,
+            js: website.js,
+            slug,
+            is_published: false
+          })
+          .select()
+          .single());
+
+        if (data) {
+          currentProjectId = data.id;
+        }
+      }
 
       if (error) {
         throw error;
@@ -1807,9 +1829,9 @@ body{
   function createSlug(text) {
     return text
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g,"-")
-      .replace(/^-+|-+$/g,"")
-      .substring(0,40);
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
   }
 
   async function renderProjects() {
@@ -1818,177 +1840,249 @@ body{
 
     if (!currentUser) {
       grid.innerHTML = `
-        <div style="grid-column:1/-1;background:white;padding:30px;border-radius:15px;text-align:center;">
-          <h3>Login to see your projects</h3>
+        <div
+          style="
+            grid-column:1/-1;
+            background:white;
+            border:1px solid #e5e7eb;
+            border-radius:16px;
+            padding:30px;
+            text-align:center;
+          "
+        >
+          <h3>Login to view your projects</h3>
+
           <p style="color:#64748b;margin:8px 0 15px;">
             Your saved websites will appear here.
           </p>
-          <button class="btn btn-primary" onclick="showAuth()">
+
+          <button
+            class="btn btn-primary"
+            onclick="showAuth()"
+          >
             Login
           </button>
         </div>
       `;
 
-      updateStats([]);
-
+      updateProjectStats([]);
       return;
     }
 
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("projects")
-      .select("*")
-      .eq("user_id", currentUser.id)
-      .order("updated_at", {
-        ascending:false
-      });
+    try {
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("projects")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .order("updated_at", {
+          ascending: false
+        });
 
-    if (error) {
-      grid.innerHTML = `
-        <p>Unable to load projects.</p>
-      `;
+      if (error) {
+        throw error;
+      }
 
-      return;
-    }
+      window.otgProjects = data || [];
 
-    window.otgProjects = data || [];
-
-    const search =
-      document.getElementById("projectSearch")
-        .value
-        .toLowerCase()
-        .trim();
-
-    const projects =
-      window.otgProjects.filter(project =>
-        project.title
+      const search =
+        document.getElementById("projectSearch")
+          .value
           .toLowerCase()
-          .includes(search)
-      );
+          .trim();
 
-    if (!projects.length) {
-      grid.innerHTML = `
-        <div style="grid-column:1/-1;background:white;padding:30px;border-radius:15px;text-align:center;">
-          <h3>No projects yet</h3>
-          <p style="color:#64748b;margin:8px 0 15px;">
-            Create your first website.
-          </p>
-          <button class="btn btn-primary" onclick="newWebsite()">
-            Create Website
-          </button>
-        </div>
-      `;
-    } else {
-      grid.innerHTML =
-        projects.map(project => `
-          <div class="project-card">
+      const projects =
+        window.otgProjects.filter(project =>
+          !search ||
+          project.title
+            .toLowerCase()
+            .includes(search)
+        );
 
-            <span class="project-status ${
+      updateProjectStats(window.otgProjects);
+
+      if (!projects.length) {
+        grid.innerHTML = `
+          <div
+            style="
+              grid-column:1/-1;
+              background:white;
+              border:1px solid #e5e7eb;
+              border-radius:16px;
+              padding:30px;
+              text-align:center;
+            "
+          >
+            <h3>No projects found</h3>
+
+            <p style="color:#64748b;margin:8px 0 15px;">
+              Create your first website to see it here.
+            </p>
+
+            <button
+              class="btn btn-primary"
+              onclick="newWebsite()"
+            >
+              Create Website
+            </button>
+          </div>
+        `;
+
+        return;
+      }
+
+      grid.innerHTML = projects.map(project => `
+        <div class="project-card">
+
+          <span
+            class="project-status ${
               project.is_published
                 ? "published"
                 : "draft"
-            }">
-              ${
-                project.is_published
-                  ? "PUBLISHED"
-                  : "DRAFT"
-              }
-            </span>
+            }"
+          >
+            ${
+              project.is_published
+                ? "PUBLISHED"
+                : "DRAFT"
+            }
+          </span>
 
-            <h3>${escapeHtml(project.title)}</h3>
+          <h3>
+            ${escapeHtml(project.title)}
+          </h3>
 
-            <p>
-              Updated ${new Date(
-                project.updated_at
-              ).toLocaleDateString()}
-            </p>
+          <p>
+            Updated
+            ${
+              project.updated_at
+                ? new Date(
+                    project.updated_at
+                  ).toLocaleDateString()
+                : "recently"
+            }
+          </p>
 
-            <div class="project-actions">
+          <div class="project-actions">
 
-              <button
-                class="btn btn-light"
-                onclick="editProject('${project.id}')"
-              >
-                Edit
-              </button>
+            <button
+              class="btn"
+              onclick="editProject('${project.id}')"
+            >
+              Edit
+            </button>
 
-              <button
-                class="btn btn-light"
-                onclick="viewProject('${project.slug}')"
-              >
-                View
-              </button>
+            <button
+              class="btn btn-light"
+              onclick="renameProject('${project.id}')"
+            >
+              Rename
+            </button>
 
-              ${
-                project.is_published
-                ? `
-                  <button
-                    class="btn btn-success"
-                    onclick="copyProjectLink('${project.slug}')"
-                  >
-                    Copy Link
-                  </button>
-                `
-                : `
-                  <button
-                    class="btn"
-                    onclick="publishExisting('${project.id}')"
-                  >
-                    Publish
-                  </button>
-                `
-              }
+            ${
+              project.is_published
+              ? `
+                <button
+                  class="btn btn-success"
+                  onclick="copyProjectLink('${project.slug}')"
+                >
+                  Copy Link
+                </button>
 
-              <button
-                class="btn btn-light"
-                onclick="renameProject('${project.id}')"
-              >
-                Rename
-              </button>
+                <button
+                  class="btn btn-light"
+                  onclick='shareProject(
+                    "${project.slug}",
+                    ${JSON.stringify(project.title)}
+                  )'
+                >
+                  Share
+                </button>
 
-              <button
-                class="btn btn-danger"
-                onclick="deleteProject('${project.id}')"
-              >
-                Delete
-              </button>
+                <button
+                  class="btn btn-light"
+                  onclick="unpublishProject('${project.id}')"
+                >
+                  Unpublish
+                </button>
 
-            </div>
+                <button
+                  class="btn btn-light"
+                  onclick="viewProject('${project.slug}')"
+                >
+                  View
+                </button>
+              `
+              : `
+                <button
+                  class="btn"
+                  onclick="publishExisting('${project.id}')"
+                >
+                  Publish
+                </button>
+              `
+            }
+
+            <button
+              class="btn btn-danger"
+              onclick="deleteProject('${project.id}')"
+            >
+              Delete
+            </button>
 
           </div>
-        `).join("");
-    }
 
-    updateStats(window.otgProjects);
+        </div>
+      `).join("");
+
+    } catch (error) {
+      grid.innerHTML = `
+        <div
+          style="
+            grid-column:1/-1;
+            background:#fee2e2;
+            color:#991b1b;
+            padding:18px;
+            border-radius:12px;
+          "
+        >
+          ${escapeHtml(error.message)}
+        </div>
+      `;
+    }
   }
 
-  function updateStats(projects) {
+  function updateProjectStats(projects) {
     document.getElementById("statProjects")
       .textContent = projects.length;
 
     document.getElementById("statPublished")
       .textContent =
-        projects.filter(p => p.is_published).length;
+        projects.filter(
+          project => project.is_published
+        ).length;
   }
 
-  function escapeHtml(text) {
-    const div =
-      document.createElement("div");
-
-    div.textContent = text;
-
-    return div.innerHTML;
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
-  async function editProject(id) {
+  function editProject(id) {
     const project =
       window.otgProjects.find(
         p => p.id === id
       );
 
     if (!project) return;
+
+    currentProjectId = id;
 
     website = {
       html: project.html || "",
@@ -2006,167 +2100,7 @@ body{
     );
   }
 
-  function viewProject(slug) {
-    window.open(
-      `${window.location.origin}/?site=${encodeURIComponent(slug)}`,
-      "_blank"
-    );
-  }
-
-  async function copyProjectLink(slug) {
-    const url =
-      `${window.location.origin}/?site=${encodeURIComponent(slug)}`;
-
-    try {
-      await navigator.clipboard.writeText(url);
-
-      showToast("Website link copied.");
-    } catch {
-      showToast(url);
-    }
-  }
-
-  async function publishWebsite() {
-    if (!currentUser) {
-      showToast("Please login before publishing.");
-      showAuth();
-      return;
-    }
-
-    openNameModalForPublish();
-  }
-
-  function openNameModalForPublish() {
-    const input =
-      document.getElementById("projectNameInput");
-
-    input.value = "My Published Website";
-
-    showModal("nameModal");
-
-    const button =
-      document.querySelector(
-        "#nameModal .btn-primary"
-      );
-
-    button.textContent = "Publish";
-
-    button.onclick = confirmPublishProject;
-
-    requestAnimationFrame(() => {
-      input.focus();
-      input.select();
-    });
-  }
-
-  async function confirmPublishProject() {
-    const title =
-      document.getElementById("projectNameInput")
-        .value
-        .trim();
-
-    if (!title) {
-      showToast("Enter a website name.");
-      return;
-    }
-
-    try {
-      const slug =
-        createSlug(title) +
-        "-" +
-        Math.random()
-          .toString(36)
-          .substring(2,8);
-
-      const {
-        data,
-        error
-      } = await supabaseClient
-        .from("projects")
-        .insert({
-          user_id: currentUser.id,
-          title,
-          html: website.html,
-          css: website.css,
-          js: website.js,
-          slug,
-          is_published: true
-        })
-        .select()
-        .single();
-
-      if (error) {
-        throw error;
-      }
-
-      closeModal("nameModal");
-
-      resetNameModalButton();
-
-      const url =
-        `${window.location.origin}/?site=${encodeURIComponent(slug)}`;
-
-      showToast("Website published successfully.");
-
-      await renderProjects();
-
-      setTimeout(async () => {
-        try {
-          await navigator.clipboard.writeText(url);
-          showToast(
-            "Published! Your website link has been copied."
-          );
-        } catch {}
-      }, 500);
-
-    } catch (error) {
-      showToast(error.message);
-      resetNameModalButton();
-    }
-  }
-
-  function resetNameModalButton() {
-    const button =
-      document.querySelector(
-        "#nameModal .btn-primary"
-      );
-
-    button.textContent = "Save";
-    button.onclick = confirmSaveProject;
-  }
-
-  async function publishExisting(id) {
-    try {
-      const {
-        data,
-        error
-      } = await supabaseClient
-        .from("projects")
-        .update({
-          is_published:true,
-          updated_at:new Date().toISOString()
-        })
-        .eq("id",id)
-        .eq("user_id",currentUser.id)
-        .select()
-        .single();
-
-      if (error) {
-        throw error;
-      }
-
-      showToast("Website published.");
-
-      await renderProjects();
-
-    } catch(error) {
-      showToast(error.message);
-    }
-  }
-
   function renameProject(id) {
-    renameProjectId = id;
-
     const project =
       window.otgProjects.find(
         p => p.id === id
@@ -2174,26 +2108,19 @@ body{
 
     if (!project) return;
 
-    const input =
-      document.getElementById("renameInput");
+    renameProjectId = id;
 
-    input.value = project.title;
+    document.getElementById("renameInput")
+      .value = project.title;
 
     showModal("renameModal");
 
     requestAnimationFrame(() => {
-      input.focus();
-      input.select();
-
-      setTimeout(() => {
-        input.focus();
-      },200);
+      document.getElementById("renameInput").focus();
     });
   }
 
   async function confirmRename() {
-    if (!renameProjectId) return;
-
     const title =
       document.getElementById("renameInput")
         .value
@@ -2204,6 +2131,8 @@ body{
       return;
     }
 
+    if (!renameProjectId) return;
+
     try {
       const {
         error
@@ -2211,10 +2140,10 @@ body{
         .from("projects")
         .update({
           title,
-          updated_at:new Date().toISOString()
+          updated_at: new Date().toISOString()
         })
-        .eq("id",renameProjectId)
-        .eq("user_id",currentUser.id);
+        .eq("id", renameProjectId)
+        .eq("user_id", currentUser.id);
 
       if (error) {
         throw error;
@@ -2224,18 +2153,25 @@ body{
 
       renameProjectId = null;
 
-      showToast("Project renamed.");
+      showToast("Project renamed successfully.");
 
       await renderProjects();
 
-    } catch(error) {
+    } catch (error) {
       showToast(error.message);
     }
   }
 
   async function deleteProject(id) {
+    const project =
+      window.otgProjects.find(
+        p => p.id === id
+      );
+
+    if (!project) return;
+
     if (!confirm(
-      "Delete this project permanently?"
+      `Delete "${project.title}"? This cannot be undone.`
     )) {
       return;
     }
@@ -2246,34 +2182,199 @@ body{
       } = await supabaseClient
         .from("projects")
         .delete()
-        .eq("id",id)
-        .eq("user_id",currentUser.id);
+        .eq("id", id)
+        .eq("user_id", currentUser.id);
 
       if (error) {
         throw error;
+      }
+
+      if (currentProjectId === id) {
+        currentProjectId = null;
       }
 
       showToast("Project deleted.");
 
       await renderProjects();
 
-    } catch(error) {
+    } catch (error) {
       showToast(error.message);
     }
   }
 
-  async function renderPublicSite(project) {
-    document.body.innerHTML = `
-      <style>
-        ${project.css || ""}
-      </style>
+  async function copyProjectLink(slug) {
+    const url =
+      `${window.location.origin}/?site=${encodeURIComponent(slug)}`;
 
-      ${project.html || ""}
+    try {
+      await navigator.clipboard.writeText(url);
 
-      <script>
-        ${project.js || ""}
-      <\/script>
-    `;
+      showToast("Website link copied.");
+
+    } catch (error) {
+
+      const textarea =
+        document.createElement("textarea");
+
+      textarea.value = url;
+
+      document.body.appendChild(textarea);
+
+      textarea.select();
+
+      document.execCommand("copy");
+
+      textarea.remove();
+
+      showToast("Website link copied.");
+    }
+  }
+
+  async function shareProject(slug, title) {
+    const url =
+      `${window.location.origin}/?site=${encodeURIComponent(slug)}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title,
+          text:
+            "Check out my website created with OTG AI Website Builder.",
+          url
+        });
+
+        return;
+
+      } catch (error) {
+
+        if (
+          error &&
+          error.name === "AbortError"
+        ) {
+          return;
+        }
+      }
+    }
+
+    await copyProjectLink(slug);
+  }
+
+  async function unpublishProject(id) {
+    if (!confirm(
+      "Unpublish this website? The public link will stop working until you publish it again."
+    )) {
+      return;
+    }
+
+    try {
+      const {
+        error
+      } = await supabaseClient
+        .from("projects")
+        .update({
+          is_published: false,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", id)
+        .eq("user_id", currentUser.id);
+
+      if (error) {
+        throw error;
+      }
+
+      showToast("Website unpublished.");
+
+      await renderProjects();
+
+    } catch (error) {
+      showToast(error.message);
+    }
+  }
+
+  async function publishExisting(id) {
+    try {
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("projects")
+        .update({
+          is_published: true,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", id)
+        .eq("user_id", currentUser.id)
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      await copyProjectLink(data.slug);
+
+      showToast(
+        "Published! Website link copied."
+      );
+
+      await renderProjects();
+
+    } catch (error) {
+      showToast(error.message);
+    }
+  }
+
+  async function publishWebsite() {
+    if (!currentUser) {
+      showToast("Please login before publishing.");
+      showAuth();
+      return;
+    }
+
+    if (currentProjectId) {
+      await publishExisting(currentProjectId);
+      return;
+    }
+
+    openPublishModal();
+  }
+
+  function openPublishModal() {
+    const title =
+      document.getElementById("projectNameInput");
+
+    title.value = "";
+
+    document.querySelector("#nameModal h3")
+      .textContent = "Publish Website";
+
+    const saveButton =
+      document.querySelector(
+        "#nameModal .btn-primary"
+      );
+
+    saveButton.textContent = "Publish & Save";
+
+    showModal("nameModal");
+
+    requestAnimationFrame(() => {
+      title.focus();
+    });
+  }
+
+  async function publishFromNewProject() {
+    await confirmSaveProject();
+
+    if (currentProjectId) {
+      await publishExisting(currentProjectId);
+    }
+  }
+
+  function viewProject(slug) {
+    window.open(
+      `${window.location.origin}/?site=${encodeURIComponent(slug)}`,
+      "_blank"
+    );
   }
 
   async function checkPublicSite() {
@@ -2285,9 +2386,7 @@ body{
     const slug =
       params.get("site");
 
-    if (!slug) {
-      return false;
-    }
+    if (!slug) return false;
 
     const {
       data,
@@ -2295,25 +2394,46 @@ body{
     } = await supabaseClient
       .from("projects")
       .select("*")
-      .eq("slug",slug)
-      .eq("is_published",true)
+      .eq("slug", slug)
+      .eq("is_published", true)
       .single();
 
     if (error || !data) {
+
       document.body.innerHTML = `
-        <div style="
-          min-height:100vh;
-          display:grid;
-          place-items:center;
-          padding:30px;
-          text-align:center;
-          font-family:Arial;
-        ">
+        <div
+          style="
+            min-height:100vh;
+            display:grid;
+            place-items:center;
+            padding:30px;
+            text-align:center;
+            font-family:Arial;
+          "
+        >
           <div>
+
             <h1>Website not found</h1>
+
             <p style="color:#64748b;">
               This website may have been removed or unpublished.
             </p>
+
+            <a
+              href="/"
+              style="
+                display:inline-block;
+                margin-top:15px;
+                padding:12px 18px;
+                background:#111;
+                color:white;
+                border-radius:8px;
+                text-decoration:none;
+              "
+            >
+              Go to OTG AI Website Builder
+            </a>
+
           </div>
         </div>
       `;
@@ -2326,57 +2446,102 @@ body{
     return true;
   }
 
-  function initializeDefaultWebsite() {
-    if (
-      website.html ||
-      website.css ||
-      website.js
-    ) {
+  async function renderPublicSite(project) {
+    document.body.innerHTML = `
+      <div
+        style="
+          min-height:100vh;
+          background:white;
+        "
+      >
+
+        <div
+          style="
+            position:fixed;
+            top:0;
+            left:0;
+            right:0;
+            z-index:9999;
+            padding:8px 12px;
+            background:rgba(17,24,39,.95);
+            color:white;
+            text-align:center;
+            font-family:Arial;
+            font-size:12px;
+          "
+        >
+          Built with
+          <strong>OTG AI Website Builder</strong>
+        </div>
+
+        <div
+          id="publicWebsite"
+          style="padding-top:30px;"
+        ></div>
+
+      </div>
+    `;
+
+    const container =
+      document.getElementById("publicWebsite");
+
+    const style =
+      document.createElement("style");
+
+    style.textContent =
+      project.css || "";
+
+    document.head.appendChild(style);
+
+    container.innerHTML =
+      project.html || "";
+
+    if (project.js) {
+      try {
+        const script =
+          document.createElement("script");
+
+        script.textContent =
+          project.js;
+
+        document.body.appendChild(script);
+
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
+  async function initializeApp() {
+    const isPublicSite =
+      await checkPublicSite();
+
+    if (isPublicSite) {
       return;
     }
 
+    renderTemplates();
+
     newWebsite();
+
+    updateAIStat();
+
+    await loadUser();
+
+    supabaseClient.auth.onAuthStateChange(
+      async (_event, session) => {
+
+        currentUser =
+          session?.user || null;
+
+        updateAuthButton();
+
+        await renderProjects();
+      }
+    );
   }
 
-  document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
-
-      const publicSite =
-        await checkPublicSite();
-
-      if (publicSite) {
-        return;
-      }
-
-      renderTemplates();
-
-      initializeDefaultWebsite();
-
-      updateAIStat();
-
-      await loadUser();
-
-      supabaseClient.auth.onAuthStateChange(
-        async () => {
-          await loadUser();
-        }
-      );
-
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker
-          .register("/sw.js")
-          .catch(() => {});
-      }
-    }
-  );
-
-  document
-    .getElementById("codeEditor")
-    ?.addEventListener("input", () => {
-      website[currentEditor] =
-        document.getElementById("codeEditor").value;
-    });
+  initializeApp();
 </script>
 
 </body>
