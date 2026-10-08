@@ -1498,10 +1498,11 @@ header{
 (function () {
 
   let otgEditingProductId = null;
+  const otgSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   async function otgGetUser() {
 
-    const result = await supabaseClient.auth.getUser();
+    ;const result = await otgSupabase.auth.getUser();
 
     if (result.error || !result.data.user) {
       throw new Error("Please log in again.");
@@ -1518,7 +1519,7 @@ header{
 
       const user = await otgGetUser();
 
-      const result = await supabaseClient
+      const result = await otgSupabase
   .from("projects")
   .select("id, title");
 
