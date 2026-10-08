@@ -1502,7 +1502,7 @@ header{
 
   async function otgGetUser() {
 
-    ;const result = await otgSupabase.auth.getUser();
+    const result = await otgSupabase.auth.getUser();
 
     if (result.error || !result.data.user) {
       throw new Error("Please log in again.");
