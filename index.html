@@ -1547,8 +1547,7 @@ header{
 
       console.error(error);
 
-      select.innerHTML = '<option value="">Unable to load websites</option>';
-
+      select.innerHTML = '<option value="">Error: ' + error.message + '</option>';
     }
 
   }
