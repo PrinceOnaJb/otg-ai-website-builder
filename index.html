@@ -1498,7 +1498,10 @@ alert("PRODUCT SCRIPT STARTED");
 (function () {
 
   let otgEditingProductId = null;
-  const otgSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);console.log("OTG Supabase:", otgSupabase);
+  const otgSupabase = window.supabase.createClient(
+  "https://actwvvokfdemobgsfctx.supabase.co",
+  "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5"
+);console.log("OTG Supabase:", otgSupabase);
 
   async function otgGetUser() {
 
