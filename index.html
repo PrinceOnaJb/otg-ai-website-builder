@@ -1498,7 +1498,7 @@ header{
 (function () {
 
   let otgEditingProductId = null;
-  const otgSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const otgSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);console.log("OTG Supabase:", otgSupabase);
 
   async function otgGetUser() {
 
