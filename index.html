@@ -1517,6 +1517,7 @@ header{
 
     try {
 
+      select.innerHTML = '<option value="">Testing connection...</option>';
 
       const result = await otgSupabase
   .from("projects")
