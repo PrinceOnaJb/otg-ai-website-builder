@@ -1519,9 +1519,8 @@ header{
       const user = await otgGetUser();
 
       const result = await supabaseClient
-        .from("projects")
-        .select("id,title")
-        .eq("user_id", user.id);
+  .from("projects")
+  .select("id, title");
 
       if (result.error) throw result.error;
 
