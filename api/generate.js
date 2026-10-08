@@ -6,13 +6,83 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { prompt, html = "", css = "", js = "" } = req.body || {};
+    const {
+      prompt,
+      html = "",
+      css = "",
+      js = "",
+      whatsappNumber = ""
+    } = req.body || {};
 
     if (!prompt || !prompt.trim()) {
       return res.status(400).json({
         error: "Prompt is required"
       });
     }
+
+    function normalizeWhatsApp(number) {
+      if (!number) return "";
+
+      let value = String(number)
+        .trim()
+        .replace(/[^\d+]/g, "");
+
+      if (value.startsWith("00")) {
+        value = "+" + value.substring(2);
+      }
+
+      if (value.startsWith("+")) {
+        return value;
+      }
+
+      if (value.startsWith("0")) {
+        return "+234" + value.substring(1);
+      }
+
+      return "+" + value;
+    }
+
+    function enforceWhatsApp(html, number) {
+      const normalized = normalizeWhatsApp(number);
+
+      if (!html) return "";
+
+      if (!normalized) {
+        return html.replace(
+          /<a\b[^>]*id=["']whatsappButton["'][^>]*>[\s\S]*?<\/a>/gi,
+          ""
+        ).replace(
+          /<a\b([^>]*?)href=["']([^"']*(?:wa\.me|api\.whatsapp\.com)[^"']*)["']([^>]*)>([\s\S]*?)<\/a>/gi,
+          "$4"
+        );
+      }
+
+      const digits = normalized.replace(/\D/g, "");
+
+      if (!digits) return html;
+
+      const link = "https://wa.me/" + digits;
+
+      return html.replace(
+        /<a\b([^>]*?)href=["']([^"']*(?:wa\.me|api\.whatsapp\.com)[^"']*)["']([^>]*)>([\s\S]*?)<\/a>/gi,
+        function(match, before, oldHref, after, inner) {
+          return (
+            "<a" +
+            before +
+            'href="' +
+            link +
+            '"' +
+            after +
+            ">" +
+            inner +
+            "</a>"
+          );
+        }
+      );
+    }
+
+    const normalizedWhatsApp =
+      normalizeWhatsApp(whatsappNumber);
 
     const systemInstruction = `
 You are OTG AI Website Assistant.
@@ -27,6 +97,7 @@ You can:
 - Add JavaScript functionality
 - Make websites responsive
 - Make websites professional and attractive
+- Make websites mobile-friendly
 
 You MUST return ONLY valid JSON.
 
@@ -42,6 +113,15 @@ Do not use markdown.
 Do not use code fences.
 Do not write explanations outside the JSON.
 Return complete, usable HTML, CSS and JavaScript.
+
+IMPORTANT WHATSAPP RULES:
+
+- Never invent a WhatsApp number.
+- Never guess a WhatsApp number.
+- Never use a random WhatsApp number.
+- If a WhatsApp number is supplied, use ONLY the supplied number.
+- If no WhatsApp number is supplied, do NOT create a WhatsApp link or WhatsApp button.
+- Do not replace the supplied WhatsApp number with another number.
 `;
 
     const userPrompt = `
@@ -61,7 +141,17 @@ Current JavaScript:
 
 ${js}
 
+WhatsApp number supplied by the user:
+
+${normalizedWhatsApp || "NONE"}
+
 Build or modify the website according to the user's request.
+
+If a WhatsApp number is supplied, use ONLY:
+
+${normalizedWhatsApp || "NONE"}
+
+If it says NONE, do not create any WhatsApp link or button.
 `;
 
     const response = await fetch(
@@ -120,17 +210,33 @@ Build or modify the website according to the user's request.
       });
     }
 
-    const result = JSON.parse(text);
+    let result;
+
+    try {
+      result = JSON.parse(text);
+    } catch (parseError) {
+      return res.status(500).json({
+        error: "The AI returned invalid website data."
+      });
+    }
+
+    const finalHtml =
+      enforceWhatsApp(
+        result.html || "",
+        normalizedWhatsApp
+      );
 
     return res.status(200).json({
-      html: result.html || "",
+      html: finalHtml,
       css: result.css || "",
       js: result.js || ""
     });
 
   } catch (error) {
     return res.status(500).json({
-      error: error.message || "Server error"
+      error:
+        error.message ||
+        "Server error"
     });
   }
 }
