@@ -2532,171 +2532,581 @@ alert("PRODUCT SCRIPT STARTED");
         result = await otgSupabase
           .from("products")
           .insert({
-            user_id: user.id,
-            project_id: projectId,
-            name: name,
-            price: price,
-            category: category,
-            image_url: image_url,
-            whatsapp_number: whatsapp_number,
-            description: description
-          });
 
-      }
+<!-- OTG PRODUCT MANAGEMENT START -->
 
-      if (result.error) {
-        throw result.error;
-      }
+<section class="section" id="products">
 
-      message.innerHTML =
-        otgEditingProductId
-          ? "<p>✅ Product updated successfully.</p>"
-          : "<p>✅ Product added successfully.</p>";
+  <div class="section-heading">
+    <h2>My Products</h2>
+    <p>Add and manage products for your saved websites.</p>
+  </div>
 
-      otgClearProductForm();
+  <div style="background:#fff;padding:20px;border-radius:16px;margin-top:20px;box-shadow:0 4px 18px rgba(0,0,0,0.08);">
 
-      await otgLoadProducts();
+    <h3 id="otgProductFormTitle">Add Product</h3>
 
-    } catch (error) {
+    <label for="otgProductProject">Choose Website</label>
 
-      console.error(error);
+    <select id="otgProductProject"
+      style="width:100%;padding:12px;margin:8px 0 15px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+      <option value="">Loading your websites...</option>
+    </select>
 
-      message.innerHTML =
-        "<p>❌ Could not save product: " +
-        error.message +
-        "</p>";
+    <input id="otgProductName" type="text"
+      placeholder="Product name"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
 
-    }
+    <input id="otgProductPrice" type="text"
+      placeholder="Price e.g. ₦35,000"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+
+    <input id="otgProductCategory" type="text"
+      placeholder="Category e.g. Fashion"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+
+    <input id="otgProductImage" type="url"
+      placeholder="Product image URL (https://...)"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+
+    <input id="otgProductWhatsApp" type="text"
+      placeholder="WhatsApp number e.g. 2348012345678"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+
+    <textarea id="otgProductDescription"
+      placeholder="Product description" rows="4"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;resize:vertical;"></textarea>
+
+    <button id="otgProductSaveButton" type="button"
+      style="width:100%;padding:13px;margin-top:10px;border:0;border-radius:8px;cursor:pointer;font-weight:bold;">
+      ➕ Add Product
+    </button>
+
+    <button id="otgProductCancelButton" type="button"
+      style="display:none;width:100%;padding:13px;margin-top:8px;border:0;border-radius:8px;cursor:pointer;">
+      Cancel Edit
+    </button>
+
+    <p id="otgProductMessage" role="status" aria-live="polite"></p>
+
+  </div>
+
+  <div style="background:#fff;padding:20px;border-radius:16px;margin-top:20px;box-shadow:0 4px 18px rgba(0,0,0,0.08);">
+
+    <h3>Your Products</h3>
+
+    <div id="otgProductsContainer">
+      Select a website above to see its products.
+    </div>
+
+  </div>
+
+</section>
+
+<script>
+(function () {
+  "use strict";
+
+  // Prevent duplicate initialization if this script is accidentally
+  // included more than once.
+  if (window.otgProductManagerInitialized) return;
+  window.otgProductManagerInitialized = true;
+
+  const SUPABASE_URL =
+    "https://actwvvokfdemobgsfctx.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
+
+  const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  let editingProductId = null;
+  let loadingProducts = false;
+
+  const $ = function (id) {
+    return document.getElementById(id);
   };
 
-  window.otgDeleteProduct = async function (productId) {
+  const projectSelect = $("otgProductProject");
+  const productContainer = $("otgProductsContainer");
+  const message = $("otgProductMessage");
+  const saveButton = $("otgProductSaveButton");
+  const cancelButton = $("otgProductCancelButton");
 
-    if (!confirm("Delete this product?")) {
+  function showMessage(text, isError) {
+    message.textContent = text;
+    message.style.color = isError ? "#b42318" : "#187444";
+  }
+
+  async function getUser() {
+    const result = await db.auth.getUser();
+
+    if (result.error || !result.data.user) {
+      throw new Error("Please log in before managing products.");
+    }
+
+    return result.data.user;
+  }
+
+  function makeElement(tag, text, className) {
+    const element = document.createElement(tag);
+
+    if (text !== undefined && text !== null) {
+      element.textContent = String(text);
+    }
+
+    if (className) {
+      element.className = className;
+    }
+
+    return element;
+  }
+
+  function makeButton(text, onClick, background) {
+    const button = makeElement("button", text);
+
+    button.type = "button";
+    button.style.cssText =
+      "padding:9px 14px;border:0;border-radius:7px;" +
+      "cursor:pointer;margin:4px 6px 4px 0;" +
+      "background:" + background + ";color:#fff;";
+
+    button.addEventListener("click", onClick);
+
+    return button;
+  }
+
+  async function loadProjects() {
+    projectSelect.replaceChildren(
+      new Option("Loading your websites...", "")
+    );
+
+    try {
+      const user = await getUser();
+
+      const result = await db
+        .from("projects")
+        .select("id, title")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (result.error) throw result.error;
+
+      const projects = result.data || [];
+
+      projectSelect.replaceChildren(
+        new Option("Select a website", "")
+      );
+
+      projects.forEach(function (project) {
+        projectSelect.add(
+          new Option(
+            project.title || "Untitled Website",
+            project.id
+          )
+        );
+      });
+
+      if (projects.length === 0) {
+        projectSelect.replaceChildren(
+          new Option("No saved websites yet", "")
+        );
+
+        productContainer.textContent =
+          "Save a website before adding products.";
+        return;
+      }
+
+      await loadProducts();
+
+    } catch (error) {
+      console.error("OTG project loading error:", error);
+
+      projectSelect.replaceChildren(
+        new Option("Could not load websites", "")
+      );
+
+      showMessage(error.message, true);
+    }
+  }
+
+  async function loadProducts() {
+    const projectId = projectSelect.value;
+
+    if (!projectId) {
+      productContainer.textContent =
+        "Select a website above to see its products.";
       return;
     }
 
+    if (loadingProducts) return;
+    loadingProducts = true;
+
+    productContainer.textContent = "Loading products...";
+
     try {
+      const user = await getUser();
 
-      const user = await otgGetUser();
-
-      const result = await otgSupabase
+      const result = await db
         .from("products")
-        .delete()
-        .eq("id", productId)
-        .eq("user_id", user.id);
+        .select("*")
+        .eq("project_id", projectId)
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
 
-      if (result.error) {
-        throw result.error;
+      if (result.error) throw result.error;
+
+      const products = result.data || [];
+
+      productContainer.replaceChildren();
+
+      if (products.length === 0) {
+        productContainer.appendChild(
+          makeElement("p", "No products added yet.")
+        );
+        return;
       }
 
-      await otgLoadProducts();
+      products.forEach(function (product) {
+        const card = document.createElement("article");
+
+        card.style.cssText =
+          "border:1px solid #e5e5e5;border-radius:12px;" +
+          "padding:15px;margin:12px 0;background:#fafafa;";
+
+        if (product.image_url) {
+          try {
+            const imageURL = new URL(product.image_url);
+
+            if (
+              imageURL.protocol === "https:" ||
+              imageURL.protocol === "http:"
+            ) {
+              const image = document.createElement("img");
+              image.src = imageURL.href;
+              image.alt = product.name || "Product";
+              image.loading = "lazy";
+              image.style.cssText =
+                "width:100%;max-width:250px;height:180px;" +
+                "object-fit:cover;border-radius:10px;margin-bottom:12px;";
+
+              card.appendChild(image);
+            }
+          } catch (_) {
+            // Ignore invalid image URLs.
+          }
+        }
+
+        card.appendChild(
+          makeElement("h3", product.name || "Unnamed Product")
+        );
+
+        card.appendChild(
+          makeElement(
+            "p",
+            "Price: " + (product.price || "Not specified")
+          )
+        );
+
+        card.appendChild(
+          makeElement(
+            "p",
+            "Category: " + (product.category || "Not specified")
+          )
+        );
+
+        card.appendChild(
+          makeElement(
+            "p",
+            product.description || "No description provided."
+          )
+        );
+
+        if (product.whatsapp_number) {
+          card.appendChild(
+            makeElement("p", "WhatsApp: " + product.whatsapp_number)
+          );
+        }
+
+        card.appendChild(
+          makeButton(
+            "✏️ Edit",
+            function () {
+              window.otgEditProduct(product.id);
+            },
+            "#2563eb"
+          )
+        );
+
+        card.appendChild(
+          makeButton(
+            "🗑️ Delete",
+            function () {
+              window.otgDeleteProduct(product.id);
+            },
+            "#b42318"
+          )
+        );
+
+        productContainer.appendChild(card);
+      });
 
     } catch (error) {
+      console.error("OTG product loading error:", error);
 
-      alert(
-        "Could not delete product: " +
-        error.message
+      productContainer.textContent =
+        "Unable to load products: " + error.message;
+
+    } finally {
+      loadingProducts = false;
+    }
+  }
+
+  function clearProductForm() {
+    $("otgProductName").value = "";
+    $("otgProductPrice").value = "";
+    $("otgProductCategory").value = "";
+    $("otgProductImage").value = "";
+    $("otgProductWhatsApp").value = "";
+    $("otgProductDescription").value = "";
+
+    editingProductId = null;
+
+    $("otgProductFormTitle").textContent = "Add Product";
+    saveButton.textContent = "➕ Add Product";
+    cancelButton.style.display = "none";
+  }
+
+  window.otgSaveProduct = async function () {
+    if (saveButton.disabled) return;
+
+    const projectId = projectSelect.value;
+    const name = $("otgProductName").value.trim();
+    const price = $("otgProductPrice").value.trim();
+    const category = $("otgProductCategory").value.trim();
+    const image_url = $("otgProductImage").value.trim();
+    const whatsapp_number = $("otgProductWhatsApp").value.trim();
+    const description = $("otgProductDescription").value.trim();
+
+    if (!projectId) {
+      showMessage("Please select a website first.", true);
+      return;
+    }
+
+    if (!name) {
+      showMessage("Please enter a product name.", true);
+      return;
+    }
+
+    if (image_url) {
+      try {
+        const parsedURL = new URL(image_url);
+
+        if (
+          parsedURL.protocol !== "https:" &&
+          parsedURL.protocol !== "http:"
+        ) {
+          throw new Error();
+        }
+      } catch (_) {
+        showMessage("Please enter a valid product image URL.", true);
+        return;
+      }
+    }
+
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving...";
+
+    try {
+      const user = await getUser();
+
+      // Confirm that the selected website belongs to this user.
+      const projectResult = await db
+        .from("projects")
+        .select("id")
+        .eq("id", projectId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (projectResult.error) throw projectResult.error;
+
+      if (!projectResult.data) {
+        throw new Error(
+          "The selected website was not found in your account."
+        );
+      }
+
+      const productData = {
+        name: name,
+        price: price,
+        category: category,
+        image_url: image_url,
+        whatsapp_number: whatsapp_number,
+        description: description
+      };
+
+      let result;
+
+      if (editingProductId) {
+        result = await db
+          .from("products")
+          .update(productData)
+          .eq("id", editingProductId)
+          .eq("project_id", projectId)
+          .eq("user_id", user.id)
+          .select("id");
+
+      } else {
+        result = await db
+          .from("products")
+          .insert({
+            ...productData,
+            user_id: user.id,
+            project_id: projectId
+          })
+          .select("id");
+      }
+
+      if (result.error) throw result.error;
+
+      if (editingProductId && (!result.data || result.data.length === 0)) {
+        throw new Error(
+          "The product was not updated. Please check your access and try again."
+        );
+      }
+
+      showMessage(
+        editingProductId
+          ? "Product updated successfully."
+          : "Product added successfully.",
+        false
       );
 
+      clearProductForm();
+
+      await loadProducts();
+
+    } catch (error) {
+      console.error("OTG product save error:", error);
+      showMessage("Could not save product: " + error.message, true);
+
+    } finally {
+      saveButton.disabled = false;
+      saveButton.textContent = editingProductId
+        ? "💾 Save Changes"
+        : "➕ Add Product";
     }
   };
 
   window.otgEditProduct = async function (productId) {
-
     try {
+      const user = await getUser();
 
-      const user = await otgGetUser();
-
-      const result = await otgSupabase
+      const result = await db
         .from("products")
         .select("*")
         .eq("id", productId)
         .eq("user_id", user.id)
         .single();
 
-      if (result.error) {
-        throw result.error;
-      }
+      if (result.error) throw result.error;
 
       const product = result.data;
 
-      otgEditingProductId =
-        product.id;
+      projectSelect.value = product.project_id;
 
-      document.getElementById("otgProductName").value =
-        product.name || "";
+      if (!projectSelect.value) {
+        throw new Error("The product's website is not available.");
+      }
 
-      document.getElementById("otgProductPrice").value =
-        product.price || "";
+      editingProductId = product.id;
 
-      document.getElementById("otgProductCategory").value =
-        product.category || "";
+      $("otgProductName").value = product.name || "";
+      $("otgProductPrice").value = product.price || "";
+      $("otgProductCategory").value = product.category || "";
+      $("otgProductImage").value = product.image_url || "";
+      $("otgProductWhatsApp").value = product.whatsapp_number || "";
+      $("otgProductDescription").value = product.description || "";
 
-      document.getElementById("otgProductImage").value =
-        product.image_url || "";
+      $("otgProductFormTitle").textContent = "Edit Product";
+      saveButton.textContent = "💾 Save Changes";
+      cancelButton.style.display = "block";
 
-      document.getElementById("otgProductWhatsApp").value =
-        product.whatsapp_number || "";
+      showMessage("Edit the details, then tap Save Changes.", false);
 
-      document.getElementById("otgProductDescription").value =
-        product.description || "";
-
-      document.getElementById("otgProductSaveButton").textContent =
-        "💾 Save Changes";
-
-      document.getElementById("otgProductCancelButton").style.display =
-        "block";
+      $("otgProductFormTitle").scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
 
     } catch (error) {
+      console.error("OTG product edit error:", error);
+      showMessage("Could not load product: " + error.message, true);
+    }
+  };
 
-      alert(
-        "Could not load product: " +
-        error.message
-      );
+  window.otgDeleteProduct = async function (productId) {
+    if (!confirm("Are you sure you want to delete this product?")) {
+      return;
+    }
 
+    try {
+      const user = await getUser();
+
+      const result = await db
+        .from("products")
+        .delete()
+        .eq("id", productId)
+        .eq("user_id", user.id)
+        .select("id");
+
+      if (result.error) throw result.error;
+
+      if (!result.data || result.data.length === 0) {
+        throw new Error(
+          "The product was not deleted. Check your permissions."
+        );
+      }
+
+      if (editingProductId === productId) {
+        clearProductForm();
+      }
+
+      showMessage("Product deleted successfully.", false);
+      await loadProducts();
+
+    } catch (error) {
+      console.error("OTG product delete error:", error);
+      showMessage("Could not delete product: " + error.message, true);
     }
   };
 
   window.otgCancelProductEdit = function () {
-
-    otgEditingProductId = null;
-
-    otgClearProductForm();
-
+    clearProductForm();
+    showMessage("Editing cancelled.", false);
   };
 
-  function otgClearProductForm() {
+  saveButton.addEventListener("click", window.otgSaveProduct);
+  cancelButton.addEventListener("click", window.otgCancelProductEdit);
+  projectSelect.addEventListener("change", loadProducts);
 
-    document.getElementById("otgProductName").value = "";
-    document.getElementById("otgProductPrice").value = "";
-    document.getElementById("otgProductCategory").value = "";
-    document.getElementById("otgProductImage").value = "";
-    document.getElementById("otgProductWhatsApp").value = "";
-    document.getElementById("otgProductDescription").value = "";
-
-    document.getElementById("otgProductSaveButton").textContent =
-      "➕ Add Product";
-
-    document.getElementById("otgProductCancelButton").style.display =
-      "none";
-
-    otgEditingProductId = null;
-
+  // Wait until the page's other scripts have initialized.
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", loadProjects, {
+      once: true
+    });
+  } else {
+    loadProjects();
   }
-
-  document
-    .getElementById("otgProductProject")
-    .addEventListener(
-      "change",
-      otgLoadProducts
-    );
-
-  otgLoadProjects();
 
 })();
 </script>
 
-<!-- OTG PRODUCT MANAGEMENT END --> <section
+<!-- OTG PRODUCT MANAGEMENT END -->
+ <section
   class="section"
   id="about"
 >
