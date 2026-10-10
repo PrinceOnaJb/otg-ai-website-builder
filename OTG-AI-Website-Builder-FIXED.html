@@ -1,0 +1,4924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OTG AI Website Builder</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f5f7fb;
+  color:#172033;
+  line-height:1.6;
+}
+
+button,
+input,
+textarea,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+a{
+  color:inherit;
+}
+
+.hidden{
+  display:none!important;
+}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:1000;
+  background:#ffffff;
+  border-bottom:1px solid #e7eaf0;
+  box-shadow:0 2px 12px rgba(0,0,0,.04);
+}
+
+.navbar{
+  max-width:1200px;
+  margin:auto;
+  padding:16px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+
+.logo{
+  font-size:21px;
+  font-weight:800;
+  color:#075b24;
+  text-decoration:none;
+  white-space:nowrap;
+}
+
+.nav-links{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.nav-links button{
+  border:0;
+  background:transparent;
+  padding:9px 12px;
+  border-radius:8px;
+  color:#465066;
+  font-weight:600;
+}
+
+.nav-links button:hover{
+  background:#f0f5f1;
+  color:#075b24;
+}
+
+.logout-btn{
+  background:#075b24!important;
+  color:#fff!important;
+}
+
+#authScreen{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:30px 18px;
+  background:
+    radial-gradient(circle at top right,rgba(7,91,36,.12),transparent 35%),
+    #f5f7fb;
+}
+
+.auth-card{
+  width:100%;
+  max-width:440px;
+  background:#fff;
+  border-radius:18px;
+  padding:34px;
+  box-shadow:0 20px 60px rgba(20,35,60,.10);
+  border:1px solid #e9edf3;
+}
+
+.auth-logo{
+  text-align:center;
+  font-size:28px;
+  font-weight:900;
+  color:#075b24;
+  margin-bottom:8px;
+}
+
+.auth-subtitle{
+  text-align:center;
+  color:#687287;
+  margin-bottom:28px;
+}
+
+.auth-card label{
+  display:block;
+  font-weight:700;
+  margin:15px 0 7px;
+}
+
+.auth-card input{
+  width:100%;
+  padding:13px 14px;
+  border:1px solid #dce1e9;
+  border-radius:9px;
+  outline:none;
+}
+
+.auth-card input:focus{
+  border-color:#075b24;
+  box-shadow:0 0 0 3px rgba(7,91,36,.08);
+}
+
+.auth-submit{
+  width:100%;
+  margin-top:22px;
+  padding:14px;
+  border:0;
+  border-radius:9px;
+  background:#075b24;
+  color:#fff;
+  font-weight:800;
+}
+
+.auth-switch{
+  text-align:center;
+  margin-top:18px;
+  color:#687287;
+}
+
+.auth-switch button{
+  border:0;
+  background:none;
+  color:#075b24;
+  font-weight:800;
+}
+
+#app{
+  min-height:100vh;
+}
+
+.hero{
+  background:linear-gradient(135deg,#075b24,#0a7831);
+  color:#fff;
+  padding:70px 20px;
+}
+
+.hero-inner{
+  max-width:1200px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:40px;
+  align-items:center;
+}
+
+.hero h1{
+  font-size:clamp(36px,6vw,64px);
+  line-height:1.05;
+  margin-bottom:20px;
+}
+
+.hero p{
+  font-size:18px;
+  max-width:650px;
+  opacity:.92;
+}
+
+.hero-actions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:28px;
+}
+
+.primary-btn,
+.secondary-btn{
+  border:0;
+  padding:13px 20px;
+  border-radius:9px;
+  font-weight:800;
+}
+
+.primary-btn{
+  background:#fff;
+  color:#075b24;
+}
+
+.secondary-btn{
+  background:rgba(255,255,255,.14);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.3);
+}
+
+.hero-card{
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  padding:28px;
+  border-radius:18px;
+  backdrop-filter:blur(10px);
+}
+
+.hero-card h3{
+  margin-bottom:10px;
+}
+
+.section{
+  max-width:1200px;
+  margin:auto;
+  padding:55px 20px;
+}
+
+.section-heading{
+  margin-bottom:28px;
+}
+
+.section-heading h2{
+  font-size:30px;
+  margin-bottom:7px;
+}
+
+.section-heading p{
+  color:#697386;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:35px;
+}
+
+.stat-card{
+  background:#fff;
+  border:1px solid #e8ebf1;
+  border-radius:14px;
+  padding:22px;
+}
+
+.stat-card span{
+  display:block;
+  color:#718096;
+  font-size:14px;
+  margin-bottom:7px;
+}
+
+.stat-card strong{
+  font-size:28px;
+  color:#075b24;
+}
+
+.generator{
+  background:#fff;
+  border:1px solid #e5e9ef;
+  border-radius:18px;
+  padding:28px;
+  box-shadow:0 8px 30px rgba(20,35,60,.05);
+}
+
+.generator textarea{
+  width:100%;
+  min-height:145px;
+  resize:vertical;
+  border:1px solid #dce1e9;
+  border-radius:10px;
+  padding:15px;
+  outline:none;
+}
+
+.generator textarea:focus{
+  border-color:#075b24;
+}
+
+.form-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+  margin-top:15px;
+}
+
+.form-group label{
+  display:block;
+  font-weight:700;
+  margin-bottom:7px;
+}
+
+.form-group input,
+.form-group select{
+  width:100%;
+  padding:12px;
+  border:1px solid #dce1e9;
+  border-radius:9px;
+  background:#fff;
+  outline:none;
+}
+
+.generate-btn{
+  margin-top:18px;
+  padding:13px 22px;
+  border:0;
+  border-radius:9px;
+  background:#075b24;
+  color:#fff;
+  font-weight:800;
+}
+
+.whatsapp-box{
+  margin-top:16px;
+  padding:18px;
+  border:1px solid #d9eadf;
+  background:#f4fbf6;
+  border-radius:12px;
+}
+
+.whatsapp-box label{
+  display:block;
+  font-weight:800;
+  color:#075b24;
+  margin-bottom:7px;
+}
+
+.whatsapp-box input{
+  width:100%;
+  padding:12px;
+  border:1px solid #cfe0d4;
+  border-radius:9px;
+  outline:none;
+}
+
+.whatsapp-box small{
+  display:block;
+  color:#6d7b71;
+  margin-top:7px;
+}
+
+.examples{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+}
+
+.example-card{
+  background:#fff;
+  border:1px solid #e6eaf0;
+  border-radius:14px;
+  padding:20px;
+}
+
+.example-card button{
+  margin-top:12px;
+  border:0;
+  background:#edf5ef;
+  color:#075b24;
+  padding:9px 13px;
+  border-radius:8px;
+  font-weight:700;
+}
+
+.template-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+
+.template-card{
+  background:#fff;
+  border:1px solid #e5e9ef;
+  border-radius:15px;
+  padding:22px;
+  transition:.2s;
+}
+
+.template-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 30px rgba(20,35,60,.08);
+}
+
+.template-icon{
+  width:48px;
+  height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#edf6ef;
+  border-radius:12px;
+  font-size:22px;
+  margin-bottom:15px;
+}
+
+.template-card h3{
+  margin-bottom:7px;
+}
+
+.template-card p{
+  color:#6c7586;
+  font-size:14px;
+}
+
+.template-card button{
+  margin-top:15px;
+  width:100%;
+  border:0;
+  padding:11px;
+  border-radius:8px;
+  background:#075b24;
+  color:#fff;
+  font-weight:700;
+}
+
+.editor-wrap{
+  background:#fff;
+  border:1px solid #e5e9ef;
+  border-radius:16px;
+  overflow:hidden;
+}
+
+.editor-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px;
+  border-bottom:1px solid #e5e9ef;
+  flex-wrap:wrap;
+}
+
+.editor-tabs{
+  display:flex;
+  gap:6px;
+}
+
+.editor-tabs button{
+  border:0;
+  background:#f1f3f6;
+  padding:8px 13px;
+  border-radius:7px;
+  font-weight:700;
+}
+
+.editor-tabs button.active{
+  background:#075b24;
+  color:#fff;
+}
+
+.editor-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.editor-actions button{
+  border:0;
+  padding:8px 12px;
+  border-radius:7px;
+  font-weight:700;
+}
+
+.editor-actions .save{
+  background:#075b24;
+  color:#fff;
+}
+
+.editor-actions .preview{
+  background:#edf1f5;
+  color:#263142;
+}
+
+#codeEditor{
+  width:100%;
+  min-height:430px;
+  border:0;
+  resize:vertical;
+  padding:18px;
+  font-family:Consolas,Monaco,monospace;
+  font-size:14px;
+  line-height:1.6;
+  outline:none;
+  background:#10151d;
+  color:#e8edf5;
+}
+
+.projects-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:17px;
+}
+
+.project-card{
+  background:#fff;
+  border:1px solid #e4e8ee;
+  border-radius:15px;
+  padding:20px;
+}
+
+.project-card h3{
+  margin-bottom:8px;
+  word-break:break-word;
+}
+
+.project-meta{
+  color:#727c8d;
+  font-size:13px;
+  margin-bottom:15px;
+}
+
+.status{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:900;
+  margin-bottom:13px;
+}
+
+.status.published{
+  background:#e4f6ea;
+  color:#16703a;
+}
+
+.status.draft{
+  background:#f0f2f5;
+  color:#667085;
+}
+
+.project-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+
+.project-actions button{
+  border:0;
+  padding:8px 10px;
+  border-radius:7px;
+  background:#edf1f5;
+  color:#293445;
+  font-size:12px;
+  font-weight:700;
+}
+
+.project-actions button.primary{
+  background:#075b24;
+  color:#fff;
+}
+
+.project-actions button.danger{
+  background:#fff0f0;
+  color:#b42318;
+}
+
+.about-card{
+  background:#fff;
+  border:1px solid #e5e9ef;
+  border-radius:16px;
+  padding:28px;
+}
+
+.about-card p{
+  color:#5f697a;
+  margin-bottom:12px;
+}
+
+.empty-state{
+  background:#fff;
+  border:1px dashed #ccd3dd;
+  border-radius:15px;
+  padding:40px 20px;
+  text-align:center;
+  color:#697386;
+}
+
+#toast{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  z-index:5000;
+  background:#172033;
+  color:#fff;
+  padding:13px 17px;
+  border-radius:9px;
+  box-shadow:0 10px 30px rgba(0,0,0,.18);
+  transform:translateY(100px);
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
+  max-width:350px;
+}
+
+#toast.show{
+  transform:translateY(0);
+  opacity:1;
+}
+
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  z-index:4000;
+  background:rgba(10,15,25,.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.modal{
+  width:100%;
+  max-width:450px;
+  background:#fff;
+  border-radius:16px;
+  padding:25px;
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+}
+
+.modal h3{
+  margin-bottom:15px;
+}
+
+.modal input{
+  width:100%;
+  padding:12px;
+  border:1px solid #dce1e9;
+  border-radius:9px;
+  outline:none;
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:18px;
+}
+
+.modal-actions button{
+  border:0;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:700;
+}
+
+.modal-cancel{
+  background:#edf1f5;
+}
+
+.modal-confirm{
+  background:#075b24;
+  color:#fff;
+}
+
+.publicSite{
+  min-height:100vh;
+  background:#fff;
+}
+
+.publicSiteHeader{
+  padding:18px 22px;
+  background:#075b24;
+  color:#fff;
+  font-weight:800;
+  font-size:18px;
+}
+
+.publicSiteContent{
+  min-height:calc(100vh - 60px);
+}
+
+@media(max-width:900px){
+
+  .hero-inner{
+    grid-template-columns:1fr;
+  }
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .template-grid,
+  .projects-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:650px){
+
+  .navbar{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .nav-links{
+    width:100%;
+  }
+
+  .nav-links button{
+    padding:8px 9px;
+  }
+
+  .hero{
+    padding:50px 18px;
+  }
+
+  .section{
+    padding:42px 16px;
+  }
+
+  .form-row{
+    grid-template-columns:1fr;
+  }
+
+  .examples,
+  .template-grid,
+  .projects-grid{
+    grid-template-columns:1fr;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .auth-card{
+    padding:25px 20px;
+  }
+
+}
+
+@media(max-width:420px){
+
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<div id="authScreen">
+
+  <div class="auth-card">
+
+    <div class="auth-logo">
+      OTG AI Website Builder
+    </div>
+
+    <div class="auth-subtitle" id="authSubtitle">
+      Login to continue building websites.
+    </div>
+
+    <form id="authForm">
+
+      <label for="authEmail">
+        Email Address
+      </label>
+
+      <input
+        type="email"
+        id="authEmail"
+        placeholder="Enter your email"
+        required
+      >
+
+      <label for="authPassword">
+        Password
+      </label>
+
+      <input
+        type="password"
+        id="authPassword"
+        placeholder="Enter your password"
+        required
+      >
+
+      <button
+        type="submit"
+        class="auth-submit"
+        id="authSubmit"
+      >
+        Login
+      </button>
+
+    </form>
+
+    <div class="auth-switch">
+
+      <span id="authSwitchText">
+        Don't have an account?
+      </span>
+
+      <button
+        type="button"
+        id="authSwitchBtn"
+      >
+        Create account
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<div id="app" class="hidden">
+
+<header>
+
+  <div class="navbar">
+
+    <a
+      href="#"
+      class="logo"
+      onclick="showSection('dashboard');return false;"
+    >
+      OTG AI Website Builder
+    </a>
+
+    <nav class="nav-links">
+
+      <button onclick="showSection('dashboard')">
+        Builder
+      </button>
+
+      <button onclick="showSection('templates')">
+        Templates
+      </button>
+
+      <button onclick="showSection('projects')">
+        My Projects
+      </button>
+
+      <button onclick="showSection('about')">
+        About OTG
+      </button>
+
+      <button
+        class="logout-btn"
+        onclick="logoutUser()"
+      >
+        Logout
+      </button>
+
+    </nav>
+
+  </div>
+
+</header>
+
+
+<section class="hero">
+
+  <div class="hero-inner">
+
+    <div>
+
+      <h1>
+        Turn your idea into a beautiful website.
+      </h1>
+
+      <p>
+        Create professional websites with OTG AI Website Builder.
+        Describe what you want and let the builder create the
+        structure for you.
+      </p>
+
+      <div class="hero-actions">
+
+        <button
+          class="primary-btn"
+          onclick="document.getElementById('generator').scrollIntoView({behavior:'smooth'})"
+        >
+          🚀 Create Your Website
+        </button>
+
+        <button
+          class="secondary-btn"
+          onclick="showSection('templates')"
+        >
+          Explore Templates
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="hero-card">
+
+      <h3>
+        Welcome to OTG
+      </h3>
+
+      <p>
+        Build, edit, save, publish and share your website
+        from one simple dashboard.
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="section"
+  id="dashboard"
+>
+
+  <div class="section-heading">
+
+    <h2>
+      Student Dashboard
+    </h2>
+
+    <p id="welcomeText">
+      Welcome back.
+    </p>
+
+  </div>
+
+  <div class="stats">
+
+    <div class="stat-card">
+      <span>Total Projects</span>
+      <strong id="totalProjects">0</strong>
+    </div>
+
+    <div class="stat-card">
+      <span>Published</span>
+      <strong id="publishedProjects">0</strong>
+    </div>
+
+    <div class="stat-card">
+      <span>Drafts</span>
+      <strong id="draftProjects">0</strong>
+    </div>
+
+    <div class="stat-card">
+      <span>OTG Builder</span>
+      <strong>AI</strong>
+    </div>
+
+  </div>
+
+
+  <div
+    class="generator"
+    id="generator"
+  >
+
+    <div class="section-heading">
+
+      <h2>
+        AI Website Generator
+      </h2>
+
+      <p>
+        Describe the website you want to create.
+      </p>
+
+    </div>
+
+    <textarea
+      id="websitePrompt"
+      placeholder="Example: Create a website for my fashion business called Prince Fashion. I sell men's and women's clothing."
+    ></textarea>
+
+    <div class="form-row">
+
+      <div class="form-group">
+
+        <label for="websiteStyle">
+          Website Style
+        </label>
+
+        <select id="websiteStyle">
+
+          <option value="professional">
+            Professional
+          </option>
+
+          <option value="modern">
+            Modern
+          </option>
+
+          <option value="minimal">
+            Minimal
+          </option>
+
+          <option value="creative">
+            Creative
+          </option>
+
+          <option value="elegant">
+            Elegant
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="whatsappNumber">
+          WhatsApp Number
+        </label>
+
+        <div class="whatsapp-box">
+
+          <input
+            type="tel"
+            id="whatsappNumber"
+            placeholder="+2348012345678"
+          >
+
+          <small>
+            Enter your own WhatsApp number. OTG will never
+            generate a random number for you.
+          </small>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <button
+      class="generate-btn"
+      id="generateBtn"
+      onclick="generateWithAI()"
+    >
+      🚀 Generate Website
+    </button>
+
+  </div>
+
+</section>
+
+
+<section class="section">
+
+  <div class="section-heading">
+
+    <h2>
+      Try an Example
+    </h2>
+
+    <p>
+      Click an example to automatically fill the generator.
+    </p>
+
+  </div>
+
+  <div class="examples">
+
+    <div class="example-card">
+
+      <h3>
+        Fashion Store
+      </h3>
+
+      <p>
+        Create a modern website for a clothing business.
+      </p>
+
+      <button onclick="loadExample('fashion')">
+        Use Example
+      </button>
+
+    </div>
+
+    <div class="example-card">
+
+      <h3>
+        Portfolio
+      </h3>
+
+      <p>
+        Create a professional portfolio website for a graphic designer.
+      </p>
+
+      <button onclick="loadExample('portfolio')">
+        Use Example
+      </button>
+
+    </div>
+
+    <div class="example-card">
+
+      <h3>
+        Restaurant
+      </h3>
+
+      <p>
+        Create a beautiful website for a restaurant.
+      </p>
+
+      <button onclick="loadExample('restaurant')">
+        Use Example
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="section"
+  id="templates"
+>
+
+  <div class="section-heading">
+
+    <h2>
+      Professional Templates
+    </h2>
+
+    <p>
+      Start quickly with a ready-made website structure.
+    </p>
+
+  </div>
+
+  <div class="template-grid">
+
+    <div class="template-card">
+
+      <div class="template-icon">
+        👔
+      </div>
+
+      <h3>Business</h3>
+
+      <p>
+        A professional layout for businesses and companies.
+      </p>
+
+      <button onclick="useTemplate('business')">
+        Use Template
+      </button>
+
+    </div>
+
+
+    <div class="template-card">
+
+      <div class="template-icon">
+        🎨
+      </div>
+
+      <h3>Portfolio</h3>
+
+      <p>
+        Showcase your work, skills and personal brand.
+      </p>
+
+      <button onclick="useTemplate('portfolio')">
+        Use Template
+      </button>
+
+    </div>
+
+
+    <div class="template-card">
+
+      <div class="template-icon">
+        👗
+      </div>
+
+      <h3>Fashion</h3>
+
+      <p>
+        A stylish website for fashion and clothing businesses.
+      </p>
+
+      <button onclick="useTemplate('fashion')">
+        Use Template
+      </button>
+
+    </div>
+
+
+    <div class="template-card">
+
+      <div class="template-icon">
+        🍽️
+      </div>
+
+      <h3>Restaurant</h3>
+
+      <p>
+        Present your menu, services and contact information.
+      </p>
+
+      <button onclick="useTemplate('restaurant')">
+        Use Template
+      </button>
+
+    </div>
+
+
+    <div class="template-card">
+
+      <div class="template-icon">
+        🏢
+      </div>
+
+      <h3>Agency</h3>
+
+      <p>
+        Perfect for creative agencies and service providers.
+      </p>
+
+      <button onclick="useTemplate('agency')">
+        Use Template
+      </button>
+
+    </div>
+
+
+    <div class="template-card">
+
+      <div class="template-icon">
+        🎓
+      </div>
+
+      <h3>School</h3>
+
+      <p>
+        A clean website structure for schools and academies.
+      </p>
+
+      <button onclick="useTemplate('school')">
+        Use Template
+      </button>
+
+    </div>
+
+
+    <div class="template-card">
+
+      <div class="template-icon">
+        🎉
+      </div>
+
+      <h3>Event</h3>
+
+      <p>
+        Promote events, celebrations and special occasions.
+      </p>
+
+      <button onclick="useTemplate('event')">
+        Use Template
+      </button>
+
+    </div>
+
+
+    <div class="template-card">
+
+      <div class="template-icon">
+        👤
+      </div>
+
+      <h3>Personal</h3>
+
+      <p>
+        Create a simple personal profile and introduction website.
+      </p>
+
+      <button onclick="useTemplate('personal')">
+        Use Template
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="section"
+  id="editorSection"
+>
+
+  <div class="section-heading">
+
+    <h2>
+      Website Editor
+    </h2>
+
+    <p>
+      Edit your generated website before saving or publishing.
+    </p>
+
+  </div>
+
+  <div class="editor-wrap">
+
+    <div class="editor-toolbar">
+
+      <div class="editor-tabs">
+
+        <button
+          id="htmlTab"
+          class="active"
+          onclick="switchEditor('html')"
+        >
+          HTML
+        </button>
+
+        <button
+          id="cssTab"
+          onclick="switchEditor('css')"
+        >
+          CSS
+        </button>
+
+        <button
+          id="jsTab"
+          onclick="switchEditor('js')"
+        >
+          JavaScript
+        </button>
+
+      </div>
+
+      <div class="editor-actions">
+
+        <button
+          class="preview"
+          onclick="previewWebsite()"
+        >
+          Preview
+        </button>
+
+        <button
+          class="save"
+          onclick="openSaveModal()"
+        >
+          Save Project
+        </button>
+
+      </div>
+
+    </div>
+
+    <textarea
+      id="codeEditor"
+      spellcheck="false"
+    ></textarea>
+
+  </div>
+
+</section>
+
+
+<section
+  class="section"
+  id="projects"
+>
+
+  <div class="section-heading">
+
+    <h2>
+      My Projects
+    </h2>
+
+    <p>
+      Manage your saved websites.
+    </p>
+
+  </div>
+
+  <div
+    id="projectsContainer"
+    class="projects-grid"
+  >
+
+    <div class="empty-state">
+      Loading your projects...
+    </div>
+
+  </div>
+
+</section>
+
+
+
+ <!-- OTG PRODUCT MANAGEMENT START -->
+
+<section class="section" id="products">
+
+  <div class="section-heading">
+    <h2>My Products</h2>
+    <p>Add and manage products for your saved websites.</p>
+  </div>
+
+  <div style="background:#fff;padding:20px;border-radius:16px;margin-top:20px;box-shadow:0 4px 18px rgba(0,0,0,0.08);">
+
+    <h3 id="otgProductFormTitle">Add Product</h3>
+
+    <label for="otgProductProject">Choose Website</label>
+
+    <select id="otgProductProject"
+      style="width:100%;padding:12px;margin:8px 0 15px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+      <option value="">Loading your websites...</option>
+    </select>
+
+    <input id="otgProductName" type="text"
+      placeholder="Product name"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+
+    <input id="otgProductPrice" type="text"
+      placeholder="Price e.g. ₦35,000"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+
+    <input id="otgProductCategory" type="text"
+      placeholder="Category e.g. Fashion"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+
+    <input id="otgProductImage" type="url"
+      placeholder="Product image URL (https://...)"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+
+    <input id="otgProductWhatsApp" type="text"
+      placeholder="WhatsApp number e.g. 2348012345678"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+
+    <textarea id="otgProductDescription"
+      placeholder="Product description" rows="4"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;resize:vertical;"></textarea>
+
+    <button id="otgProductSaveButton" type="button"
+      style="width:100%;padding:13px;margin-top:10px;border:0;border-radius:8px;cursor:pointer;font-weight:bold;">
+      ➕ Add Product
+    </button>
+
+    <button id="otgProductCancelButton" type="button"
+      style="display:none;width:100%;padding:13px;margin-top:8px;border:0;border-radius:8px;cursor:pointer;">
+      Cancel Edit
+    </button>
+
+    <p id="otgProductMessage" role="status" aria-live="polite"></p>
+
+  </div>
+
+  <div style="background:#fff;padding:20px;border-radius:16px;margin-top:20px;box-shadow:0 4px 18px rgba(0,0,0,0.08);">
+
+    <h3>Your Products</h3>
+
+    <div id="otgProductsContainer">
+      Select a website above to see its products.
+    </div>
+
+  </div>
+
+</section>
+
+<script>
+(function () {
+  "use strict";
+
+  // Prevent duplicate initialization if this script is accidentally
+  // included more than once.
+  if (window.otgProductManagerInitialized) return;
+  window.otgProductManagerInitialized = true;
+
+  const SUPABASE_URL =
+    "https://actwvvokfdemobgsfctx.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
+
+  const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  let editingProductId = null;
+  let loadingProducts = false;
+
+  const $ = function (id) {
+    return document.getElementById(id);
+  };
+
+  const projectSelect = $("otgProductProject");
+  const productContainer = $("otgProductsContainer");
+  const message = $("otgProductMessage");
+  const saveButton = $("otgProductSaveButton");
+  const cancelButton = $("otgProductCancelButton");
+
+  function showMessage(text, isError) {
+    message.textContent = text;
+    message.style.color = isError ? "#b42318" : "#187444";
+  }
+
+  async function getUser() {
+    const result = await db.auth.getUser();
+
+    if (result.error || !result.data.user) {
+      throw new Error("Please log in before managing products.");
+    }
+
+    return result.data.user;
+  }
+
+  function makeElement(tag, text, className) {
+    const element = document.createElement(tag);
+
+    if (text !== undefined && text !== null) {
+      element.textContent = String(text);
+    }
+
+    if (className) {
+      element.className = className;
+    }
+
+    return element;
+  }
+
+  function makeButton(text, onClick, background) {
+    const button = makeElement("button", text);
+
+    button.type = "button";
+    button.style.cssText =
+      "padding:9px 14px;border:0;border-radius:7px;" +
+      "cursor:pointer;margin:4px 6px 4px 0;" +
+      "background:" + background + ";color:#fff;";
+
+    button.addEventListener("click", onClick);
+
+    return button;
+  }
+
+  async function loadProjects() {
+    projectSelect.replaceChildren(
+      new Option("Loading your websites...", "")
+    );
+
+    try {
+      const user = await getUser();
+
+      const result = await db
+        .from("projects")
+        .select("id, title")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (result.error) throw result.error;
+
+      const projects = result.data || [];
+
+      projectSelect.replaceChildren(
+        new Option("Select a website", "")
+      );
+
+      projects.forEach(function (project) {
+        projectSelect.add(
+          new Option(
+            project.title || "Untitled Website",
+            project.id
+          )
+        );
+      });
+
+      if (projects.length === 0) {
+        projectSelect.replaceChildren(
+          new Option("No saved websites yet", "")
+        );
+
+        productContainer.textContent =
+          "Save a website before adding products.";
+        return;
+      }
+
+      await loadProducts();
+
+    } catch (error) {
+      console.error("OTG project loading error:", error);
+
+      projectSelect.replaceChildren(
+        new Option("Could not load websites", "")
+      );
+
+      showMessage(error.message, true);
+    }
+  }
+
+  async function loadProducts() {
+    const projectId = projectSelect.value;
+
+    if (!projectId) {
+      productContainer.textContent =
+        "Select a website above to see its products.";
+      return;
+    }
+
+    if (loadingProducts) return;
+    loadingProducts = true;
+
+    productContainer.textContent = "Loading products...";
+
+    try {
+      const user = await getUser();
+
+      const result = await db
+        .from("products")
+        .select("*")
+        .eq("project_id", projectId)
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (result.error) throw result.error;
+
+      const products = result.data || [];
+
+      productContainer.replaceChildren();
+
+      if (products.length === 0) {
+        productContainer.appendChild(
+          makeElement("p", "No products added yet.")
+        );
+        return;
+      }
+
+      products.forEach(function (product) {
+        const card = document.createElement("article");
+
+        card.style.cssText =
+          "border:1px solid #e5e5e5;border-radius:12px;" +
+          "padding:15px;margin:12px 0;background:#fafafa;";
+
+        if (product.image_url) {
+          try {
+            const imageURL = new URL(product.image_url);
+
+            if (
+              imageURL.protocol === "https:" ||
+              imageURL.protocol === "http:"
+            ) {
+              const image = document.createElement("img");
+              image.src = imageURL.href;
+              image.alt = product.name || "Product";
+              image.loading = "lazy";
+              image.style.cssText =
+                "width:100%;max-width:250px;height:180px;" +
+                "object-fit:cover;border-radius:10px;margin-bottom:12px;";
+
+              card.appendChild(image);
+            }
+          } catch (_) {
+            // Ignore invalid image URLs.
+          }
+        }
+
+        card.appendChild(
+          makeElement("h3", product.name || "Unnamed Product")
+        );
+
+        card.appendChild(
+          makeElement(
+            "p",
+            "Price: " + (product.price || "Not specified")
+          )
+        );
+
+        card.appendChild(
+          makeElement(
+            "p",
+            "Category: " + (product.category || "Not specified")
+          )
+        );
+
+        card.appendChild(
+          makeElement(
+            "p",
+            product.description || "No description provided."
+          )
+        );
+
+        if (product.whatsapp_number) {
+          card.appendChild(
+            makeElement("p", "WhatsApp: " + product.whatsapp_number)
+          );
+        }
+
+        card.appendChild(
+          makeButton(
+            "✏️ Edit",
+            function () {
+              window.otgEditProduct(product.id);
+            },
+            "#2563eb"
+          )
+        );
+
+        card.appendChild(
+          makeButton(
+            "🗑️ Delete",
+            function () {
+              window.otgDeleteProduct(product.id);
+            },
+            "#b42318"
+          )
+        );
+
+        productContainer.appendChild(card);
+      });
+
+    } catch (error) {
+      console.error("OTG product loading error:", error);
+
+      productContainer.textContent =
+        "Unable to load products: " + error.message;
+
+    } finally {
+      loadingProducts = false;
+    }
+  }
+
+  function clearProductForm() {
+    $("otgProductName").value = "";
+    $("otgProductPrice").value = "";
+    $("otgProductCategory").value = "";
+    $("otgProductImage").value = "";
+    $("otgProductWhatsApp").value = "";
+    $("otgProductDescription").value = "";
+
+    editingProductId = null;
+
+    $("otgProductFormTitle").textContent = "Add Product";
+    saveButton.textContent = "➕ Add Product";
+    cancelButton.style.display = "none";
+  }
+
+  window.otgSaveProduct = async function () {
+    if (saveButton.disabled) return;
+
+    const projectId = projectSelect.value;
+    const name = $("otgProductName").value.trim();
+    const price = $("otgProductPrice").value.trim();
+    const category = $("otgProductCategory").value.trim();
+    const image_url = $("otgProductImage").value.trim();
+    const whatsapp_number = $("otgProductWhatsApp").value.trim();
+    const description = $("otgProductDescription").value.trim();
+
+    if (!projectId) {
+      showMessage("Please select a website first.", true);
+      return;
+    }
+
+    if (!name) {
+      showMessage("Please enter a product name.", true);
+      return;
+    }
+
+    if (image_url) {
+      try {
+        const parsedURL = new URL(image_url);
+
+        if (
+          parsedURL.protocol !== "https:" &&
+          parsedURL.protocol !== "http:"
+        ) {
+          throw new Error();
+        }
+      } catch (_) {
+        showMessage("Please enter a valid product image URL.", true);
+        return;
+      }
+    }
+
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving...";
+
+    try {
+      const user = await getUser();
+
+      // Confirm that the selected website belongs to this user.
+      const projectResult = await db
+        .from("projects")
+        .select("id")
+        .eq("id", projectId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (projectResult.error) throw projectResult.error;
+
+      if (!projectResult.data) {
+        throw new Error(
+          "The selected website was not found in your account."
+        );
+      }
+
+      const productData = {
+        name: name,
+        price: price,
+        category: category,
+        image_url: image_url,
+        whatsapp_number: whatsapp_number,
+        description: description
+      };
+
+      let result;
+
+      if (editingProductId) {
+        result = await db
+          .from("products")
+          .update(productData)
+          .eq("id", editingProductId)
+          .eq("project_id", projectId)
+          .eq("user_id", user.id)
+          .select("id");
+
+      } else {
+        result = await db
+          .from("products")
+          .insert({
+            ...productData,
+            user_id: user.id,
+            project_id: projectId
+          })
+          .select("id");
+      }
+
+      if (result.error) throw result.error;
+
+      if (editingProductId && (!result.data || result.data.length === 0)) {
+        throw new Error(
+          "The product was not updated. Please check your access and try again."
+        );
+      }
+
+      showMessage(
+        editingProductId
+          ? "Product updated successfully."
+          : "Product added successfully.",
+        false
+      );
+
+      clearProductForm();
+
+      await loadProducts();
+
+    } catch (error) {
+      console.error("OTG product save error:", error);
+      showMessage("Could not save product: " + error.message, true);
+
+    } finally {
+      saveButton.disabled = false;
+      saveButton.textContent = editingProductId
+        ? "💾 Save Changes"
+        : "➕ Add Product";
+    }
+  };
+
+  window.otgEditProduct = async function (productId) {
+    try {
+      const user = await getUser();
+
+      const result = await db
+        .from("products")
+        .select("*")
+        .eq("id", productId)
+        .eq("user_id", user.id)
+        .single();
+
+      if (result.error) throw result.error;
+
+      const product = result.data;
+
+      projectSelect.value = product.project_id;
+
+      if (!projectSelect.value) {
+        throw new Error("The product's website is not available.");
+      }
+
+      editingProductId = product.id;
+
+      $("otgProductName").value = product.name || "";
+      $("otgProductPrice").value = product.price || "";
+      $("otgProductCategory").value = product.category || "";
+      $("otgProductImage").value = product.image_url || "";
+      $("otgProductWhatsApp").value = product.whatsapp_number || "";
+      $("otgProductDescription").value = product.description || "";
+
+      $("otgProductFormTitle").textContent = "Edit Product";
+      saveButton.textContent = "💾 Save Changes";
+      cancelButton.style.display = "block";
+
+      showMessage("Edit the details, then tap Save Changes.", false);
+
+      $("otgProductFormTitle").scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
+    } catch (error) {
+      console.error("OTG product edit error:", error);
+      showMessage("Could not load product: " + error.message, true);
+    }
+  };
+
+  window.otgDeleteProduct = async function (productId) {
+    if (!confirm("Are you sure you want to delete this product?")) {
+      return;
+    }
+
+    try {
+      const user = await getUser();
+
+      const result = await db
+        .from("products")
+        .delete()
+        .eq("id", productId)
+        .eq("user_id", user.id)
+        .select("id");
+
+      if (result.error) throw result.error;
+
+      if (!result.data || result.data.length === 0) {
+        throw new Error(
+          "The product was not deleted. Check your permissions."
+        );
+      }
+
+      if (editingProductId === productId) {
+        clearProductForm();
+      }
+
+      showMessage("Product deleted successfully.", false);
+      await loadProducts();
+
+    } catch (error) {
+      console.error("OTG product delete error:", error);
+      showMessage("Could not delete product: " + error.message, true);
+    }
+  };
+
+  window.otgCancelProductEdit = function () {
+    clearProductForm();
+    showMessage("Editing cancelled.", false);
+  };
+
+  saveButton.addEventListener("click", window.otgSaveProduct);
+  cancelButton.addEventListener("click", window.otgCancelProductEdit);
+  projectSelect.addEventListener("change", loadProducts);
+
+  // Wait until the page's other scripts have initialized.
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", loadProjects, {
+      once: true
+    });
+  } else {
+    loadProjects();
+  }
+
+})();
+</script>
+
+<!-- OTG PRODUCT MANAGEMENT END -->
+ <section
+  class="section"
+  id="about"
+>
+
+  <div class="section-heading">
+
+    <h2>
+      About OTG
+    </h2>
+
+  </div>
+
+  <div class="about-card">
+
+    <p>
+      OTG AI Website Builder helps students and creators
+      turn simple ideas into professional websites.
+    </p>
+
+    <p>
+      Create your website, edit the code, save your project,
+      publish it and share your website with others.
+    </p>
+
+    <p>
+      Built for OTG Graphic Academy students and creators
+      who want to learn and build with modern tools.
+    </p>
+
+  </div>
+
+</section>
+
+</div>
+
+
+<div id="toast"></div>
+
+
+<div
+  id="saveModal"
+  class="modal-overlay hidden"
+>
+
+  <div class="modal">
+
+    <h3>
+      Save Your Website
+    </h3>
+
+    <input
+      type="text"
+      id="projectTitle"
+      placeholder="Enter project name"
+    >
+
+    <div class="modal-actions">
+
+      <button
+        class="modal-cancel"
+        onclick="closeSaveModal()"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="modal-confirm"
+        onclick="confirmSaveProject()"
+      >
+        Save Project
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<div
+  id="renameModal"
+  class="modal-overlay hidden"
+>
+
+  <div class="modal">
+
+    <h3>
+      Rename Project
+    </h3>
+
+    <input
+      type="text"
+      id="renameProjectTitle"
+      placeholder="Enter new project name"
+    >
+
+    <div class="modal-actions">
+
+      <button
+        class="modal-cancel"
+        onclick="closeRenameModal()"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="modal-confirm"
+        onclick="confirmRenameProject()"
+      >
+        Rename
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+  "https://actwvvokfdemobgsfctx.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+let currentUser = null;
+let currentProjectId = null;
+let currentEditor = "html";
+let renameProjectId = null;
+let authMode = "login";
+
+let website = {
+  html:"",
+  css:"",
+  js:""
+};
+
+let websiteWhatsApp = "";
+
+window.otgProjects = [];
+
+function $(id){
+  return document.getElementById(id);
+}
+
+function showToast(message){
+
+  const toast = $("toast");
+
+  if(!toast) return;
+
+  toast.textContent = message;
+
+  toast.classList.add("show");
+
+  clearTimeout(window.otgToastTimer);
+
+  window.otgToastTimer =
+    setTimeout(function(){
+
+      toast.classList.remove("show");
+
+    },3000);
+
+}
+
+function showSection(id){
+
+  const section = $(id);
+
+  if(!section) return;
+
+  section.scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+
+}
+
+function slugify(text){
+
+  return String(text || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"")
+    .substring(0,70);
+
+}
+
+function escapeHtml(value){
+
+  return String(value || "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+function normalizeWhatsApp(number){
+
+  if(!number) return "";
+
+  let value =
+    String(number)
+      .trim()
+      .replace(/[^\d+]/g,"");
+
+  if(value.startsWith("00")){
+    value = "+" + value.substring(2);
+  }
+
+  if(value.startsWith("+")){
+    return value;
+  }
+
+  if(value.startsWith("0")){
+    return "+234" + value.substring(1);
+  }
+
+  return "+" + value;
+
+}
+
+function setWhatsAppNumber(number){
+
+  websiteWhatsApp =
+    normalizeWhatsApp(number);
+
+  const input =
+    $("whatsappNumber");
+
+  if(input){
+    input.value =
+      websiteWhatsApp;
+  }
+
+}
+
+function getWhatsAppNumber(){
+
+  const input =
+    $("whatsappNumber");
+
+  if(!input){
+    return websiteWhatsApp || "";
+  }
+
+  return normalizeWhatsApp(
+    input.value
+  );
+
+}
+
+function whatsappLink(number){
+
+  const normalized =
+    normalizeWhatsApp(number);
+
+  if(!normalized) return "";
+
+  const digits =
+    normalized.replace(/\D/g,"");
+
+  if(!digits) return "";
+
+  return "https://wa.me/" + digits;
+
+}
+
+function injectWhatsAppButton(html,number){
+
+  const normalized =
+    normalizeWhatsApp(number);
+
+  if(!normalized) return html;
+
+  const link =
+    whatsappLink(normalized);
+
+  if(!link) return html;
+
+  const existingButton =
+    html.match(
+      /<a[^>]*id=["']whatsappButton["'][^>]*>/i
+    );
+
+  if(existingButton){
+
+    return html.replace(
+      /(<a[^>]*id=["']whatsappButton["'][^>]*href=["'])[^"']*(["'][^>]*>)/i,
+      "$1" + link + "$2"
+    );
+
+  }
+
+  const button = `
+<div style="text-align:center;padding:35px 20px;">
+  <a
+    id="whatsappButton"
+    href="${link}"
+    target="_blank"
+    rel="noopener noreferrer"
+    style="
+      display:inline-block;
+      background:#128c4a;
+      color:white;
+      text-decoration:none;
+      padding:14px 22px;
+      border-radius:9px;
+      font-weight:700;
+      font-family:Arial,sans-serif;
+    "
+  >
+    Chat on WhatsApp
+  </a>
+</div>
+`;
+
+  if(/<\/body>/i.test(html)){
+    return html.replace(
+      /<\/body>/i,
+      button + "</body>"
+    );
+  }
+
+  return html + button;
+
+}
+
+function applyWhatsAppToWebsite(){
+
+  const number =
+    getWhatsAppNumber();
+
+  websiteWhatsApp =
+    number;
+
+  website.html =
+    injectWhatsAppButton(
+      website.html,
+      number
+    );
+
+  if(
+    website.html &&
+    /id=["']whatsappButton["']/i.test(
+      website.html
+    )
+  ){
+
+    const link =
+      whatsappLink(number);
+
+    website.html =
+      website.html.replace(
+        /(<a[^>]*id=["']whatsappButton["'][^>]*href=["'])[^"']*(["'][^>]*>)/i,
+        "$1" +
+        (link || "#") +
+        "$2"
+      );
+
+  }
+
+}
+
+const templates = {
+
+business:{
+html:`
+<section style="padding:80px 20px;text-align:center;background:#f5f7f5;">
+  <h1 style="font-size:48px;color:#075b24;">Your Business</h1>
+  <p style="font-size:19px;color:#555;max-width:700px;margin:20px auto;">
+    Welcome to our business website.
+  </p>
+</section>
+
+<section style="padding:60px 20px;max-width:1000px;margin:auto;">
+  <h2>About Us</h2>
+  <p>
+    We provide quality products and professional services
+    to our customers.
+  </p>
+</section>
+
+<section style="padding:60px 20px;background:#f7f7f7;">
+  <div style="max-width:1000px;margin:auto;">
+    <h2>Our Services</h2>
+    <p>
+      Discover our products and services.
+    </p>
+  </div>
+</section>
+
+<section style="padding:60px 20px;text-align:center;">
+  <h2>Contact Us</h2>
+  <p>We would love to hear from you.</p>
+</section>
+`,
+css:`
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  color:#172033;
+}
+h1,h2{
+  line-height:1.2;
+}
+`,
+js:""
+},
+
+portfolio:{
+html:`
+<section style="padding:90px 20px;text-align:center;background:#111;color:#fff;">
+  <h1 style="font-size:52px;">My Portfolio</h1>
+  <p style="font-size:20px;">
+    Creative designer & digital creator.
+  </p>
+</section>
+
+<section style="padding:70px 20px;max-width:1100px;margin:auto;">
+  <h2>About Me</h2>
+  <p>
+    Welcome to my portfolio. Here you can explore
+    some of my work and creative projects.
+  </p>
+</section>
+
+<section style="padding:70px 20px;background:#f5f5f5;">
+  <div style="max-width:1100px;margin:auto;">
+    <h2>My Work</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-top:25px;">
+      <div style="background:#fff;padding:30px;border-radius:12px;">Project One</div>
+      <div style="background:#fff;padding:30px;border-radius:12px;">Project Two</div>
+      <div style="background:#fff;padding:30px;border-radius:12px;">Project Three</div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:70px 20px;text-align:center;">
+  <h2>Let's Work Together</h2>
+  <p>Contact me for your next project.</p>
+</section>
+`,
+css:`
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+}
+`,
+js:""
+},
+
+fashion:{
+html:`
+<section style="padding:90px 20px;text-align:center;background:#111;color:white;">
+  <h1 style="font-size:54px;margin-bottom:15px;">
+    Prince Fashion
+  </h1>
+
+  <p style="font-size:20px;">
+    Premium Men's & Women's Fashion
+  </p>
+
+  <a
+    id="whatsappButton"
+    class="waButton"
+    href="#"
+    target="_blank"
+    rel="noopener noreferrer"
+    style="
+      display:inline-block;
+      margin-top:25px;
+      background:#128c4a;
+      color:#fff;
+      text-decoration:none;
+      padding:14px 24px;
+      border-radius:9px;
+      font-weight:700;
+    "
+  >
+    Chat on WhatsApp
+  </a>
+</section>
+
+<section style="padding:70px 20px;max-width:1100px;margin:auto;">
+  <h2>About Us</h2>
+  <p>
+    Welcome to Prince Fashion. We provide stylish,
+    quality and affordable clothing for men and women.
+  </p>
+</section>
+
+<section style="padding:70px 20px;background:#f5f5f5;">
+  <div style="max-width:1100px;margin:auto;">
+    <h2>Our Collection</h2>
+
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:20px;
+      margin-top:25px;
+    ">
+
+      <div style="background:#fff;padding:35px;border-radius:12px;">
+        Men's Fashion
+      </div>
+
+      <div style="background:#fff;padding:35px;border-radius:12px;">
+        Women's Fashion
+      </div>
+
+      <div style="background:#fff;padding:35px;border-radius:12px;">
+        Accessories
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section style="padding:70px 20px;text-align:center;">
+  <h2>Shop With Us</h2>
+  <p>
+    Contact us today to place your order.
+  </p>
+</section>
+`,
+css:`
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  color:#171717;
+}
+`,
+js:""
+},
+
+restaurant:{
+html:`
+<section style="padding:90px 20px;text-align:center;background:#24140c;color:#fff;">
+  <h1 style="font-size:50px;">
+    Our Restaurant
+  </h1>
+  <p style="font-size:19px;">
+    Delicious meals made with love.
+  </p>
+</section>
+
+<section style="padding:70px 20px;max-width:1000px;margin:auto;">
+  <h2>About Us</h2>
+  <p>
+    Welcome to our restaurant. Enjoy delicious meals,
+    great service and a wonderful atmosphere.
+  </p>
+</section>
+
+<section style="padding:70px 20px;background:#f7f4f1;">
+  <div style="max-width:1000px;margin:auto;">
+    <h2>Our Menu</h2>
+    <ul style="line-height:2;font-size:18px;">
+      <li>Jollof Rice</li>
+      <li>Fried Rice</li>
+      <li>Chicken</li>
+      <li>Fish</li>
+      <li>Local Dishes</li>
+    </ul>
+  </div>
+</section>
+
+<section style="padding:70px 20px;text-align:center;">
+  <h2>Contact Us</h2>
+  <p>
+    Call or visit us today.
+  </p>
+</section>
+`,
+css:`
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+}
+`,
+js:""
+},
+
+agency:{
+html:`
+<section style="padding:90px 20px;background:#075b24;color:#fff;text-align:center;">
+  <h1 style="font-size:52px;">
+    Creative Agency
+  </h1>
+  <p>
+    Ideas. Strategy. Creativity.
+  </p>
+</section>
+
+<section style="padding:70px 20px;max-width:1100px;margin:auto;">
+  <h2>What We Do</h2>
+  <p>
+    We help brands build powerful digital experiences.
+  </p>
+</section>
+
+<section style="padding:70px 20px;background:#f5f7f5;">
+  <div style="max-width:1100px;margin:auto;">
+    <h2>Our Services</h2>
+    <p>
+      Branding, graphics, websites and digital solutions.
+    </p>
+  </div>
+</section>
+`,
+css:`
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+}
+`,
+js:""
+},
+
+school:{
+html:`
+<section style="padding:80px 20px;background:#075b24;color:#fff;text-align:center;">
+  <h1 style="font-size:48px;">
+    Our Academy
+  </h1>
+  <p>
+    Learning today. Leading tomorrow.
+  </p>
+</section>
+
+<section style="padding:70px 20px;max-width:1000px;margin:auto;">
+  <h2>About Our School</h2>
+  <p>
+    We provide quality education and practical learning
+    opportunities for our students.
+  </p>
+</section>
+
+<section style="padding:70px 20px;background:#f5f7f5;">
+  <div style="max-width:1000px;margin:auto;">
+    <h2>Our Programmes</h2>
+    <p>
+      Explore our courses, programmes and learning opportunities.
+    </p>
+  </div>
+</section>
+`,
+css:`
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+}
+`,
+js:""
+},
+
+event:{
+html:`
+<section style="padding:90px 20px;text-align:center;background:#161616;color:#fff;">
+  <h1 style="font-size:52px;">
+    Special Event
+  </h1>
+  <p>
+    Join us for an unforgettable experience.
+  </p>
+</section>
+
+<section style="padding:70px 20px;text-align:center;">
+  <h2>Event Details</h2>
+  <p>Date: Coming Soon</p>
+  <p>Venue: Coming Soon</p>
+</section>
+
+<section style="padding:70px 20px;background:#f5f5f5;text-align:center;">
+  <h2>Get Your Invitation</h2>
+  <p>
+    Contact the organisers for more information.
+  </p>
+</section>
+`,
+css:`
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+}
+`,
+js:""
+},
+
+personal:{
+html:`
+<section style="padding:90px 20px;text-align:center;background:#111;color:#fff;">
+  <h1 style="font-size:50px;">
+    My Personal Website
+  </h1>
+  <p>
+    Welcome to my world.
+  </p>
+</section>
+
+<section style="padding:70px 20px;max-width:1000px;margin:auto;">
+  <h2>About Me</h2>
+  <p>
+    Hello and welcome. This website tells you more about me,
+    my work and my interests.
+  </p>
+</section>
+
+<section style="padding:70px 20px;background:#f5f5f5;">
+  <div style="max-width:1000px;margin:auto;">
+    <h2>Contact</h2>
+    <p>
+      I would love to connect with you.
+    </p>
+  </div>
+</section>
+`,
+css:`
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+}
+`,
+js:""
+}
+
+};
+
+templates.agency =
+templates.agency || templates.business;
+
+templates.personal =
+templates.personal || templates.portfolio;
+
+templates.school =
+templates.school || templates.business;
+
+templates.event =
+templates.event || templates.business;
+
+function loadTemplate(name){
+
+  const template =
+    templates[name];
+
+  if(!template){
+
+    showToast(
+      "Template not found."
+    );
+
+    return;
+
+  }
+
+  website = {
+    html:template.html || "",
+    css:template.css || "",
+    js:template.js || ""
+  };
+
+  currentProjectId = null;
+
+  setWhatsAppNumber(
+    getWhatsAppNumber()
+  );
+
+  applyWhatsAppToWebsite();
+
+  updateEditor();
+
+  $("editorSection").scrollIntoView({
+    behavior:"smooth"
+  });
+
+  showToast(
+    "Template loaded successfully."
+  );
+
+}
+
+function useTemplate(name){
+  loadTemplate(name);
+}
+
+function loadExample(type){
+
+  const prompts = {
+
+    fashion:
+      "Create a modern website for my fashion business called Prince Fashion. I sell men's and women's clothing.",
+
+    portfolio:
+      "Create a professional portfolio website for me as a graphic designer.",
+
+    restaurant:
+      "Create a beautiful website for my restaurant with an about section, menu and contact information."
+
+  };
+
+  $("websitePrompt").value =
+    prompts[type] || "";
+
+  showSection("generator");
+
+}
+
+function updateEditor(){
+
+  const editor =
+    $("codeEditor");
+
+  if(!editor) return;
+
+  editor.value =
+    website[currentEditor] || "";
+
+  document
+    .querySelectorAll(".editor-tabs button")
+    .forEach(function(button){
+      button.classList.remove("active");
+    });
+
+  const active =
+    $(currentEditor + "Tab");
+
+  if(active){
+    active.classList.add("active");
+  }
+
+}
+
+function saveEditorChanges(){
+
+  const editor =
+    $("codeEditor");
+
+  if(!editor) return;
+
+  website[currentEditor] =
+    editor.value;
+
+}
+
+function switchEditor(type){
+
+  saveEditorChanges();
+
+  currentEditor =
+    type;
+
+  updateEditor();
+
+}
+
+async function generateWithAI(){
+
+  const prompt =
+    $("websitePrompt").value.trim();
+
+  const style =
+    $("websiteStyle").value;
+
+  const whatsapp =
+    getWhatsAppNumber();
+
+  if(!prompt){
+
+    showToast(
+      "Please describe the website you want to create."
+    );
+
+    return;
+
+  }
+
+  const button =
+    $("generateBtn");
+
+  button.disabled = true;
+
+  button.textContent =
+    "Generating...";
+
+  try{
+
+    const response =
+      await fetch(
+        "/api/generate",
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:JSON.stringify({
+            prompt,
+            style,
+            whatsappNumber:whatsapp
+          })
+        }
+      );
+
+    if(!response.ok){
+      throw new Error(
+        "AI request failed"
+      );
+    }
+
+    const data =
+      await response.json();
+
+    website = {
+      html:data.html || "",
+      css:data.css || "",
+      js:data.js || ""
+    };
+
+    website.html =
+      injectWhatsAppButton(
+        website.html,
+        whatsapp
+      );
+
+    websiteWhatsApp =
+      whatsapp;
+
+    updateEditor();
+
+    $("editorSection").scrollIntoView({
+      behavior:"smooth"
+    });
+
+    showToast(
+      "Website generated successfully."
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    const lowerPrompt =
+      prompt.toLowerCase();
+
+    let type =
+      "business";
+
+    if(
+      lowerPrompt.includes("fashion") ||
+      lowerPrompt.includes("clothing")
+    ){
+      type = "fashion";
+    }
+
+    else if(
+      lowerPrompt.includes("portfolio") ||
+      lowerPrompt.includes("designer")
+    ){
+      type = "portfolio";
+    }
+
+    else if(
+      lowerPrompt.includes("restaurant") ||
+      lowerPrompt.includes("food")
+    ){
+      type = "restaurant";
+    }
+
+    else if(
+      lowerPrompt.includes("school") ||
+      lowerPrompt.includes("academy")
+    ){
+      type = "school";
+    }
+
+    else if(
+      lowerPrompt.includes("event") ||
+      lowerPrompt.includes("celebration")
+    ){
+      type = "event";
+    }
+
+    else if(
+      lowerPrompt.includes("agency")
+    ){
+      type = "agency";
+    }
+
+    else if(
+      lowerPrompt.includes("personal")
+    ){
+      type = "personal";
+    }
+
+    const template =
+      templates[type];
+
+    website = {
+      html:template.html || "",
+      css:template.css || "",
+      js:template.js || ""
+    };
+
+    website.html =
+      injectWhatsAppButton(
+        website.html,
+        whatsapp
+      );
+
+    websiteWhatsApp =
+      whatsapp;
+
+    updateEditor();
+
+    $("editorSection").scrollIntoView({
+      behavior:"smooth"
+    });
+
+    showToast(
+      "Website created successfully."
+    );
+
+  }finally{
+
+    button.disabled = false;
+
+    button.textContent =
+      "🚀 Generate Website";
+
+  }
+
+}
+
+function buildPreviewDocument(){
+
+  const html =
+    website.html || "";
+
+  const css =
+    website.css || "";
+
+  const js =
+    website.js || "";
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+${css}
+</style>
+</head>
+<body>
+${html}
+<script>
+${js}
+<\/script>
+</body>
+</html>
+`;
+
+}
+
+function previewWebsite(){
+
+  saveEditorChanges();
+
+  const preview =
+    window.open(
+      "",
+      "_blank"
+    );
+
+  if(!preview){
+
+    showToast(
+      "Please allow pop-ups to preview your website."
+    );
+
+    return;
+
+  }
+
+  preview.document.open();
+
+  preview.document.write(
+    buildPreviewDocument()
+  );
+
+  preview.document.close();
+
+}
+async function saveProject(){
+
+  saveEditorChanges();
+  applyWhatsAppToWebsite();
+
+  if(!currentUser){
+    showToast("Please login first.");
+    return;
+  }
+
+  if(!website.html.trim()){
+    showToast("Please create a website first.");
+    return;
+  }
+
+  if(currentProjectId){
+    await updateExistingProject();
+    return;
+  }
+
+  openSaveModal();
+
+}
+
+
+function openSaveModal(){
+
+  const modal = $("saveModal");
+
+  if(!modal) return;
+
+  const input = $("projectTitle");
+
+  if(input){
+    input.value = "";
+  }
+
+  modal.classList.remove("hidden");
+
+  setTimeout(function(){
+
+    if(input){
+      input.focus();
+    }
+
+  },100);
+
+}
+
+
+function closeSaveModal(){
+
+  const modal = $("saveModal");
+
+  if(modal){
+    modal.classList.add("hidden");
+  }
+
+}
+
+
+async function confirmSaveProject(){
+
+  saveEditorChanges();
+  applyWhatsAppToWebsite();
+
+  const title =
+    $("projectTitle").value.trim();
+
+  if(!title){
+
+    showToast(
+      "Please enter a project name."
+    );
+
+    return;
+
+  }
+
+  if(!currentUser){
+
+    showToast(
+      "Please login first."
+    );
+
+    return;
+
+  }
+
+  if(!website.html.trim()){
+
+    showToast(
+      "Please create a website first."
+    );
+
+    return;
+
+  }
+
+  const slug =
+    slugify(title) +
+    "-" +
+    Math.random()
+      .toString(36)
+      .substring(2,7);
+
+  const project = {
+
+    user_id:currentUser.id,
+
+    title:title,
+
+    slug:slug,
+
+    html:website.html,
+
+    css:website.css,
+
+    js:website.js,
+
+    is_published:false
+
+  };
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("projects")
+      .insert(project)
+      .select()
+      .single();
+
+  if(error){
+
+    console.error(error);
+
+    showToast(
+      error.message ||
+      "Unable to save project."
+    );
+
+    return;
+
+  }
+
+  currentProjectId =
+    data.id;
+
+  closeSaveModal();
+
+  showToast(
+    "Project saved successfully."
+  );
+
+  await renderProjects();
+
+}
+
+
+async function updateExistingProject(){
+
+  saveEditorChanges();
+  applyWhatsAppToWebsite();
+
+  if(!currentUser || !currentProjectId){
+
+    showToast(
+      "No project selected."
+    );
+
+    return;
+
+  }
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("projects")
+      .update({
+        html:website.html,
+        css:website.css,
+        js:website.js
+      })
+      .eq(
+        "id",
+        currentProjectId
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .select()
+      .single();
+
+  if(error){
+
+    console.error(error);
+
+    showToast(
+      error.message ||
+      "Unable to update project."
+    );
+
+    return;
+
+  }
+
+  if(data){
+
+    currentProjectId =
+      data.id;
+
+  }
+
+  showToast(
+    "Project updated successfully."
+  );
+
+  await renderProjects();
+
+}
+
+
+async function renderProjects(){
+
+  if(!currentUser){
+
+    return;
+
+  }
+
+  const container =
+    $("projectsContainer");
+
+  if(container){
+
+    container.innerHTML =
+      `<div class="empty-state">
+        Loading your projects...
+      </div>`;
+
+  }
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("projects")
+      .select("*")
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      );
+
+  if(error){
+
+    console.error(error);
+
+    if(container){
+
+      container.innerHTML =
+        `<div class="empty-state">
+          Unable to load projects.
+        </div>`;
+
+    }
+
+    return;
+
+  }
+
+  window.otgProjects =
+    data || [];
+
+  const projects =
+    window.otgProjects;
+
+  const published =
+    projects.filter(function(project){
+      return project.is_published;
+    }).length;
+
+  const drafts =
+    projects.length -
+    published;
+
+  if($("totalProjects")){
+    $("totalProjects").textContent =
+      projects.length;
+  }
+
+  if($("publishedProjects")){
+    $("publishedProjects").textContent =
+      published;
+  }
+
+  if($("draftProjects")){
+    $("draftProjects").textContent =
+      drafts;
+  }
+
+  if(!container) return;
+
+  if(!projects.length){
+
+    container.innerHTML =
+      `<div class="empty-state">
+        <h3>No projects yet</h3>
+        <p>Create your first website above.</p>
+      </div>`;
+
+    return;
+
+  }
+
+  container.innerHTML =
+    projects.map(function(project){
+
+      const status =
+        project.is_published
+          ? "published"
+          : "draft";
+
+      const statusText =
+        project.is_published
+          ? "PUBLISHED"
+          : "DRAFT";
+
+      const safeTitle =
+        escapeHtml(
+          project.title ||
+          "Untitled Website"
+        );
+
+      const safeSlug =
+        encodeURIComponent(
+          project.slug || ""
+        );
+
+      return `
+
+        <div class="project-card">
+
+          <span class="status ${status}">
+            ${statusText}
+          </span>
+
+          <h3>
+            ${safeTitle}
+          </h3>
+
+          <div class="project-meta">
+            ${project.created_at
+              ? new Date(
+                  project.created_at
+                ).toLocaleDateString()
+              : ""}
+          </div>
+
+          <div class="project-actions">
+
+            <button
+              class="primary"
+              onclick="editProject('${project.id}')"
+            >
+              Edit
+            </button>
+
+            ${
+              project.is_published
+              ?
+              `<button
+                onclick="viewProject('${safeSlug}')"
+              >
+                View
+              </button>
+
+              <button
+                onclick="shareProject('${safeSlug}','${safeTitle.replace(/'/g,"\\'")}')"
+              >
+                Share
+              </button>
+
+              <button
+                onclick="copyProjectLink('${safeSlug}')"
+              >
+                Copy Link
+              </button>
+
+              <button
+                onclick="unpublishProject('${project.id}')"
+              >
+                Unpublish
+              </button>`
+              :
+              `<button
+                class="primary"
+                onclick="publishExisting('${project.id}')"
+              >
+                Publish
+              </button>`
+            }
+
+            <button
+              onclick="renameProject('${project.id}')"
+            >
+              Rename
+            </button>
+
+            <button
+              class="danger"
+              onclick="deleteProject('${project.id}')"
+            >
+              Delete
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+}
+
+
+function getProjectById(id){
+
+  return window.otgProjects.find(
+    function(project){
+      return String(project.id) === String(id);
+    }
+  );
+
+}
+
+
+function extractWhatsAppFromHtml(html){
+
+  if(!html) return "";
+
+  const match =
+    html.match(
+      /https?:\/\/wa\.me\/([0-9]+)/i
+    );
+
+  if(!match){
+    return "";
+  }
+
+  return normalizeWhatsApp(
+    "+" + match[1]
+  );
+
+}
+
+
+async function editProject(id){
+
+  const project =
+    getProjectById(id);
+
+  if(!project){
+
+    showToast(
+      "Project not found."
+    );
+
+    return;
+
+  }
+
+  currentProjectId =
+    project.id;
+
+  website = {
+
+    html:
+      project.html || "",
+
+    css:
+      project.css || "",
+
+    js:
+      project.js || ""
+
+  };
+
+  const savedWhatsApp =
+    extractWhatsAppFromHtml(
+      website.html
+    );
+
+  if(savedWhatsApp){
+
+    setWhatsAppNumber(
+      savedWhatsApp
+    );
+
+  }
+
+  updateEditor();
+
+  showSection(
+    "editorSection"
+  );
+
+  showToast(
+    "Project loaded for editing."
+  );
+
+}
+
+
+function renameProject(id){
+
+  const project =
+    getProjectById(id);
+
+  if(!project){
+
+    showToast(
+      "Project not found."
+    );
+
+    return;
+
+  }
+
+  renameProjectId =
+    id;
+
+  const input =
+    $("renameProjectTitle");
+
+  if(input){
+
+    input.value =
+      project.title || "";
+
+  }
+
+  const modal =
+    $("renameModal");
+
+  if(modal){
+
+    modal.classList.remove(
+      "hidden"
+    );
+
+  }
+
+}
+
+
+function closeRenameModal(){
+
+  const modal =
+    $("renameModal");
+
+  if(modal){
+
+    modal.classList.add(
+      "hidden"
+    );
+
+  }
+
+  renameProjectId =
+    null;
+
+}
+
+
+async function confirmRenameProject(){
+
+  if(!renameProjectId){
+
+    return;
+
+  }
+
+  const input =
+    $("renameProjectTitle");
+
+  const title =
+    input
+      ? input.value.trim()
+      : "";
+
+  if(!title){
+
+    showToast(
+      "Please enter a project name."
+    );
+
+    return;
+
+  }
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("projects")
+      .update({
+        title:title
+      })
+      .eq(
+        "id",
+        renameProjectId
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      );
+
+  if(error){
+
+    console.error(error);
+
+    showToast(
+      error.message ||
+      "Unable to rename project."
+    );
+
+    return;
+
+  }
+
+  closeRenameModal();
+
+  showToast(
+    "Project renamed successfully."
+  );
+
+  await renderProjects();
+
+}
+
+
+async function deleteProject(id){
+
+  const project =
+    getProjectById(id);
+
+  if(!project){
+
+    showToast(
+      "Project not found."
+    );
+
+    return;
+
+  }
+
+  const confirmed =
+    confirm(
+      "Delete \"" +
+      (project.title || "this project") +
+      "\" permanently?"
+    );
+
+  if(!confirmed){
+    return;
+  }
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("projects")
+      .delete()
+      .eq(
+        "id",
+        id
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      );
+
+  if(error){
+
+    console.error(error);
+
+    showToast(
+      error.message ||
+      "Unable to delete project."
+    );
+
+    return;
+
+  }
+
+  if(
+    String(currentProjectId) ===
+    String(id)
+  ){
+
+    currentProjectId =
+      null;
+
+    website = {
+      html:"",
+      css:"",
+      js:""
+    };
+
+    updateEditor();
+
+  }
+
+  showToast(
+    "Project deleted."
+  );
+
+  await renderProjects();
+
+}
+
+
+function getPublicProjectUrl(slug){
+
+  return (
+    window.location.origin +
+    window.location.pathname +
+    "?site=" +
+    encodeURIComponent(slug)
+  );
+
+}
+
+
+function copyProjectLink(slug){
+
+  const decodedSlug =
+    decodeURIComponent(slug || "");
+
+  const url =
+    getPublicProjectUrl(
+      decodedSlug
+    );
+
+  if(
+    navigator.clipboard &&
+    navigator.clipboard.writeText
+  ){
+
+    navigator.clipboard
+      .writeText(url)
+      .then(function(){
+
+        showToast(
+          "Website link copied."
+        );
+
+      })
+      .catch(function(){
+
+        fallbackCopy(url);
+
+      });
+
+    return;
+
+  }
+
+  fallbackCopy(url);
+
+}
+
+
+function fallbackCopy(text){
+
+  const textarea =
+    document.createElement("textarea");
+
+  textarea.value =
+    text;
+
+  textarea.style.position =
+    "fixed";
+
+  textarea.style.opacity =
+    "0";
+
+  document.body.appendChild(
+    textarea
+  );
+
+  textarea.select();
+
+  try{
+
+    document.execCommand(
+      "copy"
+    );
+
+    showToast(
+      "Website link copied."
+    );
+
+  }catch(error){
+
+    showToast(
+      "Unable to copy link."
+    );
+
+  }
+
+  textarea.remove();
+
+}
+
+
+function viewProject(slug){
+
+  const decodedSlug =
+    decodeURIComponent(
+      slug || ""
+    );
+
+  const url =
+    getPublicProjectUrl(
+      decodedSlug
+    );
+
+  window.open(
+    url,
+    "_blank"
+  );
+
+}
+
+
+async function shareProject(
+  slug,
+  title
+){
+
+  const decodedSlug =
+    decodeURIComponent(
+      slug || ""
+    );
+
+  const url =
+    getPublicProjectUrl(
+      decodedSlug
+    );
+
+  if(
+    navigator.share
+  ){
+
+    try{
+
+      await navigator.share({
+        title:
+          title ||
+          "My Website",
+        text:
+          "Check out my website.",
+        url:url
+      });
+
+      return;
+
+    }catch(error){
+
+      if(
+        error &&
+        error.name ===
+        "AbortError"
+      ){
+
+        return;
+
+      }
+
+    }
+
+  }
+
+  copyProjectLink(
+    decodedSlug
+  );
+
+}
+
+
+async function publishExisting(id){
+
+  if(!currentUser){
+
+    showToast(
+      "Please login first."
+    );
+
+    return;
+
+  }
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("projects")
+      .update({
+        is_published:true
+      })
+      .eq(
+        "id",
+        id
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      );
+
+  if(error){
+
+    console.error(error);
+
+    showToast(
+      error.message ||
+      "Unable to publish project."
+    );
+
+    return;
+
+  }
+
+  showToast(
+    "Website published successfully."
+  );
+
+  await renderProjects();
+
+}
+
+
+async function unpublishProject(id){
+
+  if(!currentUser){
+
+    showToast(
+      "Please login first."
+    );
+
+    return;
+
+  }
+
+  const confirmed =
+    confirm(
+      "Unpublish this website?"
+    );
+
+  if(!confirmed){
+    return;
+  }
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("projects")
+      .update({
+        is_published:false
+      })
+      .eq(
+        "id",
+        id
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      );
+
+  if(error){
+
+    console.error(error);
+
+    showToast(
+      error.message ||
+      "Unable to unpublish project."
+    );
+
+    return;
+
+  }
+
+  showToast(
+    "Website unpublished."
+  );
+
+  await renderProjects();
+
+}
+
+
+async function publishWebsite(){
+
+  saveEditorChanges();
+  applyWhatsAppToWebsite();
+
+  if(!currentUser){
+
+    showToast(
+      "Please login first."
+    );
+
+    return;
+
+  }
+
+  if(!website.html.trim()){
+
+    showToast(
+      "Please create a website first."
+    );
+
+    return;
+
+  }
+
+  if(currentProjectId){
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("projects")
+        .update({
+          html:website.html,
+          css:website.css,
+          js:website.js,
+          is_published:true
+        })
+        .eq(
+          "id",
+          currentProjectId
+        )
+        .eq(
+          "user_id",
+          currentUser.id
+        );
+
+    if(error){
+
+      console.error(error);
+
+      showToast(
+        error.message ||
+        "Unable to publish website."
+      );
+
+      return;
+
+    }
+
+    showToast(
+      "Website published successfully."
+    );
+
+    await renderProjects();
+
+    return;
+
+  }
+
+  openSaveModal();
+
+}
+
+
+async function publishFromNewProject(){
+
+  saveEditorChanges();
+  applyWhatsAppToWebsite();
+
+  if(!website.html.trim()){
+
+    showToast(
+      "Please create a website first."
+    );
+
+    return;
+
+  }
+
+  if(!currentUser){
+
+    showToast(
+      "Please login first."
+    );
+
+    return;
+
+  }
+
+  const title =
+    prompt(
+      "Enter a name for your website:"
+    );
+
+  if(!title){
+
+    return;
+
+  }
+
+  const cleanTitle =
+    title.trim();
+
+  if(!cleanTitle){
+
+    return;
+
+  }
+
+  const slug =
+    slugify(cleanTitle) +
+    "-" +
+    Math.random()
+      .toString(36)
+      .substring(2,7);
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("projects")
+      .insert({
+        user_id:currentUser.id,
+        title:cleanTitle,
+        slug:slug,
+        html:website.html,
+        css:website.css,
+        js:website.js,
+        is_published:true
+      })
+      .select()
+      .single();
+
+  if(error){
+
+    console.error(error);
+
+    showToast(
+      error.message ||
+      "Unable to publish website."
+    );
+
+    return;
+
+  }
+
+  currentProjectId =
+    data.id;
+
+  showToast(
+    "Website published successfully."
+  );
+
+  await renderProjects();
+
+}
+
+
+function renderPublicSite(data){
+
+  document.body.innerHTML = "";
+
+  document.body.style.margin =
+    "0";
+
+  document.body.style.background =
+    "#fff";
+
+  const wrapper =
+    document.createElement("div");
+
+  wrapper.className =
+    "publicSite";
+
+  const header =
+    document.createElement("div");
+
+  header.className =
+    "publicSiteHeader";
+
+  header.textContent =
+    data.title ||
+    "OTG Website";
+
+  const content =
+    document.createElement("div");
+
+  content.className =
+    "publicSiteContent";
+
+  const style =
+    document.createElement("style");
+
+  style.textContent =
+    data.css || "";
+
+  content.innerHTML =
+    data.html || "";
+
+  wrapper.appendChild(
+    header
+  );
+
+  wrapper.appendChild(
+    style
+  );
+
+  wrapper.appendChild(
+    content
+  );
+
+  document.body.appendChild(
+    wrapper
+  );
+
+  if(data.js){
+
+    const script =
+      document.createElement("script");
+
+    script.textContent =
+      data.js;
+
+    document.body.appendChild(
+      script
+    );
+
+  }
+
+}
+
+
+async function checkPublicSite(){
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const slug =
+    params.get("site");
+
+  if(!slug){
+
+    return false;
+
+  }
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("projects")
+      .select(
+        "title,slug,html,css,js,is_published"
+      )
+      .eq(
+        "slug",
+        slug
+      )
+      .eq(
+        "is_published",
+        true
+      )
+      .maybeSingle();
+
+  if(error){
+
+    console.error(error);
+
+    document.body.innerHTML =
+      `<div style="
+        min-height:100vh;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:30px;
+        font-family:Arial,sans-serif;
+        text-align:center;
+      ">
+        <div>
+          <h2>Unable to load website</h2>
+          <p>Please try again later.</p>
+        </div>
+      </div>`;
+
+    return true;
+
+  }
+
+  if(!data){
+
+    document.body.innerHTML =
+      `<div style="
+        min-height:100vh;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:30px;
+        font-family:Arial,sans-serif;
+        text-align:center;
+      ">
+        <div>
+          <h2>Website not found</h2>
+          <p>This website may have been unpublished or does not exist.</p>
+        </div>
+      </div>`;
+
+    return true;
+
+  }
+
+  renderPublicSite(data);
+
+  return true;
+
+}
+
+
+function setAuthMode(mode){
+
+  authMode =
+    mode;
+
+  const subtitle =
+    $("authSubtitle");
+
+  const submit =
+    $("authSubmit");
+
+  const switchText =
+    $("authSwitchText");
+
+  const switchButton =
+    $("authSwitchBtn");
+
+  if(authMode === "signup"){
+
+    if(subtitle){
+      subtitle.textContent =
+        "Create your OTG account.";
+    }
+
+    if(submit){
+      submit.textContent =
+        "Create Account";
+    }
+
+    if(switchText){
+      switchText.textContent =
+        "Already have an account?";
+    }
+
+    if(switchButton){
+      switchButton.textContent =
+        "Login";
+    }
+
+  }else{
+
+    if(subtitle){
+      subtitle.textContent =
+        "Login to continue building websites.";
+    }
+
+    if(submit){
+      submit.textContent =
+        "Login";
+    }
+
+    if(switchText){
+      switchText.textContent =
+        "Don't have an account?";
+    }
+
+    if(switchButton){
+      switchButton.textContent =
+        "Create account";
+    }
+
+  }
+
+}
+
+
+async function handleAuthSubmit(event){
+
+  event.preventDefault();
+
+  const email =
+    $("authEmail")
+      .value
+      .trim();
+
+  const password =
+    $("authPassword")
+      .value;
+
+  if(!email || !password){
+
+    showToast(
+      "Enter your email and password."
+    );
+
+    return;
+
+  }
+
+  const button =
+    $("authSubmit");
+
+  if(button){
+
+    button.disabled =
+      true;
+
+    button.textContent =
+      authMode === "signup"
+        ? "Creating..."
+        : "Logging in...";
+
+  }
+
+  try{
+
+    if(authMode === "signup"){
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .auth
+          .signUp({
+            email:email,
+            password:password
+          });
+
+      if(error){
+
+        throw error;
+
+      }
+
+      if(data.session){
+
+        currentUser =
+          data.user;
+
+        showApp();
+
+      }else{
+
+        showToast(
+          "Account created. Check your email if confirmation is required."
+        );
+
+        setAuthMode(
+          "login"
+        );
+
+      }
+
+    }else{
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .auth
+          .signInWithPassword({
+            email:email,
+            password:password
+          });
+
+      if(error){
+
+        throw error;
+
+      }
+
+      currentUser =
+        data.user;
+
+      showApp();
+
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      error.message ||
+      "Authentication failed."
+    );
+
+  }finally{
+
+    if(button){
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        authMode === "signup"
+          ? "Create Account"
+          : "Login";
+
+    }
+
+  }
+
+}
+
+
+function showApp(){
+
+  $("authScreen")
+    .classList
+    .add("hidden");
+
+  $("app")
+    .classList
+    .remove("hidden");
+
+  if(currentUser){
+
+    const email =
+      currentUser.email ||
+      "";
+
+    if($("welcomeText")){
+
+      $("welcomeText").textContent =
+        "Welcome back, " +
+        email +
+        ".";
+
+    }
+
+  }
+
+  renderProjects();
+
+}
+
+
+async function logoutUser(){
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .auth
+      .signOut();
+
+  if(error){
+
+    console.error(error);
+
+    showToast(
+      error.message ||
+      "Unable to logout."
+    );
+
+    return;
+
+  }
+
+  currentUser =
+    null;
+
+  currentProjectId =
+    null;
+
+  website = {
+    html:"",
+    css:"",
+    js:""
+  };
+
+  websiteWhatsApp =
+    "";
+
+  $("app")
+    .classList
+    .add("hidden");
+
+  $("authScreen")
+    .classList
+    .remove("hidden");
+
+  setAuthMode(
+    "login"
+  );
+
+  $("authForm").reset();
+
+  showToast(
+    "Logged out successfully."
+  );
+
+}
+
+
+async function initializeApp(){
+
+  const {
+    data
+  } =
+    await supabaseClient
+      .auth
+      .getSession();
+
+  if(
+    data &&
+    data.session &&
+    data.session.user
+  ){
+
+    currentUser =
+      data.session.user;
+
+    showApp();
+
+  }else{
+
+    $("authScreen")
+      .classList
+      .remove("hidden");
+
+    $("app")
+      .classList
+      .add("hidden");
+
+  }
+
+}
+
+
+$("authForm")
+  .addEventListener(
+    "submit",
+    handleAuthSubmit
+  );
+
+
+$("authSwitchBtn")
+  .addEventListener(
+    "click",
+    function(){
+
+      if(authMode === "login"){
+
+        setAuthMode(
+          "signup"
+        );
+
+      }else{
+
+        setAuthMode(
+          "login"
+        );
+
+      }
+
+    }
+  );
+
+
+const saveModal =
+  $("saveModal");
+
+if(saveModal){
+
+  saveModal.addEventListener(
+    "click",
+    function(event){
+
+      if(
+        event.target ===
+        saveModal
+      ){
+
+        closeSaveModal();
+
+      }
+
+    }
+  );
+
+}
+
+
+const renameModal =
+  $("renameModal");
+
+if(renameModal){
+
+  renameModal.addEventListener(
+    "click",
+    function(event){
+
+      if(
+        event.target ===
+        renameModal
+      ){
+
+        closeRenameModal();
+
+      }
+
+    }
+  );
+
+}
+
+
+supabaseClient
+  .auth
+  .onAuthStateChange(
+    function(event,session){
+
+      if(
+        event ===
+        "SIGNED_IN"
+      ){
+
+        currentUser =
+          session
+            ? session.user
+            : null;
+
+        if(currentUser){
+
+          showApp();
+
+        }
+
+      }
+
+      if(
+        event ===
+        "SIGNED_OUT"
+      ){
+
+        currentUser =
+          null;
+
+        $("app")
+          .classList
+          .add("hidden");
+
+        $("authScreen")
+          .classList
+          .remove("hidden");
+
+      }
+
+    }
+  );
+
+
+(async function(){
+
+  const isPublic =
+    await checkPublicSite();
+
+  if(!isPublic){
+
+    await initializeApp();
+
+  }
+
+})();
+
+</script>
+</body>
+</html>
