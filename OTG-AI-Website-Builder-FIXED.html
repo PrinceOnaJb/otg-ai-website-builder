@@ -839,6 +839,15 @@ header{
 
 </div>
 
+<div id="approvalScreen" class="hidden" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#f3f6fb;font-family:Arial,sans-serif;">
+  <div style="max-width:560px;width:100%;background:#fff;border-radius:18px;padding:32px;box-shadow:0 12px 40px rgba(0,0,0,.10);text-align:center;">
+    <div style="font-size:42px;margin-bottom:12px;">⏳</div>
+    <h2 style="margin:0 0 12px;color:#172554;">OTG Student Account Review</h2>
+    <p id="approvalMessage" style="color:#475569;line-height:1.6;">Your account is being checked.</p>
+    <button type="button" onclick="refreshApprovalStatus()" style="padding:12px 18px;border:0;border-radius:9px;background:#1d4ed8;color:white;cursor:pointer;margin:8px;">Check approval status</button>
+    <button type="button" onclick="logoutUser()" style="padding:12px 18px;border:1px solid #cbd5e1;border-radius:9px;background:white;color:#334155;cursor:pointer;margin:8px;">Log out</button>
+  </div>
+</div>
 
 <div id="app" class="hidden">
 
@@ -4586,22 +4595,11 @@ async function handleAuthSubmit(event){
       }
 
       if(data.session){
-
-        currentUser =
-          data.user;
-
-        showApp();
-
+        currentUser = data.user;
+        await refreshApprovalStatus();
       }else{
-
-        showToast(
-          "Account created. Check your email if confirmation is required."
-        );
-
-        setAuthMode(
-          "login"
-        );
-
+        showToast("Account created. Check your email to confirm the account if confirmation is required, then log in. Your dashboard will be available after administrator approval.");
+        setAuthMode("login");
       }
 
     }else{
@@ -4658,7 +4656,122 @@ async function handleAuthSubmit(event){
 }
 
 
-function showApp(){
+const OTG_ADMIN_EMAIL = "perfectpairs2021@gmail.com";
+let currentProfile = null;
+let approvalCheckInProgress = false;
+
+async function fetchCurrentProfile(){
+  if(!currentUser) throw new Error("Please log in first.");
+  const { data, error } = await supabaseClient
+    .from("profiles")
+    .select("id,email,role,approval_status")
+    .eq("id", currentUser.id)
+    .maybeSingle();
+  if(error) throw error;
+  if(!data) throw new Error("Your student profile has not been created yet. Please contact the administrator.");
+  currentProfile = data;
+  return data;
+}
+
+function hideAllAccessScreens(){
+  $("authScreen").classList.add("hidden");
+  $("approvalScreen").classList.add("hidden");
+  $("app").classList.add("hidden");
+}
+
+async function refreshApprovalStatus(){
+  if(approvalCheckInProgress || !currentUser) return;
+  approvalCheckInProgress = true;
+  const message = $("approvalMessage");
+  if(message) message.textContent = "Checking your account status…";
+  try{
+    const profile = await fetchCurrentProfile();
+    if(profile.role === "admin" || profile.approval_status === "approved"){
+      hideAllAccessScreens();
+      await showApp(true);
+      return;
+    }
+    hideAllAccessScreens();
+    $("approvalScreen").classList.remove("hidden");
+    if(profile.approval_status === "rejected"){
+      message.textContent = "Your account request was not approved. Please contact the OTG administrator for assistance.";
+    }else{
+      message.textContent = "Your free account has been created successfully. Please wait while the OTG administrator reviews and approves your account. Your dashboard will remain locked until approval.";
+    }
+  }catch(error){
+    console.error("Approval status check failed:", error);
+    hideAllAccessScreens();
+    $("approvalScreen").classList.remove("hidden");
+    if(message) message.textContent = "We could not verify your approval status. Please check your internet connection and try again. If this continues, contact the administrator.";
+  }finally{ approvalCheckInProgress = false; }
+}
+
+function ensureAdminPanel(){
+  if(!currentProfile || currentProfile.role !== "admin") return;
+  let panel = $("otgAdminApprovalPanel");
+  if(!panel){
+    panel = document.createElement("section");
+    panel.id = "otgAdminApprovalPanel";
+    panel.style.cssText = "margin:18px auto;padding:20px;max-width:1100px;background:#fff;border:2px solid #dbeafe;border-radius:14px;box-shadow:0 5px 18px rgba(15,23,42,.07);";
+    panel.innerHTML = '<h2 style="margin-top:0;color:#1e3a8a;">Admin: Student Approval</h2><p>Approve student accounts here. Only approved students can enter the builder.</p><div id="otgApprovalList">Loading student requests…</div><button type="button" id="otgRefreshApprovals" style="margin-top:12px;padding:9px 14px;border:0;border-radius:7px;background:#1d4ed8;color:white;cursor:pointer;">Refresh requests</button>';
+    const app = $("app");
+    app.insertBefore(panel, app.firstChild);
+    $("otgRefreshApprovals").addEventListener("click", loadAdminApprovals);
+  }
+  loadAdminApprovals();
+}
+
+async function loadAdminApprovals(){
+  const list = $("otgApprovalList");
+  if(!list || !currentProfile || currentProfile.role !== "admin") return;
+  list.textContent = "Loading student requests…";
+  const { data, error } = await supabaseClient.from("profiles")
+    .select("id,email,approval_status,created_at")
+    .eq("role", "student").order("created_at", {ascending:false});
+  if(error){ console.error(error); list.textContent = "Could not load requests. Check the profiles table policies in Supabase."; return; }
+  if(!data || !data.length){ list.textContent = "No student accounts found yet."; return; }
+  list.replaceChildren();
+  data.forEach(profile => {
+    const row = document.createElement("div");
+    row.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #e2e8f0;";
+    const info = document.createElement("div");
+    const email = document.createElement("strong"); email.textContent = profile.email || "Student email unavailable";
+    const status = document.createElement("div"); status.style.cssText = "font-size:13px;color:#64748b;margin-top:4px;"; status.textContent = "Status: " + profile.approval_status;
+    info.append(email,status); row.append(info);
+    if(profile.approval_status !== "approved"){
+      const approve = document.createElement("button"); approve.type="button"; approve.textContent="Approve";
+      approve.style.cssText="padding:8px 12px;border:0;border-radius:7px;background:#15803d;color:white;cursor:pointer;";
+      approve.addEventListener("click", () => setStudentApproval(profile.id,"approved")); row.append(approve);
+    }
+    if(profile.approval_status !== "rejected"){
+      const reject = document.createElement("button"); reject.type="button"; reject.textContent="Reject";
+      reject.style.cssText="padding:8px 12px;border:0;border-radius:7px;background:#b91c1c;color:white;cursor:pointer;";
+      reject.addEventListener("click", () => setStudentApproval(profile.id,"rejected")); row.append(reject);
+    }
+    list.append(row);
+  });
+}
+
+async function setStudentApproval(studentId, status){
+  if(!currentProfile || currentProfile.role !== "admin") { showToast("Administrator access required."); return; }
+  const { error } = await supabaseClient.from("profiles")
+    .update({approval_status:status, updated_at:new Date().toISOString()})
+    .eq("id", studentId).eq("role", "student");
+  if(error){ console.error(error); showToast("Could not update approval: " + error.message); return; }
+  showToast("Student status updated to " + status + ".");
+  await loadAdminApprovals();
+}
+
+async function showApp(approvalAlreadyChecked){
+  if(!approvalAlreadyChecked && currentUser){
+    await refreshApprovalStatus();
+    return;
+  }
+  if(!currentUser || !currentProfile || (currentProfile.role !== "admin" && currentProfile.approval_status !== "approved")){
+    await refreshApprovalStatus();
+    return;
+  }
+
 
   $("authScreen")
     .classList
@@ -4686,6 +4799,7 @@ function showApp(){
   }
 
   renderProjects();
+  ensureAdminPanel();
 
 }
 
@@ -4734,6 +4848,9 @@ async function logoutUser(){
   $("authScreen")
     .classList
     .remove("hidden");
+  $("approvalScreen").classList.add("hidden");
+
+  currentProfile = null;
 
   setAuthMode(
     "login"
