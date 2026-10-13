@@ -995,6 +995,12 @@ header{
 .otg-lesson-card footer{position:static!important;display:flex!important}
 @media(max-width:600px){.otg-lesson-card>header{padding:20px!important}.otg-lesson-card h2{font-size:25px!important}.otg-lesson-card footer{align-items:flex-start!important}}
 </style>
+
+<meta name="theme-color" content="#123b78">
+<meta name="description" content="OTG Academy — learn, practise, build and publish with OTG AI Website Builder.">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/otg-app-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/otg-app-icon.svg">
 </head>
 
 <body>
@@ -2635,7 +2641,29 @@ function injectWhatsAppButton(html,number){
   if(/<\/body>/i.test(html)){
     return html.replace(
       /<\/body>/i,
-      button + "</body>"
+      button + "
+<script>
+(function(){
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('/sw.js').catch(function(err){ console.warn('OTG app offline setup:', err); }); });
+  }
+  let installPromptEvent = null;
+  window.addEventListener('beforeinstallprompt', function(event){
+    event.preventDefault(); installPromptEvent = event;
+    let box = document.getElementById('otgInstallAppPrompt');
+    if (!box) {
+      box = document.createElement('div'); box.id='otgInstallAppPrompt';
+      box.style.cssText='position:fixed;z-index:99999;right:16px;bottom:16px;max-width:340px;background:#fff;color:#172554;border:1px solid #bfdbfe;border-radius:16px;padding:16px;box-shadow:0 12px 35px rgba(15,23,42,.22);font:14px/1.5 Arial,sans-serif';
+      box.innerHTML='<strong style="display:block;font-size:16px;margin-bottom:5px">Install OTG Academy</strong><span>Put the app on your device for quick access.</span><div style="display:flex;gap:8px;margin-top:12px"><button id="otgInstallNow" style="border:0;border-radius:8px;background:#1d4ed8;color:#fff;padding:10px 13px;font-weight:700;cursor:pointer">Install app</button><button id="otgInstallLater" style="border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#334155;padding:10px 13px;cursor:pointer">Later</button></div>';
+      document.body.appendChild(box);
+      document.getElementById('otgInstallNow').addEventListener('click', async function(){ if(!installPromptEvent)return; installPromptEvent.prompt(); await installPromptEvent.userChoice; installPromptEvent=null; box.remove(); });
+      document.getElementById('otgInstallLater').addEventListener('click', function(){ box.remove(); });
+    }
+  });
+  window.addEventListener('appinstalled', function(){ var box=document.getElementById('otgInstallAppPrompt'); if(box)box.remove(); });
+})();
+</script>
+</body>"
     );
   }
 
