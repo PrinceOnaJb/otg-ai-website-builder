@@ -249,6 +249,48 @@ async function loadAcademyPanelData(key,content){
     });
    }
   }
+ }else if(key==="certificates"){
+  const heading=document.createElement("h3");heading.textContent=admin?"Issue and manage certificates":"My certificates";heading.style.cssText="margin:0 0 8px;color:#172554";area.appendChild(heading);
+  const hint=document.createElement("p");hint.textContent=admin?"Issue certificates to approved students and revoke a certificate if necessary.":"Certificates issued by OTG Graphic Academy will appear here.";hint.style.cssText="margin:0 0 16px;color:#64748b;line-height:1.7";area.appendChild(hint);
+  if(admin){
+   const form=document.createElement("form");form.style.cssText="display:grid;gap:9px;max-width:680px;margin:12px 0 24px;padding:16px;border:1px solid #dbeafe;border-radius:12px;background:#f8fbff";
+   const studentLabel=document.createElement("label");studentLabel.textContent="Approved student";studentLabel.style.cssText="display:grid;gap:6px;font-size:13px;font-weight:800;color:#334155";
+   const studentSelect=document.createElement("select");studentSelect.required=true;studentSelect.style.cssText="padding:11px;border:1px solid #cbd5e1;border-radius:8px;background:#fff";
+   const first=document.createElement("option");first.value="";first.textContent="Choose a student";studentSelect.appendChild(first);studentLabel.appendChild(studentSelect);
+   const course=document.createElement("input");course.required=true;course.maxLength=180;course.placeholder="Course or achievement title";course.style.cssText="padding:11px;border:1px solid #cbd5e1;border-radius:8px";
+   const issue=document.createElement("button");issue.type="submit";issue.textContent="Issue certificate";issue.style.cssText="justify-self:start;padding:10px 14px;border:0;border-radius:8px;background:#1d4ed8;color:#fff;font-weight:800";
+   const formStatus=document.createElement("span");formStatus.setAttribute("role","status");formStatus.style.cssText="font-size:13px;color:#475569";
+   form.append(studentLabel,course,issue,formStatus);area.appendChild(form);
+   const {data:approvedStudents,error:studentsError}=await db.from("profiles").select("id,email").eq("role","student").eq("approval_status","approved").order("email",{ascending:true});
+   if(studentsError){formStatus.textContent="Student list could not load: "+studentsError.message;studentSelect.disabled=true;issue.disabled=true;}
+   else (approvedStudents||[]).forEach(student=>{const opt=document.createElement("option");opt.value=student.id;opt.textContent=student.email||"Approved student";studentSelect.appendChild(opt);});
+   form.addEventListener("submit",async e=>{e.preventDefault();if(!studentSelect.value){formStatus.textContent="Choose an approved student first.";return;}issue.disabled=true;formStatus.textContent="Issuing certificate…";const {error}=await db.from("academy_certificates").insert({student_id:studentSelect.value,course:course.value.trim(),issued_by:userId});if(error){formStatus.textContent="Certificate could not be issued: "+error.message;issue.disabled=false;return;}formStatus.textContent="Certificate issued successfully.";loadAcademyPanelData(key,content);});
+  }
+  const {data:certificates,error:certError}=await db.from("academy_certificates").select("id,student_id,course,certificate_code,issued_at,status").order("issued_at",{ascending:false});
+  const list=document.createElement("div");list.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:16px";area.appendChild(list);
+  if(certError){list.textContent="Certificates could not load: "+certError.message;}
+  else if(!certificates||!certificates.length){const empty=document.createElement("p");empty.textContent=admin?"No certificates have been issued yet.":"You do not have any certificates yet. Keep learning and check back here.";empty.style.cssText="padding:18px;border:1px dashed #cbd5e1;border-radius:12px;color:#64748b";list.appendChild(empty);}
+  else{
+   const ids=[...new Set(certificates.map(c=>c.student_id))];
+   const {data:profiles}=await db.from("profiles").select("id,email").in("id",ids);
+   const emailById=new Map((profiles||[]).map(p=>[p.id,p.email||"OTG student"]));
+   certificates.forEach(cert=>{
+    const card=document.createElement("article");card.style.cssText="padding:18px;border:1px solid #dbeafe;border-radius:14px;background:#fff;box-shadow:0 5px 18px rgba(15,23,42,.04)";
+    const label=document.createElement("div");label.textContent="OTG GRAPHIC ACADEMY";label.style.cssText="font-size:10px;letter-spacing:1.4px;font-weight:900;color:#1d4ed8;margin-bottom:12px";
+    const title=document.createElement("h4");title.textContent=cert.course;title.style.cssText="margin:0 0 8px;color:#172554;font-size:19px;line-height:1.35";
+    const recipient=document.createElement("p");recipient.textContent="Awarded to: "+(emailById.get(cert.student_id)||"OTG student");recipient.style.cssText="margin:0 0 8px;color:#334155;overflow-wrap:anywhere";
+    const code=document.createElement("p");code.textContent="Certificate ID: "+cert.certificate_code;code.style.cssText="margin:0 0 6px;color:#64748b;font-size:12px";
+    const date=document.createElement("p");date.textContent="Issued: "+new Date(cert.issued_at).toLocaleDateString();date.style.cssText="margin:0 0 12px;color:#64748b;font-size:12px";
+    const state=document.createElement("p");state.textContent=cert.status==="issued"?"Status: Issued":"Status: Revoked";state.style.cssText="margin:0 0 12px;font-weight:800;color:"+(cert.status==="issued"?"#15803d":"#b91c1c");
+    card.append(label,title,recipient,code,date,state);
+    if(cert.status==="issued"){
+     const print=document.createElement("button");print.type="button";print.textContent="Print / Save as PDF";print.style.cssText="padding:9px 12px;border:0;border-radius:8px;background:#1d4ed8;color:#fff;font-weight:800;cursor:pointer";
+     print.addEventListener("click",()=>{const win=window.open("","_blank","width=900,height=650");if(!win){state.textContent="Allow pop-ups to print this certificate.";return;}win.document.write("<!doctype html><html><head><title>OTG Academy Certificate</title><meta name='viewport' content='width=device-width,initial-scale=1'><style>body{font-family:Georgia,serif;padding:30px;color:#172554}.certificate{min-height:480px;border:10px double #1d4ed8;padding:44px;text-align:center;display:flex;flex-direction:column;justify-content:center}.brand{font:800 13px Arial;letter-spacing:4px;color:#1d4ed8}.title{font-size:36px;margin:24px 0}.name{font-size:24px;margin:18px 0;border-bottom:1px solid #94a3b8;padding:12px}.course{font-size:25px;font-weight:bold}.meta{font:12px Arial;color:#475569;margin-top:24px}@media print{body{padding:0}.certificate{min-height:90vh}}</style></head><body><main class='certificate'><div class='brand'>OTG GRAPHIC ACADEMY</div><h1 class='title'>Certificate of Achievement</h1><p>This certificate is presented to</p><div class='name'>"+esc(emailById.get(cert.student_id)||"OTG student")+"</div><p>for completing / achieving</p><div class='course'>"+esc(cert.course)+"</div><p class='meta'>Certificate ID: "+esc(cert.certificate_code)+" · Issued: "+esc(new Date(cert.issued_at).toLocaleDateString())+"</p><p class='meta'>Issued by OTG Graphic Academy</p><button onclick='window.print()' style='margin:24px auto 0;padding:10px 18px;border:0;background:#1d4ed8;color:white;font-weight:bold;border-radius:6px'>Print / Save as PDF</button></main></body></html>");win.document.close();});card.appendChild(print);
+     if(admin){const revoke=document.createElement("button");revoke.type="button";revoke.textContent="Revoke";revoke.style.cssText="margin-left:8px;padding:9px 12px;border:1px solid #fecaca;border-radius:8px;background:#fff7f7;color:#b91c1c;font-weight:800;cursor:pointer";revoke.addEventListener("click",async()=>{if(!window.confirm("Revoke this certificate?"))return;revoke.disabled=true;const {error}=await db.from("academy_certificates").update({status:"revoked"}).eq("id",cert.id);if(error){state.textContent="Could not revoke: "+error.message;revoke.disabled=false;return;}loadAcademyPanelData(key,content);});card.appendChild(revoke);}
+    }
+    list.appendChild(card);
+   });
+  }
  }else if(key==="community"||key==="discussion"){
   const h=document.createElement("h3");h.textContent=key==="community"?"Student community":"Discussion board";area.appendChild(h);
   if(userId){
