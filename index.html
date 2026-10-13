@@ -4582,14 +4582,41 @@ async function handleAuthSubmit(event){
         error
       } =
         await supabaseClient
-.auth
-  .signUp({
-    email:email,
-    password:password,
-    options: {
-      emailRedirectTo: window.location.origin
-    }
-  });        error
+          .auth
+          .signUp({
+            email:email,
+            password:password,
+            options: {
+              emailRedirectTo: window.location.origin
+            }
+          });
+
+      if(error){
+
+        throw error;
+
+      }
+
+      if(data.session && data.user){
+
+        currentUser = data.user;
+        await refreshApprovalStatus();
+
+      }else{
+
+        showToast(
+          "Account created. Check your email to confirm the account if confirmation is required, then log in. Your dashboard will be available after administrator approval."
+        );
+
+        setAuthMode("login");
+
+      }
+
+    }else{
+
+      const {
+        data,
+        error
       } =
         await supabaseClient
           .auth
@@ -4607,7 +4634,7 @@ async function handleAuthSubmit(event){
       currentUser =
         data.user;
 
-      showApp();
+      await refreshApprovalStatus();
 
     }
 
