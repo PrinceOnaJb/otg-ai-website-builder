@@ -62,10 +62,20 @@ begin
 end;
 $$;
 
-drop trigger if exists on_auth_user_created_otg_profile on auth.users;
-create trigger on_auth_user_created_otg_profile
-after insert on auth.users
-for each row execute procedure public.handle_new_otg_user();
+do $
+begin
+  if not exists (
+    select 1 from pg_trigger
+    where tgname = 'on_auth_user_created_otg_profile'
+      and tgrelid = 'auth.users'::regclass
+      and not tgisinternal
+  ) then
+    create trigger on_auth_user_created_otg_profile
+    after insert on auth.users
+    for each row execute procedure public.handle_new_otg_user();
+  end if;
+end;
+$;
 
 -- Backfill accounts that already existed before this trigger was installed.
 insert into public.profiles (id, email, role, approval_status)
@@ -81,18 +91,32 @@ set email = excluded.email,
     approval_status = case when lower(coalesce(excluded.email, '')) = 'perfectpairs2021@gmail.com' then 'approved' else public.profiles.approval_status end,
     updated_at = now();
 
-drop policy if exists "OTG users can read own profile or admin can read all" on public.profiles;
-create policy "OTG users can read own profile or admin can read all"
-on public.profiles for select
-to authenticated
-using (id = (select auth.uid()) or (select public.is_otg_admin()));
+do $
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'profiles'
+      and policyname = 'OTG users can read own profile or admin can read all'
+  ) then
+    create policy "OTG users can read own profile or admin can read all"
+    on public.profiles for select
+    to authenticated
+    using (id = (select auth.uid()) or (select public.is_otg_admin()));
+  end if;
 
-drop policy if exists "OTG admin can update profiles" on public.profiles;
-create policy "OTG admin can update profiles"
-on public.profiles for update
-to authenticated
-using ((select public.is_otg_admin()))
-with check ((select public.is_otg_admin()));
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'profiles'
+      and policyname = 'OTG admin can update profiles'
+  ) then
+    create policy "OTG admin can update profiles"
+    on public.profiles for update
+    to authenticated
+    using ((select public.is_otg_admin()))
+    with check ((select public.is_otg_admin()));
+  end if;
+end;
+$;
 
 grant select on public.profiles to authenticated;
 grant update (approval_status, updated_at) on public.profiles to authenticated;
@@ -109,10 +133,20 @@ begin
 end;
 $$;
 
-drop trigger if exists set_otg_profile_updated_at on public.profiles;
-create trigger set_otg_profile_updated_at
-before update on public.profiles
-for each row execute procedure public.set_otg_profile_updated_at();
+do $
+begin
+  if not exists (
+    select 1 from pg_trigger
+    where tgname = 'set_otg_profile_updated_at'
+      and tgrelid = 'public.profiles'::regclass
+      and not tgisinternal
+  ) then
+    create trigger set_otg_profile_updated_at
+    before update on public.profiles
+    for each row execute procedure public.set_otg_profile_updated_at();
+  end if;
+end;
+$;
 
 -- Verify: this should return the profiles table and your admin profile.
 select table_name
