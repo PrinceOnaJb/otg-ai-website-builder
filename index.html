@@ -249,6 +249,59 @@ async function loadAcademyPanelData(key,content){
     });
    }
   }
+ }else if(key==="reviews"){
+  const heading=document.createElement("h3");heading.textContent=admin?"Website review queue":"Request a website review";heading.style.cssText="margin:0 0 8px;color:#172554";area.appendChild(heading);
+  const intro=document.createElement("p");intro.textContent=admin?"Review student websites, leave practical feedback and record a rating.":"Choose one of your saved projects and ask your coach for feedback.";intro.style.cssText="margin:0 0 16px;color:#64748b;line-height:1.7";area.appendChild(intro);
+  if(admin){
+   const {data:reviews,error}=await db.from("academy_website_reviews").select("id,project_id,student_id,request_message,status,rating,feedback,created_at").order("created_at",{ascending:false});
+   const list=document.createElement("div");list.style.cssText="display:grid;gap:14px";area.appendChild(list);
+   if(error){list.textContent="Website reviews could not load: "+error.message;}
+   else if(!reviews||!reviews.length){list.textContent="No website review requests have been submitted yet.";}
+   else{
+    const studentIds=[...new Set(reviews.map(r=>r.student_id))],projectIds=[...new Set(reviews.map(r=>r.project_id))];
+    const [{data:profiles},{data:projects}]=await Promise.all([
+     db.from("profiles").select("id,email").in("id",studentIds),
+     db.from("projects").select("id,title,slug,is_published").in("id",projectIds)
+    ]);
+    const emailById=new Map((profiles||[]).map(p=>[p.id,p.email||"Student"]));
+    const projectById=new Map((projects||[]).map(p=>[p.id,p]));
+    reviews.forEach(review=>{
+     const card=document.createElement("article");card.style.cssText="padding:16px;border:1px solid #e2e8f0;border-radius:12px;background:#fff";
+     const h=document.createElement("h4");h.textContent=(projectById.get(review.project_id)?.title||"Website project")+" · "+(emailById.get(review.student_id)||"Student");h.style.cssText="margin:0 0 8px;color:#172554;font-size:16px";
+     const request=document.createElement("p");request.textContent=review.request_message||"No message added.";request.style.cssText="margin:0 0 12px;color:#475569;white-space:pre-wrap;line-height:1.7";
+     const form=document.createElement("form");form.style.cssText="display:grid;gap:9px";
+     const statusLabel=document.createElement("label");statusLabel.textContent="Review status";statusLabel.style.cssText="display:grid;gap:5px;font-size:13px;font-weight:800;color:#334155";
+     const status=document.createElement("select");status.style.cssText="padding:10px;border:1px solid #cbd5e1;border-radius:8px";[["requested","Requested"],["in_review","In review"],["completed","Completed"]].forEach(([v,l])=>{const o=document.createElement("option");o.value=v;o.textContent=l;if(v===review.status)o.selected=true;status.appendChild(o);});statusLabel.appendChild(status);
+     const ratingLabel=document.createElement("label");ratingLabel.textContent="Rating";ratingLabel.style.cssText="display:grid;gap:5px;font-size:13px;font-weight:800;color:#334155";
+     const rating=document.createElement("select");rating.style.cssText="padding:10px;border:1px solid #cbd5e1;border-radius:8px";const noRating=document.createElement("option");noRating.value="";noRating.textContent="No rating yet";rating.appendChild(noRating);[1,2,3,4,5].forEach(v=>{const o=document.createElement("option");o.value=String(v);o.textContent=v+" / 5";if(review.rating===v)o.selected=true;rating.appendChild(o);});ratingLabel.appendChild(rating);
+     const feedback=document.createElement("textarea");feedback.rows=4;feedback.maxLength=4000;feedback.placeholder="Coach feedback and suggested improvements";feedback.value=review.feedback||"";feedback.style.cssText="box-sizing:border-box;width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px";
+     const save=document.createElement("button");save.type="submit";save.textContent="Save review";save.style.cssText="justify-self:start;padding:10px 14px;border:0;border-radius:8px;background:#1d4ed8;color:#fff;font-weight:800";
+     const message=document.createElement("span");message.setAttribute("role","status");message.style.cssText="font-size:12px;color:#475569";
+     form.append(statusLabel,ratingLabel,feedback,save,message);form.addEventListener("submit",async e=>{e.preventDefault();save.disabled=true;message.textContent="Saving review…";const completed=status.value==="completed";const {error:saveError}=await db.from("academy_website_reviews").update({status:status.value,rating:rating.value?Number(rating.value):null,feedback:feedback.value.trim(),reviewer_id:completed?userId:null,reviewed_at:completed?new Date().toISOString():null,updated_at:new Date().toISOString()}).eq("id",review.id);if(saveError){message.textContent="Review could not be saved: "+saveError.message;save.disabled=false;return;}message.textContent="Review saved.";save.disabled=false;});
+     card.append(h,request,form);list.appendChild(card);
+    });
+   }
+  }else if(userId){
+   const {data:projects,error:projectError}=await db.from("projects").select("id,title,slug,is_published").eq("user_id",userId).order("updated_at",{ascending:false});
+   const {data:reviews,error:reviewError}=await db.from("academy_website_reviews").select("id,project_id,request_message,status,rating,feedback,created_at").eq("student_id",userId).order("created_at",{ascending:false});
+   if(projectError){const p=document.createElement("p");p.textContent="Your projects could not load: "+projectError.message;area.appendChild(p);}
+   if(reviewError){const p=document.createElement("p");p.textContent="Your review history could not load: "+reviewError.message;area.appendChild(p);}
+   const reviewRows=reviews||[];
+   const history=document.createElement("section");history.style.cssText="display:grid;gap:12px;margin-bottom:22px";
+   const historyTitle=document.createElement("h4");historyTitle.textContent="Your review history";historyTitle.style.cssText="margin:12px 0 0;color:#172554";history.appendChild(historyTitle);
+   if(!reviewRows.length){const p=document.createElement("p");p.textContent="You have not requested a review yet.";p.style.color="#64748b";history.appendChild(p);}
+   reviewRows.forEach(r=>{const card=document.createElement("article");card.style.cssText="padding:14px;border:1px solid #e2e8f0;border-radius:11px;background:#fff";const project=(projects||[]).find(p=>p.id===r.project_id);const h=document.createElement("h4");h.textContent=project?.title||"Website project";h.style.cssText="margin:0 0 6px;color:#172554";const status=document.createElement("p");status.textContent="Status: "+r.status.replace("_"," ") +(r.rating?" · Rating: "+r.rating+"/5":"");status.style.cssText="margin:0 0 8px;color:#64748b;font-size:13px;font-weight:700";const msg=document.createElement("p");msg.textContent=r.feedback?"Coach feedback: "+r.feedback:"Coach feedback has not been added yet.";msg.style.cssText="margin:0;color:#334155;line-height:1.7;white-space:pre-wrap";card.append(h,status,msg);history.appendChild(card);});
+   area.appendChild(history);
+   const requestTitle=document.createElement("h4");requestTitle.textContent="Request a new review";requestTitle.style.cssText="margin:22px 0 10px;color:#172554";area.appendChild(requestTitle);
+   const list=document.createElement("div");list.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px";area.appendChild(list);
+   if(!projectError&&(!projects||!projects.length)){const p=document.createElement("p");p.textContent="Save a website project in the Builder first, then you can request a review.";list.appendChild(p);}
+   (projects||[]).forEach(project=>{
+    const card=document.createElement("article");card.style.cssText="padding:15px;border:1px solid #e2e8f0;border-radius:12px;background:#fff";
+    const h=document.createElement("h4");h.textContent=project.title||"Untitled website";h.style.cssText="margin:0 0 6px;color:#172554";
+    const state=document.createElement("p");state.textContent=project.is_published?"Published website":"Saved draft";state.style.cssText="margin:0 0 10px;color:#64748b;font-size:12px";
+    const form=document.createElement("form");form.style.cssText="display:grid;gap:8px";const msg=document.createElement("textarea");msg.rows=2;msg.maxLength=1500;msg.placeholder="What would you like feedback on? (optional)";msg.style.cssText="width:100%;box-sizing:border-box;padding:9px;border:1px solid #cbd5e1;border-radius:8px";const btn=document.createElement("button");btn.type="submit";btn.textContent="Request review";btn.style.cssText="padding:9px 12px;border:0;border-radius:8px;background:#1d4ed8;color:#fff;font-weight:800";const status=document.createElement("span");status.setAttribute("role","status");status.style.cssText="font-size:12px;color:#475569";form.append(msg,btn,status);form.addEventListener("submit",async e=>{e.preventDefault();btn.disabled=true;status.textContent="Sending review request…";const {error}=await db.from("academy_website_reviews").insert({project_id:project.id,student_id:userId,request_message:msg.value.trim()});if(error){status.textContent="Could not request review: "+error.message;btn.disabled=false;return;}status.textContent="Review requested.";loadAcademyPanelData(key,content);});card.append(h,state,form);list.appendChild(card);
+   });
+  }
  }else if(key==="certificates"){
   const heading=document.createElement("h3");heading.textContent=admin?"Issue and manage certificates":"My certificates";heading.style.cssText="margin:0 0 8px;color:#172554";area.appendChild(heading);
   const hint=document.createElement("p");hint.textContent=admin?"Issue certificates to approved students and revoke a certificate if necessary.":"Certificates issued by OTG Graphic Academy will appear here.";hint.style.cssText="margin:0 0 16px;color:#64748b;line-height:1.7";area.appendChild(hint);
