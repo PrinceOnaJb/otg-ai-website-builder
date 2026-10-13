@@ -210,6 +210,41 @@ async function loadAcademyPanelData(key,content){
   if(admin)area.innerHTML='<h3>Create an assignment</h3><form id="otgAssignmentForm" style="display:grid;gap:8px;margin:12px 0"><input name="title" required placeholder="Assignment title" style="padding:10px"><input name="course" placeholder="Course name" style="padding:10px"><textarea name="instructions" required placeholder="Assignment instructions" style="padding:10px"></textarea><label>Due date (optional) <input name="due_at" type="date"></label><label><input name="published" type="checkbox"> Publish for approved students</label><button class="primary-btn">Save assignment</button><span id="otgAssignmentMsg"></span></form>';
   if(admin)area.querySelector("#otgAssignmentForm").addEventListener("submit",async e=>{e.preventDefault();const f=e.currentTarget,d=new FormData(f);const {error}=await db.from("academy_assignments").insert({title:d.get("title"),course:d.get("course")||"Getting Started",instructions:d.get("instructions"),due_at:d.get("due_at")?new Date(d.get("due_at")+"T23:59:00").toISOString():null,is_published:d.get("published")==="on",created_by:userId});f.querySelector("#otgAssignmentMsg").textContent=error?"Save failed: "+error.message:"Assignment saved.";if(!error){f.reset();loadAcademyPanelData(key,content);}});
   const {data,error}=await db.from("academy_assignments").select("id,title,course,instructions,due_at").eq("is_published",true).order("created_at",{ascending:false});const list=document.createElement("div");if(error)list.textContent="Assignments could not load: "+error.message;else if(!data||!data.length)list.textContent="No assignments published yet.";else data.forEach(x=>{const c=document.createElement("article");c.style.cssText="padding:12px 0;border-bottom:1px solid #e2e8f0";c.innerHTML="<strong>"+esc(x.title)+"</strong><p>"+esc(x.course)+" · "+esc(x.instructions)+"</p>"+(x.due_at?"<small>Due: "+esc(new Date(x.due_at).toLocaleDateString())+"</small>":"")+'<form class="otgSubmitForm" data-id="'+x.id+'" style="display:grid;gap:8px;margin-top:8px"><textarea name="answer" required placeholder="Type your assignment answer" style="padding:10px"></textarea><button class="primary-btn">Submit work</button><span></span></form>';list.appendChild(c);});list.querySelectorAll(".otgSubmitForm").forEach(f=>f.addEventListener("submit",async e=>{e.preventDefault();const span=f.querySelector("span");if(!userId){span.textContent="Please sign in again.";return;}const {error}=await db.from("academy_submissions").upsert({assignment_id:Number(f.dataset.id),student_id:userId,submission_text:new FormData(f).get("answer"),status:"submitted"},{onConflict:"assignment_id,student_id"});span.textContent=error?"Submission failed: "+error.message:"Work submitted successfully.";if(!error)f.reset();}));area.appendChild(list);
+  if(admin){
+   const reviewSection=document.createElement("section");reviewSection.style.cssText="margin-top:28px;padding-top:20px;border-top:1px solid #cbd5e1";
+   const reviewTitle=document.createElement("h3");reviewTitle.textContent="Review student submissions";reviewTitle.style.cssText="color:#172554;margin:0 0 12px";
+   const reviewHint=document.createElement("p");reviewHint.textContent="Read student work, leave feedback, and update its review status.";reviewHint.style.cssText="color:#64748b;line-height:1.6";
+   const reviewList=document.createElement("div");reviewList.style.cssText="display:grid;gap:14px";
+   reviewSection.append(reviewTitle,reviewHint,reviewList);area.appendChild(reviewSection);
+   const {data:submissions, error:submissionsError}=await db.from("academy_submissions").select("id,assignment_id,student_id,submission_text,status,coach_feedback,submitted_at").order("submitted_at",{ascending:false});
+   if(submissionsError){reviewList.textContent="Submissions could not load: "+submissionsError.message;}
+   else if(!submissions||!submissions.length){reviewList.textContent="No student submissions have been received yet.";}
+   else{
+    const studentIds=[...new Set(submissions.map(x=>x.student_id))];
+    const assignmentIds=[...new Set(submissions.map(x=>x.assignment_id))];
+    const [{data:studentProfiles},{data:assignmentRows}]=await Promise.all([
+     db.from("profiles").select("id,email").in("id",studentIds),
+     db.from("academy_assignments").select("id,title,course").in("id",assignmentIds)
+    ]);
+    const studentById=new Map((studentProfiles||[]).map(x=>[x.id,x.email||"Student"]));
+    const assignmentById=new Map((assignmentRows||[]).map(x=>[String(x.id),x]));
+    submissions.forEach(sub=>{
+     const card=document.createElement("article");card.style.cssText="padding:16px;border:1px solid #e2e8f0;border-radius:12px;background:#fff";
+     const h=document.createElement("h4");h.textContent=studentById.get(sub.student_id)||"Student";h.style.cssText="margin:0 0 5px;color:#172554;font-size:15px";
+     const task=document.createElement("p");const assignment=assignmentById.get(String(sub.assignment_id));task.textContent=(assignment?assignment.title+" · "+(assignment.course||""):"Assignment #"+sub.assignment_id)+" · Submitted "+new Date(sub.submitted_at).toLocaleString();task.style.cssText="margin:0 0 10px;color:#64748b;font-size:12px";
+     const answer=document.createElement("div");answer.textContent=sub.submission_text||"(No written answer supplied)";answer.style.cssText="padding:12px;border-radius:8px;background:#f8fafc;color:#334155;white-space:pre-wrap;line-height:1.7;overflow-wrap:anywhere";
+     const form=document.createElement("form");form.style.cssText="display:grid;gap:8px;margin-top:12px";
+     const statusLabel=document.createElement("label");statusLabel.textContent="Review status";statusLabel.style.cssText="display:grid;gap:5px;font-size:13px;font-weight:700;color:#334155";
+     const statusSelect=document.createElement("select");statusSelect.name="status";statusSelect.style.cssText="padding:10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff";
+     [["submitted","Submitted"],["reviewing","Under review"],["needs_changes","Changes requested"],["approved","Approved"]].forEach(([value,label])=>{const opt=document.createElement("option");opt.value=value;opt.textContent=label;if(value===sub.status)opt.selected=true;statusSelect.appendChild(opt);});statusLabel.appendChild(statusSelect);
+     const feedback=document.createElement("textarea");feedback.name="feedback";feedback.rows=3;feedback.maxLength=4000;feedback.placeholder="Coach feedback for the student";feedback.value=sub.coach_feedback||"";feedback.style.cssText="width:100%;box-sizing:border-box;padding:10px;border:1px solid #cbd5e1;border-radius:8px";
+     const save=document.createElement("button");save.type="submit";save.textContent="Save review";save.style.cssText="justify-self:start;padding:10px 14px;border:0;border-radius:8px;background:#1d4ed8;color:#fff;font-weight:800";
+     const msg=document.createElement("span");msg.setAttribute("role","status");msg.style.cssText="font-size:12px;color:#475569";
+     form.append(statusLabel,feedback,save,msg);form.addEventListener("submit",async e=>{e.preventDefault();save.disabled=true;msg.textContent="Saving review…";const statusValue=statusSelect.value;const reviewed=statusValue!=="submitted";const {error:saveError}=await db.from("academy_submissions").update({status:statusValue,coach_feedback:feedback.value.trim(),reviewed_at:reviewed?new Date().toISOString():null,reviewed_by:reviewed?userId:null}).eq("id",sub.id);if(saveError){msg.textContent="Review could not be saved: "+saveError.message;save.disabled=false;return;}msg.textContent="Review saved.";save.disabled=false;});
+     card.append(h,task,answer,form);reviewList.appendChild(card);
+    });
+   }
+  }
  }else if(key==="community"||key==="discussion"){
   const h=document.createElement("h3");h.textContent=key==="community"?"Student community":"Discussion board";area.appendChild(h);
   if(userId){
