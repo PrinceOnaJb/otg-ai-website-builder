@@ -67,7 +67,7 @@ async function loadAcademyPanelData(key,content){
     if(completionError){completionLoadError=completionError;console.warn("Lesson progress could not load:",completionError.message);}
     else completedLessonIds=new Set((completionRows||[]).filter(row=>row.completed_at).map(row=>String(row.lesson_id)));
   }
-  if(data&&data.length){const publishedIds=new Set(data.map(lesson=>String(lesson.id)));completedLessonIds=new Set([...completedLessonIds].filter(id=>publishedIds.has(id));}
+  if(data&&data.length){const publishedIds=new Set(data.map(lesson=>String(lesson.id)));completedLessonIds=new Set([...completedLessonIds].filter(id=>publishedIds.has(id)));}
   const progressWrap=document.createElement("section");
   progressWrap.style.cssText="margin:18px 0 20px;padding:18px 20px;border:1px solid #dbeafe;border-radius:14px;background:#f8fbff;max-width:920px";
   const progressTop=document.createElement("div");
