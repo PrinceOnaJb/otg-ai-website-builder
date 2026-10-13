@@ -2212,9 +2212,14 @@ header{
         new Option("Could not load websites — tap to retry", "")
       );
       projectSelect.disabled = false;
-      productContainer.textContent =
-        "Your saved websites could not be loaded. Use the retry option below. Details: " +
-        (error && error.message ? error.message : "Unknown error");
+      productContainer.replaceChildren();
+      const errorBox = makeElement("div");
+      errorBox.style.cssText = "padding:14px;border:1px solid #fecaca;border-radius:10px;background:#fff7f7;color:#991b1b;line-height:1.6";
+      errorBox.appendChild(makeElement("p", "Your saved websites could not be loaded."));
+      errorBox.appendChild(makeElement("p", "Details: " + (error && error.message ? error.message : "Unknown error")));
+      const retryButton = makeButton("Retry loading websites", loadProjects, "#1d4ed8");
+      errorBox.appendChild(retryButton);
+      productContainer.appendChild(errorBox);
       showMessage(
         "Website loading failed" +
         (error && error.message ? ": " + error.message : ". Please retry."),
