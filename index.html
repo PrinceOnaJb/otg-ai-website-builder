@@ -4828,6 +4828,8 @@ async function fetchCurrentProfile(){
   if(error) throw error;
   if(!data) throw new Error("Your student profile has not been created yet. Please contact the administrator.");
   currentProfile = data;
+  window.otgAcademyUserId = currentUser.id;
+  window.otgAcademyIsAdmin = data.role === "admin" && data.approval_status === "approved";
   return data;
 }
 
