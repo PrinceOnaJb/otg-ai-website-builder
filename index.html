@@ -2162,30 +2162,36 @@ header{
     projectSelect.replaceChildren(
       new Option("Loading your websites...", "")
     );
+    projectSelect.disabled = true;
 
     try {
       const user = await getUser();
-
-      const result = await db
+      let result = await db
         .from("projects")
         .select("id, title")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
+      // If the ordering column is temporarily unavailable through the API
+      // schema cache, retry the same owner-scoped query without ordering.
+      if (result.error) {
+        console.warn("OTG ordered website query failed; retrying:", result.error);
+        result = await db
+          .from("projects")
+          .select("id, title")
+          .eq("user_id", user.id);
+      }
+
       if (result.error) throw result.error;
 
       const projects = result.data || [];
-
       projectSelect.replaceChildren(
         new Option("Select a website", "")
       );
 
       projects.forEach(function (project) {
         projectSelect.add(
-          new Option(
-            project.title || "Untitled Website",
-            project.id
-          )
+          new Option(project.title || "Untitled Website", project.id)
         );
       });
 
@@ -2193,22 +2199,27 @@ header{
         projectSelect.replaceChildren(
           new Option("No saved websites yet", "")
         );
-
         productContainer.textContent =
-          "Save a website before adding products.";
+          "No saved websites were found in this account. Open My Projects and confirm your website is saved.";
         return;
       }
 
+      projectSelect.disabled = false;
       await loadProducts();
-
     } catch (error) {
       console.error("OTG project loading error:", error);
-
       projectSelect.replaceChildren(
-        new Option("Could not load websites", "")
+        new Option("Could not load websites — tap to retry", "")
       );
-
-      showMessage(error.message, true);
+      projectSelect.disabled = false;
+      productContainer.textContent =
+        "Your saved websites could not be loaded. Use the retry option below. Details: " +
+        (error && error.message ? error.message : "Unknown error");
+      showMessage(
+        "Website loading failed" +
+        (error && error.message ? ": " + error.message : ". Please retry."),
+        true
+      );
     }
   }
 
