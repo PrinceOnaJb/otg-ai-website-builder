@@ -5044,7 +5044,7 @@ async function fetchCurrentProfile(){
   if(!data) throw new Error("Your student profile has not been created yet. Please contact the administrator.");
   currentProfile = data;
   window.otgAcademyUserId = currentUser.id;
-  window.otgAcademyIsAdmin = (String(data.role || "").toLowerCase() === "admin" || String(data.email || "").toLowerCase() === OTG_ADMIN_EMAIL.toLowerCase()) && (String(data.approval_status || "").toLowerCase() === "approved" || String(data.role || "").toLowerCase() === "admin" || String(data.email || "").toLowerCase() === OTG_ADMIN_EMAIL.toLowerCase());
+  window.otgAcademyIsAdmin = String(data.role || "").toLowerCase() === "admin" && String(data.approval_status || "").toLowerCase() === "approved";
   return data;
 }
 
