@@ -2641,7 +2641,7 @@ function injectWhatsAppButton(html,number){
   if(/<\/body>/i.test(html)){
     return html.replace(
       /<\/body>/i,
-      button + "
+      button + `
 <script>
 (function(){
   if ('serviceWorker' in navigator && location.protocol === 'https:') {
@@ -2662,8 +2662,8 @@ function injectWhatsAppButton(html,number){
   });
   window.addEventListener('appinstalled', function(){ var box=document.getElementById('otgInstallAppPrompt'); if(box)box.remove(); });
 })();
-</script>
-</body>"
+<\/script>
+</body>`
     );
   }
 
