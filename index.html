@@ -3268,6 +3268,30 @@ function buildPreviewDocument(){
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
 ${css}
+
+/* OTG lesson layout safeguard: enforce the course design even if dashboard styles conflict */
+.otg-lesson-library{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:22px!important;width:100%!important;max-width:920px!important;margin:20px 0 8px!important}
+.otg-lesson-card{display:block!important;position:relative!important;box-sizing:border-box!important;overflow:hidden!important;width:100%!important;margin:0 0 22px!important;padding:0!important;border:1px solid #dbe4f0!important;border-radius:18px!important;background:#fff!important;box-shadow:0 8px 26px rgba(15,23,42,.09)!important;color:#172033!important;line-height:1.7!important}
+.otg-lesson-card>header{position:static!important;inset:auto!important;z-index:auto!important;display:block!important;padding:clamp(20px,4vw,32px)!important;background:linear-gradient(125deg,#eff6ff,#f8fafc 62%,#eef2ff)!important;border:0!important;border-bottom:1px solid #dbeafe!important;box-shadow:none!important}
+.otg-lesson-card>header>div{display:block!important;position:static!important}
+.otg-lesson-card h2{display:block!important;margin:0 0 14px!important;padding:0!important;font-size:clamp(24px,4vw,34px)!important;line-height:1.25!important;font-weight:800!important;letter-spacing:-.5px!important;color:#172554!important}
+.otg-lesson-card>header>span{display:inline-block!important;margin:0!important;padding:7px 12px!important;border-radius:999px!important;background:#dbeafe!important;color:#1e40af!important;font-size:12px!important;font-weight:800!important}
+.otg-lesson-card p{display:block!important;margin:0 0 14px!important;padding:0!important;max-width:none!important;color:#334155!important;font-size:16px!important;line-height:1.9!important;white-space:pre-wrap!important}
+.otg-lesson-card>header p{margin:18px 0 0!important;max-width:720px!important;font-size:16px!important;line-height:1.8!important}
+.otg-lesson-card>div{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:18px!important;padding:clamp(18px,3.5vw,30px)!important;background:#fff!important}
+.otg-lesson-card section{display:block!important;box-sizing:border-box!important;margin:0!important;padding:clamp(18px,3vw,24px)!important;border:1px solid #e2e8f0!important;border-radius:14px!important;background:#fff!important}
+.otg-lesson-card section h3{display:block!important;margin:0 0 14px!important;padding:0!important;font-size:20px!important;line-height:1.4!important;font-weight:800!important;color:#172554!important}
+.otg-lesson-card section>div{display:flex!important;align-items:flex-start!important;gap:10px!important;margin:10px 0!important;padding:0!important;background:transparent!important}
+.otg-lesson-card section>div>span{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 22px!important;width:22px!important;height:22px!important;margin:0!important;padding:0!important;border-radius:50%!important;background:#dcfce7!important;color:#166534!important;font-weight:800!important}
+.otg-lesson-card section:last-child{background:#fff7ed!important;border-color:#fed7aa!important}
+.otg-lesson-card section:last-child h3{color:#7c2d12!important}
+.otg-lesson-card section:last-child p{color:#7c2d12!important;font-size:14px!important}
+.otg-lesson-card a{display:inline-flex!important;align-items:center!important;justify-content:center!important;align-self:start!important;padding:12px 18px!important;border-radius:10px!important;background:#1d4ed8!important;color:#fff!important;text-decoration:none!important;font-weight:800!important}
+.otg-lesson-card>footer{position:static!important;display:flex!important;flex-wrap:wrap!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;padding:16px clamp(18px,3.5vw,30px)!important;border:0!important;border-top:1px solid #e2e8f0!important;background:#fbfdff!important;box-shadow:none!important}
+.otg-lesson-card>footer span{display:inline!important;margin:0!important;padding:0!important;background:transparent!important;color:#64748b!important;font-size:12px!important;font-weight:600!important}
+.otg-lesson-card>footer button{display:inline-block!important;margin:0!important;padding:8px 12px!important;border:1px solid #cbd5e1!important;border-radius:9px!important;background:#fff!important;color:#334155!important;font-size:13px!important;font-weight:700!important;cursor:pointer!important}
+@media(max-width:600px){.otg-lesson-card>header{padding:20px!important}.otg-lesson-card>div{padding:16px!important}.otg-lesson-card section{padding:17px!important}.otg-lesson-card h2{font-size:26px!important}}
+
 </style>
 </head>
 <body>
