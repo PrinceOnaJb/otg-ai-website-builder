@@ -187,3 +187,8 @@ where table_schema = 'public'
     'academy_announcements','academy_discussions','academy_discussion_replies'
   )
 order by table_name;
+
+-- Security hardening: RLS calls this helper for approved-student policies.
+REVOKE ALL ON FUNCTION public.is_otg_approved_student() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.is_otg_approved_student() TO authenticated;
+
