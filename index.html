@@ -135,7 +135,7 @@ async function loadAcademyPanelData(key,content){
    const notesHeading=document.createElement("h3");notesHeading.textContent="Lesson overview";notesHeading.style.cssText="margin:0 0 14px;font-size:21px;line-height:1.35;color:#172554";notesBox.appendChild(notesHeading);
    if(lessonText){
     // Render lesson notes as real learning content, not one long plain-text paragraph.
-    const lessonLines=lessonText.replace(/^lesson\s*notes\s*:\s*/i,"").replace(/\r/g,"").split("\n");
+    const lessonLines=lessonText.replace(/^lesson\s*notes\s*:\s*/i,"").replace(/\r/g,"").replace(/\\n/g,"\n").split("\n");
     let paragraphLines=[], listNode=null, listKind="";
     let paragraphCount=0;const flushParagraph=()=>{if(!paragraphLines.length)return;const p=document.createElement("p");p.textContent=paragraphLines.join(" ").trim();paragraphCount++;p.style.cssText=paragraphCount===1?"margin:0 0 20px;padding:18px 20px;border-left:4px solid #2563eb;border-radius:0 12px 12px 0;background:linear-gradient(110deg,#eff6ff,#f8fafc);color:#1e293b;font-size:17px;line-height:1.9":"margin:0 0 16px;color:#334155;font-size:16px;line-height:1.85";notesBox.appendChild(p);paragraphLines=[];};
     const flushList=()=>{if(listNode&&listNode.children.length)notesBox.appendChild(listNode);listNode=null;listKind="";};
