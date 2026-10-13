@@ -62,7 +62,7 @@ begin
 end;
 $$;
 
-do $
+do $otg$
 begin
   if not exists (
     select 1 from pg_trigger
@@ -75,7 +75,7 @@ begin
     for each row execute procedure public.handle_new_otg_user();
   end if;
 end;
-$;
+$otg$;
 
 -- Backfill accounts that already existed before this trigger was installed.
 insert into public.profiles (id, email, role, approval_status)
@@ -91,7 +91,7 @@ set email = excluded.email,
     approval_status = case when lower(coalesce(excluded.email, '')) = 'perfectpairs2021@gmail.com' then 'approved' else public.profiles.approval_status end,
     updated_at = now();
 
-do $
+do $otg$
 begin
   if not exists (
     select 1 from pg_policies
@@ -116,7 +116,7 @@ begin
     with check ((select public.is_otg_admin()));
   end if;
 end;
-$;
+$otg$;
 
 grant select on public.profiles to authenticated;
 grant update (approval_status, updated_at) on public.profiles to authenticated;
@@ -133,7 +133,7 @@ begin
 end;
 $$;
 
-do $
+do $otg$
 begin
   if not exists (
     select 1 from pg_trigger
@@ -146,7 +146,7 @@ begin
     for each row execute procedure public.set_otg_profile_updated_at();
   end if;
 end;
-$;
+$otg$;
 
 -- Verify: this should return the profiles table and your admin profile.
 select table_name
