@@ -80,7 +80,25 @@ async function loadAcademyPanelData(key,content){
    const notesEyebrow=document.createElement("div");notesEyebrow.textContent="YOUR LEARNING NOTES";notesEyebrow.style.cssText="margin-bottom:10px;font-size:11px;letter-spacing:1.3px;font-weight:800;color:#2563eb";notesBox.appendChild(notesEyebrow);
    const notesHeading=document.createElement("h3");notesHeading.textContent="Lesson overview";notesHeading.style.cssText="margin:0 0 14px;font-size:21px;line-height:1.35;color:#172554";notesBox.appendChild(notesHeading);
    if(lessonText){
-    lessonText.split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean).forEach(paragraph=>{const p=document.createElement("p");p.textContent=paragraph.replace(/^lesson\s*notes\s*:\s*/i,"");p.style.cssText="margin:0 0 18px;color:#334155;font-size:16px;line-height:1.9;white-space:pre-wrap";notesBox.appendChild(p);});
+    // Render lesson notes as real learning content, not one long plain-text paragraph.
+    const lessonLines=lessonText.replace(/^lesson\s*notes\s*:\s*/i,"").replace(/\r/g,"").split("\n");
+    let paragraphLines=[], listNode=null, listKind="";
+    const flushParagraph=()=>{if(!paragraphLines.length)return;const p=document.createElement("p");p.textContent=paragraphLines.join(" ").trim();p.style.cssText="margin:0 0 16px;color:#334155;font-size:16px;line-height:1.85";notesBox.appendChild(p);paragraphLines=[];};
+    const flushList=()=>{if(listNode&&listNode.children.length)notesBox.appendChild(listNode);listNode=null;listKind="";};
+    lessonLines.forEach(raw=>{
+      const line=raw.trim();
+      if(!line){flushParagraph();flushList();return;}
+      const heading=line.match(/^(#{1,4})\s+(.+)$/)||line.match(/^(?:SECTION|TOPIC|PART)\s*\d*\s*[:.-]\s*(.+)$/i);
+      const numbered=line.match(/^\s*(?:\d+[.)]|\d+\s*[-:])\s+(.+)$/);
+      const bullet=line.match(/^\s*[-*•✓]\s+(.+)$/);
+      if(heading){flushParagraph();flushList();const level=heading[1]?heading[1].length:3;const h=document.createElement(level<=2?"h4":"h5");h.textContent=heading[2]||heading[1];h.style.cssText="margin:20px 0 10px;color:#172554;font-size:"+(level<=2?"19px":"16px")+";line-height:1.4;font-weight:800";notesBox.appendChild(h);return;}
+      if(numbered||bullet){flushParagraph();const kind=numbered?"ol":"ul";if(!listNode||listKind!==kind){flushList();listNode=document.createElement(kind);listKind=kind;listNode.style.cssText="margin:2px 0 18px;padding:15px 18px 15px 38px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;color:#334155";}const li=document.createElement("li");li.textContent=(numbered||bullet)[1];li.style.cssText="padding:4px 0;line-height:1.75";listNode.appendChild(li);return;}
+      flushList();
+      const callout=line.match(/^(?:key takeaway|remember|important|example|tip|note)\s*:\s*(.+)$/i);
+      if(callout){flushParagraph();const box=document.createElement("div");box.style.cssText="margin:8px 0 18px;padding:15px 17px;border-left:4px solid #2563eb;border-radius:8px;background:#eff6ff;color:#1e3a8a;line-height:1.75";const strong=document.createElement("strong");strong.textContent=line.split(":")[0]+": ";box.appendChild(strong);box.appendChild(document.createTextNode(callout[1]));notesBox.appendChild(box);return;}
+      paragraphLines.push(line);
+    });
+    flushParagraph();flushList();
     const conceptHeading=document.createElement("h4");conceptHeading.textContent="Four foundations to notice";conceptHeading.style.cssText="margin:22px 0 12px;font-size:15px;font-weight:800;color:#172554";notesBox.appendChild(conceptHeading);
     const conceptGrid=document.createElement("div");conceptGrid.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin-bottom:8px";
     [["Layout","Arrange elements so the message is easy to follow.","#eff6ff","#1d4ed8"],["Colour","Choose colours that support the message and feel consistent.","#fdf2f8","#9d174d"],["Typography","Use clear, readable text with a useful size hierarchy.","#f5f3ff","#6d28d9"],["Communication","Make the main idea clear for the intended audience.","#ecfdf5","#047857"]].forEach(item=>{const tile=document.createElement("div");tile.style.cssText="min-width:0;padding:16px;border:1px solid #e2e8f0;border-radius:12px;background:"+item[2];const h=document.createElement("h4");h.textContent=item[0];h.style.cssText="margin:0 0 7px;font-size:14px;font-weight:800;color:"+item[3];const p=document.createElement("p");p.textContent=item[1];p.style.cssText="margin:0;font-size:13px;line-height:1.65;color:#334155";tile.appendChild(h);tile.appendChild(p);conceptGrid.appendChild(tile);});notesBox.appendChild(conceptGrid);
@@ -910,6 +928,9 @@ header{
 .otg-lesson-card>header>div{display:block!important;position:static!important}
 .otg-lesson-card h2{display:block!important;margin:0 0 14px!important;padding:0!important;font-size:clamp(24px,4vw,34px)!important;line-height:1.25!important;font-weight:800!important;color:#172554!important}
 .otg-lesson-card p{max-width:none!important}
+.otg-lesson-card h4,.otg-lesson-card h5{display:block!important;position:static!important}
+.otg-lesson-card ul,.otg-lesson-card ol{display:block!important;position:static!important}
+.otg-lesson-card li{display:list-item!important;position:static!important}
 .otg-lesson-card section{display:block!important;position:static!important}
 .otg-lesson-card footer{position:static!important;display:flex!important}
 @media(max-width:600px){.otg-lesson-card>header{padding:20px!important}.otg-lesson-card h2{font-size:25px!important}.otg-lesson-card footer{align-items:flex-start!important}}
