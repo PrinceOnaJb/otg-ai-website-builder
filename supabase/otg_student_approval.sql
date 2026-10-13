@@ -156,3 +156,9 @@ where table_schema = 'public' and table_name = 'profiles';
 select email, role, approval_status
 from public.profiles
 where lower(coalesce(email, '')) = 'perfectpairs2021@gmail.com';
+
+-- Security hardening: keep trigger-only functions unavailable through the public API.
+REVOKE ALL ON FUNCTION public.handle_new_otg_user() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.is_otg_admin() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.is_otg_admin() TO authenticated;
+
