@@ -203,5 +203,7 @@ CREATE POLICY "Owners read views for own projects" ON public.academy_website_pag
 -- Keep approval helpers callable by signed-in users for RLS policy checks, not by anonymous callers.
 REVOKE ALL ON FUNCTION public.is_otg_admin() FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.is_otg_admin() TO authenticated;
+REVOKE ALL ON FUNCTION public.is_otg_approved() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.is_otg_approved() TO authenticated;
 REVOKE ALL ON FUNCTION public.is_otg_approved_student() FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.is_otg_approved_student() TO authenticated;
