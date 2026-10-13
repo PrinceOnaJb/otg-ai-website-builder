@@ -54,7 +54,7 @@ async function loadAcademyPanelData(key,content){
  const userId=window.otgAcademyUserId||null;
  const esc=v=>String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
  content.querySelectorAll(".otg-academy-data-area").forEach(el=>el.remove());
- const cleanLessonText=v=>String(v==null?"":v).replace(/^\s*(?:course\s*name|short\s*description|description|lesson\s*notes|notes)\s*:\s*/i,"").trim();
+ const cleanLessonText=v=>String(v==null?"":v).replace(/^\s*(?:lesson\s*title|title|course\s*name|course|short\s*description|description|lesson\s*notes|notes)\s*:\s*/i,"").trim();
  const area=document.createElement("div");area.className="otg-academy-data-area";area.style.cssText="margin-top:24px;padding-top:20px;border-top:1px solid #e2e8f0";content.appendChild(area);
  if(key==="learn"||key==="watch"){
   if(admin)area.innerHTML='<h3>Publish a lesson</h3><form id="otgLessonForm" style="display:grid;gap:8px;margin:12px 0"><input name="title" required placeholder="Lesson title" style="padding:10px"><input name="course" placeholder="Course name" style="padding:10px"><textarea name="description" placeholder="Short description" style="padding:10px"></textarea><textarea name="content" placeholder="Lesson notes" style="padding:10px"></textarea><input name="video_url" type="url" placeholder="Video URL (optional)" style="padding:10px"><label><input name="published" type="checkbox"> Publish for approved students</label><button class="primary-btn">Save lesson</button><span id="otgLessonMsg"></span></form>';
