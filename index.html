@@ -77,7 +77,7 @@ async function loadAcademyPanelData(key,content){
   progressTop.append(progressTitle,progressCount);
   const progressTrack=document.createElement("div");progressTrack.setAttribute("role","progressbar");progressTrack.setAttribute("aria-label","Lesson completion progress");progressTrack.setAttribute("aria-valuemin","0");progressTrack.setAttribute("aria-valuemax","100");progressTrack.style.cssText="height:10px;overflow:hidden;border-radius:999px;background:#dbeafe";
   const progressFill=document.createElement("div");progressFill.style.cssText="height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,#2563eb,#0d9488);transition:width .25s ease";progressTrack.appendChild(progressFill);
-  const progressHint=document.createElement("p");progressHint.style.cssText="margin:9px 0 0;color:#64748b;font-size:12px;line-height:1.6";
+  const progressHint=document.createElement("p");progressHint.setAttribute("role","status");progressHint.setAttribute("aria-live","polite");progressHint.style.cssText="margin:9px 0 0;color:#64748b;font-size:12px;line-height:1.6";
   progressWrap.append(progressTop,progressTrack,progressHint);
   const updateProgressDisplay=total=>{
     const done=completedLessonIds.size;
@@ -149,11 +149,27 @@ async function loadAcademyPanelData(key,content){
    completeBtn.setAttribute("aria-label",isCompleted?"Lesson completed":"Mark "+title+" as complete");
    completeBtn.style.cssText="border:0;border-radius:9px;padding:10px 14px;background:"+(isCompleted?"#dcfce7":"#1d4ed8")+";color:"+(isCompleted?"#166534":"#fff")+";font-weight:800;cursor:"+(completeBtn.disabled?"default":"pointer")+";opacity:"+(completeBtn.disabled&&!isCompleted?".65":"1");
    completeBtn.addEventListener("click",async()=>{
-     if(!userId){completeBtn.textContent="Please sign in again";completeBtn.disabled=true;return;}
+     if(!userId){completeBtn.textContent="Please sign in again";completeBtn.disabled=true;progressHint.textContent="Please sign in again before completing a lesson.";return;}
      completeBtn.disabled=true;completeBtn.textContent="Saving…";
-     const {error:saveError}=await db.from("academy_lesson_progress").upsert({student_id:userId,lesson_id:x.id,completed_at:new Date().toISOString()},{onConflict:"student_id,lesson_id"});
-     if(saveError){console.error("Could not save lesson completion:",saveError);completeBtn.disabled=false;completeBtn.textContent="Try again";completeBtn.title="Progress was not saved: "+saveError.message;return;}
-     completedLessonIds.add(String(x.id));completeBtn.textContent="✓ Lesson completed";completeBtn.style.background="#dcfce7";completeBtn.style.color="#166534";completeBtn.style.cursor="default";updateProgressDisplay(data.length);
+     progressHint.textContent="Saving your lesson completion…";
+     try{
+       const {error:saveError}=await db.from("academy_lesson_progress").upsert({student_id:userId,lesson_id:x.id,completed_at:new Date().toISOString()},{onConflict:"student_id,lesson_id"});
+       if(saveError)throw saveError;
+       completedLessonIds.add(String(x.id));
+       completeBtn.textContent="✓ Lesson completed";
+       completeBtn.style.background="#dcfce7";
+       completeBtn.style.color="#166534";
+       completeBtn.style.cursor="default";
+       completeBtn.title="Completion was saved to your account.";
+       updateProgressDisplay(data.length);
+       progressHint.textContent="Saved successfully. Refresh this page to verify that your completion remains recorded.";
+     }catch(saveError){
+       console.error("Could not save lesson completion:",saveError);
+       completeBtn.disabled=false;
+       completeBtn.textContent="Try again";
+       completeBtn.title="Progress was not saved: "+(saveError?.message||"Unknown error");
+       progressHint.textContent="We couldn't save this lesson completion. Please try again. "+(saveError?.message||"Check your connection and account access.");
+     }
    });
    footer.appendChild(completeBtn);
    const topLink=document.createElement("button");topLink.type="button";topLink.textContent="Back to top ↑";topLink.style.cssText="border:1px solid #cbd5e1;border-radius:9px;padding:8px 12px;background:#fff;color:#334155;font-weight:700;cursor:pointer";topLink.addEventListener("click",()=>card.scrollIntoView({behavior:"smooth",block:"start"}));footer.appendChild(topLink);card.appendChild(footer);
