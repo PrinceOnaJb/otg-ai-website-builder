@@ -4829,7 +4829,7 @@ async function fetchCurrentProfile(){
   if(!data) throw new Error("Your student profile has not been created yet. Please contact the administrator.");
   currentProfile = data;
   window.otgAcademyUserId = currentUser.id;
-  window.otgAcademyIsAdmin = data.role === "admin" && data.approval_status === "approved";
+  window.otgAcademyIsAdmin = (String(data.role || "").toLowerCase() === "admin" || String(data.email || "").toLowerCase() === OTG_ADMIN_EMAIL.toLowerCase()) && (String(data.approval_status || "").toLowerCase() === "approved" || String(data.role || "").toLowerCase() === "admin" || String(data.email || "").toLowerCase() === OTG_ADMIN_EMAIL.toLowerCase());
   return data;
 }
 
@@ -4846,7 +4846,7 @@ async function refreshApprovalStatus(){
   if(message) message.textContent = "Checking your account status…";
   try{
     const profile = await fetchCurrentProfile();
-    if(profile.role === "admin" || profile.approval_status === "approved"){
+    if(String(profile.role || "").toLowerCase() === "admin" || String(profile.approval_status || "").toLowerCase() === "approved" || String(profile.email || "").toLowerCase() === OTG_ADMIN_EMAIL.toLowerCase()){
       hideAllAccessScreens();
       await showApp(true);
       return;
@@ -4867,7 +4867,7 @@ async function refreshApprovalStatus(){
 }
 
 function ensureAdminPanel(){
-  if(!currentProfile || currentProfile.role !== "admin") return;
+  if(!currentProfile || (String(currentProfile.role || "").toLowerCase() !== "admin" && String(currentProfile.email || "").toLowerCase() !== OTG_ADMIN_EMAIL.toLowerCase())) return;
   let panel = $("otgAdminApprovalPanel");
   if(!panel){
     panel = document.createElement("section");
@@ -4883,7 +4883,7 @@ function ensureAdminPanel(){
 
 async function loadAdminApprovals(){
   const list = $("otgApprovalList");
-  if(!list || !currentProfile || currentProfile.role !== "admin") return;
+  if(!list || !currentProfile || (String(currentProfile.role || "").toLowerCase() !== "admin" && String(currentProfile.email || "").toLowerCase() !== OTG_ADMIN_EMAIL.toLowerCase())) return;
   list.textContent = "Loading student requests…";
   const { data, error } = await supabaseClient.from("profiles")
     .select("id,email,approval_status,created_at")
@@ -4913,7 +4913,7 @@ async function loadAdminApprovals(){
 }
 
 async function setStudentApproval(studentId, status){
-  if(!currentProfile || currentProfile.role !== "admin") { showToast("Administrator access required."); return; }
+  if(!currentProfile || (String(currentProfile.role || "").toLowerCase() !== "admin" && String(currentProfile.email || "").toLowerCase() !== OTG_ADMIN_EMAIL.toLowerCase())) { showToast("Administrator access required."); return; }
   const { error } = await supabaseClient.from("profiles")
     .update({approval_status:status, updated_at:new Date().toISOString()})
     .eq("id", studentId).eq("role", "student");
