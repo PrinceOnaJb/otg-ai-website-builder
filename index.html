@@ -80,7 +80,11 @@ async function loadAcademyPanelData(key,content){
    const notesEyebrow=document.createElement("div");notesEyebrow.textContent="YOUR LEARNING NOTES";notesEyebrow.style.cssText="margin-bottom:10px;font-size:11px;letter-spacing:1.3px;font-weight:800;color:#2563eb";notesBox.appendChild(notesEyebrow);
    const notesHeading=document.createElement("h3");notesHeading.textContent="Lesson overview";notesHeading.style.cssText="margin:0 0 14px;font-size:21px;line-height:1.35;color:#172554";notesBox.appendChild(notesHeading);
    if(lessonText){
-    lessonText.split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean).forEach(paragraph=>{const p=document.createElement("p");p.textContent=paragraph.replace(/^lesson\s*notes\s*:\s*/i,"");p.style.cssText="margin:0 0 14px;color:#334155;font-size:16px;line-height:1.9;white-space:pre-wrap";notesBox.appendChild(p);});
+    lessonText.split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean).forEach(paragraph=>{const p=document.createElement("p");p.textContent=paragraph.replace(/^lesson\s*notes\s*:\s*/i,"");p.style.cssText="margin:0 0 18px;color:#334155;font-size:16px;line-height:1.9;white-space:pre-wrap";notesBox.appendChild(p);});
+    const conceptHeading=document.createElement("h4");conceptHeading.textContent="Four foundations to notice";conceptHeading.style.cssText="margin:22px 0 12px;font-size:15px;font-weight:800;color:#172554";notesBox.appendChild(conceptHeading);
+    const conceptGrid=document.createElement("div");conceptGrid.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin-bottom:8px";
+    [["Layout","Arrange elements so the message is easy to follow.","#eff6ff","#1d4ed8"],["Colour","Choose colours that support the message and feel consistent.","#fdf2f8","#9d174d"],["Typography","Use clear, readable text with a useful size hierarchy.","#f5f3ff","#6d28d9"],["Communication","Make the main idea clear for the intended audience.","#ecfdf5","#047857"]].forEach(item=>{const tile=document.createElement("div");tile.style.cssText="min-width:0;padding:16px;border:1px solid #e2e8f0;border-radius:12px;background:"+item[2];const h=document.createElement("h4");h.textContent=item[0];h.style.cssText="margin:0 0 7px;font-size:14px;font-weight:800;color:"+item[3];const p=document.createElement("p");p.textContent=item[1];p.style.cssText="margin:0;font-size:13px;line-height:1.65;color:#334155";tile.appendChild(h);tile.appendChild(p);conceptGrid.appendChild(tile);});notesBox.appendChild(conceptGrid);
+    const takeaway=document.createElement("div");takeaway.style.cssText="margin-top:14px;padding:16px 18px;border-left:4px solid #2563eb;border-radius:8px;background:#eff6ff;color:#1e3a8a;font-size:14px;line-height:1.75";takeaway.innerHTML="<strong>Remember:</strong> Good graphic design is not just decoration. It helps people understand a message quickly and clearly.";notesBox.appendChild(takeaway);
    }else{const p=document.createElement("p");p.textContent="Lesson notes will be added by your coach.";p.style.cssText="margin:0;color:#64748b;line-height:1.8";notesBox.appendChild(p);}
    body.appendChild(notesBox);
    const outcomes=document.createElement("section");outcomes.style.cssText="padding:20px 22px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0";
@@ -898,6 +902,17 @@ header{
 .academy-note{font-size:12px;color:#7a8498;margin-top:14px}
 @media(max-width:850px){.academy-layout{grid-template-columns:1fr}.academy-sidebar{max-height:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.academy-brand{grid-column:1/-1}.academy-stats{grid-template-columns:1fr}.academy-welcome{padding:19px}.academy-welcome h3{font-size:21px}}
 
+
+/* OTG lesson layout safeguard: enforce course design on the actual Learn page */
+.otg-lesson-library{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:22px!important;width:100%!important;max-width:920px!important;margin:20px 0 8px!important}
+.otg-lesson-card{display:block!important;position:relative!important;box-sizing:border-box!important;overflow:hidden!important;width:100%!important;margin:0 0 22px!important;padding:0!important;border:1px solid #dbe4f0!important;border-radius:18px!important;background:#fff!important;box-shadow:0 8px 26px rgba(15,23,42,.09)!important;color:#172033!important;line-height:1.7!important}
+.otg-lesson-card>header{position:static!important;inset:auto!important;z-index:auto!important;display:block!important;padding:clamp(20px,4vw,32px)!important;background:linear-gradient(125deg,#eff6ff,#f8fafc 62%,#eef2ff)!important;border:0!important;border-bottom:1px solid #dbeafe!important;box-shadow:none!important}
+.otg-lesson-card>header>div{display:block!important;position:static!important}
+.otg-lesson-card h2{display:block!important;margin:0 0 14px!important;padding:0!important;font-size:clamp(24px,4vw,34px)!important;line-height:1.25!important;font-weight:800!important;color:#172554!important}
+.otg-lesson-card p{max-width:none!important}
+.otg-lesson-card section{display:block!important;position:static!important}
+.otg-lesson-card footer{position:static!important;display:flex!important}
+@media(max-width:600px){.otg-lesson-card>header{padding:20px!important}.otg-lesson-card h2{font-size:25px!important}.otg-lesson-card footer{align-items:flex-start!important}}
 </style>
 </head>
 
@@ -3269,28 +3284,6 @@ function buildPreviewDocument(){
 <style>
 ${css}
 
-/* OTG lesson layout safeguard: enforce the course design even if dashboard styles conflict */
-.otg-lesson-library{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:22px!important;width:100%!important;max-width:920px!important;margin:20px 0 8px!important}
-.otg-lesson-card{display:block!important;position:relative!important;box-sizing:border-box!important;overflow:hidden!important;width:100%!important;margin:0 0 22px!important;padding:0!important;border:1px solid #dbe4f0!important;border-radius:18px!important;background:#fff!important;box-shadow:0 8px 26px rgba(15,23,42,.09)!important;color:#172033!important;line-height:1.7!important}
-.otg-lesson-card>header{position:static!important;inset:auto!important;z-index:auto!important;display:block!important;padding:clamp(20px,4vw,32px)!important;background:linear-gradient(125deg,#eff6ff,#f8fafc 62%,#eef2ff)!important;border:0!important;border-bottom:1px solid #dbeafe!important;box-shadow:none!important}
-.otg-lesson-card>header>div{display:block!important;position:static!important}
-.otg-lesson-card h2{display:block!important;margin:0 0 14px!important;padding:0!important;font-size:clamp(24px,4vw,34px)!important;line-height:1.25!important;font-weight:800!important;letter-spacing:-.5px!important;color:#172554!important}
-.otg-lesson-card>header>span{display:inline-block!important;margin:0!important;padding:7px 12px!important;border-radius:999px!important;background:#dbeafe!important;color:#1e40af!important;font-size:12px!important;font-weight:800!important}
-.otg-lesson-card p{display:block!important;margin:0 0 14px!important;padding:0!important;max-width:none!important;color:#334155!important;font-size:16px!important;line-height:1.9!important;white-space:pre-wrap!important}
-.otg-lesson-card>header p{margin:18px 0 0!important;max-width:720px!important;font-size:16px!important;line-height:1.8!important}
-.otg-lesson-card>div{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:18px!important;padding:clamp(18px,3.5vw,30px)!important;background:#fff!important}
-.otg-lesson-card section{display:block!important;box-sizing:border-box!important;margin:0!important;padding:clamp(18px,3vw,24px)!important;border:1px solid #e2e8f0!important;border-radius:14px!important;background:#fff!important}
-.otg-lesson-card section h3{display:block!important;margin:0 0 14px!important;padding:0!important;font-size:20px!important;line-height:1.4!important;font-weight:800!important;color:#172554!important}
-.otg-lesson-card section>div{display:flex!important;align-items:flex-start!important;gap:10px!important;margin:10px 0!important;padding:0!important;background:transparent!important}
-.otg-lesson-card section>div>span{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 22px!important;width:22px!important;height:22px!important;margin:0!important;padding:0!important;border-radius:50%!important;background:#dcfce7!important;color:#166534!important;font-weight:800!important}
-.otg-lesson-card section:last-child{background:#fff7ed!important;border-color:#fed7aa!important}
-.otg-lesson-card section:last-child h3{color:#7c2d12!important}
-.otg-lesson-card section:last-child p{color:#7c2d12!important;font-size:14px!important}
-.otg-lesson-card a{display:inline-flex!important;align-items:center!important;justify-content:center!important;align-self:start!important;padding:12px 18px!important;border-radius:10px!important;background:#1d4ed8!important;color:#fff!important;text-decoration:none!important;font-weight:800!important}
-.otg-lesson-card>footer{position:static!important;display:flex!important;flex-wrap:wrap!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;padding:16px clamp(18px,3.5vw,30px)!important;border:0!important;border-top:1px solid #e2e8f0!important;background:#fbfdff!important;box-shadow:none!important}
-.otg-lesson-card>footer span{display:inline!important;margin:0!important;padding:0!important;background:transparent!important;color:#64748b!important;font-size:12px!important;font-weight:600!important}
-.otg-lesson-card>footer button{display:inline-block!important;margin:0!important;padding:8px 12px!important;border:1px solid #cbd5e1!important;border-radius:9px!important;background:#fff!important;color:#334155!important;font-size:13px!important;font-weight:700!important;cursor:pointer!important}
-@media(max-width:600px){.otg-lesson-card>header{padding:20px!important}.otg-lesson-card>div{padding:16px!important}.otg-lesson-card section{padding:17px!important}.otg-lesson-card h2{font-size:26px!important}}
 
 </style>
 </head>
