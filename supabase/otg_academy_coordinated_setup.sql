@@ -529,3 +529,15 @@ GRANT EXECUTE ON FUNCTION public.is_otg_admin() TO authenticated;
 REVOKE ALL ON FUNCTION public.is_otg_approved_student() FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.is_otg_approved_student() TO authenticated;
 
+-- Helpful indexes for dashboard list queries and foreign-key lookups.
+CREATE INDEX IF NOT EXISTS idx_academy_announcements_created_by ON public.academy_announcements(created_by);
+CREATE INDEX IF NOT EXISTS idx_academy_assignments_created_by ON public.academy_assignments(created_by);
+CREATE INDEX IF NOT EXISTS idx_academy_discussion_replies_discussion_id ON public.academy_discussion_replies(discussion_id);
+CREATE INDEX IF NOT EXISTS idx_academy_discussion_replies_student_id ON public.academy_discussion_replies(student_id);
+CREATE INDEX IF NOT EXISTS idx_academy_discussions_student_id ON public.academy_discussions(student_id);
+CREATE INDEX IF NOT EXISTS idx_academy_lessons_created_by ON public.academy_lessons(created_by);
+CREATE INDEX IF NOT EXISTS idx_academy_submissions_reviewed_by ON public.academy_submissions(reviewed_by);
+CREATE INDEX IF NOT EXISTS idx_academy_submissions_student_id ON public.academy_submissions(student_id);
+CREATE INDEX IF NOT EXISTS idx_products_project_id ON public.products(project_id);
+CREATE INDEX IF NOT EXISTS idx_products_user_id ON public.products(user_id);
+CREATE INDEX IF NOT EXISTS idx_projects_user_id ON public.projects(user_id);
