@@ -1045,6 +1045,12 @@ header{
 
     </form>
 
+    <div id="confirmationHelp" hidden style="margin-top:16px;padding:14px;border:1px solid #bfdbfe;border-radius:10px;background:#eff6ff;">
+      <p id="confirmationHelpText" style="margin:0 0 10px;color:#1e3a8a;line-height:1.6;">If your email is not confirmed, you can request another confirmation message.</p>
+      <button type="button" id="resendConfirmationBtn" style="padding:10px 14px;border:0;border-radius:8px;background:#1d4ed8;color:#fff;font-weight:700;cursor:pointer;">Resend confirmation email</button>
+      <p id="confirmationStatus" role="status" aria-live="polite" style="margin:10px 0 0;color:#334155;font-size:13px;line-height:1.5;"></p>
+    </div>
+
     <div class="auth-switch">
 
       <span id="authSwitchText">
@@ -4821,6 +4827,44 @@ function setAuthMode(mode){
 }
 
 
+function showConfirmationHelp(email, message){
+  const panel = $("confirmationHelp");
+  const emailInput = $("authEmail");
+  const text = $("confirmationHelpText");
+  const status = $("confirmationStatus");
+  if(emailInput && email) emailInput.value = email;
+  if(text && message) text.textContent = message;
+  if(status) status.textContent = "";
+  if(panel) panel.hidden = false;
+}
+
+async function resendConfirmationEmail(){
+  const email = $("authEmail").value.trim();
+  const button = $("resendConfirmationBtn");
+  const status = $("confirmationStatus");
+  if(!email){
+    if(status) status.textContent = "Enter your email address above first.";
+    $("authEmail").focus();
+    return;
+  }
+  if(button){ button.disabled = true; button.textContent = "Sending…"; }
+  if(status) status.textContent = "Requesting a new confirmation email…";
+  try{
+    const {error} = await supabaseClient.auth.resend({
+      type: "signup",
+      email: email,
+      options: { emailRedirectTo: window.location.origin }
+    });
+    if(error) throw error;
+    if(status) status.textContent = "If this account can receive a confirmation message, Supabase has accepted the request. Check your inbox and spam folder. If no message arrives, the configured email service may still need attention.";
+  }catch(error){
+    console.error("Confirmation email resend failed:", error);
+    if(status) status.textContent = "The confirmation email could not be requested: " + (error && error.message || "Unknown error") + ". The email service configuration may need attention.";
+  }finally{
+    if(button){ button.disabled = false; button.textContent = "Resend confirmation email"; }
+  }
+}
+
 async function handleAuthSubmit(event){
 
   event.preventDefault();
@@ -4890,8 +4934,10 @@ async function handleAuthSubmit(event){
 
       }else{
 
+        showConfirmationHelp(email, "Your account has been created. Confirm your email before logging in. If the message did not arrive, request another confirmation email below.");
+
         showToast(
-          "Account created. Check your email to confirm the account if confirmation is required, then log in. Your dashboard will be available after administrator approval."
+          "Account created. Check your email to confirm your account before logging in."
         );
 
         setAuthMode("login");
@@ -4928,10 +4974,13 @@ async function handleAuthSubmit(event){
 
     console.error(error);
 
-    showToast(
-      error.message ||
-      "Authentication failed."
-    );
+    const authErrorMessage = String(error && error.message || "Authentication failed.");
+    if (/email not confirmed|email_not_confirmed|confirm your email/i.test(authErrorMessage)) {
+      showConfirmationHelp(email, "Your email address has not been confirmed. Request a new confirmation message below, then try logging in again.");
+      showToast("Please confirm your email before logging in.");
+    } else {
+      showToast(authErrorMessage);
+    }
 
   }finally{
 
@@ -5226,6 +5275,8 @@ $("authSwitchBtn")
 
     }
   );
+
+$("resendConfirmationBtn").addEventListener("click", resendConfirmationEmail);
 
 
 const saveModal =
