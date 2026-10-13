@@ -5013,7 +5013,7 @@ async function checkPublicSite(){
     await supabaseClient
       .from("projects")
       .select(
-        "title,slug,html,css,js,is_published"
+        "id,title,slug,html,css,js,is_published"
       )
       .eq(
         "slug",
@@ -5069,6 +5069,18 @@ async function checkPublicSite(){
 
     return true;
 
+  }
+
+  // Record one public page view per browser, per site, per UTC day when storage is available.
+  const viewKey="otg_view_"+data.id;
+  const viewDay=new Date().toISOString().slice(0,10);
+  let shouldRecordView=true;
+  try{shouldRecordView=localStorage.getItem(viewKey)!==viewDay;}catch(storageError){}
+  if(shouldRecordView){
+    supabaseClient.from("academy_website_page_views").insert({project_id:data.id}).then(({error:viewError})=>{
+      if(!viewError){try{localStorage.setItem(viewKey,viewDay);}catch(storageError){}}
+      else console.warn("Public page view could not be recorded:",viewError.message);
+    }).catch(viewError=>console.warn("Public page view could not be recorded:",viewError));
   }
 
   renderPublicSite(data);
