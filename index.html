@@ -84,7 +84,9 @@ async function loadAcademyPanelData(key,content){
  if(key==="learn"||key==="watch"){
   if(admin)area.innerHTML='<h3>Publish a lesson</h3><form id="otgLessonForm" style="display:grid;gap:8px;margin:12px 0"><input name="title" required placeholder="Lesson title" style="padding:10px"><input name="course" placeholder="Course name" style="padding:10px"><textarea name="description" placeholder="Short description" style="padding:10px"></textarea><textarea name="content" placeholder="Lesson notes" style="padding:10px"></textarea><input name="video_url" type="url" placeholder="Video URL (optional)" style="padding:10px"><label><input name="published" type="checkbox"> Publish for approved students</label><button class="primary-btn">Save lesson</button><span id="otgLessonMsg"></span></form>';
   if(admin)area.querySelector("#otgLessonForm").addEventListener("submit",async e=>{e.preventDefault();const f=e.currentTarget,d=new FormData(f);const {error}=await db.from("academy_lessons").insert({title:d.get("title"),course:d.get("course")||"Getting Started",description:d.get("description")||"",content:d.get("content")||"",video_url:d.get("video_url")||null,is_published:d.get("published")==="on",created_by:userId});f.querySelector("#otgLessonMsg").textContent=error?"Save failed: "+error.message:"Lesson saved.";if(!error){f.reset();loadAcademyPanelData(key,content);}});
-  const {data,error}=await db.from("academy_lessons").select("id,title,course,description,content,video_url,created_at").eq("is_published",true).order("sort_order",{ascending:true}).order("created_at",{ascending:false});
+  let lessonsQuery=db.from("academy_lessons").select("id,title,course,description,content,video_url,created_at").eq("is_published",true).order("sort_order",{ascending:true}).order("created_at",{ascending:false});
+  if(key==="watch")lessonsQuery=lessonsQuery.not("video_url","is",null).neq("video_url","");
+  const {data,error}=await lessonsQuery;
   let completedLessonIds=new Set();
   let completionLoadError=null;
   if(userId){
@@ -114,7 +116,7 @@ async function loadAcademyPanelData(key,content){
   };
   const list=document.createElement("div");list.className="otg-lesson-library";list.style.cssText="display:grid;grid-template-columns:minmax(0,1fr);gap:22px;margin:20px 0 8px;max-width:920px";
   if(error){const msg=document.createElement("p");msg.textContent="Lessons could not load: "+error.message;msg.style.cssText="padding:16px;border:1px solid #fecaca;border-radius:12px;background:#fff7f7;color:#991b1b";list.appendChild(msg);}
-  else if(!data||!data.length){const empty=document.createElement("div");empty.style.cssText="padding:28px;border:1px dashed #cbd5e1;border-radius:16px;background:#f8fafc;color:#475569";empty.innerHTML="<strong>No published lessons yet</strong><p style='margin:8px 0 0;line-height:1.7'>Your coach's published lessons will appear here when available.</p>";list.appendChild(empty);}
+  else if(!data||!data.length){const empty=document.createElement("div");empty.style.cssText="padding:28px;border:1px dashed #cbd5e1;border-radius:16px;background:#f8fafc;color:#475569";empty.innerHTML=key==="watch"?"<strong>No video lessons yet</strong><p style='margin:8px 0 0;line-height:1.7'>Your coach's video lessons will appear here when a video link is added to a published lesson.</p>":"<strong>No published lessons yet</strong><p style='margin:8px 0 0;line-height:1.7'>Your coach's published lessons will appear here when available.</p>";list.appendChild(empty);}
   else data.forEach((x,index)=>{
    const title=cleanLessonText(x.title)||"Untitled lesson";
    const courseName=cleanLessonText(x.course)||"Getting Started";
