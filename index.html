@@ -249,6 +249,33 @@ async function loadAcademyPanelData(key,content){
     });
    }
   }
+ }else if(key==="earn"){
+  const heading=document.createElement("h3");heading.textContent="Create & Earn · My products and services";heading.style.cssText="margin:0 0 8px;color:#172554";area.appendChild(heading);
+  const intro=document.createElement("p");intro.textContent="Use your skills to create useful services, add products in the Builder, and share your published website with potential customers.";intro.style.cssText="margin:0 0 16px;color:#64748b;line-height:1.7";area.appendChild(intro);
+  if(!userId){const p=document.createElement("p");p.textContent="Please sign in again to view your products.";area.appendChild(p);}
+  else{
+   const {data:products,error}=await db.from("products").select("id,name,price,description,image_url,category,whatsapp_number,created_at").eq("user_id",userId).order("created_at",{ascending:false});
+   if(error){const p=document.createElement("p");p.textContent="Your products could not load: "+error.message;area.appendChild(p);}
+   else if(!products||!products.length){const empty=document.createElement("div");empty.style.cssText="padding:20px;border:1px dashed #cbd5e1;border-radius:12px;background:#f8fafc;color:#475569;line-height:1.7";empty.textContent="You have not added any products yet. Open the Builder, go to My Products, and add a product or service to start building your catalogue.";area.appendChild(empty);}
+   else{
+    const grid=document.createElement("div");grid.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px";
+    products.forEach(product=>{
+     const card=document.createElement("article");card.style.cssText="overflow:hidden;border:1px solid #e2e8f0;border-radius:13px;background:#fff";
+     const imageUrl=String(product.image_url||"");
+     if(/^https?:\/\//i.test(imageUrl)){const img=document.createElement("img");img.src=imageUrl;img.alt=product.name||"Product image";img.loading="lazy";img.referrerPolicy="no-referrer";img.style.cssText="display:block;width:100%;max-height:220px;object-fit:cover;background:#f1f5f9";card.appendChild(img);}
+     const body=document.createElement("div");body.style.cssText="padding:15px";
+     const name=document.createElement("h4");name.textContent=product.name||"Untitled product";name.style.cssText="margin:0 0 7px;color:#172554;font-size:17px";
+     const price=document.createElement("p");price.textContent=product.price?"Price: "+product.price:"Price not added";price.style.cssText="margin:0 0 6px;color:#1d4ed8;font-weight:800";
+     const category=document.createElement("p");category.textContent=product.category||"General";category.style.cssText="margin:0 0 8px;color:#64748b;font-size:12px";
+     const description=document.createElement("p");description.textContent=product.description||"No description added.";description.style.cssText="margin:0 0 12px;color:#334155;line-height:1.65;white-space:pre-wrap";
+     body.append(name,price,category,description);
+     const digits=String(product.whatsapp_number||"").replace(/\D/g,"");
+     if(digits.length>=7){const link=document.createElement("a");link.href="https://wa.me/"+digits;link.target="_blank";link.rel="noopener noreferrer";link.textContent="Contact on WhatsApp";link.style.cssText="display:inline-block;padding:9px 12px;border-radius:8px;background:#15803d;color:#fff;text-decoration:none;font-weight:800;font-size:13px";body.appendChild(link);}
+     card.appendChild(body);grid.appendChild(card);
+    });
+    area.appendChild(grid);
+   }
+  }
  }else if(key==="analytics"){
   const heading=document.createElement("h3");heading.textContent="Your website and learning analytics";heading.style.cssText="margin:0 0 8px;color:#172554";area.appendChild(heading);
   const intro=document.createElement("p");intro.textContent="These figures come from your saved OTG Academy activity and recorded visits to your published websites.";intro.style.cssText="margin:0 0 16px;color:#64748b;line-height:1.7";area.appendChild(intro);
