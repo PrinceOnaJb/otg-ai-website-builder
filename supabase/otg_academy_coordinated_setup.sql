@@ -526,10 +526,6 @@ WHERE lower(coalesce(email, '')) = 'perfectpairs2021@gmail.com';
 REVOKE ALL ON FUNCTION public.handle_new_otg_user() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.is_otg_admin() FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.is_otg_admin() TO authenticated;
-REVOKE ALL ON FUNCTION public.is_otg_approved() FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.is_otg_approved() TO authenticated;
 REVOKE ALL ON FUNCTION public.is_otg_approved_student() FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.is_otg_approved_student() TO authenticated;
-REVOKE ALL ON FUNCTION public.handle_otg_new_user() FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION public.rls_auto_enable() FROM PUBLIC, anon, authenticated;
 
