@@ -59,7 +59,33 @@ async function loadAcademyPanelData(key,content){
  if(key==="learn"||key==="watch"){
   if(admin)area.innerHTML='<h3>Publish a lesson</h3><form id="otgLessonForm" style="display:grid;gap:8px;margin:12px 0"><input name="title" required placeholder="Lesson title" style="padding:10px"><input name="course" placeholder="Course name" style="padding:10px"><textarea name="description" placeholder="Short description" style="padding:10px"></textarea><textarea name="content" placeholder="Lesson notes" style="padding:10px"></textarea><input name="video_url" type="url" placeholder="Video URL (optional)" style="padding:10px"><label><input name="published" type="checkbox"> Publish for approved students</label><button class="primary-btn">Save lesson</button><span id="otgLessonMsg"></span></form>';
   if(admin)area.querySelector("#otgLessonForm").addEventListener("submit",async e=>{e.preventDefault();const f=e.currentTarget,d=new FormData(f);const {error}=await db.from("academy_lessons").insert({title:d.get("title"),course:d.get("course")||"Getting Started",description:d.get("description")||"",content:d.get("content")||"",video_url:d.get("video_url")||null,is_published:d.get("published")==="on",created_by:userId});f.querySelector("#otgLessonMsg").textContent=error?"Save failed: "+error.message:"Lesson saved.";if(!error){f.reset();loadAcademyPanelData(key,content);}});
-  const {data,error}=await db.from("academy_lessons").select("title,course,description,content,video_url,created_at").eq("is_published",true).order("created_at",{ascending:false});
+  const {data,error}=await db.from("academy_lessons").select("id,title,course,description,content,video_url,created_at").eq("is_published",true).order("sort_order",{ascending:true}).order("created_at",{ascending:false});
+  let completedLessonIds=new Set();
+  let completionLoadError=null;
+  if(userId){
+    const {data:completionRows,error:completionError}=await db.from("academy_lesson_progress").select("lesson_id,completed_at").eq("student_id",userId);
+    if(completionError){completionLoadError=completionError;console.warn("Lesson progress could not load:",completionError.message);}
+    else completedLessonIds=new Set((completionRows||[]).filter(row=>row.completed_at).map(row=>String(row.lesson_id)));
+  }
+  const progressWrap=document.createElement("section");
+  progressWrap.style.cssText="margin:18px 0 20px;padding:18px 20px;border:1px solid #dbeafe;border-radius:14px;background:#f8fbff;max-width:920px";
+  const progressTop=document.createElement("div");
+  progressTop.style.cssText="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px";
+  const progressTitle=document.createElement("strong");progressTitle.textContent="Your course progress";progressTitle.style.cssText="color:#172554;font-size:16px";
+  const progressCount=document.createElement("span");progressCount.style.cssText="color:#1d4ed8;font-size:13px;font-weight:800";
+  progressTop.append(progressTitle,progressCount);
+  const progressTrack=document.createElement("div");progressTrack.setAttribute("role","progressbar");progressTrack.setAttribute("aria-label","Lesson completion progress");progressTrack.setAttribute("aria-valuemin","0");progressTrack.setAttribute("aria-valuemax","100");progressTrack.style.cssText="height:10px;overflow:hidden;border-radius:999px;background:#dbeafe";
+  const progressFill=document.createElement("div");progressFill.style.cssText="height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,#2563eb,#0d9488);transition:width .25s ease";progressTrack.appendChild(progressFill);
+  const progressHint=document.createElement("p");progressHint.style.cssText="margin:9px 0 0;color:#64748b;font-size:12px;line-height:1.6";
+  progressWrap.append(progressTop,progressTrack,progressHint);
+  const updateProgressDisplay=total=>{
+    const done=completedLessonIds.size;
+    const percent=total?Math.round(done/total*100):0;
+    progressCount.textContent=done+" of "+total+" lessons completed";
+    progressFill.style.width=percent+"%";
+    progressTrack.setAttribute("aria-valuenow",String(percent));
+    progressHint.textContent=completionLoadError?"Progress could not be loaded. Please refresh after checking your Supabase migration.":(total?"Your progress is saved to your account when you mark a lesson complete.":"Published lessons will appear here when your coach adds them.");
+  };
   const list=document.createElement("div");list.className="otg-lesson-library";list.style.cssText="display:grid;grid-template-columns:minmax(0,1fr);gap:22px;margin:20px 0 8px;max-width:920px";
   if(error){const msg=document.createElement("p");msg.textContent="Lessons could not load: "+error.message;msg.style.cssText="padding:16px;border:1px solid #fecaca;border-radius:12px;background:#fff7f7;color:#991b1b";list.appendChild(msg);}
   else if(!data||!data.length){const empty=document.createElement("div");empty.style.cssText="padding:28px;border:1px dashed #cbd5e1;border-radius:16px;background:#f8fafc;color:#475569";empty.innerHTML="<strong>No published lessons yet</strong><p style='margin:8px 0 0;line-height:1.7'>Your coach's published lessons will appear here when available.</p>";list.appendChild(empty);}
@@ -117,9 +143,24 @@ async function loadAcademyPanelData(key,content){
    card.appendChild(body);
    const footer=document.createElement("footer");footer.style.cssText="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:16px clamp(18px,3.5vw,30px);border-top:1px solid #e2e8f0;background:#fbfdff";
    const footnote=document.createElement("span");footnote.textContent="OTG GRAPHIC ACADEMY  •  Learn at your pace";footnote.style.cssText="color:#64748b;font-size:12px;font-weight:600";footer.appendChild(footnote);
+   const isCompleted=completedLessonIds.has(String(x.id));
+   const completeBtn=document.createElement("button");completeBtn.type="button";completeBtn.textContent=isCompleted?"✓ Lesson completed":"Mark as Complete";completeBtn.disabled=isCompleted||!userId||!!completionLoadError;
+   completeBtn.setAttribute("aria-label",isCompleted?"Lesson completed":"Mark "+title+" as complete");
+   completeBtn.style.cssText="border:0;border-radius:9px;padding:10px 14px;background:"+(isCompleted?"#dcfce7":"#1d4ed8")+";color:"+(isCompleted?"#166534":"#fff")+";font-weight:800;cursor:"+(completeBtn.disabled?"default":"pointer")+";opacity:"+(completeBtn.disabled&&!isCompleted?".65":"1");
+   completeBtn.addEventListener("click",async()=>{
+     if(!userId){completeBtn.textContent="Please sign in again";completeBtn.disabled=true;return;}
+     completeBtn.disabled=true;completeBtn.textContent="Saving…";
+     const {error:saveError}=await db.from("academy_lesson_progress").upsert({student_id:userId,lesson_id:x.id,completed_at:new Date().toISOString()},{onConflict:"student_id,lesson_id"});
+     if(saveError){console.error("Could not save lesson completion:",saveError);completeBtn.disabled=false;completeBtn.textContent="Try again";completeBtn.title="Progress was not saved: "+saveError.message;return;}
+     completedLessonIds.add(String(x.id));completeBtn.textContent="✓ Lesson completed";completeBtn.style.background="#dcfce7";completeBtn.style.color="#166534";completeBtn.style.cursor="default";updateProgressDisplay(data.length);
+   });
+   footer.appendChild(completeBtn);
    const topLink=document.createElement("button");topLink.type="button";topLink.textContent="Back to top ↑";topLink.style.cssText="border:1px solid #cbd5e1;border-radius:9px;padding:8px 12px;background:#fff;color:#334155;font-weight:700;cursor:pointer";topLink.addEventListener("click",()=>card.scrollIntoView({behavior:"smooth",block:"start"}));footer.appendChild(topLink);card.appendChild(footer);
    list.appendChild(card);
   });
+  if(data&&data.length)updateProgressDisplay(data.length);
+  else updateProgressDisplay(0);
+  area.appendChild(progressWrap);
   area.appendChild(list);
  }else if(key==="assignments"){
   if(admin)area.innerHTML='<h3>Create an assignment</h3><form id="otgAssignmentForm" style="display:grid;gap:8px;margin:12px 0"><input name="title" required placeholder="Assignment title" style="padding:10px"><input name="course" placeholder="Course name" style="padding:10px"><textarea name="instructions" required placeholder="Assignment instructions" style="padding:10px"></textarea><label>Due date (optional) <input name="due_at" type="date"></label><label><input name="published" type="checkbox"> Publish for approved students</label><button class="primary-btn">Save assignment</button><span id="otgAssignmentMsg"></span></form>';
@@ -931,6 +972,8 @@ header{
 .otg-lesson-card h4,.otg-lesson-card h5{display:block!important;position:static!important}
 .otg-lesson-card ul,.otg-lesson-card ol{display:block!important;position:static!important}
 .otg-lesson-card li{display:list-item!important;position:static!important}
+.otg-lesson-card button:disabled{cursor:default!important}
+@media(max-width:600px){.otg-lesson-card footer{gap:10px!important}.otg-lesson-card footer button{max-width:100%;white-space:normal}}
 .otg-lesson-card section{display:block!important;position:static!important}
 .otg-lesson-card footer{position:static!important;display:flex!important}
 @media(max-width:600px){.otg-lesson-card>header{padding:20px!important}.otg-lesson-card h2{font-size:25px!important}.otg-lesson-card footer{align-items:flex-start!important}}
