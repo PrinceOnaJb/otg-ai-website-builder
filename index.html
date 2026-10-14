@@ -142,6 +142,123 @@ async function loadAcademyPanelData(key,content){
     newsList.appendChild(card);
    });
   }
+  const worldNewsSection=document.createElement("section");
+  worldNewsSection.style.cssText="margin-top:26px;padding:20px;border:1px solid #dbeafe;border-radius:16px;background:linear-gradient(145deg,#f8fbff,#fff);";
+  const worldNewsHeading=document.createElement("h3");
+  worldNewsHeading.textContent="🌍 Latest World News";
+  worldNewsHeading.style.cssText="margin:0 0 7px;color:#172554;font-size:21px";
+  const worldNewsIntro=document.createElement("p");
+  worldNewsIntro.textContent="Fresh headlines from news publishers. Select a topic and open any story to read it from the original source.";
+  worldNewsIntro.style.cssText="margin:0 0 14px;color:#64748b;line-height:1.65";
+  const worldNewsTabs=document.createElement("div");
+  worldNewsTabs.setAttribute("aria-label","News categories");
+  worldNewsTabs.style.cssText="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px";
+  const worldNewsList=document.createElement("div");
+  worldNewsList.setAttribute("aria-live","polite");
+  worldNewsList.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px";
+  const worldNewsStatus=document.createElement("p");
+  worldNewsStatus.setAttribute("role","status");
+  worldNewsStatus.style.cssText="margin:12px 0 0;color:#64748b;font-size:12px;line-height:1.6";
+  worldNewsSection.append(worldNewsHeading,worldNewsIntro,worldNewsTabs,worldNewsList,worldNewsStatus);
+  area.appendChild(worldNewsSection);
+  const worldNewsFeeds={
+   "World":"https://news.google.com/rss/search?q=world+news&hl=en&gl=US&ceid=US:en",
+   "Nigeria":"https://news.google.com/rss/search?q=Nigeria+news&hl=en-NG&gl=NG&ceid=NG:en",
+   "Africa":"https://news.google.com/rss/search?q=Africa+news&hl=en&gl=NG&ceid=NG:en",
+   "Technology & AI":"https://news.google.com/rss/search?q=technology+OR+artificial+intelligence&hl=en&gl=US&ceid=US:en",
+   "Education":"https://news.google.com/rss/search?q=education+news&hl=en&gl=NG&ceid=NG:en"
+  };
+  let activeWorldNewsCategory="World";
+  const renderWorldNews=async category=>{
+   activeWorldNewsCategory=category;
+   worldNewsList.replaceChildren();
+   worldNewsStatus.textContent="Loading the latest headlines…";
+   worldNewsTabs.querySelectorAll("button").forEach(button=>{
+    const active=button.dataset.newsCategory===category;
+    button.style.background=active?"#075b24":"#fff";
+    button.style.color=active?"#fff":"#14532d";
+    button.style.borderColor=active?"#075b24":"#bbf7d0";
+    button.setAttribute("aria-pressed",active?"true":"false");
+   });
+   const feed=worldNewsFeeds[category];
+   const cacheKey="otgWorldNews:"+category;
+   let items=null;
+   try{
+    try{
+     const cached=JSON.parse(sessionStorage.getItem(cacheKey)||"null");
+     if(cached&&cached.savedAt&&Date.now()-cached.savedAt<10*60*1000&&Array.isArray(cached.items))items=cached.items;
+    }catch(cacheReadError){}
+    if(!items){
+     const endpoint="https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(feed);
+     const response=await fetch(endpoint,{headers:{Accept:"application/json"}});
+     if(!response.ok)throw new Error("News service is temporarily unavailable.");
+     const payload=await response.json();
+     if(payload.status!=="ok"||!Array.isArray(payload.items))throw new Error("No headlines were returned.");
+     items=payload.items.slice(0,5).map(item=>({title:String(item.title||"News story"),link:String(item.link||""),author:String(item.author||payload.feed&&payload.feed.title||"News source"),pubDate:String(item.pubDate||"")}));
+     try{sessionStorage.setItem(cacheKey,JSON.stringify({savedAt:Date.now(),items}));}catch(cacheWriteError){}
+    }
+    if(activeWorldNewsCategory!==category)return;
+    worldNewsList.replaceChildren();
+    if(!items.length)throw new Error("No recent stories were found for this topic.");
+    items.forEach(item=>{
+     const card=document.createElement("article");
+     card.style.cssText="min-width:0;padding:15px;border:1px solid #dbeafe;border-radius:12px;background:#fff;display:flex;flex-direction:column;gap:8px";
+     const source=document.createElement("small");
+     source.textContent=item.author||"News source";
+     source.style.cssText="color:#64748b;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px";
+     const title=document.createElement("h4");
+     title.textContent=item.title||"News story";
+     title.style.cssText="margin:0;color:#172554;font-size:15px;line-height:1.5;overflow-wrap:anywhere";
+     card.append(source,title);
+     if(item.pubDate){
+      const date=document.createElement("small");
+      const parsedDate=new Date(item.pubDate);
+      date.textContent=Number.isNaN(parsedDate.getTime())?"":parsedDate.toLocaleString();
+      date.style.cssText="color:#64748b;font-size:11px";
+      card.appendChild(date);
+     }
+     let safeLink=null;
+     try{const parsedLink=new URL(item.link);if(parsedLink.protocol==="https:"||parsedLink.protocol==="http:")safeLink=parsedLink.href;}catch(linkError){}
+     if(safeLink){
+      const link=document.createElement("a");
+      link.href=safeLink;
+      link.target="_blank";
+      link.rel="noopener noreferrer";
+      link.textContent="Read full story ↗";
+      link.style.cssText="margin-top:auto;padding-top:4px;color:#166534;font-size:13px;font-weight:800;text-decoration:underline;overflow-wrap:anywhere";
+      card.appendChild(link);
+     }
+     worldNewsList.appendChild(card);
+    });
+    worldNewsStatus.textContent="Headlines are refreshed when requested and cached on this device for 10 minutes. News links open the original publisher or news listing.";
+   }catch(newsFetchError){
+    if(activeWorldNewsCategory!==category)return;
+    worldNewsList.replaceChildren();
+    const fallback=document.createElement("p");
+    fallback.textContent="Live headlines could not load right now. You can still browse this topic on Google News.";
+    fallback.style.cssText="grid-column:1/-1;padding:14px;border-radius:10px;background:#fff7ed;color:#9a3412;line-height:1.6";
+    worldNewsList.appendChild(fallback);
+    const fallbackLink=document.createElement("a");
+    fallbackLink.href="https://news.google.com/";
+    fallbackLink.target="_blank";
+    fallbackLink.rel="noopener noreferrer";
+    fallbackLink.textContent="Open Google News ↗";
+    fallbackLink.style.cssText="color:#166534;font-weight:800";
+    worldNewsList.appendChild(fallbackLink);
+    worldNewsStatus.textContent="News requires an internet connection. Academy lessons and assignments remain separate from this feed.";
+    console.warn("OTG world news could not load:",newsFetchError);
+   }
+  };
+  Object.keys(worldNewsFeeds).forEach(category=>{
+   const tab=document.createElement("button");
+   tab.type="button";
+   tab.textContent=category;
+   tab.dataset.newsCategory=category;
+   tab.style.cssText="padding:8px 12px;border:1px solid #bbf7d0;border-radius:999px;background:#fff;color:#14532d;font-size:12px;font-weight:800;cursor:pointer";
+   tab.addEventListener("click",()=>renderWorldNews(category));
+   worldNewsTabs.appendChild(tab);
+  });
+  renderWorldNews("World");
   return;
  }
  if(key==="codelab"){
