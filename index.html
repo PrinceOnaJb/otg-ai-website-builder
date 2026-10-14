@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Learn graphic design, practise digital skills, complete assignments, build websites and grow your portfolio with OTG GRAPHIC Academy.">
-<meta name="theme-color" content="#075b24">
+<meta name="description" content="OTG Academy — learn, practise, build and publish with OTG AI Website Builder.">
+<meta name="theme-color" content="#123b78">
 <meta property="og:type" content="website">
 <meta property="og:title" content="OTG GRAPHIC Academy">
 <meta property="og:description" content="Learn, create, publish and grow with OTG GRAPHIC Academy. Explore academy updates, lessons, assignments and website-building tools.">
@@ -248,9 +248,38 @@ async function loadAcademyPanelData(key,content){
   const list=document.createElement("div");list.className="otg-lesson-library";list.style.cssText="display:grid;grid-template-columns:minmax(0,1fr);gap:22px;margin:20px 0 8px;max-width:920px";
   if(error){const msg=document.createElement("p");msg.textContent="Lessons could not load: "+error.message;msg.style.cssText="padding:16px;border:1px solid #fecaca;border-radius:12px;background:#fff7f7;color:#991b1b";list.appendChild(msg);}
   else if(!data||!data.length){const empty=document.createElement("div");empty.style.cssText="padding:28px;border:1px dashed #cbd5e1;border-radius:16px;background:#f8fafc;color:#475569";empty.innerHTML=key==="watch"?"<strong>No video lessons yet</strong><p style='margin:8px 0 0;line-height:1.7'>Your coach's video lessons will appear here when a video link is added to a published lesson.</p>":"<strong>No published lessons yet</strong><p style='margin:8px 0 0;line-height:1.7'>Your coach's published lessons will appear here when available.</p>";list.appendChild(empty);}
-  else data.forEach((x,index)=>{
+  else {
+   let activeLearningStage="";
+   data.forEach((x,index)=>{
    const title=cleanLessonText(x.title)||"Untitled lesson";
    const courseName=cleanLessonText(x.course)||"Getting Started";
+    const stageMatch=String(courseName).match(/^\\s*(beginner|intermediate|advanced)\\b/i);
+    const stageKey=stageMatch?stageMatch[1].toLowerCase():"additional";
+    if(stageKey!==activeLearningStage){
+     activeLearningStage=stageKey;
+     const stageDetails={
+      beginner:{title:"BEGINNER  •  FOUNDATIONS",intro:"Build confidence with essential tools, design principles and guided practice.",number:"01"},
+      intermediate:{title:"INTERMEDIATE  •  APPLIED DESIGN",intro:"Apply your skills to real-world flyers, promotions and event materials.",number:"02"},
+      advanced:{title:"ADVANCED  •  PROFESSIONAL PRACTICE",intro:"Develop brand identity, business materials, presentation skills and client-ready work.",number:"03"},
+      additional:{title:"ADDITIONAL LEARNING",intro:"Explore more lessons and special topics from your OTG coach.",number:"04"}
+     }[stageKey];
+     const stageHeader=document.createElement("section");
+     stageHeader.setAttribute("aria-label",stageDetails.title);
+     stageHeader.style.cssText="display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:13px;padding:16px 18px;border:1px solid #dbe4f0;border-radius:14px;background:linear-gradient(120deg,#f8fafc,#eef4ff);";
+     const stageNumber=document.createElement("span");
+     stageNumber.textContent=stageDetails.number;
+     stageNumber.style.cssText="display:grid;place-items:center;min-width:42px;height:42px;padding:0 8px;border-radius:11px;background:#172b52;color:#f6d27a;font-size:12px;font-weight:900;letter-spacing:.5px;";
+     const stageCopy=document.createElement("div");
+     const stageTitle=document.createElement("h3");
+     stageTitle.textContent=stageDetails.title;
+     stageTitle.style.cssText="margin:0 0 4px;color:#172b52;font-size:13px;letter-spacing:.8px;line-height:1.5;";
+     const stageIntro=document.createElement("p");
+     stageIntro.textContent=stageDetails.intro;
+     stageIntro.style.cssText="margin:0;color:#52617a;font-size:13px;line-height:1.65;";
+     stageCopy.append(stageTitle,stageIntro);
+     stageHeader.append(stageNumber,stageCopy);
+     list.appendChild(stageHeader);
+    }
    const description=cleanLessonText(x.description);
    const lessonText=cleanLessonText(x.content);
    const card=document.createElement("article");card.className="otg-lesson-card";card.style.cssText="box-sizing:border-box;overflow:hidden;width:100%;border:1px solid #dbe4f0;border-radius:18px;background:#fff;box-shadow:0 8px 26px rgba(15,23,42,.07);color:#172033";
@@ -373,7 +402,8 @@ async function loadAcademyPanelData(key,content){
    footer.appendChild(completeBtn);
    const topLink=document.createElement("button");topLink.type="button";topLink.textContent="Back to top ↑";topLink.style.cssText="border:1px solid #cbd5e1;border-radius:9px;padding:8px 12px;background:#fff;color:#334155;font-weight:700;cursor:pointer";topLink.addEventListener("click",()=>card.scrollIntoView({behavior:"smooth",block:"start"}));footer.appendChild(topLink);card.appendChild(footer);
    list.appendChild(card);
-  });
+   });
+  }
   if(data&&data.length)updateProgressDisplay(data.length);
   else updateProgressDisplay(0);
   area.appendChild(progressWrap);
@@ -1648,8 +1678,7 @@ header{
 @media(max-width:600px){.otg-lesson-card>header{padding:20px!important}.otg-lesson-card h2{font-size:25px!important}.otg-lesson-card footer{align-items:flex-start!important}}
 </style>
 
-<meta name="theme-color" content="#123b78">
-<meta name="description" content="OTG Academy — learn, practise, build and publish with OTG AI Website Builder.">
+
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/otg-app-icon.svg" type="image/svg+xml">
 <link rel="icon" href="/otg-app-icon-192.png" sizes="192x192" type="image/png">
