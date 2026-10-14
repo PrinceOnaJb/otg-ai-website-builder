@@ -56,6 +56,26 @@ async function loadAcademyPanelData(key,content){
  content.querySelectorAll(".otg-academy-data-area").forEach(el=>el.remove());
  const cleanLessonText=v=>String(v==null?"":v).replace(/^\s*(?:lesson\s*title|title|course\s*name|course|short\s*description|description|lesson\s*notes|notes)\s*:\s*/i,"").trim();
  const area=document.createElement("div");area.className="otg-academy-data-area";area.style.cssText="margin-top:24px;padding-top:20px;border-top:1px solid #e2e8f0";content.appendChild(area);
+ if(key==="home"){
+  const heading=document.createElement("h3");heading.textContent=admin?"Academy overview":"Your learning overview";heading.style.cssText="margin:0 0 8px;color:#172554;font-size:21px";area.appendChild(heading);
+  const intro=document.createElement("p");intro.textContent=admin?"Manage student access, publish lessons and assignments, and review student work from the dashboard menu.":"Your learning activity is saved to your account. Open Learn to study a lesson, then complete the practice and submit your assignment.";intro.style.cssText="margin:0 0 16px;color:#64748b;line-height:1.7";area.appendChild(intro);
+  const grid=document.createElement("div");grid.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px";
+  const stats=admin?[
+   ["Pending approvals",()=>db.from("profiles").select("id",{count:"exact",head:true}).eq("role","student").eq("approval_status","pending")],
+   ["Published lessons",()=>db.from("academy_lessons").select("id",{count:"exact",head:true}).eq("is_published",true)],
+   ["Published assignments",()=>db.from("academy_assignments").select("id",{count:"exact",head:true}).eq("is_published",true)],
+   ["Submissions to review",()=>db.from("academy_submissions").select("id",{count:"exact",head:true}).in("status",["submitted","reviewing","needs_changes"])]
+  ]:[
+   ["Lessons completed",()=>db.from("academy_lesson_progress").select("id",{count:"exact",head:true}).eq("student_id",userId)],
+   ["Available assignments",()=>db.from("academy_assignments").select("id",{count:"exact",head:true}).eq("is_published",true)],
+   ["My submissions",()=>db.from("academy_submissions").select("id",{count:"exact",head:true}).eq("student_id",userId)],
+   ["My websites",()=>db.from("projects").select("id",{count:"exact",head:true}).eq("user_id",userId)]
+  ];
+  const results=await Promise.all(stats.map(async item=>{try{return {label:item[0],result:await item[1]()};}catch(error){return {label:item[0],result:{count:null,error}};}}));
+  results.forEach(item=>{const card=document.createElement("article");card.style.cssText="padding:17px;border:1px solid #dbeafe;border-radius:13px;background:#fff;min-width:0";const number=document.createElement("strong");number.textContent=item.result.error?"—":String(item.result.count==null?0:item.result.count);number.style.cssText="display:block;font-size:27px;line-height:1.2;color:#1d4ed8";const label=document.createElement("span");label.textContent=item.label;label.style.cssText="display:block;margin-top:7px;font-size:12px;font-weight:800;color:#475569";card.append(number,label);if(item.result.error){const note=document.createElement("small");note.textContent="Could not load";note.style.cssText="display:block;margin-top:6px;color:#b91c1c";card.appendChild(note);}grid.appendChild(card);});
+  area.appendChild(grid);
+  const note=document.createElement("p");note.textContent=admin?"Tip: open Learn to publish lesson notes and video links, Submit Assignment to publish tasks and review submissions, or Notifications to post an academy announcement.":"Recommended next step: open Learn and complete the published Introduction to Graphic Design lesson. Your progress stays connected to your account.";note.style.cssText="margin:16px 0 0;padding:14px 16px;border-left:4px solid #2563eb;border-radius:8px;background:#eff6ff;color:#1e3a8a;line-height:1.7";area.appendChild(note);return;
+ }
  if(key==="codelab"){
   const wrap=document.createElement("section");
   wrap.style.cssText="max-width:1100px;margin:0 auto;padding:clamp(14px,3vw,24px);border:1px solid #dbeafe;border-radius:16px;background:#f8fbff;color:#172033";
@@ -5392,6 +5412,7 @@ async function handleAuthSubmit(event){
 const OTG_ADMIN_EMAIL = "perfectpairs2021@gmail.com";
 let currentProfile = null;
 let approvalCheckInProgress = false;
+let approvalCheckPromise = null;
 
 async function fetchCurrentProfile(){
   if(!currentUser) throw new Error("Please log in first.");
@@ -5415,30 +5436,37 @@ function hideAllAccessScreens(){
 }
 
 async function refreshApprovalStatus(){
-  if(approvalCheckInProgress || !currentUser) return;
+  if(!currentUser) return;
+  if(approvalCheckPromise) return approvalCheckPromise;
   approvalCheckInProgress = true;
-  const message = $("approvalMessage");
-  if(message) message.textContent = "Checking your account status…";
-  try{
-    const profile = await fetchCurrentProfile();
-    if((String(profile.role || "").toLowerCase() === "admin" || String(profile.role || "").toLowerCase() === "student") && String(profile.approval_status || "").toLowerCase() === "approved"){
+  approvalCheckPromise = (async()=>{
+    const message = $("approvalMessage");
+    if(message) message.textContent = "Checking your account status…";
+    try{
+      const profile = await fetchCurrentProfile();
+      if((String(profile.role || "").toLowerCase() === "admin" || String(profile.role || "").toLowerCase() === "student") && String(profile.approval_status || "").toLowerCase() === "approved"){
+        hideAllAccessScreens();
+        await showApp(true);
+        return;
+      }
       hideAllAccessScreens();
-      await showApp(true);
-      return;
+      $("approvalScreen").classList.remove("hidden");
+      if(profile.approval_status === "rejected"){
+        message.textContent = "Your account request was not approved. Please contact the OTG administrator for assistance.";
+      }else{
+        message.textContent = "Your free account has been created successfully. Please wait while the OTG administrator reviews and approves your account. Your dashboard will remain locked until approval.";
+      }
+    }catch(error){
+      console.error("Approval status check failed:", error);
+      hideAllAccessScreens();
+      $("approvalScreen").classList.remove("hidden");
+      if(message) message.textContent = "We could not verify your approval status. Please check your internet connection and try again. If this continues, contact the administrator.";
+    }finally{
+      approvalCheckInProgress = false;
+      approvalCheckPromise = null;
     }
-    hideAllAccessScreens();
-    $("approvalScreen").classList.remove("hidden");
-    if(profile.approval_status === "rejected"){
-      message.textContent = "Your account request was not approved. Please contact the OTG administrator for assistance.";
-    }else{
-      message.textContent = "Your free account has been created successfully. Please wait while the OTG administrator reviews and approves your account. Your dashboard will remain locked until approval.";
-    }
-  }catch(error){
-    console.error("Approval status check failed:", error);
-    hideAllAccessScreens();
-    $("approvalScreen").classList.remove("hidden");
-    if(message) message.textContent = "We could not verify your approval status. Please check your internet connection and try again. If this continues, contact the administrator.";
-  }finally{ approvalCheckInProgress = false; }
+  })();
+  return approvalCheckPromise;
 }
 
 function ensureAdminPanel(){
