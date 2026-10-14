@@ -5854,34 +5854,59 @@ supabaseClient
 
 <script id="otg-pwa-install-setup">
 (function(){
+  var deferredPrompt = null;
+  function isRunningAsInstalledApp(){
+    return window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia('(display-mode: fullscreen)').matches ||
+      navigator.standalone === true;
+  }
   if ('serviceWorker' in navigator && location.protocol === 'https:') {
     window.addEventListener('load', function(){
-      navigator.serviceWorker.register('/sw.js').catch(function(err){
+      navigator.serviceWorker.register('/sw.js', {updateViaCache:'none'}).then(function(registration){
+        if(registration && registration.update) registration.update().catch(function(){});
+      }).catch(function(err){
         console.warn('OTG Academy app setup:', err);
       });
     }, {once:true});
   }
-  var deferredPrompt = null;
   function addInstallButton(){
-    if(document.getElementById('otgInstallAppButton')) return;
-    var btn=document.createElement('button');
-    btn.id='otgInstallAppButton';
-    btn.type='button';
-    btn.textContent='Install OTG Academy';
-    btn.setAttribute('aria-label','Install OTG GRAPHIC Academy on this device');
-    btn.addEventListener('click', async function(){
-      if(deferredPrompt){
-        deferredPrompt.prompt();
-        try{
-          var choice=await deferredPrompt.userChoice;
-          if(choice && choice.outcome==='accepted') btn.hidden=true;
-        }catch(e){}
-        deferredPrompt=null;
-        return;
-      }
-      alert('To install OTG Academy: open your browser menu (⋮) and choose “Install app” or “Add to Home screen”. On a computer, open the browser menu and choose “Install OTG Academy” if available.');
-    });
-    document.body.appendChild(btn);
+    var btn=document.getElementById('otgInstallAppButton');
+    if(!btn){
+      btn=document.createElement('button');
+      btn.id='otgInstallAppButton';
+      btn.type='button';
+      btn.textContent='Install OTG Academy';
+      btn.setAttribute('aria-label','Install OTG GRAPHIC Academy on this device');
+      document.body.appendChild(btn);
+      btn.addEventListener('click', async function(){
+        if(isRunningAsInstalledApp()){
+          btn.hidden=true;
+          return;
+        }
+        if(deferredPrompt){
+          try{
+            deferredPrompt.prompt();
+            var choice=await deferredPrompt.userChoice;
+            if(choice && choice.outcome==='accepted') btn.hidden=true;
+          }catch(error){
+            console.warn('OTG Academy install prompt:',error);
+            showInstallHelp();
+          }finally{
+            deferredPrompt=null;
+          }
+          return;
+        }
+        showInstallHelp();
+      });
+    }
+    btn.hidden=isRunningAsInstalledApp();
+  }
+  function showInstallHelp(){
+    var isAndroid=/Android/i.test(navigator.userAgent);
+    var instructions=isAndroid
+      ? 'For Android: open this website in Google Chrome, tap the three-dot menu (⋮), then choose “Install app” or “Add to Home screen”. If neither option appears, refresh the page and check again. If OTG Academy is already installed, open it from your phone’s app list.'
+      : 'Open this website in your browser menu and choose “Install app” or “Add to Home screen” if available. On iPhone/iPad, open in Safari, tap Share, then “Add to Home Screen”.';
+    alert(instructions);
   }
   window.addEventListener('beforeinstallprompt',function(event){
     event.preventDefault();
