@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OTG AI Website Builder</title>
+<title>OTG GRAPHIC Academy | AI Website Builder</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* OTG Academy dashboard navigation shell */
@@ -93,7 +93,30 @@ async function loadAcademyPanelData(key,content){
   const status=document.createElement("p");status.setAttribute("role","status");status.setAttribute("aria-live","polite");status.style.cssText="margin:10px 0 0;color:#475569;font-size:13px";
   const makeButton=(label,primary,fn)=>{const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:10px 15px;border-radius:9px;border:1px solid "+(primary?"#1d4ed8":"#cbd5e1")+";background:"+(primary?"#1d4ed8":"#fff")+";color:"+(primary?"#fff":"#1e293b")+";font-weight:800;cursor:pointer";b.addEventListener("click",fn);controls.appendChild(b);return b;};
   const preview=document.createElement("iframe");preview.title="Code Lab live preview";preview.setAttribute("sandbox","allow-scripts");preview.setAttribute("referrerpolicy","no-referrer");preview.style.cssText="display:block;width:100%;height:340px;border:1px solid #cbd5e1;border-radius:12px;background:#fff";
-  const runCode=()=>{const css=cssEditor.value;const js=jsEditor.value.replace(/<\/script/gi,"<\\/script");preview.srcdoc="<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style>"+css+"</style></head><body>"+htmlEditor.value+"<scr"+"ipt>"+js+"</scr"+"ipt></body></html>";status.textContent="Preview updated. Your code has not been published.";};
+  const runCode=()=>{const css=cssEditor.value;const js=jsEditor.value.replace(/<\/script/gi,"<\\/script");preview.srcdoc="<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style>"+css+"</style>
+<style id="otg-mobile-app-readiness">
+#otgInstallAppButton{position:fixed;right:14px;bottom:14px;z-index:100000;border:0;border-radius:999px;background:#123b78;color:#fff;padding:12px 17px;font:700 14px/1.2 Arial,sans-serif;box-shadow:0 8px 26px rgba(15,23,42,.25);max-width:calc(100vw - 28px)}
+#otgInstallAppButton:focus-visible{outline:3px solid #38bdf8;outline-offset:3px}
+@media(max-width:650px){
+  html,body{max-width:100%;overflow-x:hidden}
+  .navbar{gap:10px}
+  .nav-links{display:flex;flex-wrap:wrap;gap:5px}
+  .academy-layout{display:flex;flex-direction:column;gap:14px;width:100%}
+  .academy-sidebar{display:flex;flex-direction:row;align-items:center;width:100%;max-width:100%;max-height:none;overflow-x:auto;overflow-y:hidden;gap:6px;padding:10px;white-space:nowrap;-webkit-overflow-scrolling:touch}
+  .academy-brand{flex:0 0 auto;border-bottom:0;border-right:1px solid rgba(255,255,255,.2);padding:6px 12px 6px 4px;margin:0}
+  .academy-nav{flex:0 0 auto;white-space:nowrap}
+  .academy-main{width:100%;min-width:0}
+  .academy-welcome{gap:10px;padding:16px}
+  .academy-content-card{padding:18px;min-width:0}
+  .academy-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .otg-academy-data-area{max-width:100%;overflow-wrap:anywhere}
+  .otg-academy-data-area input,.otg-academy-data-area textarea,.otg-academy-data-area select{width:100%;max-width:100%;box-sizing:border-box}
+  #otgInstallAppButton{right:10px;bottom:10px;padding:11px 14px}
+}
+@media(max-width:420px){.academy-stats{grid-template-columns:1fr}.academy-welcome h3{font-size:19px}}
+</style>
+
+</head><body>"+htmlEditor.value+"<scr"+"ipt>"+js+"</scr"+"ipt></body></html>";status.textContent="Preview updated. Your code has not been published.";};
   makeButton("▶ Run code",true,runCode);
   makeButton("Save draft on this device",false,()=>{try{localStorage.setItem("otgAcademyCodeLabDraft",JSON.stringify({html:htmlEditor.value,css:cssEditor.value,js:jsEditor.value}));status.textContent="Draft saved on this device only.";}catch(e){status.textContent="This browser did not allow a local draft to be saved.";}}); 
   makeButton("Load saved draft",false,()=>{try{const raw=localStorage.getItem("otgAcademyCodeLabDraft");if(!raw){status.textContent="No saved draft was found on this device.";return;}const d=JSON.parse(raw);htmlEditor.value=d.html||"";cssEditor.value=d.css||"";jsEditor.value=d.js||"";runCode();status.textContent="Saved draft loaded from this device.";}catch(e){status.textContent="Could not load the saved draft.";}}); 
@@ -1352,7 +1375,11 @@ header{
 <meta name="description" content="OTG Academy — learn, practise, build and publish with OTG AI Website Builder.">
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/otg-app-icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/otg-app-icon.svg">
+<link rel="icon" href="/otg-app-icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="/otg-app-icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="mobile-web-app-capable" content="yes">
 </head>
 
 <body>
@@ -5802,5 +5829,52 @@ supabaseClient
 })();
 
 </script>
+
+<script id="otg-pwa-install-setup">
+(function(){
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('/sw.js').catch(function(err){
+        console.warn('OTG Academy app setup:', err);
+      });
+    }, {once:true});
+  }
+  var deferredPrompt = null;
+  function addInstallButton(){
+    if(document.getElementById('otgInstallAppButton')) return;
+    var btn=document.createElement('button');
+    btn.id='otgInstallAppButton';
+    btn.type='button';
+    btn.textContent='Install OTG Academy';
+    btn.setAttribute('aria-label','Install OTG GRAPHIC Academy on this device');
+    btn.addEventListener('click', async function(){
+      if(deferredPrompt){
+        deferredPrompt.prompt();
+        try{
+          var choice=await deferredPrompt.userChoice;
+          if(choice && choice.outcome==='accepted') btn.hidden=true;
+        }catch(e){}
+        deferredPrompt=null;
+        return;
+      }
+      alert('To install OTG Academy: open your browser menu (⋮) and choose “Install app” or “Add to Home screen”. On a computer, open the browser menu and choose “Install OTG Academy” if available.');
+    });
+    document.body.appendChild(btn);
+  }
+  window.addEventListener('beforeinstallprompt',function(event){
+    event.preventDefault();
+    deferredPrompt=event;
+    addInstallButton();
+  });
+  window.addEventListener('appinstalled',function(){
+    var btn=document.getElementById('otgInstallAppButton');
+    if(btn) btn.hidden=true;
+    deferredPrompt=null;
+  });
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addInstallButton,{once:true});
+  else addInstallButton();
+})();
+</script>
+
 </body>
 </html>
