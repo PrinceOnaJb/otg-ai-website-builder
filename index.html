@@ -6001,7 +6001,7 @@ supabaseClient
   window.addEventListener('appinstalled',function(){
     deferredPrompt=null;
     var btn=document.getElementById('otgInstallAppButton');
-    if(btn) btn.hidden=false;
+    if(btn) btn.hidden=true;
   });
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addInstallButton,{once:true});
   else addInstallButton();
