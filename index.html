@@ -6462,58 +6462,40 @@ supabaseClient
 <!-- OTG LIVE NEWSPAPER TICKER START -->
 <script id="otg-live-newspaper-ticker">
 (function(){
-  if(window.__otgLiveNewsTickerInstalled) return;
-  window.__otgLiveNewsTickerInstalled=true;
   function installTicker(){
     var dashboard=document.getElementById("academyDashboard");
-    var heading=dashboard&&dashboard.querySelector(".section-heading");
-    if(!dashboard||!heading||document.getElementById("otgLiveNewspaperTicker")) return;
+    if(!dashboard)return false;
+    if(document.getElementById("otgLiveNewspaperTicker"))return true;
     var section=document.createElement("section");
     section.id="otgLiveNewspaperTicker";
     section.setAttribute("aria-label","Live newspaper headlines");
-    section.style.cssText="margin:0 auto 18px;padding:11px 0;border:1px solid #dbeafe;border-radius:12px;background:#fff;overflow:hidden;box-shadow:0 3px 14px rgba(15,23,42,.06);max-width:1200px";
-    var header=document.createElement("div");
-    header.style.cssText="display:flex;align-items:center;gap:9px;padding:0 14px 9px;flex-wrap:wrap";
-    var badge=document.createElement("span");
-    badge.textContent="● LIVE NEWS";
-    badge.style.cssText="flex:none;background:#b91c1c;color:#fff;border-radius:4px;padding:5px 8px;font-size:11px;font-weight:900;letter-spacing:.5px";
-    var caption=document.createElement("strong");
-    caption.textContent="Punch · AIT · ARISE News · BBC · Technology";
-    caption.style.cssText="color:#172554;font-size:13px;line-height:1.5";
-    var pause=document.createElement("button");
-    pause.type="button";pause.textContent="Pause";pause.setAttribute("aria-pressed","false");
-    pause.style.cssText="margin-left:auto;border:1px solid #cbd5e1;border-radius:7px;background:#fff;padding:5px 9px;color:#334155;font-size:11px;font-weight:800;cursor:pointer";
-    header.append(badge,caption,pause);
-    var viewport=document.createElement("div");
-    viewport.style.cssText="overflow:hidden;white-space:nowrap;border-top:1px solid #fee2e2;border-bottom:1px solid #fee2e2;background:#fff7f7;padding:11px 0";
-    viewport.tabIndex=0;viewport.setAttribute("aria-label","Scrolling live news headlines. Focus here to pause scrolling.");
-    var track=document.createElement("div");
-    track.style.cssText="display:flex;width:max-content;align-items:center;gap:34px;will-change:transform;animation:otgNewsTickerScroll 75s linear infinite";
-    viewport.appendChild(track);
-    var status=document.createElement("p");
-    status.setAttribute("role","status");status.style.cssText="margin:8px 14px 0;color:#64748b;font-size:11px;line-height:1.5";status.textContent="Connecting to live headlines…";
+    section.style.cssText="display:block!important;visibility:visible!important;position:relative;z-index:2;margin:0 auto 18px;padding:12px 0;border:1px solid #dbeafe;border-radius:12px;background:#fff;overflow:hidden;box-shadow:0 3px 14px rgba(15,23,42,.06);max-width:1200px;color:#172554";
+    var header=document.createElement("div");header.style.cssText="display:flex;align-items:center;gap:9px;padding:0 14px 9px;flex-wrap:wrap";
+    var badge=document.createElement("span");badge.textContent="● LIVE NEWS";badge.style.cssText="flex:none;background:#b91c1c;color:#fff;border-radius:4px;padding:5px 8px;font-size:11px;font-weight:900;letter-spacing:.5px";
+    var caption=document.createElement("strong");caption.textContent="Punch · AIT · ARISE News · BBC · Technology";caption.style.cssText="color:#172554;font-size:13px;line-height:1.5";
+    var pause=document.createElement("button");pause.type="button";pause.textContent="Pause";pause.setAttribute("aria-pressed","false");pause.style.cssText="margin-left:auto;border:1px solid #cbd5e1;border-radius:7px;background:#fff;padding:5px 9px;color:#334155;font-size:11px;font-weight:800;cursor:pointer";header.append(badge,caption,pause);
+    var viewport=document.createElement("div");viewport.style.cssText="display:block;overflow:hidden;white-space:nowrap;border-top:1px solid #fee2e2;border-bottom:1px solid #fee2e2;background:#fff7f7;padding:11px 0";viewport.tabIndex=0;viewport.setAttribute("aria-label","Scrolling news headlines; focus to pause.");
+    var track=document.createElement("div");track.className="otg-news-track";track.style.cssText="display:flex;width:max-content;align-items:center;gap:34px;will-change:transform;animation:otgNewsTickerScroll 75s linear infinite";viewport.appendChild(track);
+    var status=document.createElement("p");status.setAttribute("role","status");status.style.cssText="margin:8px 14px 0;color:#64748b;font-size:11px;line-height:1.5";status.textContent="Connecting to live headlines…";
     section.append(header,viewport,status);
-    var style=document.createElement("style");
-    style.textContent="@keyframes otgNewsTickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}@media(prefers-reduced-motion:reduce){#otgLiveNewspaperTicker .otg-news-track{animation:none!important;transform:none!important}}#otgLiveNewspaperTicker .otg-news-viewport:hover .otg-news-track,#otgLiveNewspaperTicker .otg-news-viewport:focus-within .otg-news-track{animation-play-state:paused}";
-    track.className="otg-news-track";viewport.className="otg-news-viewport";
-    document.head.appendChild(style);
-    heading.insertAdjacentElement("afterend",section);
+    var style=document.createElement("style");style.textContent="@keyframes otgNewsTickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}@media(prefers-reduced-motion:reduce){.otg-news-track{animation:none!important;transform:none!important}}#otgLiveNewspaperTicker:hover .otg-news-track,#otgLiveNewspaperTicker:focus-within .otg-news-track{animation-play-state:paused}";document.head.appendChild(style);
+    var first=dashboard.querySelector(".section-heading");if(first)dashboard.insertBefore(section,first);else dashboard.insertBefore(section,dashboard.firstChild);
     pause.addEventListener("click",function(){var paused=pause.getAttribute("aria-pressed")==="true";pause.setAttribute("aria-pressed",paused?"false":"true");pause.textContent=paused?"Pause":"Resume";track.style.animationPlayState=paused?"running":"paused";});
-    function showFallback(message){track.replaceChildren();var link=document.createElement("a");link.href="https://news.google.com/";link.target="_blank";link.rel="noopener noreferrer";link.textContent="Open latest headlines on Google News ↗";link.style.cssText="padding:0 16px;color:#b91c1c;font-weight:800;text-decoration:underline";track.appendChild(link);track.style.animation="none";status.textContent=message||"Live headlines are temporarily unavailable. Use the link above to read current news."}
-    Promise.resolve().then(function(){
-      if(typeof supabaseClient==="undefined"||!supabaseClient.functions) throw new Error("News connection is not ready");
-      return supabaseClient.functions.invoke("otg-live-news");
-    }).then(function(result){
-      if(result.error) throw result.error;
-      var data=result.data||{};var headlines=Array.isArray(data.headlines)?data.headlines:[];
-      if(!headlines.length){showFallback(data.message);return;}
-      function itemNode(item){var link=document.createElement("a");link.href=item.link;link.target="_blank";link.rel="noopener noreferrer";link.title="Read this headline";link.style.cssText="display:inline-flex;align-items:center;gap:8px;color:#172554;text-decoration:none;font-size:13px;font-weight:750;max-width:78vw;white-space:nowrap";var source=document.createElement("span");source.textContent=item.source||"NEWS";source.style.cssText="color:#b91c1c;font-size:10px;font-weight:900;letter-spacing:.4px";var title=document.createElement("span");title.textContent=item.title;link.append(source,title);return link;}
-      var a=document.createElement("div"),b=document.createElement("div");a.style.cssText=b.style.cssText="display:flex;align-items:center;gap:34px;padding-right:34px";
-      headlines.forEach(function(item){a.appendChild(itemNode(item));});headlines.forEach(function(item){b.appendChild(itemNode(item));});track.replaceChildren(a,b);
-      status.textContent="Latest available headlines. Tap a headline to open its story.";
-    }).catch(function(error){console.warn("OTG live news ticker:",error);showFallback("Could not connect to live headlines right now. Use the link above to view current news.");});
+    function showFallback(message){track.replaceChildren();var link=document.createElement("a");link.href="https://news.google.com/";link.target="_blank";link.rel="noopener noreferrer";link.textContent="Open latest headlines on Google News ↗";link.style.cssText="display:inline-block;padding:0 16px;color:#b91c1c;font-weight:800;text-decoration:underline";track.appendChild(link);track.style.animation="none";status.textContent=message||"Live headlines are temporarily unavailable. Use the link above to read current news.";}
+    try{
+      if(typeof supabaseClient==="undefined"||!supabaseClient.functions){showFallback("The live news connection is not ready. Tap the link above for current headlines.");return true;}
+      supabaseClient.functions.invoke("otg-live-news").then(function(result){
+        if(result.error)throw result.error;
+        var data=result.data||{};var headlines=Array.isArray(data.headlines)?data.headlines:[];
+        if(!headlines.length){showFallback(data.message);return;}
+        function makeItem(item){var a=document.createElement("a");a.href=item.link;a.target="_blank";a.rel="noopener noreferrer";a.style.cssText="display:inline-flex;align-items:center;gap:8px;color:#172554;text-decoration:none;font-size:13px;font-weight:750;max-width:78vw;white-space:nowrap";var src=document.createElement("span");src.textContent=item.source||"NEWS";src.style.cssText="color:#b91c1c;font-size:10px;font-weight:900";var title=document.createElement("span");title.textContent=item.title;a.append(src,title);return a;}
+        var a=document.createElement("div"),b=document.createElement("div");a.style.cssText=b.style.cssText="display:flex;align-items:center;gap:34px;padding-right:34px";headlines.forEach(function(item){a.appendChild(makeItem(item));});headlines.forEach(function(item){b.appendChild(makeItem(item));});track.replaceChildren(a,b);status.textContent="Latest available headlines. Tap a headline to open its story.";
+      }).catch(function(error){console.warn("OTG live news ticker:",error);showFallback("Could not connect to live headlines right now. Tap the link above for current headlines.");});
+    }catch(error){console.warn("OTG ticker setup:",error);showFallback("Live headlines are unavailable right now. Tap the link above for current headlines.");}
+    return true;
   }
-  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",installTicker,{once:true}); else installTicker();
+  function start(){var attempts=0;function retry(){attempts++;if(installTicker())return;if(attempts<30)setTimeout(retry,500);}retry();}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
 </script>
 <!-- OTG LIVE NEWSPAPER TICKER END -->
