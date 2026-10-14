@@ -746,6 +746,16 @@ header{
   color:#fff!important;
 }
 
+/* Persistent OTG Academy branding inside the sticky app header */
+.otg-sticky-welcome{display:flex;align-items:center;gap:9px;flex:0 0 auto;max-width:360px;padding:7px 11px;border:1px solid #dbeafe;border-radius:14px;background:linear-gradient(110deg,#eff6ff,#fff7ed);box-shadow:0 4px 14px rgba(30,58,138,.10)}
+.otg-sticky-welcome img{display:block;width:42px;height:42px;object-fit:contain;border-radius:10px;flex:0 0 42px}
+.otg-sticky-welcome-copy{min-width:0;font-size:12px;font-weight:800;line-height:1.35;color:#17336b;animation:otgWelcomeGlow 3.2s ease-in-out infinite}
+.otg-sticky-welcome-copy span{display:block;font-size:10px;font-weight:700;letter-spacing:.6px;color:#a16207;text-transform:uppercase}
+@keyframes otgWelcomeGlow{0%,100%{opacity:1;transform:translateY(0)}50%{opacity:.78;transform:translateY(-1px)}}
+@media(max-width:900px){.otg-sticky-welcome{max-width:100%;align-self:flex-end}.navbar{gap:12px}}
+@media(max-width:650px){.otg-sticky-welcome{align-self:stretch;max-width:none}.otg-sticky-welcome img{width:36px;height:36px;flex-basis:36px}.otg-sticky-welcome-copy{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.otg-sticky-welcome-copy{animation:none}}
+
 #authScreen{
   min-height:100vh;
   display:flex;
@@ -1638,6 +1648,11 @@ header{
       </button>
 
     </nav>
+
+    <div class="otg-sticky-welcome" id="otgStickyWelcome" role="status" aria-live="polite">
+      <img src="/otg-app-icon-192.png" alt="OTG Graphic Academy app icon" width="42" height="42">
+      <div class="otg-sticky-welcome-copy"><span>Welcome</span>OTG Graphic Academy AI Website Builder</div>
+    </div>
 
   </div>
 
@@ -2811,8 +2826,8 @@ header{
     </aside>
     <div class="academy-main">
       <div class="academy-welcome">
-        <div><span class="academy-eyebrow">YOUR LEARNING JOURNEY</span><h3 id="academyPanelTitle">Welcome to your Student Hub</h3><p id="academyPanelIntro">Learn new skills, practise with projects and grow your digital portfolio.</p></div>
-        <div class="academy-avatar" id="academyAvatar">OTG</div>
+        <div><span class="academy-eyebrow">YOUR LEARNING JOURNEY</span><h3 id="academyPanelTitle">Welcome to OTG Graphic Academy AI Website Builder</h3><p id="academyPanelIntro">Learn new skills, practise with projects and grow your digital portfolio.</p></div>
+        <div class="academy-avatar" id="academyAvatar"><img src="/otg-app-icon-192.png" alt="OTG Graphic Academy app icon" width="58" height="58" style="display:block;width:58px;height:58px;object-fit:contain;border-radius:14px"></div>
       </div>
       <div class="academy-stats">
         <div class="academy-stat"><span>Learning points</span><strong id="academyPoints">0</strong><small>Earn points from published websites and certificates</small></div>
