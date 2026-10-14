@@ -16,6 +16,12 @@
   "prefer_related_applications": false,
   "icons": [
     {
+      "src": "/otg-app-icon.svg?v=8",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
       "src": "/otg-app-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
@@ -25,12 +31,6 @@
       "src": "/otg-app-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/otg-app-icon.svg?v=7",
-      "sizes": "any",
-      "type": "image/svg+xml",
       "purpose": "any"
     }
   ]
