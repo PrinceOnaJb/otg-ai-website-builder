@@ -1,4 +1,4 @@
-const CACHE_NAME = "otg-academy-v25";
+const CACHE_NAME = "otg-academy-v26";
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
