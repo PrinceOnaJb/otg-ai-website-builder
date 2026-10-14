@@ -50,8 +50,25 @@ function openAcademyPanel(key,button){
 
 async function loadAcademyPanelData(key,content){
  const db=window.supabase.createClient("https://actwvvokfdemobgsfctx.supabase.co","sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5");
- const admin=window.otgAcademyIsAdmin===true;
- const userId=window.otgAcademyUserId||null;
+ let admin=window.otgAcademyIsAdmin===true;
+ const authResult=await db.auth.getUser();
+ const activeUser=authResult&&authResult.data?authResult.data.user:null;
+ const userId=(activeUser&&activeUser.id)||window.otgAcademyUserId||null;
+ if(activeUser){
+  try{
+   const {data:roleProfile,error:roleProfileError}=await db.from("profiles").select("role,approval_status").eq("id",activeUser.id).maybeSingle();
+   if(!roleProfileError&&roleProfile){
+    admin=String(roleProfile.role||"").toLowerCase()==="admin"&&String(roleProfile.approval_status||"").toLowerCase()==="approved";
+    window.otgAcademyIsAdmin=admin;
+    window.otgAcademyUserId=activeUser.id;
+   }
+  }catch(roleCheckError){
+   console.warn("OTG Academy admin status refresh:",roleCheckError);
+  }
+ }else{
+  admin=false;
+  window.otgAcademyIsAdmin=false;
+ }
  const esc=v=>String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
  content.querySelectorAll(".otg-academy-data-area").forEach(el=>el.remove());
  const cleanLessonText=v=>String(v==null?"":v).replace(/^\s*(?:lesson\s*title|title|course\s*name|course|short\s*description|description|lesson\s*notes|notes)\s*:\s*/i,"").trim();
