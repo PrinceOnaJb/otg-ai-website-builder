@@ -6493,11 +6493,9 @@ supabaseClient
     var attempts=0;
     function connect(){
       attempts++;
-      if(typeof supabaseClient==="undefined"||!supabaseClient.functions){if(attempts<20){status.textContent="Connecting to the live news service…";setTimeout(connect,1000);}else fallback("Could not connect to the live news service. Tap above for current headlines.");return;}
-      supabaseClient.functions.invoke("otg-live-news").then(function(result){
-        if(result.error)throw result.error;
-        var headlines=result.data&&Array.isArray(result.data.headlines)?result.data.headlines:[];
-        if(!headlines.length){fallback("No headlines were returned just now. Tap above for current headlines.");return;}
+      fetch("https://actwvvokfdemobgsfctx.supabase.co/functions/v1/otg-live-news",{method:"GET",headers:{"Accept":"application/json"},cache:"no-store"}).then(function(response){if(!response.ok)throw new Error("News service HTTP "+response.status);return response.json();}).then(function(data){
+        var headlines=data&&Array.isArray(data.headlines)?data.headlines:[];
+        if(!headlines.length){fallback("The news service connected but returned no headlines. Tap above for current headlines.");return;}
         var group=document.createElement("div");group.style.cssText="display:flex;align-items:center;gap:34px;padding-right:34px";
         headlines.forEach(function(item){var a=document.createElement("a");a.href=item.link;a.target="_blank";a.rel="noopener noreferrer";a.style.cssText="display:inline-flex;align-items:center;gap:8px;color:#172554;text-decoration:none;font-size:13px;font-weight:750;max-width:78vw;white-space:nowrap";var src=document.createElement("span");src.textContent=item.source||"NEWS";src.style.cssText="color:#b91c1c;font-size:10px;font-weight:900";var title=document.createElement("span");title.textContent=item.title;a.append(src,title);group.appendChild(a);});
         var clone=group.cloneNode(true);track.replaceChildren(group,clone);track.style.animation="otgNewsTickerScroll 75s linear infinite";status.textContent="Latest available headlines. Tap any headline to open its story.";
