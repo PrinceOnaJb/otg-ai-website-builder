@@ -253,7 +253,7 @@ async function loadAcademyPanelData(key,content){
    data.forEach((x,index)=>{
    const title=cleanLessonText(x.title)||"Untitled lesson";
    const courseName=cleanLessonText(x.course)||"Getting Started";
-    const stageMatch=String(courseName).match(/^\\s*(beginner|intermediate|advanced)\\b/i);
+    const stageMatch=String(courseName).match(/^\s*(beginner|intermediate|advanced)\b/i);
     const stageKey=stageMatch?stageMatch[1].toLowerCase():"additional";
     if(stageKey!==activeLearningStage){
      activeLearningStage=stageKey;
