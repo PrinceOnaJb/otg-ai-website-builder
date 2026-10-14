@@ -299,7 +299,12 @@ async function loadAcademyPanelData(key,content){
     const form=document.createElement("form");form.className="otgSubmitForm";form.dataset.id=x.id;form.style.cssText="display:grid;gap:12px;margin-top:14px;padding:12px;border:1px solid #dbeafe;border-radius:11px;background:#f8fbff";
     const savedText=existingSubmission&&existingSubmission.submission_text||"";
     const savedAnswers={};
-    savedText.split(/\r?\n/).forEach(line=>{const match=line.match(/^Answer (\d+):\s?(.*)$/);if(match)savedAnswers[Number(match[1])-1]=match[2];});
+    if(/^Answer 1:/m.test(savedText)){
+     savedText.split(/\n\n(?=Answer \d+:)/).forEach(block=>{
+      const match=block.match(/^Answer (\d+):[ \t]?([\s\S]*)$/);
+      if(match)savedAnswers[Number(match[1])-1]=match[2].replace(/\n+$/,"");
+     });
+    }
     const answerCount=questionLines.length||1;
     for(let i=0;i<answerCount;i++){
      const label=document.createElement("label");label.style.cssText="display:grid;gap:7px;font-size:13px;font-weight:700;color:#1e3a8a";
