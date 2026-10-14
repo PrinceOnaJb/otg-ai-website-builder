@@ -160,7 +160,7 @@ async function loadAcademyPanelData(key,content){
   worldNewsStatus.setAttribute("role","status");
   worldNewsStatus.style.cssText="margin:12px 0 0;color:#64748b;font-size:12px;line-height:1.6";
   worldNewsSection.append(worldNewsHeading,worldNewsIntro,worldNewsTabs,worldNewsList,worldNewsStatus);
-  area.appendChild(worldNewsSection);
+  area.insertBefore(worldNewsSection,area.firstChild);
   const worldNewsFeeds={
    "World":"https://news.google.com/rss/search?q=world+news&hl=en&gl=US&ceid=US:en",
    "Nigeria":"https://news.google.com/rss/search?q=Nigeria+news&hl=en-NG&gl=NG&ceid=NG:en",
