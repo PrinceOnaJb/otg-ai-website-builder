@@ -5246,7 +5246,7 @@ function renderPublicSite(data, products){
         description.style.cssText="margin:0;color:#475569;line-height:1.6;overflow-wrap:anywhere";
         details.appendChild(description);
       }
-      const phone=String(product.whatsapp_number||"").replace(/\\D/g,"");
+      const phone=String(product.whatsapp_number||"").replace(/\D/g,"");
       const normalizedPhone=(phone.length===11 && phone.charAt(0)==="0")?"234"+phone.slice(1):phone;
       if(normalizedPhone.length>=8 && normalizedPhone.length<=15){
         const order=document.createElement("a");
