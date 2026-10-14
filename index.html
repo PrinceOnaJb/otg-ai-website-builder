@@ -281,13 +281,13 @@ async function loadAcademyPanelData(key,content){
    const title=document.createElement("h4");title.textContent=x.title;title.style.cssText="margin:0 0 7px;color:#172554;font-size:17px";
    const course=document.createElement("p");course.textContent=x.course||"Getting Started";course.style.cssText="margin:0 0 10px;color:#64748b;font-size:13px";
    const instructions=document.createElement("div");instructions.style.cssText="display:grid;gap:9px;margin:12px 0";
-   const instructionLines=String(x.instructions||"").split(/\\r?\\n/).map(line=>line.trim()).filter(Boolean);
-   const questionLines=instructionLines.filter(line=>/^(?:question\\s*\\d+|q\\s*\\d+)\\s*[:.)-]/i.test(line));
+   const instructionLines=String(x.instructions||"").split(/\r?\n/).map(line=>line.trim()).filter(Boolean);
+   const questionLines=instructionLines.filter(line=>/^(?:question\s*\d+|q\s*\d+)\s*[:.)-]/i.test(line));
    const displayLines=questionLines.length?questionLines:instructionLines;
    if(displayLines.length){
     displayLines.forEach((line,index)=>{
      const q=document.createElement("div");q.style.cssText="padding:12px;border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;color:#334155;line-height:1.65;white-space:pre-wrap";
-     q.textContent=questionLines.length?line.replace(/^(?:question\\s*\\d+|q\\s*\\d+)\\s*[:.)-]\\s*/i,"Question "+(index+1)+": "):line;
+     q.textContent=questionLines.length?line.replace(/^(?:question\s*\d+|q\s*\d+)\s*[:.)-]\s*/i,"Question "+(index+1)+": "):line;
      instructions.appendChild(q);
     });
    }else{const p=document.createElement("p");p.textContent="No additional instructions provided.";instructions.appendChild(p);}
@@ -299,12 +299,12 @@ async function loadAcademyPanelData(key,content){
     const form=document.createElement("form");form.className="otgSubmitForm";form.dataset.id=x.id;form.style.cssText="display:grid;gap:12px;margin-top:14px;padding:12px;border:1px solid #dbeafe;border-radius:11px;background:#f8fbff";
     const savedText=existingSubmission&&existingSubmission.submission_text||"";
     const savedAnswers={};
-    savedText.split(/\\r?\\n/).forEach(line=>{const match=line.match(/^Answer (\\d+):\\s?(.*)$/);if(match)savedAnswers[Number(match[1])-1]=match[2];});
+    savedText.split(/\r?\n/).forEach(line=>{const match=line.match(/^Answer (\d+):\s?(.*)$/);if(match)savedAnswers[Number(match[1])-1]=match[2];});
     const answerCount=questionLines.length||1;
     for(let i=0;i<answerCount;i++){
      const label=document.createElement("label");label.style.cssText="display:grid;gap:7px;font-size:13px;font-weight:700;color:#1e3a8a";
      label.textContent=questionLines.length?"Answer "+(i+1):"Your answer";
-     const input=document.createElement("textarea");input.name="answer";input.required=true;input.maxLength=20000;input.placeholder=questionLines.length?"Write your answer to question "+(i+1)+"...":"Write your answer here...";input.value=questionLines.length?(savedAnswers[i]||""):(savedText&&!/^Answer \\d+:/.test(savedText)?savedText:"");
+     const input=document.createElement("textarea");input.name="answer";input.required=true;input.maxLength=20000;input.placeholder=questionLines.length?"Write your answer to question "+(i+1)+"...":"Write your answer here...";input.value=questionLines.length?(savedAnswers[i]||""):(savedText&&!/^Answer \d+:/.test(savedText)?savedText:"");
      input.style.cssText="width:100%;box-sizing:border-box;min-height:110px;padding:12px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:#0f172a;font:inherit;line-height:1.6;resize:vertical";
      label.appendChild(input);form.appendChild(label);
     }
@@ -314,7 +314,7 @@ async function loadAcademyPanelData(key,content){
     if(existingSubmission){const note=document.createElement("p");note.textContent="Your submission status: "+existingSubmission.status+(existingSubmission.coach_feedback?" · Coach feedback: "+existingSubmission.coach_feedback:"");note.style.cssText="margin:8px 0;color:#475569;font-size:13px;line-height:1.6;white-space:pre-wrap";c.insertBefore(note,form);}
    }
    list.appendChild(c);
-  });list.querySelectorAll(".otgSubmitForm").forEach(f=>f.addEventListener("submit",async e=>{e.preventDefault();const span=f.querySelector("span");if(!userId){span.textContent="Please sign in again.";return;}const fields=[...f.querySelectorAll('textarea[name="answer"]')];const answer=fields.length>1?fields.map((field,index)=>"Answer "+(index+1)+": "+field.value.trim()).join("\\n\\n"):fields[0].value.trim();const {error}=await db.from("academy_submissions").upsert({assignment_id:Number(f.dataset.id),student_id:userId,submission_text:answer,status:"submitted"},{onConflict:"assignment_id,student_id"});span.textContent=error?"Submission failed: "+error.message:"Work submitted successfully. Your answer is saved.";if(!error){mySubmissionByAssignment.set(String(f.dataset.id),{submission_text:answer,status:"submitted",coach_feedback:""});const note=f.previousElementSibling;if(note&&note.tagName==="P")note.textContent="Your submission status: submitted";}}));area.appendChild(list);
+  });list.querySelectorAll(".otgSubmitForm").forEach(f=>f.addEventListener("submit",async e=>{e.preventDefault();const span=f.querySelector("span");if(!userId){span.textContent="Please sign in again.";return;}const fields=[...f.querySelectorAll('textarea[name="answer"]')];const answer=fields.length>1?fields.map((field,index)=>"Answer "+(index+1)+": "+field.value.trim()).join("\n\n"):fields[0].value.trim();const {error}=await db.from("academy_submissions").upsert({assignment_id:Number(f.dataset.id),student_id:userId,submission_text:answer,status:"submitted"},{onConflict:"assignment_id,student_id"});span.textContent=error?"Submission failed: "+error.message:"Work submitted successfully. Your answer is saved.";if(!error){mySubmissionByAssignment.set(String(f.dataset.id),{submission_text:answer,status:"submitted",coach_feedback:""});const note=f.previousElementSibling;if(note&&note.tagName==="P")note.textContent="Your submission status: submitted";}}));area.appendChild(list);
   if(admin){
    const reviewSection=document.createElement("section");reviewSection.style.cssText="margin-top:28px;padding-top:20px;border-top:1px solid #cbd5e1";
    const reviewTitle=document.createElement("h3");reviewTitle.textContent="Review student submissions";reviewTitle.style.cssText="color:#172554;margin:0 0 12px";
