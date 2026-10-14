@@ -846,9 +846,42 @@ async function loadAcademyPanelData(key,content){
    form.addEventListener("submit",async e=>{e.preventDefault();if(optIn.checked&&!name.value.trim()){status.textContent="Add a display name before making your profile discoverable.";return;}save.disabled=true;status.textContent="Saving profile…";const {error:saveError}=await db.from("academy_student_profiles").upsert({user_id:userId,display_name:name.value.trim(),country:country.value.trim(),bio:bio.value.trim(),interests:interests.value.trim(),is_discoverable:optIn.checked,updated_at:new Date().toISOString()},{onConflict:"user_id"});if(saveError){status.textContent="Profile could not be saved: "+saveError.message;save.disabled=false;return;}status.textContent="Profile settings saved.";save.disabled=false;});
   }
  }else if(key==="notifications"){
-  if(admin){area.innerHTML='<h3>Publish an announcement</h3><form id="otgAnnouncementForm" style="display:grid;gap:8px;margin:12px 0 22px"><input name="title" required maxlength="140" placeholder="Announcement title" style="padding:10px"><textarea name="message" required maxlength="4000" placeholder="Announcement message" style="padding:10px"></textarea><button class="primary-btn" style="background:#1d4ed8;color:#fff">Publish announcement</button><span id="otgAnnouncementMsg"></span></form>';area.querySelector("#otgAnnouncementForm").addEventListener("submit",async e=>{e.preventDefault();const f=e.currentTarget,d=new FormData(f);const {error:saveError}=await db.from("academy_announcements").insert({title:d.get("title"),message:d.get("message"),created_by:userId,is_published:true});f.querySelector("#otgAnnouncementMsg").textContent=saveError?"Could not publish: "+saveError.message:"Announcement published.";if(!saveError){f.reset();loadAcademyPanelData(key,content);}});}
-  const {data,error}=await db.from("academy_announcements").select("title,message,created_at").eq("is_published",true).order("created_at",{ascending:false});if(error)area.textContent="Announcements could not load: "+error.message;else if(!data||!data.length){const empty=document.createElement("p");empty.textContent="No academy announcements yet.";area.appendChild(empty);}else data.forEach(x=>{const c=document.createElement("article");c.style.cssText="padding:14px 0;border-bottom:1px solid #e2e8f0";const h=document.createElement("h4");h.textContent=x.title;h.style.cssText="color:#172554;font-size:16px";const p=document.createElement("p");p.textContent=x.message;p.style.cssText="margin:6px 0;color:#334155;white-space:pre-wrap";const date=document.createElement("small");date.textContent=new Date(x.created_at).toLocaleString();date.style.color="#64748b";c.append(h,p,date);area.appendChild(c);});
- }
+   const addNotice=(titleText,bodyText,metaText)=>{
+    const card=document.createElement("article");card.style.cssText="padding:14px 16px;margin:0 0 10px;border:1px solid #dbeafe;border-radius:11px;background:#fff";
+    const h=document.createElement("h4");h.textContent=titleText;h.style.cssText="margin:0 0 5px;color:#123b78;font-size:15px";
+    const p=document.createElement("p");p.textContent=bodyText;p.style.cssText="margin:0;color:#334155;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere";card.append(h,p);
+    if(metaText){const m=document.createElement("small");m.textContent=metaText;m.style.cssText="display:block;margin-top:7px;color:#64748b";card.appendChild(m);}area.appendChild(card);
+   };
+   const activityTitle=document.createElement("h3");activityTitle.textContent=admin?"Academy activity":"Your recent activity";activityTitle.style.cssText="margin:0 0 12px;color:#123b78";area.appendChild(activityTitle);
+   if(admin){
+    area.insertAdjacentHTML("afterbegin",'<h3 style="margin:0 0 10px;color:#123b78">Publish an announcement</h3><form id="otgAnnouncementForm" style="display:grid;gap:8px;margin:0 0 22px"><input name="title" required maxlength="140" placeholder="Announcement title" style="padding:10px;border:1px solid #cbd5e1;border-radius:8px"><textarea name="message" required maxlength="4000" rows="3" placeholder="Announcement message" style="padding:10px;border:1px solid #cbd5e1;border-radius:8px"></textarea><button class="primary-btn" style="background:#123b78;color:#fff">Publish announcement</button><span id="otgAnnouncementMsg" role="status"></span></form>');
+    area.querySelector("#otgAnnouncementForm").addEventListener("submit",async e=>{e.preventDefault();const form=e.currentTarget,d=new FormData(form),button=form.querySelector("button");button.disabled=true;const {error:saveError}=await db.from("academy_announcements").insert({title:String(d.get("title")||"").trim(),message:String(d.get("message")||"").trim(),created_by:userId,is_published:true});form.querySelector("#otgAnnouncementMsg").textContent=saveError?"Could not publish: "+saveError.message:"Announcement published.";button.disabled=false;if(!saveError){form.reset();loadAcademyPanelData(key,content);}});
+    const [pendingProfiles,pendingSubs]=await Promise.all([
+     db.from("profiles").select("id").eq("approval_status","pending").limit(5),
+     db.from("academy_submissions").select("id").eq("status","submitted").limit(5)
+    ]);
+    addNotice("Student approvals",pendingProfiles.error?"Could not load pending accounts: "+pendingProfiles.error.message:String((pendingProfiles.data||[]).length)+" pending account(s) in the latest five. Open Student Account Approvals to review access.");
+    addNotice("Assignment reviews",pendingSubs.error?"Could not load submissions: "+pendingSubs.error.message:String((pendingSubs.data||[]).length)+" submitted item(s) in the latest five. Open Review Student Submissions to score work and provide feedback.");
+   }else{
+    const results=await Promise.all([
+     db.from("academy_submissions").select("id,status,submitted_at,score,coach_feedback").eq("student_id",userId).order("submitted_at",{ascending:false}).limit(5),
+     db.from("academy_certificates").select("course,status,issued_at").eq("student_id",userId).order("issued_at",{ascending:false}).limit(5),
+     db.from("academy_connection_requests").select("message,created_at").eq("target_id",userId).eq("status","pending").order("created_at",{ascending:false}).limit(5),
+     db.from("academy_website_reviews").select("project_title,status,rating,feedback,updated_at").eq("student_id",userId).order("updated_at",{ascending:false}).limit(5)
+    ]);
+    if(results.some(r=>r.error))addNotice("Some updates unavailable","Refresh this section to try loading all recent activity.");
+    const [subs,certs,connections,reviews]=results;
+    (subs.data||[]).forEach(x=>addNotice(x.status==="submitted"?"Assignment submitted":"Assignment reviewed",x.status==="submitted"?"Your work has been submitted and is waiting for coach review.":("Status: "+(x.status||"updated")+(x.score!==null&&x.score!==undefined?" · Score: "+x.score+"/100":"")+(x.coach_feedback?"\nCoach feedback: "+x.coach_feedback:"")),x.submitted_at?new Date(x.submitted_at).toLocaleString():"Assignment update"));
+    (certs.data||[]).filter(x=>x.status==="issued").forEach(x=>addNotice("Certificate issued",x.course||"Your OTG Academy certificate is ready.",x.issued_at?new Date(x.issued_at).toLocaleDateString():"Certificate available"));
+    (connections.data||[]).forEach(x=>addNotice("Connection request received",x.message||"An approved OTG student would like to connect.",x.created_at?new Date(x.created_at).toLocaleString():"New request"));
+    (reviews.data||[]).filter(x=>x.feedback||x.status==="reviewed"||x.status==="completed").forEach(x=>addNotice("Website review updated",String(x.project_title||"Your website")+(x.rating!==null&&x.rating!==undefined?" · Rating: "+x.rating+"/5":"")+(x.feedback?"\nCoach feedback: "+x.feedback:""),x.updated_at?new Date(x.updated_at).toLocaleString():"Review update"));
+   }
+   const {data:announcements,error:announcementError}=await db.from("academy_announcements").select("title,message,created_at").eq("is_published",true).order("created_at",{ascending:false}).limit(10);
+   const ah=document.createElement("h3");ah.textContent="Academy announcements";ah.style.cssText="margin:22px 0 10px;color:#123b78";area.appendChild(ah);
+   if(announcementError)addNotice("Announcements unavailable","Announcements could not load: "+announcementError.message);
+   else if(!announcements||!announcements.length)addNotice("No new announcements","Your coach has not published an announcement yet.");
+   else announcements.forEach(x=>addNotice(x.title,x.message,x.created_at?new Date(x.created_at).toLocaleString():"Academy update"));
+  }
 }
 
 </script>
@@ -3090,11 +3123,11 @@ header{
   </style>
   <div id="otgLiveNewspaperTicker" aria-label="Live newspaper headlines" style="display:block!important;visibility:visible!important;position:relative;z-index:5;margin:0 auto 18px;padding:12px 0;border:1px solid #dbeafe;border-radius:12px;background:#fff;overflow:hidden;box-shadow:0 3px 14px rgba(15,23,42,.06);max-width:1200px;color:#172554">
     <div style="display:flex;align-items:center;gap:9px;padding:0 14px 9px;flex-wrap:wrap">
-      <span style="flex:none;background:#b91c1c;color:#fff;border-radius:4px;padding:5px 8px;font-size:11px;font-weight:900;letter-spacing:.5px">🔴 LIVE NEWS</span>
+      <span style="flex:none;background:#123b78;color:#fff;border-radius:4px;padding:5px 8px;font-size:11px;font-weight:900;letter-spacing:.5px">🔴 LIVE NEWS</span>
       <strong style="color:#172554;font-size:13px;line-height:1.5">Punch · AIT · ARISE News · BBC · Technology</strong>
       <button id="otgLiveNewsPause" type="button" aria-pressed="false" style="margin-left:auto;border:1px solid #cbd5e1;border-radius:7px;background:#fff;padding:5px 9px;color:#334155;font-size:11px;font-weight:800;cursor:pointer">Pause</button>
     </div>
-    <div tabindex="0" aria-label="Scrolling news headlines; focus to pause" style="display:block;overflow:hidden;white-space:nowrap;border-top:1px solid #fee2e2;border-bottom:1px solid #fee2e2;background:#fff7f7;padding:11px 0">
+    <div tabindex="0" aria-label="Scrolling news headlines; focus to pause" style="display:block;overflow:hidden;white-space:nowrap;border-top:1px solid #dbeafe;border-bottom:1px solid #dbeafe;background:#f8fbff;padding:11px 0">
       <div id="otgLiveNewsTrack" class="otg-news-track" style="display:flex;width:max-content;align-items:center;gap:34px;will-change:transform"><span style="padding:0 16px;color:#64748b;font-size:13px">Connecting to live headlines…</span></div>
     </div>
     <p id="otgLiveNewsStatus" role="status" style="margin:8px 14px 0;color:#64748b;font-size:11px;line-height:1.5">Connecting to live newspaper headlines…</p>
@@ -6746,12 +6779,12 @@ supabaseClient
       modal.setAttribute("aria-labelledby","otgNewsStoryTitle");
       modal.style.cssText="position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:rgba(15,23,42,.72);";
       var card=document.createElement("article");
-      card.style.cssText="width:min(760px,100%);max-height:88vh;overflow:auto;box-sizing:border-box;background:#fff;border-radius:16px;border-top:6px solid #b91c1c;padding:clamp(20px,4vw,32px);box-shadow:0 24px 80px rgba(0,0,0,.3);color:#172033";
+      card.style.cssText="width:min(760px,100%);max-height:88vh;overflow:auto;box-sizing:border-box;background:#fff;border-radius:16px;border-top:6px solid #2563eb;padding:clamp(20px,4vw,32px);box-shadow:0 24px 80px rgba(0,0,0,.3);color:#172033";
       var top=document.createElement("div");top.style.cssText="display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px";
-      var brand=document.createElement("strong");brand.textContent="OTG LIVE NEWS";brand.style.cssText="color:#b91c1c;letter-spacing:1px;font-size:12px";
+      var brand=document.createElement("strong");brand.textContent="OTG LIVE NEWS";brand.style.cssText="color:#1d4ed8;letter-spacing:1px;font-size:12px";
       var close=document.createElement("button");close.type="button";close.textContent="Close ✕";close.style.cssText="border:1px solid #cbd5e1;border-radius:8px;background:#fff;padding:8px 12px;font-weight:800;color:#334155;cursor:pointer";
       close.addEventListener("click",hideStory);top.append(brand,close);
-      var source=document.createElement("p");source.id="otgNewsStorySource";source.style.cssText="margin:0 0 8px;color:#b91c1c;font-size:12px;font-weight:900;letter-spacing:.5px";
+      var source=document.createElement("p");source.id="otgNewsStorySource";source.style.cssText="margin:0 0 8px;color:#1d4ed8;font-size:12px;font-weight:900;letter-spacing:.5px";
       var title=document.createElement("h2");title.id="otgNewsStoryTitle";title.style.cssText="font-size:clamp(23px,4vw,34px);line-height:1.25;margin:0 0 12px;color:#172554";
       var date=document.createElement("p");date.id="otgNewsStoryDate";date.style.cssText="margin:0 0 20px;color:#64748b;font-size:12px";
       var line=document.createElement("div");line.style.cssText="height:1px;background:#e2e8f0;margin-bottom:20px";
