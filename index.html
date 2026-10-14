@@ -44,12 +44,17 @@ function openAcademyPanel(key,button){
     ? '<button class="primary-btn" onclick="showSection(\''+panel.url.slice(1)+'\')">'+panel.action+'</button>'
     : '<button class="primary-btn" onclick="openAcademyPanel(\''+(panel.next||"home")+'\')">'+panel.action+'</button>';
    content.innerHTML='<span class="academy-card-icon">'+panel.icon+'</span><h3>'+panel.heading+'</h3><p>'+panel.body+'</p>'+action;
-   loadAcademyPanelData(key,content);
+   loadAcademyPanelData(key,content).catch(function(error){
+     console.error("OTG Academy panel failed to load:",error);
+     let notice=content.querySelector(".otg-academy-load-error");
+     if(!notice){notice=document.createElement("p");notice.className="otg-academy-load-error";notice.setAttribute("role","alert");notice.style.cssText="margin-top:16px;padding:12px;border:1px solid #fecaca;border-radius:8px;background:#fff7f7;color:#991b1b;white-space:pre-wrap;overflow-wrap:anywhere";content.appendChild(notice);}
+     notice.textContent="This section could not load: "+(error&&error.message?error.message:"Unknown error")+". Please refresh the page and try again.";
+   });
  }
 }
 
 async function loadAcademyPanelData(key,content){
- const db=window.supabase.createClient("https://actwvvokfdemobgsfctx.supabase.co","sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5");
+ const db=supabaseClient;
  let admin=window.otgAcademyIsAdmin===true;
  const authResult=await db.auth.getUser();
  const activeUser=authResult&&authResult.data?authResult.data.user:null;
