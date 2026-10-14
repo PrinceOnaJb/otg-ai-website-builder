@@ -96,7 +96,47 @@ async function loadAcademyPanelData(key,content){
   const results=await Promise.all(stats.map(async item=>{try{return {label:item[0],result:await item[1]()};}catch(error){return {label:item[0],result:{count:null,error}};}}));
   results.forEach(item=>{const card=document.createElement("article");card.style.cssText="padding:17px;border:1px solid #dbeafe;border-radius:13px;background:#fff;min-width:0";const number=document.createElement("strong");number.textContent=item.result.error?"—":String(item.result.count==null?0:item.result.count);number.style.cssText="display:block;font-size:27px;line-height:1.2;color:#1d4ed8";const label=document.createElement("span");label.textContent=item.label;label.style.cssText="display:block;margin-top:7px;font-size:12px;font-weight:800;color:#475569";card.append(number,label);if(item.result.error){const note=document.createElement("small");note.textContent="Could not load";note.style.cssText="display:block;margin-top:6px;color:#b91c1c";card.appendChild(note);}grid.appendChild(card);});
   area.appendChild(grid);
-  const note=document.createElement("p");note.textContent=admin?"Tip: open Learn to publish lesson notes and video links, Submit Assignment to publish tasks and review submissions, or Notifications to post an academy announcement.":"Recommended next step: open Learn and complete the published Introduction to Graphic Design lesson. Your progress stays connected to your account.";note.style.cssText="margin:16px 0 0;padding:14px 16px;border-left:4px solid #2563eb;border-radius:8px;background:#eff6ff;color:#1e3a8a;line-height:1.7";area.appendChild(note);return;
+  const note=document.createElement("p");note.textContent=admin?"Tip: open Learn to publish lesson notes and video links, Submit Assignment to publish tasks and review submissions, or Notifications to post an academy announcement.":"Recommended next step: open Learn and complete the published Introduction to Graphic Design lesson. Your progress stays connected to your account.";note.style.cssText="margin:16px 0 0;padding:14px 16px;border-left:4px solid #2563eb;border-radius:8px;background:#eff6ff;color:#1e3a8a;line-height:1.7";area.appendChild(note);
+  const newsHeading=document.createElement("h3");
+  newsHeading.textContent="Latest News & Updates";
+  newsHeading.style.cssText="margin:26px 0 10px;color:#172554;font-size:21px";
+  area.appendChild(newsHeading);
+  const newsIntro=document.createElement("p");
+  newsIntro.textContent="Important notices and updates from OTG Graphic Academy.";
+  newsIntro.style.cssText="margin:0 0 12px;color:#64748b;line-height:1.6";
+  area.appendChild(newsIntro);
+  const newsList=document.createElement("div");
+  newsList.style.cssText="display:grid;gap:12px";
+  area.appendChild(newsList);
+  const {data:newsData,error:newsError}=await db.from("academy_announcements").select("title,message,created_at").eq("is_published",true).order("created_at",{ascending:false}).limit(4);
+  if(newsError){
+   const newsErrorText=document.createElement("p");
+   newsErrorText.textContent="Latest updates could not load right now.";
+   newsErrorText.style.cssText="padding:13px;border-radius:10px;background:#fff7ed;color:#9a3412";
+   newsList.appendChild(newsErrorText);
+  }else if(!newsData||!newsData.length){
+   const emptyNews=document.createElement("p");
+   emptyNews.textContent="No academy updates have been posted yet. Please check back soon.";
+   emptyNews.style.cssText="padding:13px;border-radius:10px;background:#eff6ff;color:#1e3a8a";
+   newsList.appendChild(emptyNews);
+  }else{
+   newsData.forEach(item=>{
+    const card=document.createElement("article");
+    card.style.cssText="padding:15px;border:1px solid #dbeafe;border-radius:12px;background:#fff";
+    const title=document.createElement("h4");
+    title.textContent=item.title||"Academy update";
+    title.style.cssText="margin:0 0 6px;color:#1e3a8a;font-size:16px";
+    const message=document.createElement("p");
+    message.textContent=item.message||"";
+    message.style.cssText="margin:0;color:#334155;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere";
+    const date=document.createElement("small");
+    date.textContent=item.created_at?new Date(item.created_at).toLocaleString():"";
+    date.style.cssText="display:block;margin-top:9px;color:#64748b;font-size:12px";
+    card.append(title,message,date);
+    newsList.appendChild(card);
+   });
+  }
+  return;
  }
  if(key==="codelab"){
   const wrap=document.createElement("section");
@@ -758,15 +798,22 @@ header{
 @media(prefers-reduced-motion:reduce){.otg-sticky-welcome img,.otg-sticky-welcome-copy{animation:none;filter:none;transform:none;opacity:1}}
 
 #authScreen{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:30px 18px;
-  background:
-    radial-gradient(circle at top right,rgba(7,91,36,.12),transparent 35%),
-    #f5f7fb;
+  min-height:100vh;display:grid;grid-template-columns:minmax(0,440px) minmax(0,620px);
+  align-content:center;align-items:stretch;justify-content:center;gap:24px;padding:30px 18px;
+  background:radial-gradient(circle at top right,rgba(7,91,36,.12),transparent 35%),#f5f7fb;
 }
+.public-news-panel{width:100%;min-width:0;max-width:620px;padding:clamp(22px,3vw,34px);border:1px solid #dbe4f0;border-radius:18px;background:rgba(255,255,255,.96);box-shadow:0 20px 60px rgba(20,35,60,.08);align-self:center}
+.public-news-eyebrow{display:inline-block;margin-bottom:8px;color:#1d4ed8;font-size:11px;font-weight:900;letter-spacing:1.7px;text-transform:uppercase}
+.public-news-panel h2{margin:0 0 7px;color:#172554;font-size:clamp(22px,3vw,30px);line-height:1.2}
+.public-news-intro{margin:0 0 18px;color:#64748b;line-height:1.65}
+.public-news-list{display:grid;gap:12px}
+.public-news-item{padding:15px;border:1px solid #e2e8f0;border-radius:12px;background:linear-gradient(135deg,#fff,#f8fbff)}
+.public-news-item h3{margin:0 0 6px;color:#1e3a8a;font-size:16px;line-height:1.4}
+.public-news-item p{margin:0;color:#334155;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
+.public-news-item time{display:block;margin-top:9px;color:#64748b;font-size:12px}
+.public-news-empty{padding:15px;border-radius:12px;background:#eff6ff;color:#1e3a8a;line-height:1.6}
+@media(max-width:900px){#authScreen{grid-template-columns:minmax(0,560px);align-content:start;gap:16px;padding:22px 14px}.auth-card,.public-news-panel{max-width:560px}}
+@media(max-width:480px){.auth-card{padding:24px 19px}.public-news-panel{padding:22px 18px}}
 
 .auth-card{
   width:100%;
@@ -1592,6 +1639,15 @@ header{
     </div>
 
   </div>
+
+  <section class="public-news-panel" aria-labelledby="otgPublicNewsTitle">
+    <span class="public-news-eyebrow">From the Academy</span>
+    <h2 id="otgPublicNewsTitle">Latest News &amp; Updates</h2>
+    <p class="public-news-intro">Stay informed about new lessons, assignment notices, student opportunities and important OTG GRAPHIC Academy announcements.</p>
+    <div id="otgPublicNewsList" class="public-news-list" aria-live="polite">
+      <p class="public-news-empty">Loading the latest academy updates…</p>
+    </div>
+  </section>
 
 </div>
 
@@ -6269,6 +6325,39 @@ supabaseClient
   });
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addInstallButton,{once:true});
   else addInstallButton();
+})();
+</script>
+
+
+<script>
+(function(){
+  async function loadPublicAcademyNews(){
+    var list=document.getElementById("otgPublicNewsList");
+    if(!list) return;
+    try{
+      var response=await supabaseClient.from("academy_announcements").select("title,message,created_at").eq("is_published",true).order("created_at",{ascending:false}).limit(4);
+      list.replaceChildren();
+      if(response.error) throw response.error;
+      var items=response.data||[];
+      if(!items.length){
+        var empty=document.createElement("p");empty.className="public-news-empty";empty.textContent="No academy updates have been posted yet. Please check back soon.";list.appendChild(empty);return;
+      }
+      items.forEach(function(item){
+        var card=document.createElement("article");card.className="public-news-item";
+        var title=document.createElement("h3");title.textContent=item.title||"Academy update";
+        var message=document.createElement("p");message.textContent=item.message||"";
+        var date=document.createElement("time");
+        if(item.created_at){date.dateTime=item.created_at;date.textContent=new Date(item.created_at).toLocaleString();}
+        card.append(title,message,date);list.appendChild(card);
+      });
+    }catch(error){
+      list.replaceChildren();var fallback=document.createElement("p");fallback.className="public-news-empty";
+      fallback.textContent="Latest updates are temporarily unavailable. Please try again shortly.";list.appendChild(fallback);
+      console.warn("OTG public news:",error);
+    }
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",loadPublicAcademyNews,{once:true});
+  else loadPublicAcademyNews();
 })();
 </script>
 
