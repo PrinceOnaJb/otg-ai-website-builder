@@ -6486,21 +6486,76 @@ supabaseClient
     var status=document.getElementById("otgLiveNewsStatus");
     var pause=document.getElementById("otgLiveNewsPause");
     if(!section||!track||!status)return;
-    if(pause)pause.addEventListener("click",function(){var paused=pause.getAttribute("aria-pressed")==="true";pause.setAttribute("aria-pressed",paused?"false":"true");pause.textContent=paused?"Pause":"Resume";track.style.animationPlayState=paused?"running":"paused";});
-    function fallback(message){
-      track.replaceChildren();var a=document.createElement("a");a.href="https://news.google.com/";a.target="_blank";a.rel="noopener noreferrer";a.textContent="Open latest headlines on Google News ↗";a.style.cssText="display:inline-block;padding:0 16px;color:#b91c1c;font-weight:800;text-decoration:underline";track.appendChild(a);track.style.animation="none";status.textContent=message||"Live headlines are temporarily unavailable. Tap the link above for current news.";
+    var currentHeadlines=[];
+    var modal=null;
+    function getModal(){
+      if(modal)return modal;
+      modal=document.createElement("div");
+      modal.id="otgNewsStoryModal";
+      modal.setAttribute("role","dialog");
+      modal.setAttribute("aria-modal","true");
+      modal.setAttribute("aria-labelledby","otgNewsStoryTitle");
+      modal.style.cssText="position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:rgba(15,23,42,.72);";
+      var card=document.createElement("article");
+      card.style.cssText="width:min(760px,100%);max-height:88vh;overflow:auto;box-sizing:border-box;background:#fff;border-radius:16px;border-top:6px solid #b91c1c;padding:clamp(20px,4vw,32px);box-shadow:0 24px 80px rgba(0,0,0,.3);color:#172033";
+      var top=document.createElement("div");top.style.cssText="display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px";
+      var brand=document.createElement("strong");brand.textContent="OTG LIVE NEWS";brand.style.cssText="color:#b91c1c;letter-spacing:1px;font-size:12px";
+      var close=document.createElement("button");close.type="button";close.textContent="Close ✕";close.style.cssText="border:1px solid #cbd5e1;border-radius:8px;background:#fff;padding:8px 12px;font-weight:800;color:#334155;cursor:pointer";
+      close.addEventListener("click",hideStory);top.append(brand,close);
+      var source=document.createElement("p");source.id="otgNewsStorySource";source.style.cssText="margin:0 0 8px;color:#b91c1c;font-size:12px;font-weight:900;letter-spacing:.5px";
+      var title=document.createElement("h2");title.id="otgNewsStoryTitle";title.style.cssText="font-size:clamp(23px,4vw,34px);line-height:1.25;margin:0 0 12px;color:#172554";
+      var date=document.createElement("p");date.id="otgNewsStoryDate";date.style.cssText="margin:0 0 20px;color:#64748b;font-size:12px";
+      var line=document.createElement("div");line.style.cssText="height:1px;background:#e2e8f0;margin-bottom:20px";
+      var summary=document.createElement("div");summary.id="otgNewsStorySummary";summary.style.cssText="font-size:16px;line-height:1.85;color:#334155;white-space:normal;overflow-wrap:anywhere";
+      var note=document.createElement("p");note.textContent="This is the available news summary. The publisher's full report is linked below.";note.style.cssText="margin:20px 0 14px;color:#64748b;font-size:12px;line-height:1.6";
+      var link=document.createElement("a");link.id="otgNewsStoryLink";link.target="_blank";link.rel="noopener noreferrer";link.textContent="Read full report from publisher ↗";link.style.cssText="display:inline-block;padding:12px 16px;border-radius:9px;background:#14532d;color:#fff;text-decoration:none;font-size:13px;font-weight:800";
+      card.append(top,source,title,date,line,summary,note,link);modal.appendChild(card);document.body.appendChild(modal);
+      modal.addEventListener("click",function(event){if(event.target===modal)hideStory();});
+      document.addEventListener("keydown",function(event){if(event.key==="Escape"&&modal&&modal.style.display==="flex")hideStory();});
+      return modal;
     }
-    var attempts=0;
+    function hideStory(){if(modal)modal.style.display="none";}
+    function showStory(item){
+      var root=getModal();
+      root.querySelector("#otgNewsStorySource").textContent=(item.source||"LATEST NEWS")+" · OTG GRAPHIC ACADEMY";
+      root.querySelector("#otgNewsStoryTitle").textContent=item.title||"Latest news";
+      var date=item.publishedAt?new Date(item.publishedAt):null;
+      root.querySelector("#otgNewsStoryDate").textContent=date&&!isNaN(date.getTime())?"Published "+date.toLocaleString():"Latest available report";
+      root.querySelector("#otgNewsStorySummary").textContent=item.summary||"A short summary was not supplied by the news feed. Open the publisher's report below for the full story.";
+      var link=root.querySelector("#otgNewsStoryLink");link.href=item.link||"#";link.textContent="Read full report from "+(item.source||"publisher")+" ↗";
+      root.style.display="flex";root.querySelector("button").focus();
+    }
+    function showUnavailable(message){
+      track.replaceChildren();
+      var note=document.createElement("span");note.textContent="Live headlines are temporarily unavailable.";note.style.cssText="display:inline-block;padding:0 16px;color:#9f1239;font-weight:800";
+      var retry=document.createElement("button");retry.type="button";retry.textContent="Try again";retry.style.cssText="margin-left:8px;padding:6px 10px;border:1px solid #fecaca;border-radius:7px;background:#fff;color:#9f1239;font-weight:800;cursor:pointer";retry.addEventListener("click",connect);
+      track.append(note,retry);track.style.animation="none";status.textContent=message||"Please try again shortly. No Google redirect is used here.";
+    }
     function connect(){
-      attempts++;
-      fetch("https://actwvvokfdemobgsfctx.supabase.co/functions/v1/otg-live-news",{method:"GET",headers:{"Accept":"application/json"},cache:"no-store"}).then(function(response){if(!response.ok)throw new Error("News service HTTP "+response.status);return response.json();}).then(function(data){
-        var headlines=data&&Array.isArray(data.headlines)?data.headlines:[];
-        if(!headlines.length){fallback("The news service connected but returned no headlines. Tap above for current headlines.");return;}
+      status.textContent="Loading the latest headlines…";
+      fetch("https://actwvvokfdemobgsfctx.supabase.co/functions/v1/otg-live-news",{method:"GET",headers:{"Accept":"application/json"},cache:"no-store"})
+      .then(function(response){if(!response.ok)throw new Error("News service HTTP "+response.status);return response.json();})
+      .then(function(data){
+        currentHeadlines=data&&Array.isArray(data.headlines)?data.headlines:[];
+        if(!currentHeadlines.length){showUnavailable("The news feed returned no headlines right now. Tap Try again in a moment.");return;}
+        track.replaceChildren();
         var group=document.createElement("div");group.style.cssText="display:flex;align-items:center;gap:34px;padding-right:34px";
-        headlines.forEach(function(item){var a=document.createElement("a");a.href=item.link;a.target="_blank";a.rel="noopener noreferrer";a.style.cssText="display:inline-flex;align-items:center;gap:8px;color:#172554;text-decoration:none;font-size:13px;font-weight:750;max-width:78vw;white-space:nowrap";var src=document.createElement("span");src.textContent=item.source||"NEWS";src.style.cssText="color:#b91c1c;font-size:10px;font-weight:900";var title=document.createElement("span");title.textContent=item.title;a.append(src,title);group.appendChild(a);});
-        var clone=group.cloneNode(true);track.replaceChildren(group,clone);track.style.animation="otgNewsTickerScroll 75s linear infinite";status.textContent="Latest available headlines. Tap any headline to open its story.";
-      }).catch(function(error){console.warn("OTG live news ticker:",error);fallback("The live headline service could not be reached. Tap above for current headlines.");});
+        currentHeadlines.forEach(function(item,index){
+          var button=document.createElement("button");button.type="button";button.style.cssText="display:inline-flex;align-items:center;gap:8px;color:#172554;text-decoration:none;font-size:13px;font-weight:750;max-width:78vw;white-space:nowrap;border:0;background:transparent;cursor:pointer;padding:0";
+          button.setAttribute("aria-label","Read news summary: "+(item.title||"latest news"));
+          var src=document.createElement("span");src.textContent=item.source||"NEWS";src.style.cssText="color:#b91c1c;font-size:10px;font-weight:900";
+          var title=document.createElement("span");title.textContent=item.title||"Latest headline";
+          button.append(src,title);button.addEventListener("click",function(){showStory(item);});group.appendChild(button);
+          if(index<currentHeadlines.length-1){var dot=document.createElement("span");dot.textContent="•";dot.style.color="#cbd5e1";group.appendChild(dot);}
+        });
+        var clone=group.cloneNode(true);
+        Array.from(clone.querySelectorAll("button")).forEach(function(button,index){button.addEventListener("click",function(){showStory(currentHeadlines[index%currentHeadlines.length]);});});
+        track.append(group,clone);track.style.animation="otgNewsTickerScroll 75s linear infinite";
+        status.textContent="Latest available headlines · Tap any headline to read its summary here.";
+        if(pause&&pause.getAttribute("aria-pressed")==="true")track.style.animationPlayState="paused";
+      }).catch(function(error){console.warn("OTG live news ticker:",error);showUnavailable("Could not connect to the live news feed. Check your connection and try again.");});
     }
+    if(pause)pause.addEventListener("click",function(){var paused=pause.getAttribute("aria-pressed")==="true";pause.setAttribute("aria-pressed",paused?"false":"true");pause.textContent=paused?"Pause":"Resume";track.style.animationPlayState=paused?"running":"paused";});
     connect();
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",startNews,{once:true});else startNews();
