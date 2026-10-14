@@ -1,11 +1,9 @@
-const CACHE_NAME = "otg-academy-v6";
+const CACHE_NAME = "otg-academy-v7";
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
   "/manifest.json",
-  "/otg-app-icon.svg",
-  "/otg-app-icon-192.png",
-  "/otg-app-icon-512.png"
+  "/otg-app-icon.svg"
 ];
 
 self.addEventListener("install", event => {
