@@ -3119,6 +3119,7 @@ header{
     @keyframes otgNewsTickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
     #otgLiveNewspaperTicker .otg-news-track{display:flex;width:max-content;animation:otgNewsTickerScroll 75s linear infinite;will-change:transform}
     #otgLiveNewspaperTicker:hover .otg-news-track{animation-play-state:paused}
+     #otgLiveNewspaperTicker:focus-within .otg-news-track{animation-play-state:paused}
     @media(prefers-reduced-motion:reduce){#otgLiveNewspaperTicker .otg-news-track{animation-duration:150s!important}}
   </style>
   <div id="otgLiveNewspaperTicker" aria-label="Live newspaper headlines" style="display:block!important;visibility:visible!important;position:relative;z-index:5;margin:0 auto 18px;padding:12px 0;border:1px solid #dbeafe;border-radius:12px;background:#fff;overflow:hidden;box-shadow:0 3px 14px rgba(15,23,42,.06);max-width:1200px;color:#172554">
@@ -6809,8 +6810,8 @@ supabaseClient
     }
     function showUnavailable(message){
       track.replaceChildren();
-      var note=document.createElement("span");note.textContent="Live headlines are temporarily unavailable.";note.style.cssText="display:inline-block;padding:0 16px;color:#9f1239;font-weight:800";
-      var retry=document.createElement("button");retry.type="button";retry.textContent="Try again";retry.style.cssText="margin-left:8px;padding:6px 10px;border:1px solid #fecaca;border-radius:7px;background:#fff;color:#9f1239;font-weight:800;cursor:pointer";retry.addEventListener("click",connect);
+      var note=document.createElement("span");note.textContent="Live headlines are temporarily unavailable.";note.style.cssText="display:inline-block;padding:0 16px;color:#475569;font-weight:800";
+      var retry=document.createElement("button");retry.type="button";retry.textContent="Try again";retry.style.cssText="margin-left:8px;padding:6px 10px;border:1px solid #cbd5e1;border-radius:7px;background:#fff;color:#475569;font-weight:800;cursor:pointer";retry.addEventListener("click",connect);
       track.append(note,retry);track.style.animation="none";status.textContent=message||"Please try again shortly. No Google redirect is used here.";
     }
     function connect(){
@@ -6825,7 +6826,7 @@ supabaseClient
         currentHeadlines.forEach(function(item,index){
           var button=document.createElement("button");button.type="button";button.style.cssText="display:inline-flex;flex:0 0 auto;align-items:center;gap:8px;color:#172554;text-decoration:none;font-size:13px;font-weight:750;max-width:none;width:max-content;white-space:nowrap;border:0;background:transparent;cursor:pointer;padding:0";
           button.setAttribute("aria-label","Read news summary: "+(item.title||"latest news"));
-          var src=document.createElement("span");src.textContent=item.source||"NEWS";src.style.cssText="color:#b91c1c;font-size:10px;font-weight:900";
+          var src=document.createElement("span");src.textContent=item.source||"NEWS";src.style.cssText="color:#1d4ed8;font-size:10px;font-weight:900";
           var title=document.createElement("span");title.textContent=item.title||"Latest headline";
           button.append(src,title);button.addEventListener("click",function(){showStory(item);});group.appendChild(button);
           if(index<currentHeadlines.length-1){var dot=document.createElement("span");dot.textContent="•";dot.style.color="#cbd5e1";group.appendChild(dot);}
