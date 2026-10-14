@@ -6507,7 +6507,7 @@ supabaseClient
       var date=document.createElement("p");date.id="otgNewsStoryDate";date.style.cssText="margin:0 0 20px;color:#64748b;font-size:12px";
       var line=document.createElement("div");line.style.cssText="height:1px;background:#e2e8f0;margin-bottom:20px";
       var summary=document.createElement("div");summary.id="otgNewsStorySummary";summary.style.cssText="font-size:16px;line-height:1.85;color:#334155;white-space:normal;overflow-wrap:anywhere";
-      var note=document.createElement("p");note.textContent="This is the available news summary. The publisher's full report is linked below.";note.style.cssText="margin:20px 0 14px;color:#64748b;font-size:12px;line-height:1.6";
+      var note=document.createElement("p");note.id="otgNewsStoryNote";note.textContent="This is the available news summary from the news feed.";note.style.cssText="margin:20px 0 14px;color:#64748b;font-size:12px;line-height:1.6";
       var link=document.createElement("a");link.id="otgNewsStoryLink";link.target="_blank";link.rel="noopener noreferrer";link.textContent="Read full report from publisher ↗";link.style.cssText="display:inline-block;padding:12px 16px;border-radius:9px;background:#14532d;color:#fff;text-decoration:none;font-size:13px;font-weight:800";
       card.append(top,source,title,date,line,summary,note,link);modal.appendChild(card);document.body.appendChild(modal);
       modal.addEventListener("click",function(event){if(event.target===modal)hideStory();});
@@ -6522,7 +6522,7 @@ supabaseClient
       var date=item.publishedAt?new Date(item.publishedAt):null;
       root.querySelector("#otgNewsStoryDate").textContent=date&&!isNaN(date.getTime())?"Published "+date.toLocaleString():"Latest available report";
       root.querySelector("#otgNewsStorySummary").textContent=item.summary||"A short summary was not supplied by the news feed. Open the publisher's report below for the full story.";
-      var link=root.querySelector("#otgNewsStoryLink");link.href=item.link||"#";link.textContent="Read full report from "+(item.source||"publisher")+" ↗";
+      var link=root.querySelector("#otgNewsStoryLink");var validPublisherLink=!!item.link&&!/news\.google\.com/i.test(item.link);link.href=validPublisherLink?item.link:"#";link.hidden=!validPublisherLink;root.querySelector("#otgNewsStoryNote").textContent=validPublisherLink?"This is the available news summary. You can continue to the original publisher for the full report.":"This summary is displayed inside OTG Academy. A direct publisher link was not available, so no Google redirect is shown.";link.textContent="Read full report from "+(item.source||"publisher")+" ↗";
       root.style.display="flex";root.querySelector("button").focus();
     }
     function showUnavailable(message){
