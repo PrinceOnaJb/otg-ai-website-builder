@@ -81,6 +81,7 @@ async function loadAcademyPanelData(key,content){
   window.otgAcademyIsAdmin=false;
  }
  const esc=v=>String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+ const appendLessonInline=(parent,value)=>{const text=String(value==null?"":value);const pattern=/\\*\\*[^*]+\\*\\*|\\*[^*]+\\*/g;let cursor=0,match;while((match=pattern.exec(text))){if(match.index>cursor)parent.appendChild(document.createTextNode(text.slice(cursor,match.index)));const token=match[0];const node=document.createElement(token.startsWith("**")?"strong":"em");node.textContent=token.startsWith("**")?token.slice(2,-2):token.slice(1,-1);parent.appendChild(node);cursor=pattern.lastIndex;}if(cursor<text.length)parent.appendChild(document.createTextNode(text.slice(cursor)));};
  content.querySelectorAll(".otg-academy-data-area").forEach(el=>el.remove());
  const cleanLessonText=v=>String(v==null?"":v).replace(/^\s*(?:lesson\s*title|title|course\s*name|course|short\s*description|description|lesson\s*notes|notes)\s*:\s*/i,"").trim();
  const area=document.createElement("div");area.className="otg-academy-data-area";area.style.cssText="margin-top:24px;padding-top:20px;border-top:1px solid #e2e8f0";content.appendChild(area);
@@ -228,7 +229,7 @@ async function loadAcademyPanelData(key,content){
     // Render lesson notes as real learning content, not one long plain-text paragraph.
     const lessonLines=lessonText.replace(/^lesson\s*notes\s*:\s*/i,"").replace(/\r/g,"").replace(/\\n/g,"\n").split("\n");
     let paragraphLines=[], listNode=null, listKind="";
-    let paragraphCount=0;const flushParagraph=()=>{if(!paragraphLines.length)return;const p=document.createElement("p");p.textContent=paragraphLines.join(" ").trim();paragraphCount++;p.style.cssText=paragraphCount===1?"margin:0 0 20px;padding:18px 20px;border-left:4px solid #2563eb;border-radius:0 12px 12px 0;background:linear-gradient(110deg,#eff6ff,#f8fafc);color:#1e293b;font-size:17px;line-height:1.9":"margin:0 0 16px;color:#334155;font-size:16px;line-height:1.85";notesBox.appendChild(p);paragraphLines=[];};
+    let paragraphCount=0;const flushParagraph=()=>{if(!paragraphLines.length)return;const p=document.createElement("p");appendLessonInline(p,paragraphLines.join(" ").trim());paragraphCount++;p.style.cssText=paragraphCount===1?"margin:0 0 20px;padding:18px 20px;border-left:4px solid #2563eb;border-radius:0 12px 12px 0;background:linear-gradient(110deg,#eff6ff,#f8fafc);color:#1e293b;font-size:17px;line-height:1.9":"margin:0 0 16px;color:#334155;font-size:16px;line-height:1.85";notesBox.appendChild(p);paragraphLines=[];};
     const flushList=()=>{if(listNode&&listNode.children.length)notesBox.appendChild(listNode);listNode=null;listKind="";};
     lessonLines.forEach(raw=>{
       const line=raw.trim();
@@ -237,10 +238,10 @@ async function loadAcademyPanelData(key,content){
       const numbered=line.match(/^\s*(?:\d+[.)]|\d+\s*[-:])\s+(.+)$/);
       const bullet=line.match(/^\s*[-*•✓]\s+(.+)$/);
       if(heading){flushParagraph();flushList();const level=heading[1]?heading[1].length:3;const h=document.createElement(level<=2?"h4":"h5");h.textContent=(heading[2]||heading[1]||"").replace(/^\s*(?:SECTION|TOPIC|PART)\s*\d*\s*[:.-]\s*/i,"").trim();h.style.cssText="margin:20px 0 10px;color:#172554;font-size:"+(level<=2?"19px":"16px")+";line-height:1.4;font-weight:800";notesBox.appendChild(h);return;}
-      if(numbered||bullet){flushParagraph();const kind=numbered?"ol":"ul";if(!listNode||listKind!==kind){flushList();listNode=document.createElement(kind);listKind=kind;listNode.style.cssText="margin:2px 0 18px;padding:15px 18px 15px 38px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;color:#334155";}const li=document.createElement("li");li.textContent=(numbered||bullet)[1];li.style.cssText="padding:4px 0;line-height:1.75";listNode.appendChild(li);return;}
+      if(numbered||bullet){flushParagraph();const kind=numbered?"ol":"ul";if(!listNode||listKind!==kind){flushList();listNode=document.createElement(kind);listKind=kind;listNode.style.cssText="margin:2px 0 18px;padding:15px 18px 15px 38px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;color:#334155";}const li=document.createElement("li");appendLessonInline(li,(numbered||bullet)[1]);li.style.cssText="padding:4px 0;line-height:1.75";listNode.appendChild(li);return;}
       flushList();
       const callout=line.match(/^(?:key takeaway|remember|important|example|tip|note)\s*:\s*(.+)$/i);
-      if(callout){flushParagraph();const box=document.createElement("div");box.style.cssText="margin:8px 0 18px;padding:15px 17px;border-left:4px solid #2563eb;border-radius:8px;background:#eff6ff;color:#1e3a8a;line-height:1.75";const strong=document.createElement("strong");strong.textContent=line.split(":")[0]+": ";box.appendChild(strong);box.appendChild(document.createTextNode(callout[1]));notesBox.appendChild(box);return;}
+      if(callout){flushParagraph();const box=document.createElement("div");box.style.cssText="margin:8px 0 18px;padding:15px 17px;border-left:4px solid #2563eb;border-radius:8px;background:#eff6ff;color:#1e3a8a;line-height:1.75";const strong=document.createElement("strong");strong.textContent=line.split(":")[0]+": ";box.appendChild(strong);appendLessonInline(box,callout[1]);notesBox.appendChild(box);return;}
       paragraphLines.push(line);
     });
     flushParagraph();flushList();
