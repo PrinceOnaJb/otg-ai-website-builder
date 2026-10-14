@@ -746,13 +746,13 @@ header{
   color:#fff!important;
 }
 
-/* Persistent OTG Academy branding: icon arrives first, welcome text slides in and settles */
+/* Clean, natural website-style welcome reveal */
 .otg-sticky-welcome{display:flex;align-items:center;gap:9px;flex:0 0 auto;max-width:380px;padding:7px 11px;border:1px solid #dbeafe;border-radius:14px;background:linear-gradient(110deg,#eff6ff,#fff7ed);box-shadow:0 4px 14px rgba(30,58,138,.10);order:3}
-.otg-sticky-welcome img{display:block;width:46px;height:46px;object-fit:contain;border-radius:10px;flex:0 0 46px;animation:otgIconArrive .95s cubic-bezier(.2,.85,.25,1.35) both}
-.otg-sticky-welcome-copy{min-width:0;font-size:12px;font-weight:800;line-height:1.35;color:#17336b;animation:otgWelcomeArrive 1.1s cubic-bezier(.2,.8,.2,1) .25s both}
+.otg-sticky-welcome img{display:block;width:46px;height:46px;object-fit:contain;border-radius:10px;flex:0 0 46px;animation:otgIconFadeIn .55s ease-out both}
+.otg-sticky-welcome-copy{min-width:0;font-size:12px;font-weight:800;line-height:1.35;color:#17336b;animation:otgTextFadeIn .65s ease-out .12s both}
 .otg-sticky-welcome-copy span{display:block;font-size:10px;font-weight:800;letter-spacing:1px;color:#a16207;text-transform:uppercase}
-@keyframes otgIconArrive{0%{opacity:0;transform:scale(.45) rotate(-22deg)}72%{opacity:1;transform:scale(1.12) rotate(4deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
-@keyframes otgWelcomeArrive{0%{opacity:0;transform:translateX(38px);filter:blur(3px)}70%{opacity:1;transform:translateX(-3px);filter:blur(0)}100%{opacity:1;transform:translateX(0);filter:blur(0)}}
+@keyframes otgIconFadeIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+@keyframes otgTextFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:900px){.otg-sticky-welcome{max-width:100%;align-self:flex-end}.navbar{gap:12px}}
 @media(max-width:650px){.otg-sticky-welcome{align-self:flex-end;max-width:100%;order:2}.otg-sticky-welcome img{width:40px;height:40px;flex-basis:40px}.otg-sticky-welcome-copy{font-size:11px}.navbar .logo{order:1}.navbar .nav-links{order:3}}
 @media(prefers-reduced-motion:reduce){.otg-sticky-welcome img,.otg-sticky-welcome-copy{animation:none;filter:none;transform:none;opacity:1}}
