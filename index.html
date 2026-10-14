@@ -5879,10 +5879,6 @@ supabaseClient
       btn.setAttribute('aria-label','Install OTG GRAPHIC Academy on this device');
       document.body.appendChild(btn);
       btn.addEventListener('click', async function(){
-        if(isRunningAsInstalledApp()){
-          btn.hidden=true;
-          return;
-        }
         if(deferredPrompt){
           try{
             deferredPrompt.prompt();
@@ -5899,7 +5895,7 @@ supabaseClient
         showInstallHelp();
       });
     }
-    btn.hidden=isRunningAsInstalledApp();
+    btn.hidden=false;
   }
   function showInstallHelp(){
     var isAndroid=/Android/i.test(navigator.userAgent);
@@ -5914,9 +5910,9 @@ supabaseClient
     addInstallButton();
   });
   window.addEventListener('appinstalled',function(){
-    var btn=document.getElementById('otgInstallAppButton');
-    if(btn) btn.hidden=true;
     deferredPrompt=null;
+    var btn=document.getElementById('otgInstallAppButton');
+    if(btn) btn.hidden=false;
   });
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addInstallButton,{once:true});
   else addInstallButton();
