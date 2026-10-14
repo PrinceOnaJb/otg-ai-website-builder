@@ -6501,8 +6501,8 @@ supabaseClient
     pause.addEventListener("click",function(){var paused=pause.getAttribute("aria-pressed")==="true";pause.setAttribute("aria-pressed",paused?"false":"true");pause.textContent=paused?"Pause":"Resume";track.style.animationPlayState=paused?"running":"paused";});
     function showFallback(message){track.replaceChildren();var link=document.createElement("a");link.href="https://news.google.com/";link.target="_blank";link.rel="noopener noreferrer";link.textContent="Open latest headlines on Google News ↗";link.style.cssText="padding:0 16px;color:#b91c1c;font-weight:800;text-decoration:underline";track.appendChild(link);track.style.animation="none";status.textContent=message||"Live headlines are temporarily unavailable. Use the link above to read current news."}
     Promise.resolve().then(function(){
-      if(!window.supabaseClient||!window.supabaseClient.functions) throw new Error("News connection is not ready");
-      return window.supabaseClient.functions.invoke("otg-live-news");
+      if(typeof supabaseClient==="undefined"||!supabaseClient.functions) throw new Error("News connection is not ready");
+      return supabaseClient.functions.invoke("otg-live-news");
     }).then(function(result){
       if(result.error) throw result.error;
       var data=result.data||{};var headlines=Array.isArray(data.headlines)?data.headlines:[];
