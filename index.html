@@ -124,7 +124,7 @@ async function loadAcademyPanelData(key,content){
   wrap.append(heading,intro,editors,controls,previewTitle,preview,status);area.appendChild(wrap);runCode();return;
  }
  if(key==="learn"||key==="watch"){
-  if(admin)area.innerHTML='<h3>Publish a lesson</h3><form id="otgLessonForm" style="display:grid;gap:8px;margin:12px 0"><input name="title" required placeholder="Lesson title" style="padding:10px"><input name="course" placeholder="Course name" style="padding:10px"><textarea name="description" placeholder="Short description" style="padding:10px"></textarea><textarea name="content" placeholder="Lesson notes" style="padding:10px"></textarea><input name="video_url" type="url" placeholder="Video URL (optional)" style="padding:10px"><label><input name="published" type="checkbox"> Publish for approved students</label><button class="primary-btn">Save lesson</button><span id="otgLessonMsg"></span></form>';
+  if(admin)area.innerHTML='<h3>Publish a lesson</h3><form id="otgLessonForm" style="display:grid;gap:8px;margin:12px 0"><input name="title" required placeholder="Lesson title" style="padding:10px"><input name="course" placeholder="Course name" style="padding:10px"><textarea name="description" placeholder="Short description" style="padding:10px"></textarea><textarea name="content" rows="7" placeholder="Lesson notes: write your explanation here. For a styled heading, start a line with # Heading. Use - before list items, and add a blank line between sections." style="padding:12px;line-height:1.7;border:1px solid #cbd5e1;border-radius:10px"></textarea><small style="color:#64748b;line-height:1.6">Tip: use a heading such as # What is graphic design? on its own line, then write your notes below it. The student lesson page will format headings, lists, and key takeaways into sections.</small><input name="video_url" type="url" placeholder="Video URL (optional)" style="padding:10px"><label><input name="published" type="checkbox"> Publish for approved students</label><button class="primary-btn">Save lesson</button><span id="otgLessonMsg"></span></form>';
   if(admin)area.querySelector("#otgLessonForm").addEventListener("submit",async e=>{e.preventDefault();const f=e.currentTarget,d=new FormData(f);const {error}=await db.from("academy_lessons").insert({title:d.get("title"),course:d.get("course")||"Getting Started",description:d.get("description")||"",content:d.get("content")||"",video_url:d.get("video_url")||null,is_published:d.get("published")==="on",created_by:userId});f.querySelector("#otgLessonMsg").textContent=error?"Save failed: "+error.message:"Lesson saved.";if(!error){f.reset();loadAcademyPanelData(key,content);}});
   let lessonsQuery=db.from("academy_lessons").select("id,title,course,description,content,video_url,created_at,is_published").order("sort_order",{ascending:true}).order("created_at",{ascending:false});
   if(!admin)lessonsQuery=lessonsQuery.eq("is_published",true);
@@ -166,7 +166,7 @@ async function loadAcademyPanelData(key,content){
    const description=cleanLessonText(x.description);
    const lessonText=cleanLessonText(x.content);
    const card=document.createElement("article");card.className="otg-lesson-card";card.style.cssText="box-sizing:border-box;overflow:hidden;width:100%;border:1px solid #dbe4f0;border-radius:18px;background:#fff;box-shadow:0 8px 26px rgba(15,23,42,.07);color:#172033";
-   const hero=document.createElement("header");hero.style.cssText="padding:clamp(20px,4vw,32px);background:linear-gradient(125deg,#eff6ff 0%,#f8fafc 62%,#eef2ff 100%);border-bottom:1px solid #dbeafe";
+   const hero=document.createElement("header");hero.className="otg-lesson-hero";hero.style.cssText="padding:clamp(20px,4vw,32px);background:linear-gradient(125deg,#eff6ff 0%,#f8fafc 62%,#eef2ff 100%);border-bottom:1px solid #dbeafe";
    const brand=document.createElement("div");brand.textContent="OTG GRAPHIC ACADEMY  /  LESSON "+String(index+1).padStart(2,"0");brand.style.cssText="font-size:11px;letter-spacing:1.5px;font-weight:800;color:#1d4ed8;margin-bottom:14px";hero.appendChild(brand);
    const h=document.createElement("h2");h.textContent=title;h.style.cssText="margin:0 0 14px;font-size:clamp(24px,4vw,34px);line-height:1.2;letter-spacing:-.5px;font-weight:800;color:#172554";hero.appendChild(h);
    const coursePill=document.createElement("span");coursePill.textContent="COURSE  ·  "+courseName;coursePill.style.cssText="display:inline-block;padding:7px 12px;border-radius:999px;background:#dbeafe;color:#1e40af;font-size:12px;font-weight:800";hero.appendChild(coursePill);
@@ -174,8 +174,8 @@ async function loadAcademyPanelData(key,content){
    const pathStrip=document.createElement("div");pathStrip.setAttribute("aria-label","Lesson learning path");pathStrip.style.cssText="display:flex;flex-wrap:wrap;gap:9px 12px;margin-top:22px;padding-top:18px;border-top:1px solid #dbeafe";
    [["01","Read the lesson"],["02","Try the practice"],["03","Check your understanding"]].forEach(step=>{const chip=document.createElement("div");chip.style.cssText="display:flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid #dbeafe;border-radius:10px;background:rgba(255,255,255,.8);color:#334155;font-size:12px;font-weight:700";const number=document.createElement("span");number.textContent=step[0];number.style.cssText="display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;flex:0 0 23px;border-radius:7px;background:#dbeafe;color:#1d4ed8;font-size:11px;font-weight:900";const label=document.createElement("span");label.textContent=step[1];chip.append(number,label);pathStrip.appendChild(chip);});hero.appendChild(pathStrip);
    card.appendChild(hero);
-   const body=document.createElement("div");body.style.cssText="display:grid;grid-template-columns:minmax(0,1fr);gap:18px;padding:clamp(18px,3.5vw,30px)";
-   const notesBox=document.createElement("section");notesBox.style.cssText="padding:clamp(18px,3vw,24px);border:1px solid #e2e8f0;border-radius:14px;background:#fff";
+   const body=document.createElement("div");body.className="otg-lesson-body";body.style.cssText="display:grid;grid-template-columns:minmax(0,1fr);gap:18px;padding:clamp(18px,3.5vw,30px)";
+   const notesBox=document.createElement("section");notesBox.className="otg-lesson-notes";notesBox.style.cssText="padding:clamp(18px,3vw,24px);border:1px solid #e2e8f0;border-radius:14px;background:#fff";
    const notesEyebrow=document.createElement("div");notesEyebrow.textContent="YOUR LEARNING NOTES";notesEyebrow.style.cssText="margin-bottom:10px;font-size:11px;letter-spacing:1.3px;font-weight:800;color:#2563eb";notesBox.appendChild(notesEyebrow);
    const notesHeading=document.createElement("h3");notesHeading.textContent="Lesson overview";notesHeading.style.cssText="margin:0 0 14px;font-size:21px;line-height:1.35;color:#172554";notesBox.appendChild(notesHeading);
    if(lessonText){
@@ -204,16 +204,16 @@ async function loadAcademyPanelData(key,content){
     const takeaway=document.createElement("div");takeaway.style.cssText="margin-top:14px;padding:16px 18px;border-left:4px solid #2563eb;border-radius:8px;background:#eff6ff;color:#1e3a8a;font-size:14px;line-height:1.75";takeaway.innerHTML="<strong>Remember:</strong> Good graphic design is not just decoration. It helps people understand a message quickly and clearly.";notesBox.appendChild(takeaway);
    }else{const p=document.createElement("p");p.textContent="Lesson notes will be added by your coach.";p.style.cssText="margin:0;color:#64748b;line-height:1.8";notesBox.appendChild(p);}
    body.appendChild(notesBox);
-   const outcomes=document.createElement("section");outcomes.style.cssText="padding:20px 22px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0";
+   const outcomes=document.createElement("section");outcomes.className="otg-lesson-outcomes";outcomes.style.cssText="padding:20px 22px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0";
    const outcomesTitle=document.createElement("h3");outcomesTitle.textContent="By the end of this lesson";outcomesTitle.style.cssText="margin:0 0 14px;font-size:18px;color:#172554";outcomes.appendChild(outcomesTitle);
    ["Explain the main idea in your own words","Recognise how the lesson applies to real design work","Use one idea from the lesson in a short practice task"].forEach((txt,i)=>{const row=document.createElement("div");row.style.cssText="display:flex;align-items:flex-start;gap:10px;margin:10px 0;color:#334155;font-size:14px;line-height:1.65";const check=document.createElement("span");check.textContent="✓";check.style.cssText="display:inline-flex;align-items:center;justify-content:center;flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:#dcfce7;color:#166534;font-weight:800";row.appendChild(check);const t=document.createElement("span");t.textContent=txt;row.appendChild(t);outcomes.appendChild(row);});
    body.appendChild(outcomes);
-   const activity=document.createElement("section");activity.style.cssText="padding:20px 22px;border-radius:14px;background:#fff7ed;border:1px solid #fed7aa";
+   const activity=document.createElement("section");activity.className="otg-lesson-practice";activity.style.cssText="padding:20px 22px;border-radius:14px;background:#fff7ed;border:1px solid #fed7aa";
    const activityLabel=document.createElement("div");activityLabel.textContent="PRACTICE";activityLabel.style.cssText="margin-bottom:8px;font-size:11px;letter-spacing:1.3px;font-weight:800;color:#9a3412";activity.appendChild(activityLabel);
    const activityTitle=document.createElement("h3");activityTitle.textContent="Try it yourself";activityTitle.style.cssText="margin:0 0 8px;font-size:18px;color:#7c2d12";activity.appendChild(activityTitle);
    const activityText=document.createElement("p");activityText.textContent="Create or sketch a simple design that uses this lesson's idea. Pay attention to clarity, readability and the audience. Be ready to explain one choice you made.";activityText.style.cssText="margin:0;color:#7c2d12;font-size:14px;line-height:1.8";activity.appendChild(activityText);body.appendChild(activity);
    if(/graphic design/i.test(title+" "+courseName)){
-    const quiz=document.createElement("section");quiz.style.cssText="padding:22px;border:1px solid #c7d2fe;border-radius:14px;background:linear-gradient(135deg,#eef2ff,#f8fafc)";
+    const quiz=document.createElement("section");quiz.className="otg-lesson-quiz";quiz.style.cssText="padding:22px;border:1px solid #c7d2fe;border-radius:14px;background:linear-gradient(135deg,#eef2ff,#f8fafc)";
     const quizLabel=document.createElement("div");quizLabel.textContent="QUICK KNOWLEDGE CHECK";quizLabel.style.cssText="font-size:11px;letter-spacing:1.2px;font-weight:800;color:#4338ca;margin-bottom:8px";
     const quizTitle=document.createElement("h3");quizTitle.textContent="What is the main purpose of graphic design?";quizTitle.style.cssText="margin:0 0 14px;font-size:18px;line-height:1.45;color:#1e1b4b";
     const quizOptions=document.createElement("div");quizOptions.style.cssText="display:grid;gap:9px";
@@ -223,7 +223,7 @@ async function loadAcademyPanelData(key,content){
    }
    if(x.video_url){const video=document.createElement("a");video.href=x.video_url;video.target="_blank";video.rel="noopener noreferrer";video.textContent="▶  Watch the lesson video";video.style.cssText="display:inline-flex;align-items:center;justify-content:center;align-self:start;padding:12px 18px;border-radius:10px;background:#1d4ed8;color:#fff;text-decoration:none;font-weight:800";body.appendChild(video);}
    card.appendChild(body);
-   const footer=document.createElement("footer");footer.style.cssText="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:16px clamp(18px,3.5vw,30px);border-top:1px solid #e2e8f0;background:#fbfdff";
+   const footer=document.createElement("footer");footer.className="otg-lesson-footer";footer.style.cssText="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:16px clamp(18px,3.5vw,30px);border-top:1px solid #e2e8f0;background:#fbfdff";
    const footnote=document.createElement("span");footnote.textContent="OTG GRAPHIC ACADEMY  •  Learn at your pace"+(admin?(x.is_published?"  •  PUBLISHED":"  •  DRAFT"):"");footnote.style.cssText="color:"+(admin&&!x.is_published?"#b45309":"#64748b")+";font-size:12px;font-weight:700";footer.appendChild(footnote);
    if(admin){
     const publishBtn=document.createElement("button");publishBtn.type="button";publishBtn.textContent=x.is_published?"Unpublish lesson":"Publish lesson";publishBtn.style.cssText="border:1px solid "+(x.is_published?"#fecaca":"#86efac")+";border-radius:9px;padding:10px 14px;background:"+(x.is_published?"#fff7f7":"#f0fdf4")+";color:"+(x.is_published?"#b91c1c":"#166534")+";font-weight:800;cursor:pointer";
@@ -3874,6 +3874,22 @@ ${css}
 
 
 </style>
+
+<style id="otg-academy-lesson-polish">
+/* Keep lesson cards visibly structured and readable across screen sizes. */
+.otg-lesson-library{width:100%;max-width:960px!important;margin:22px auto 10px!important;gap:24px!important}
+.otg-lesson-card{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;line-height:1.65!important;border:1px solid #dbe4f0!important;border-radius:20px!important;box-shadow:0 12px 32px rgba(15,23,42,.09)!important}
+.otg-lesson-hero{background:linear-gradient(125deg,#eaf2ff 0%,#f8fafc 58%,#eef2ff 100%)!important;padding:clamp(22px,4vw,36px)!important}
+.otg-lesson-body{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:18px!important;padding:clamp(16px,3.5vw,30px)!important}
+.otg-lesson-notes{border:1px solid #dbe4f0!important;border-radius:16px!important;background:#fff!important;box-shadow:0 4px 14px rgba(15,23,42,.035)!important}
+.otg-lesson-outcomes{background:linear-gradient(135deg,#f0fdf4,#f8fafc)!important;border-color:#bbf7d0!important}
+.otg-lesson-practice{background:linear-gradient(135deg,#fff7ed,#fffbeb)!important;border-color:#fed7aa!important}
+.otg-lesson-quiz{background:linear-gradient(135deg,#eef2ff,#f8fafc)!important;border-color:#c7d2fe!important}
+.otg-lesson-footer{gap:10px!important;background:#f8fafc!important}
+.otg-lesson-card p,.otg-lesson-card li{overflow-wrap:anywhere}
+@media(max-width:600px){.otg-lesson-card{border-radius:14px!important}.otg-lesson-hero{padding:20px 16px!important}.otg-lesson-body{padding:14px!important}.otg-lesson-footer{align-items:stretch!important}.otg-lesson-footer button{max-width:100%}}
+</style>
+
 </head>
 <body>
 ${html}
