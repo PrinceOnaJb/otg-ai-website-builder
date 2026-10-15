@@ -1064,7 +1064,14 @@ async function loadAcademyPanelData(key,content){
     const accepted=related.find(r=>r.status==="accepted");
     const outbound=related.find(r=>r.requester_id===userId);
     const inbound=related.find(r=>r.target_id===userId);
-    if(accepted){const status=document.createElement("p");status.textContent="✓ Connected";status.style.cssText="margin:0 0 10px;color:#15803d;font-weight:800";card.appendChild(status);const callActions=document.createElement("div");callActions.style.cssText="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px";const roomUsers=[String(userId),String(student.user_id)].sort();const roomName="OTGConnect"+roomUsers.join("").replace(/[^a-zA-Z0-9]/g,"").slice(0,90);const makeCall=(mode)=>{const voice=mode==="voice";const callUrl="https://meet.jit.si/"+roomName+(voice?"#config.startAudioOnly=true":"");const win=window.open(callUrl,"_blank","noopener,noreferrer");if(!win){status.textContent="Your browser blocked the call window. Allow pop-ups for this site and try again.";return;}status.textContent=(voice?"Voice":"Video")+" call room opened. Share the same room link with your connected student so they can join.";};const voiceBtn=document.createElement("button");voiceBtn.type="button";voiceBtn.textContent="☎ Voice call";voiceBtn.style.cssText="padding:9px 12px;border:0;border-radius:8px;background:#0f766e;color:#fff;font-weight:800";voiceBtn.addEventListener("click",()=>makeCall("voice"));const videoBtn=document.createElement("button");videoBtn.type="button";videoBtn.textContent="▣ Video call";videoBtn.style.cssText="padding:9px 12px;border:0;border-radius:8px;background:#1d4ed8;color:#fff;font-weight:800";videoBtn.addEventListener("click",()=>makeCall("video"));const shareBtn=document.createElement("button");shareBtn.type="button";shareBtn.textContent="Share call link";shareBtn.style.cssText="padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#334155;font-weight:800";shareBtn.addEventListener("click",async()=>{const callUrl="https://meet.jit.si/"+roomName;if(navigator.share){try{await navigator.share({title:"OTG student call",text:"Join our OTG student voice/video call",url:callUrl});}catch(err){if(err&&err.name!=="AbortError")status.textContent="Could not open the share menu. You can share this link manually: "+callUrl;}}else{try{await navigator.clipboard.writeText(callUrl);status.textContent="Call link copied. Send it to your connected student: "+callUrl;}catch(err){window.prompt("Copy this call link and send it to your connected student:",callUrl);}}});callActions.append(voiceBtn,videoBtn,shareBtn);card.appendChild(callActions);const callHint=document.createElement("small");callHint.textContent="Internet-based calls. Both students need internet, and the other student must join the same room link. Calls use Jitsi Meet.";callHint.style.cssText="display:block;margin-top:9px;color:#64748b;line-height:1.5";card.appendChild(callHint);}
+    if(accepted){
+     const status=document.createElement("p");status.textContent="✓ Connected";status.style.cssText="margin:0 0 10px;color:#15803d;font-weight:800";card.appendChild(status);
+     const callActions=document.createElement("div");callActions.style.cssText="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px";
+     const voiceBtn=document.createElement("button");voiceBtn.type="button";voiceBtn.textContent="☎ Voice call";voiceBtn.style.cssText="padding:9px 12px;border:0;border-radius:8px;background:#0f766e;color:#fff;font-weight:800";voiceBtn.addEventListener("click",()=>window.otgStartStudentCall(student.user_id,student.display_name||"OTG student","voice",status));
+     const videoBtn=document.createElement("button");videoBtn.type="button";videoBtn.textContent="▣ Video call";videoBtn.style.cssText="padding:9px 12px;border:0;border-radius:8px;background:#1d4ed8;color:#fff;font-weight:800";videoBtn.addEventListener("click",()=>window.otgStartStudentCall(student.user_id,student.display_name||"OTG student","video",status));
+     callActions.append(voiceBtn,videoBtn);card.appendChild(callActions);
+     const callHint=document.createElement("small");callHint.textContent="Calls ring your connected student inside the Student Hub. They can accept or decline before joining the internet call.";callHint.style.cssText="display:block;margin-top:9px;color:#64748b;line-height:1.5";card.appendChild(callHint);
+    }
     else if(outbound&&outbound.status==="pending"){const status=document.createElement("p");status.textContent="Connection request sent";status.style.cssText="margin:0;color:#64748b;font-weight:700";card.appendChild(status);}
     else if(inbound&&inbound.status==="pending"){const status=document.createElement("p");status.textContent="They have requested to connect. Respond above.";status.style.cssText="margin:0;color:#64748b;font-size:13px";card.appendChild(status);}
     else if((outbound&&outbound.status==="declined")||(inbound&&inbound.status==="declined")){const status=document.createElement("p");status.textContent="This connection request was declined.";status.style.cssText="margin:0;color:#64748b;font-size:13px";card.appendChild(status);}
@@ -3898,6 +3905,90 @@ const supabaseClient =
     SUPABASE_URL,
     SUPABASE_KEY
   );
+
+
+/* OTG Student Hub incoming/outgoing internet calls */
+(function(){
+ "use strict";
+ const client=supabaseClient;
+ const state=window.otgCallState=window.otgCallState||{channel:null,userId:null,active:null,overlay:null};
+ function roomUrl(call){return "https://meet.jit.si/OTG-Student-Call-"+call.room_name;}
+ function closeOverlay(){const el=document.getElementById("otgCallOverlay");if(el)el.remove();state.overlay=null;}
+ function makeButton(label,color,fn){const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:11px 15px;border:0;border-radius:10px;background:"+color+";color:#fff;font-weight:800;font-size:14px;cursor:pointer";b.addEventListener("click",fn);return b;}
+ function showCall(call,direction,peerName){
+  state.active={call,direction,peerName:peerName||"your OTG connection"};closeOverlay();
+  const overlay=document.createElement("div");overlay.id="otgCallOverlay";overlay.style.cssText="position:fixed;inset:0;z-index:2147483000;background:rgba(8,20,42,.76);display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box";
+  const box=document.createElement("section");box.setAttribute("role","dialog");box.setAttribute("aria-modal","true");box.style.cssText="width:min(100%,420px);box-sizing:border-box;padding:24px;border-radius:22px;background:#fff;box-shadow:0 24px 80px rgba(0,0,0,.3);font-family:Arial,sans-serif;text-align:center;color:#172554";
+  const icon=document.createElement("div");icon.textContent=call.call_type==="voice"?"☎":"▣";icon.style.cssText="width:68px;height:68px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:#e0f2fe;color:#075985;font-size:30px;font-weight:800";
+  const title=document.createElement("h2");title.style.cssText="margin:0 0 8px;font-size:23px";
+  const detail=document.createElement("p");detail.style.cssText="margin:0 0 20px;color:#475569;line-height:1.6;overflow-wrap:anywhere";
+  const actions=document.createElement("div");actions.style.cssText="display:flex;justify-content:center;gap:10px;flex-wrap:wrap";
+  const status=String(call.status||"ringing"),name=peerName||"your OTG connection";
+  if(status==="ringing"&&direction==="incoming"){
+   title.textContent="Incoming "+(call.call_type==="voice"?"voice":"video")+" call";detail.textContent=name+" is calling you. Accept to join, or decline.";
+   actions.append(makeButton("Accept","#15803d",()=>changeStatus(call,"accepted",detail)),makeButton("Decline","#b91c1c",()=>changeStatus(call,"declined",detail)));
+  }else if(status==="ringing"&&direction==="outgoing"){
+   title.textContent="Calling…";detail.textContent="Waiting for "+name+" to answer. Keep this page open.";
+   actions.append(makeButton("Cancel call","#b91c1c",()=>changeStatus(call,"cancelled",detail)));
+  }else if(status==="accepted"){
+   title.textContent="Call accepted";detail.textContent=name+" accepted. Tap Join call to start your "+(call.call_type==="voice"?"voice":"video")+" call. Calls use Jitsi Meet.";
+   actions.append(makeButton("Join call","#0f766e",()=>window.open(roomUrl(call),"_blank","noopener,noreferrer")),makeButton("End call","#b91c1c",()=>changeStatus(call,"ended",detail)));
+  }else{
+   title.textContent=({declined:"Call declined",missed:"Missed call",cancelled:"Call cancelled",ended:"Call ended"})[status]||"Call finished";
+   detail.textContent=status==="declined"?name+" declined the call.":status==="missed"?"There was no answer. You can try again later.":status==="cancelled"?"The caller cancelled this call.":"This call has ended.";
+   actions.append(makeButton("Close","#334155",()=>{closeOverlay();state.active=null;}));
+   window.setTimeout(()=>{if(state.active&&state.active.call.id===call.id&&state.active.call.status===status){closeOverlay();state.active=null;}},6000);
+  }
+  box.append(icon,title,detail,actions);
+  const note=document.createElement("p");note.textContent="Only approved, connected OTG students can create call invitations. Do not share call links publicly.";note.style.cssText="margin:18px 0 0;font-size:11px;line-height:1.5;color:#64748b";
+  box.appendChild(note);overlay.appendChild(box);document.body.appendChild(overlay);state.overlay=overlay;
+ }
+ async function changeStatus(call,next,detail){
+  try{const r=await client.from("otg_student_calls").update({status:next}).eq("id",call.id).select("*").single();if(r.error)throw r.error;
+   const direction=state.active?state.active.direction:"incoming",name=state.active?state.active.peerName:"your OTG connection";showCall(r.data,direction,name);
+  }catch(e){detail.textContent="Could not update the call: "+(e&&e.message?e.message:"Please try again.");}
+ }
+ async function getPeerName(call,userId){
+  const other=call.caller_id===userId?call.callee_id:call.caller_id;
+  try{const r=await client.from("academy_student_profiles").select("display_name").eq("user_id",other).maybeSingle();return r.data&&r.data.display_name?r.data.display_name:"your OTG connection";}catch(_){return "your OTG connection";}
+ }
+ async function handleRow(call,userId){
+  if(!call||!userId)return;
+  const direction=call.caller_id===userId?"outgoing":"incoming";
+  if(call.status==="ringing"||call.status==="accepted"){
+   if(state.active&&state.active.call.id!==call.id&&["ringing","accepted"].includes(state.active.call.status))return;
+   const name=await getPeerName(call,userId);showCall(call,direction,name);return;
+  }
+  if(state.active&&state.active.call.id===call.id){showCall(call,direction,state.active.peerName||"your OTG connection");}
+ }
+ async function startCall(calleeId,peerName,mode,statusEl){
+  if(!state.userId){if(statusEl)statusEl.textContent="Please sign in again before calling.";return;}
+  if(state.active&&["ringing","accepted"].includes(state.active.call.status)){if(statusEl)statusEl.textContent="You already have a call in progress. Finish it before starting another.";return;}
+  if(String(calleeId)===String(state.userId)){if(statusEl)statusEl.textContent="You cannot call your own account.";return;}
+  try{
+   if(statusEl)statusEl.textContent="Starting "+mode+" call…";
+   const randomRoom=(window.crypto&&window.crypto.randomUUID)?window.crypto.randomUUID():("otg"+Date.now().toString(36)+Math.random().toString(36).slice(2));
+   const r=await client.from("otg_student_calls").insert({caller_id:state.userId,callee_id:calleeId,call_type:mode,status:"ringing",room_name:randomRoom.replace(/[^a-zA-Z0-9-]/g,"")}).select("*").single();
+   if(r.error)throw r.error;
+   showCall(r.data,"outgoing",peerName||"your OTG connection");if(statusEl)statusEl.textContent="Calling "+(peerName||"your connection")+"…";
+   window.setTimeout(async()=>{try{const check=await client.from("otg_student_calls").select("status").eq("id",r.data.id).maybeSingle();if(check.data&&check.data.status==="ringing")await client.from("otg_student_calls").update({status:"missed"}).eq("id",r.data.id);}catch(_){}},47000);
+  }catch(e){if(statusEl)statusEl.textContent="Call could not start: "+(e&&e.message?e.message:"Please try again.");}
+ }
+ window.otgStartStudentCall=startCall;
+ window.otgStopCallNotifications=function(){if(state.channel){client.removeChannel(state.channel);state.channel=null;}state.userId=null;state.active=null;closeOverlay();};
+ window.otgInitCallNotifications=function(user){
+  if(!user||!user.id)return;if(state.userId===user.id&&state.channel)return;
+  window.otgStopCallNotifications();state.userId=user.id;
+  state.channel=client.channel("otg-student-calls-"+user.id)
+   .on("postgres_changes",{event:"INSERT",schema:"public",table:"otg_student_calls",filter:"callee_id=eq."+user.id},p=>handleRow(p.new,user.id))
+   .on("postgres_changes",{event:"UPDATE",schema:"public",table:"otg_student_calls",filter:"callee_id=eq."+user.id},p=>handleRow(p.new,user.id))
+   .on("postgres_changes",{event:"UPDATE",schema:"public",table:"otg_student_calls",filter:"caller_id=eq."+user.id},p=>handleRow(p.new,user.id))
+   .subscribe((status,error)=>{if(status==="CHANNEL_ERROR"||status==="TIMED_OUT")console.warn("OTG call notifications:",status,error||"");});
+  client.from("otg_student_calls").select("*").eq("callee_id",user.id).eq("status","ringing").order("created_at",{ascending:false}).limit(1).then(async r=>{if(!r.error&&r.data&&r.data.length&&!state.active)await handleRow(r.data[0],user.id);});
+ };
+ client.auth.onAuthStateChange((event,session)=>{window.setTimeout(()=>{if(session&&session.user)window.otgInitCallNotifications(session.user);else if(event==="SIGNED_OUT")window.otgStopCallNotifications();},0);});
+ client.auth.getSession().then(r=>{if(r.data&&r.data.session&&r.data.session.user)window.otgInitCallNotifications(r.data.session.user);});
+})();
 
 let currentUser = null;
 let currentProjectId = null;
