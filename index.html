@@ -72,7 +72,7 @@ async function loadAcademyPanelData(key,content){
   try{
    const {data:roleProfile,error:roleProfileError}=await db.from("profiles").select("role,approval_status").eq("id",activeUser.id).maybeSingle();
    if(!roleProfileError&&roleProfile){
-    admin=String(roleProfile.role||"").toLowerCase()==="admin";
+    admin=String(roleProfile.role||"").toLowerCase()==="admin" && String(roleProfile.approval_status||"").toLowerCase()==="approved";
     window.otgAcademyIsAdmin=admin;
     window.otgAcademyUserId=activeUser.id;
    }
