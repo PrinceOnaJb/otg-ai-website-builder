@@ -7468,7 +7468,7 @@ supabaseClient
     if(!record){result.textContent="No certificate record was found for "+cleanCode+". Check the code or contact the academy.";result.style.background="#fff7ed";result.style.borderColor="#fed7aa";return;}
     var valid=record.status==="issued";
     var status=document.createElement("div");status.textContent=valid?"VALID CERTIFICATE":"CERTIFICATE REVOKED";status.style.cssText="font-weight:900;font-size:14px;letter-spacing:1px;color:"+(valid?"#166534":"#b91c1c")+";margin-bottom:14px";
-    var rows=[["Certificate holder",record.student_name],["Course / achievement",record.course],["Certificate ID",record.certificate_code],["Date issued",record.issued_at?new Date(record.issued_at).toLocaleDateString():"Not available"],["Coach / signatory",record.coach_name||"Coach Prince John Enyi Ona"]];
+    var rows=[["Certificate holder",record.student_name],["Certificate type",record.certificate_type==="participation"?"Participation Certificate":"Completion Certificate"],["Course / achievement",record.course],["Certificate ID",record.certificate_code],["Date issued",record.issued_at?new Date(record.issued_at).toLocaleDateString():"Not available"],["Coach / signatory",record.coach_name||"Coach Prince John Enyi Ona"]];
     result.appendChild(status);
     rows.forEach(function(pair){var row=document.createElement("p");row.style.cssText="margin:8px 0";var label=document.createElement("strong");label.textContent=pair[0]+": ";var value=document.createElement("span");value.textContent=pair[1]||"Not recorded";row.append(label,value);result.appendChild(row);});
     result.style.background=valid?"#f0fdf4":"#fef2f2";result.style.borderColor=valid?"#bbf7d0":"#fecaca";
