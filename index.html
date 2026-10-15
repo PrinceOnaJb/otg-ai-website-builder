@@ -361,7 +361,77 @@ async function loadAcademyPanelData(key,content){
   const status=document.createElement("p");status.setAttribute("role","status");status.setAttribute("aria-live","polite");status.style.cssText="margin:10px 0 0;color:#475569;font-size:13px";
   const makeButton=(label,primary,fn)=>{const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:10px 15px;border-radius:9px;border:1px solid "+(primary?"#1d4ed8":"#cbd5e1")+";background:"+(primary?"#1d4ed8":"#fff")+";color:"+(primary?"#fff":"#1e293b")+";font-weight:800;cursor:pointer";b.addEventListener("click",fn);controls.appendChild(b);return b;};
   const preview=document.createElement("iframe");preview.title="Code Lab live preview";preview.setAttribute("sandbox","allow-scripts");preview.setAttribute("referrerpolicy","no-referrer");preview.style.cssText="display:block;width:100%;height:340px;border:1px solid #cbd5e1;border-radius:12px;background:#fff";
-  const runCode=()=>{const css=cssEditor.value;const js=jsEditor.value.replace(/<\/script/gi,"<\\/script");preview.srcdoc="<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style>"+css+"</style></head><body>"+htmlEditor.value+"<scr"+"ipt>"+js+"</scr"+"ipt></body></html>";status.textContent="Preview updated. Your code has not been published.";};
+  const runCode=()=>{const css=cssEditor.value;const js=jsEditor.value.replace(/<\/script/gi,"<\\/script");preview.srcdoc="<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style>"+css+"</style>
+<style id="otg-dashboard-polish">
+/* OTG dashboard visual refinement: preserves existing features and IDs */
+header{position:relative;z-index:20}
+.navbar{max-width:1440px;min-height:92px;padding:16px 24px;gap:22px}
+.logo{font-size:clamp(18px,1.5vw,24px);letter-spacing:-.35px}
+.nav-links{justify-content:center;gap:5px}
+.nav-links button{font-size:15px;white-space:nowrap;transition:background .18s ease,color .18s ease}
+.nav-links button:hover,.nav-links button:focus-visible{background:#eef7f0;color:#075b24}
+.nav-links .logout-btn{background:#075b24;color:#fff;padding:12px 18px}
+.nav-links .logout-btn:hover,.nav-links .logout-btn:focus-visible{background:#06471d;color:#fff}
+.otg-sticky-welcome{max-width:360px;min-width:245px;gap:12px;padding:10px 14px;border:1px solid #e8e4d6;border-radius:16px;background:linear-gradient(120deg,#fff 0%,#fffaf0 100%);box-shadow:0 5px 18px rgba(15,35,25,.06)}
+.otg-sticky-welcome img{width:44px;height:44px;object-fit:contain;flex:0 0 auto}
+.otg-sticky-welcome-copy{font-size:13px;line-height:1.35;letter-spacing:.1px}
+.otg-sticky-welcome-copy span{display:block;color:#98620b;font-size:11px;letter-spacing:1.5px;margin-bottom:3px}
+.hero{background:radial-gradient(ellipse at 90% 8%,rgba(218,184,83,.28),transparent 35%),linear-gradient(120deg,#075b24 0%,#087332 58%,#326b3b 100%);padding:clamp(48px,6vw,78px) 24px}
+.hero-inner{max-width:1440px;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:clamp(28px,5vw,76px)}
+.hero h1{max-width:820px;font-size:clamp(38px,4.5vw,68px);line-height:1.06;letter-spacing:-1.8px;margin:0 0 22px}
+.hero p{font-size:clamp(17px,1.35vw,21px);line-height:1.7;max-width:700px}
+.hero-actions{gap:12px;margin-top:30px}
+.primary-btn,.secondary-btn{min-height:52px;padding:14px 22px;border-radius:12px;font-size:16px;transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
+.primary-btn{box-shadow:0 5px 14px rgba(0,0,0,.08)}
+.primary-btn:hover,.secondary-btn:hover{transform:translateY(-2px)}
+.hero-card{padding:clamp(24px,3vw,38px);border:1px solid rgba(255,226,143,.48);border-radius:22px;background:rgba(255,255,255,.105);box-shadow:0 18px 45px rgba(0,0,0,.08);backdrop-filter:blur(12px)}
+.hero-card h3{font-size:clamp(21px,2vw,27px);margin-bottom:14px}
+.hero-card p{font-size:clamp(17px,1.5vw,22px);line-height:1.65;margin:0}
+#dashboard{padding-top:48px}
+#dashboard .section-heading h2{letter-spacing:-.5px}
+.stats{gap:18px}
+.stat-card{border-radius:16px;box-shadow:0 5px 18px rgba(22,45,31,.035);transition:transform .18s ease,box-shadow .18s ease}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(22,45,31,.08)}
+.generator{border-radius:20px;box-shadow:0 12px 34px rgba(20,35,60,.055)}
+button:focus-visible,a:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid rgba(218,184,83,.8);outline-offset:3px}
+@media(max-width:1100px){
+ .navbar{flex-wrap:wrap;justify-content:center}
+ .logo{width:100%;text-align:center}
+ .nav-links{order:2}
+ .otg-sticky-welcome{order:3;max-width:100%;width:min(100%,480px);justify-content:center}
+ .hero-inner{grid-template-columns:minmax(0,1fr) minmax(260px,.8fr);gap:28px}
+}
+@media(max-width:760px){
+ .navbar{padding:14px 16px;gap:12px}
+ .nav-links{width:100%;gap:5px}
+ .nav-links button{padding:9px 10px;font-size:14px}
+ .otg-sticky-welcome{min-width:0}
+ .hero{padding:44px 18px}
+ .hero-inner{grid-template-columns:1fr;gap:28px}
+ .hero h1{font-size:clamp(36px,9vw,52px);letter-spacing:-1px}
+ .hero p{font-size:17px;line-height:1.65}
+ .hero-card{padding:24px}
+ .hero-actions{display:grid;grid-template-columns:1fr}
+ .primary-btn,.secondary-btn{width:100%}
+ .section{padding:40px 18px}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .stat-card{padding:17px}
+ .generator{padding:20px}
+}
+@media(max-width:420px){
+ .logo{white-space:normal;line-height:1.25}
+ .nav-links button{font-size:13px;padding:8px}
+ .otg-sticky-welcome-copy{font-size:12px}
+ .stats{gap:10px}
+ .stat-card strong{font-size:24px}
+}
+@media(prefers-reduced-motion:reduce){
+ .nav-links button,.primary-btn,.secondary-btn,.stat-card{transition:none}
+ .primary-btn:hover,.secondary-btn:hover,.stat-card:hover{transform:none}
+}
+</style>
+
+</head><body>"+htmlEditor.value+"<scr"+"ipt>"+js+"</scr"+"ipt></body></html>";status.textContent="Preview updated. Your code has not been published.";};
   makeButton("▶ Run code",true,runCode);
   makeButton("Save draft on this device",false,()=>{try{localStorage.setItem("otgAcademyCodeLabDraft",JSON.stringify({html:htmlEditor.value,css:cssEditor.value,js:jsEditor.value}));status.textContent="Draft saved on this device only.";}catch(e){status.textContent="This browser did not allow a local draft to be saved.";}}); 
   makeButton("Load saved draft",false,()=>{try{const raw=localStorage.getItem("otgAcademyCodeLabDraft");if(!raw){status.textContent="No saved draft was found on this device.";return;}const d=JSON.parse(raw);htmlEditor.value=d.html||"";cssEditor.value=d.css||"";jsEditor.value=d.js||"";runCode();status.textContent="Saved draft loaded from this device.";}catch(e){status.textContent="Could not load the saved draft.";}}); 
