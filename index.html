@@ -7857,7 +7857,27 @@ supabaseClient
       var heading=document.createElement("h3");heading.textContent=panel[3];
       var body=document.createElement("p");body.textContent=panel[4];
       content.append(icon,heading,body);
-      var note=document.createElement("p");note.setAttribute("role","status");note.style.cssText="margin-top:16px;padding:12px;border-radius:8px;background:#eff6ff;color:#1e3a8a";note.textContent="Navigation is responding. If this section normally loads account data, refresh the page and try again.";content.appendChild(note);
+      var note=document.createElement("p");note.setAttribute("role","status");note.style.cssText="margin-top:16px;padding:12px;border-radius:8px;background:#eff6ff;color:#1e3a8a";note.textContent=key==="calls"?"Opening the interactive call centre…":"Navigation is responding. If this section normally loads account data, refresh the page and try again.";content.appendChild(note);
+      if(key==="calls"){
+        var connectButton=document.createElement("button");
+        connectButton.type="button";
+        connectButton.textContent="Find students & send a connection request";
+        connectButton.style.cssText="display:inline-flex;align-items:center;justify-content:center;margin-top:10px;padding:12px 16px;border:0;border-radius:10px;background:#166534;color:#fff;font-weight:900;cursor:pointer";
+        connectButton.addEventListener("click",function(){
+          if(typeof window.openAcademyPanel==="function")window.openAcademyPanel("connect",connectButton);
+          else note.textContent="Student navigation is unavailable. Refresh the Student Hub and try again.";
+        });
+        content.appendChild(connectButton);
+        if(typeof loadAcademyPanelData==="function"){
+          loadAcademyPanelData(key,content).then(function(){note.remove();}).catch(function(error){
+            note.textContent="The call centre could not finish loading: "+(error&&error.message?error.message:"Please refresh the Student Hub and try again.");
+            note.style.background="#fff7ed";note.style.color="#9a3412";
+          });
+        }else{
+          note.textContent="The call-centre script did not load. Refresh the Student Hub and try again.";
+          note.style.background="#fff7ed";note.style.color="#9a3412";
+        }
+      }
     }
   }
   var original=window.openAcademyPanel;
