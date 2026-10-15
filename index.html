@@ -1060,7 +1060,7 @@ async function loadAcademyPanelData(key,content){
    const historyList=document.createElement("div");historyList.style.cssText="display:grid;gap:10px";area.appendChild(historyList);;area.appendChild(historyList);
    if(historyResult.error){const warn=document.createElement("p");warn.textContent="Call history could not load: "+historyResult.error.message;warn.style.cssText="padding:12px;border-radius:10px;background:#fff7ed;color:#9a3412";historyList.appendChild(warn);}
    const rawHistory=historyResult.data||[];
-   const statusRank={accepted:6,ringing:5,ended:4,missed:3,declined:2,cancelled:1};
+   const statusRank={ended:7,accepted:6,ringing:5,missed:4,declined:3,cancelled:2};
    const groupedHistory=new Map();rawHistory.forEach(call=>{const key=call.room_name||call.id;const prior=groupedHistory.get(key);if(!prior||(statusRank[call.status]||0)>(statusRank[prior.status]||0))groupedHistory.set(key,call);});
    const history=Array.from(groupedHistory.values());
    if(!history.length&&!historyResult.error){const empty=document.createElement("p");empty.textContent="No call sessions yet. When you place or receive a call, it will appear here.";empty.style.cssText="padding:14px;border:1px dashed #cbd5e1;border-radius:12px;color:#64748b";historyList.appendChild(empty);}
@@ -3998,7 +3998,7 @@ const supabaseClient =
   const actions=document.createElement("div");actions.style.cssText="display:flex;justify-content:center;gap:10px;flex-wrap:wrap";
   const status=String(call.status||"ringing"),name=peerName||"your OTG connection";
   if(status==="ringing"&&direction==="incoming"){
-   title.textContent="Incoming "+(call.call_type==="voice"?"voice":"video")+" call";detail.textContent=name+" is calling you. Accept to join, or decline.";
+   title.textContent="Incoming "+(call.call_type==="voice"?"voice":"video")+" call";detail.textContent=(String(call.room_name||"").startsWith("OTGBroadcast-")?name+" is calling all online students. Accept to join, or decline.":name+" is calling you. Accept to join, or decline.");
    actions.append(makeButton("Accept","#15803d",()=>changeStatus(call,"accepted",detail)),makeButton("Decline","#b91c1c",()=>changeStatus(call,"declined",detail)));
   }else if(status==="ringing"&&direction==="outgoing"){
    title.textContent="Calling…";detail.textContent="Waiting for "+name+" to answer. Keep this page open.";
@@ -4052,7 +4052,7 @@ const supabaseClient =
    if(String(calleeId)===String(state.userId)){if(statusEl)statusEl.textContent="You cannot call your own account.";return;}
    if(statusEl)statusEl.textContent="Connecting to OTG call service…";
    const randomRoom=(window.crypto&&window.crypto.randomUUID)?window.crypto.randomUUID():("otg"+Date.now().toString(36)+Math.random().toString(36).slice(2));
-   const roomName=randomRoom.replace(/[^a-zA-Z0-9-]/g,"");
+   const roomName="OTGDirect-"+randomRoom.replace(/[^a-zA-Z0-9-]/g,"");
    const r=await client.rpc("otg_start_broadcast_call",{p_callee_ids:[calleeId],p_call_type:mode,p_room_name:roomName});
    if(r.error)throw r.error;
    const call=Array.isArray(r.data)?r.data[0]:r.data;
@@ -4082,12 +4082,13 @@ const supabaseClient =
    const signedInUser=sessionResult&&sessionResult.data&&sessionResult.data.session?sessionResult.data.session.user:null;
    if(!signedInUser){if(statusEl)statusEl.textContent="Please sign in again before starting a call.";return;}
    if(state.userId!==signedInUser.id||!state.lobbyChannel)window.otgInitCallNotifications(signedInUser);
-   const online=window.otgGetOnlineStudents();
+   let online=window.otgGetOnlineStudents();
+   if(!online.length){await new Promise(resolve=>window.setTimeout(resolve,1500));online=window.otgGetOnlineStudents();}
    if(!online.length){if(statusEl)statusEl.textContent="No other approved students are online right now. Ask students to open Student Hub and keep it open, then try again.";return;}
    if(state.active&&["ringing","accepted"].includes(state.active.call.status)){if(statusEl)statusEl.textContent="You already have a call in progress. Finish it before starting another.";return;}
    if(statusEl)statusEl.textContent="Sending the call invitation to "+online.length+" online student"+(online.length===1?"":"s")+"…";
    const randomRoom=(window.crypto&&window.crypto.randomUUID)?window.crypto.randomUUID():("otg"+Date.now().toString(36)+Math.random().toString(36).slice(2));
-   const roomName=randomRoom.replace(/[^a-zA-Z0-9-]/g,"");
+   const roomName="OTGBroadcast-"+randomRoom.replace(/[^a-zA-Z0-9-]/g,"");
    const result=await client.rpc("otg_start_broadcast_call",{p_callee_ids:online.map(p=>p.user_id),p_call_type:mode,p_room_name:roomName});
    if(result.error)throw result.error;
    const calls=Array.isArray(result.data)?result.data:[result.data].filter(Boolean);
