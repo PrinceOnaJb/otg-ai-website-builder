@@ -4113,7 +4113,7 @@ const supabaseClient =
    if(state.userId!==signedInUser.id||!state.lobbyChannel)window.otgInitCallNotifications(signedInUser);
    let online=window.otgGetOnlineStudents();
    if(!online.length){await new Promise(resolve=>window.setTimeout(resolve,1500));online=window.otgGetOnlineStudents();}
-   if(!online.length){if(statusEl)statusEl.textContent="No other approved students are online right now. Ask students to open Student Hub and keep it open, then try again.";return;}
+   if(!online.length){if(statusEl)statusEl.textContent="No other approved students are currently detected online, so no call invitation was sent. Keep Student Hub open on another approved student account and use Refresh calls to check again.";showCall({id:"otg-no-online-"+Date.now(),call_type:mode,status:"no-online",room_name:""}, "outgoing", "other approved students");return;}
    if(state.active&&["ringing","accepted"].includes(state.active.call.status)){if(statusEl)statusEl.textContent="You already have a call in progress. Finish it before starting another.";return;}
    if(statusEl)statusEl.textContent="Sending the call invitation to "+online.length+" online student"+(online.length===1?"":"s")+"…";
    const randomRoom=(window.crypto&&window.crypto.randomUUID)?window.crypto.randomUUID():("otg"+Date.now().toString(36)+Math.random().toString(36).slice(2));
