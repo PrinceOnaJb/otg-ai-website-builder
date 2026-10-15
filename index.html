@@ -4524,7 +4524,7 @@ ${js}
 
 }
 
-function previewWebsite(){
+async function previewWebsite(){
 
   saveEditorChanges();
 
@@ -4545,14 +4545,110 @@ function previewWebsite(){
   }
 
   preview.document.open();
-
-  preview.document.write(
-    buildPreviewDocument()
-  );
-
+  preview.document.write(buildPreviewDocument());
   preview.document.close();
 
+  // When previewing an already-saved website, include its saved product catalogue too.
+  // A new, unsaved template has no project ID yet, so it correctly previews the design alone.
+  if(!currentUser || !currentProjectId) return;
+
+  try{
+    const {data:products,error}=await supabaseClient
+      .from("products")
+      .select("id,name,price,description,image_url,category,whatsapp_number,created_at")
+      .eq("project_id",currentProjectId)
+      .order("created_at",{ascending:false});
+
+    if(error) throw error;
+    if(!Array.isArray(products) || !products.length || preview.closed) return;
+
+    const doc=preview.document;
+    if(!doc.body) return;
+
+    const catalogue=doc.createElement("section");
+    catalogue.setAttribute("aria-label","Products and services");
+    catalogue.style.cssText="max-width:1180px;margin:0 auto;padding:36px 18px 44px;font-family:Arial,sans-serif;color:#172033;background:#fff;border-top:1px solid #e2e8f0";
+
+    const heading=doc.createElement("h2");
+    heading.textContent="Products & Services";
+    heading.style.cssText="margin:0 0 8px;font-size:clamp(24px,4vw,34px);line-height:1.2;color:#172033";
+    const intro=doc.createElement("p");
+    intro.textContent="Browse the available products and contact us to order.";
+    intro.style.cssText="margin:0 0 22px;color:#64748b;line-height:1.7";
+    const grid=doc.createElement("div");
+    grid.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:18px";
+
+    products.forEach(function(product){
+      const card=doc.createElement("article");
+      card.style.cssText="min-width:0;overflow:hidden;border:1px solid #e2e8f0;border-radius:14px;background:#fff;box-shadow:0 6px 20px rgba(15,23,42,.07)";
+
+      const imageURL=String(product.image_url||"");
+      if(imageURL){
+        try{
+          const parsed=new URL(imageURL);
+          if(parsed.protocol==="https:"||parsed.protocol==="http:"){
+            const image=doc.createElement("img");
+            image.src=parsed.href;
+            image.alt=String(product.name||"Product image");
+            image.loading="lazy";
+            image.referrerPolicy="no-referrer";
+            image.style.cssText="display:block;width:100%;height:190px;object-fit:cover;background:#f1f5f9";
+            card.appendChild(image);
+          }
+        }catch(ignoreImageURL){}
+      }
+
+      const details=doc.createElement("div");
+      details.style.cssText="padding:16px;display:flex;flex-direction:column;gap:9px";
+      if(product.category){
+        const category=doc.createElement("span");
+        category.textContent=String(product.category);
+        category.style.cssText="color:#1d4ed8;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em";
+        details.appendChild(category);
+      }
+      const name=doc.createElement("h3");
+      name.textContent=String(product.name||"Product");
+      name.style.cssText="margin:0;font-size:18px;line-height:1.4;color:#172033;overflow-wrap:anywhere";
+      details.appendChild(name);
+
+      if(product.price){
+        const price=doc.createElement("p");
+        price.textContent=String(product.price);
+        price.style.cssText="margin:0;font-size:17px;font-weight:850;color:#075b24";
+        details.appendChild(price);
+      }
+      if(product.description){
+        const description=doc.createElement("p");
+        description.textContent=String(product.description);
+        description.style.cssText="margin:0;color:#475569;line-height:1.65;overflow-wrap:anywhere";
+        details.appendChild(description);
+      }
+
+      const phone=String(product.whatsapp_number||"").replace(/\\D/g,"");
+      const normalizedPhone=(phone.length===11&&phone.charAt(0)==="0")?"234"+phone.slice(1):phone;
+      if(normalizedPhone.length>=8&&normalizedPhone.length<=15){
+        const order=doc.createElement("a");
+        order.href="https://wa.me/"+normalizedPhone;
+        order.target="_blank";
+        order.rel="noopener noreferrer";
+        order.textContent="Order via WhatsApp";
+        order.style.cssText="display:inline-flex;align-items:center;justify-content:center;margin-top:4px;padding:11px 14px;border-radius:9px;background:#075b24;color:#fff;font-weight:800;text-decoration:none;text-align:center";
+        details.appendChild(order);
+      }
+
+      card.appendChild(details);
+      grid.appendChild(card);
+    });
+
+    catalogue.append(heading,intro,grid);
+    doc.body.appendChild(catalogue);
+  }catch(error){
+    console.warn("OTG preview product catalogue:",error);
+    showToast("Preview opened, but its product catalogue could not be loaded.");
+  }
+
 }
+
 async function saveProject(){
 
   saveEditorChanges();
