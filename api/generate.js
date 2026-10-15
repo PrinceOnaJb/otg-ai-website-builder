@@ -8,6 +8,7 @@ export default async function handler(req, res) {
   try {
     const {
       prompt,
+      style = "professional",
       html = "",
       css = "",
       js = "",
@@ -112,7 +113,23 @@ The JSON must contain exactly these three properties:
 Do not use markdown.
 Do not use code fences.
 Do not write explanations outside the JSON.
-Return complete, usable HTML, CSS and JavaScript.
+Return a complete, polished website as three separate fields.
+
+HTML RULES:
+- The html field must contain BODY CONTENT ONLY (sections and elements). Do not include html, head, body, style, or script wrapper tags.
+- Put all styling in the css field and all browser JavaScript in the js field.
+- Do not return placeholders such as "add content here", lorem ipsum, or TODO comments.
+- Make the design responsive for phones, tablets, and desktop.
+- Use strong visual hierarchy, generous spacing, refined typography, a consistent colour palette, polished cards, clear buttons, and professional section layouts.
+- Include a compelling hero section, useful navigation, relevant sections, a clear call to action, and a professional footer when suitable.
+- Use semantic HTML, accessible labels, readable contrast, and keyboard-friendly controls.
+- For product/e-commerce requests, create a storefront layout with product catalogue area, product cards, pricing, category/filter UI where useful, and clear contact/order actions. Do not invent real products, prices, reviews, testimonials, addresses, or business facts. Use clearly marked sample products only when the user asks for a demo or has not supplied product details.
+- Keep JavaScript self-contained, avoid external libraries unless necessary, and make buttons/forms perform meaningful actions. Do not claim to process real payments or store orders unless an actual backend exists.
+- Prefer attractive CSS-only visual details over broken or invented image URLs. If using images, use reliable public image URLs only when appropriate and provide useful alt text.
+- If modifying existing code, preserve its intended content and improve it rather than replacing it with an unrelated template.
+
+Selected design style: ${style}.
+Apply this style deliberately to the layout, typography, spacing, components, and colours.
 
 IMPORTANT WHATSAPP RULES:
 
@@ -128,6 +145,10 @@ IMPORTANT WHATSAPP RULES:
 User request:
 
 ${prompt}
+
+Selected design style:
+
+${style}
 
 Current HTML:
 
@@ -185,7 +206,9 @@ If it says NONE, do not create any WhatsApp link or button.
           ],
 
           generationConfig: {
-            responseMimeType: "application/json"
+            responseMimeType: "application/json",
+            maxOutputTokens: 24000,
+            temperature: 0.7
           }
         })
       }
@@ -220,16 +243,19 @@ If it says NONE, do not create any WhatsApp link or button.
       });
     }
 
-    const finalHtml =
-      enforceWhatsApp(
-        result.html || "",
-        normalizedWhatsApp
-      );
+    if (typeof result.html !== "string" || !result.html.trim()) {
+      return res.status(500).json({ error: "The AI did not return usable HTML." });
+    }
+    if (typeof result.css !== "string" || typeof result.js !== "string") {
+      return res.status(500).json({ error: "The AI response is missing CSS or JavaScript." });
+    }
+
+    const finalHtml = enforceWhatsApp(result.html, normalizedWhatsApp);
 
     return res.status(200).json({
       html: finalHtml,
-      css: result.css || "",
-      js: result.js || ""
+      css: result.css,
+      js: result.js
     });
 
   } catch (error) {
