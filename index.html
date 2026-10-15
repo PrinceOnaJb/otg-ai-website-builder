@@ -2846,6 +2846,37 @@ html{scroll-behavior:auto}
   class="section"
   id="projects"
 >
+  <style id="otg-project-workspace-styles">
+    #projects{position:relative}
+    #projects .section-heading{max-width:1120px;margin:0 auto 22px;text-align:left;padding:0 0 18px;border-bottom:1px solid #e5eadf}
+    #projects .section-heading h2{color:#153f2b;font-size:clamp(26px,3.5vw,36px);letter-spacing:-.6px;margin:0 0 8px;font-weight:850}
+    #projects .section-heading p{color:#627166;font-size:14px;line-height:1.7;margin:0;max-width:680px}
+    #projects .otg-project-intro{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:0 0 20px;padding:18px 20px;border:1px solid #dce7d8;border-radius:16px;background:linear-gradient(115deg,#f3f8f1,#fffdf5);box-shadow:0 5px 18px rgba(22,65,42,.045)}
+    #projects .otg-project-intro-copy{min-width:0;flex:1}
+    #projects .otg-project-eyebrow{display:block;color:#8a6a18;font-size:10px;font-weight:900;letter-spacing:1.6px;text-transform:uppercase;margin-bottom:6px}
+    #projects .otg-project-intro strong{display:block;color:#1b4b31;font-size:16px;line-height:1.4;margin-bottom:4px}
+    #projects .otg-project-intro p{margin:0;color:#5d6e62;font-size:13px;line-height:1.65}
+    #projects .otg-project-mark{display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:14px;background:#e4eedf;color:#205b3c;border:1px solid #d4e2cf}
+    #projects .projects-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:18px}
+    #projects .project-card{position:relative;display:flex;flex-direction:column;min-width:0;min-height:215px;padding:22px;border:1px solid #e0e7df;border-radius:17px;background:linear-gradient(180deg,#fff 0%,#fdfefb 100%);box-shadow:0 5px 18px rgba(21,63,43,.045);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;overflow:hidden}
+    #projects .project-card:before{content:"";position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,#1d623d,#d9b957)}
+    #projects .project-card:hover{transform:translateY(-2px);border-color:#c9d9c7;box-shadow:0 12px 28px rgba(21,63,43,.09)}
+    #projects .project-card h3{color:#183b29;font-size:18px;line-height:1.45;margin:0 0 8px;font-weight:800;overflow-wrap:anywhere}
+    #projects .project-meta{color:#778579;font-size:12px;margin-bottom:17px}
+    #projects .status{letter-spacing:.6px;padding:6px 10px;border:1px solid transparent}
+    #projects .status.published{background:#e6f5e9;color:#17613b;border-color:#c9e7d0}
+    #projects .status.draft{background:#f3f4f0;color:#59655d;border-color:#e0e4dc}
+    #projects .project-actions{margin-top:auto;padding-top:14px;border-top:1px solid #edf1e9;gap:8px}
+    #projects .project-actions button{min-height:36px;padding:9px 12px;border:1px solid #dfe6dd;border-radius:9px;background:#f7f9f5;color:#33473a;font-size:12px;font-weight:800;transition:background .15s ease,border-color .15s ease}
+    #projects .project-actions button:hover{background:#edf4e9;border-color:#c4d7bf}
+    #projects .project-actions button.primary{background:#195a37;color:#fff;border-color:#195a37}
+    #projects .project-actions button.primary:hover{background:#12462a}
+    #projects .project-actions button.danger{background:#fff7f6;color:#a52b2b;border-color:#f0d4d1}
+    #projects .project-actions button.danger:hover{background:#ffedeb;border-color:#e8b8b4}
+    #projects .empty-state{grid-column:1/-1;border:1px dashed #cbd9c8;background:linear-gradient(135deg,#fbfdf9,#fff);border-radius:17px;padding:42px 22px}
+    @media(max-width:600px){#projects .section-heading{padding-bottom:14px}#projects .otg-project-intro{padding:16px;border-radius:13px}#projects .project-card{padding:19px;min-height:0}#projects .project-actions button{flex:1 1 auto}}
+    @media(prefers-reduced-motion:reduce){#projects .project-card,#projects .project-actions button{transition:none}#projects .project-card:hover{transform:none}}
+  </style>
 
   <div class="section-heading">
 
@@ -2854,9 +2885,18 @@ html{scroll-behavior:auto}
     </h2>
 
     <p>
-      Manage your saved websites.
+      Your professional website workspace — manage saved drafts, published websites and project links in one place.
     </p>
 
+  </div>
+
+  <div class="otg-project-intro">
+    <div class="otg-project-intro-copy">
+      <span class="otg-project-eyebrow">OTG GRAPHIC ACADEMY · PROJECT WORKSPACE</span>
+      <strong>Your website portfolio, organised.</strong>
+      <p>Continue editing a draft, publish a finished website, or share your live work with clients and collaborators.</p>
+    </div>
+    <div class="otg-project-mark" aria-hidden="true">⌘</div>
   </div>
 
   <div
