@@ -6368,6 +6368,12 @@ async function fetchCurrentProfile(){
   currentProfile = data;
   window.otgAcademyUserId = currentUser.id;
   window.otgAcademyIsAdmin = String(data.role || "").toLowerCase() === "admin" && String(data.approval_status || "").toLowerCase() === "approved";
+  /* Keep the administrator publishing link in sync immediately after the authenticated profile is loaded. */
+  const publishAssignmentNav = document.getElementById("otgPublishAssignmentNav");
+  if(publishAssignmentNav){
+    publishAssignmentNav.hidden = !window.otgAcademyIsAdmin;
+    publishAssignmentNav.style.display = window.otgAcademyIsAdmin ? "flex" : "none";
+  }
   return data;
 }
 
