@@ -1029,47 +1029,40 @@ async function loadAcademyPanelData(key,content){
   await loadThreads();
  }else if(key==="calls"){
   const callTitle=document.createElement("h3");callTitle.textContent="Voice & Video Calls";callTitle.style.cssText="margin:0 0 8px;color:#14532d;font-size:22px;font-weight:900";area.appendChild(callTitle);
-  const callIntro=document.createElement("p");callIntro.textContent="This is your dedicated call centre. Choose an accepted connection to start a call. Keep the Student Hub open while waiting for incoming calls.";callIntro.style.cssText="margin:0 0 16px;color:#475569;line-height:1.7";area.appendChild(callIntro);
+  const callIntro=document.createElement("p");callIntro.textContent="Start one voice or video call and let any approved student who is online answer. You do not need to choose a student first. Keep Student Hub open to receive calls.";callIntro.style.cssText="margin:0 0 16px;color:#475569;line-height:1.7";area.appendChild(callIntro);
   if(!userId){const p=document.createElement("p");p.textContent="Please sign in again to use OTG Calls.";area.appendChild(p);}
   else{
-   const callsHelp=document.createElement("p");callsHelp.textContent="Loading your connections and recent call sessions…";callsHelp.setAttribute("role","status");callsHelp.style.cssText="padding:12px;border-radius:10px;background:#eff6ff;color:#1e40af";area.appendChild(callsHelp);
-   const [connectionsResult,historyResult]=await Promise.all([
-    db.from("academy_connection_requests").select("requester_id,target_id,status").or("requester_id.eq."+userId+",target_id.eq."+userId).eq("status","accepted"),
-    db.from("otg_student_calls").select("id,caller_id,callee_id,call_type,status,created_at,answered_at,ended_at").or("caller_id.eq."+userId+",callee_id.eq."+userId).order("created_at",{ascending:false}).limit(20)
-   ]);
+   const callsHelp=document.createElement("p");callsHelp.textContent="Checking which approved students are online…";callsHelp.setAttribute("role","status");callsHelp.style.cssText="padding:12px;border-radius:10px;background:#eff6ff;color:#1e40af";area.appendChild(callsHelp);
+   const historyResult=await db.from("otg_student_calls").select("id,caller_id,callee_id,call_type,status,room_name,created_at,answered_at,ended_at").or("caller_id.eq."+userId+",callee_id.eq."+userId).order("created_at",{ascending:false}).limit(60);
    callsHelp.remove();
    const callSection=(titleText)=>{const h=document.createElement("h4");h.textContent=titleText;h.style.cssText="margin:18px 0 10px;color:#172554;font-size:17px;font-weight:900";area.appendChild(h);return h;};
-   callSection("Start a call");
-   const connectionList=document.createElement("div");connectionList.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px";area.appendChild(connectionList);
-   if(connectionsResult.error){const warn=document.createElement("p");warn.textContent="Your connections could not load: "+connectionsResult.error.message;warn.style.cssText="padding:12px;border-radius:10px;background:#fff7ed;color:#9a3412";connectionList.appendChild(warn);}
-   const acceptedRows=connectionsResult.data||[];
-   const connectedIds=[...new Set(acceptedRows.map(r=>r.requester_id===userId?r.target_id:r.requester_id).filter(id=>id&&id!==userId))];
-   if(connectedIds.length){
-    const profilesResult=await db.from("academy_student_profiles").select("user_id,display_name,country").in("user_id",connectedIds);
-    const profileMap=new Map((profilesResult.data||[]).map(p=>[p.user_id,p]));
-    connectedIds.forEach(otherId=>{
-     const profile=profileMap.get(otherId)||{};
-     const card=document.createElement("article");card.style.cssText="padding:16px;border:1px solid #bbf7d0;border-radius:14px;background:#f0fdf4";
-     const name=document.createElement("h4");name.textContent=profile.display_name||"Connected OTG student";name.style.cssText="margin:0 0 5px;color:#14532d;font-size:17px;font-weight:900";
-     const info=document.createElement("p");info.textContent=(profile.country?profile.country+" · ":"")+"Connection accepted";info.style.cssText="margin:0 0 12px;color:#64748b;font-size:13px";
-     const actions=document.createElement("div");actions.style.cssText="display:flex;gap:8px;flex-wrap:wrap";
-     const voice=document.createElement("button");voice.type="button";voice.textContent="☎ Voice call";voice.style.cssText="padding:10px 12px;border:0;border-radius:9px;background:#0f766e;color:#fff;font-weight:900;cursor:pointer";voice.addEventListener("click",()=>window.otgStartStudentCall(otherId,profile.display_name||"Connected OTG student","voice",info));
-     const video=document.createElement("button");video.type="button";video.textContent="▣ Video call";video.style.cssText="padding:10px 12px;border:0;border-radius:9px;background:#1d4ed8;color:#fff;font-weight:900;cursor:pointer";video.addEventListener("click",()=>window.otgStartStudentCall(otherId,profile.display_name||"Connected OTG student","video",info));
-     actions.append(voice,video);card.append(name,info,actions);connectionList.appendChild(card);
-    });
-    if(profilesResult.error){const warn=document.createElement("p");warn.textContent="Some profile names could not load; call buttons are still available.";warn.style.cssText="color:#92400e";connectionList.appendChild(warn);}
-   }else if(!connectionsResult.error){
-    const emptyCard=document.createElement("article");emptyCard.style.cssText="padding:22px 18px;border:1px solid #cbd5e1;border-radius:16px;background:linear-gradient(145deg,#f8fafc,#eff6ff);text-align:center;box-shadow:0 5px 18px rgba(15,23,42,.05)";
-    const emptyIcon=document.createElement("div");emptyIcon.textContent="☎️";emptyIcon.style.cssText="font-size:34px;margin-bottom:8px";
-    const emptyTitle=document.createElement("h4");emptyTitle.textContent="Connect with a student to start calling";emptyTitle.style.cssText="margin:0 0 8px;color:#172554;font-size:18px;font-weight:900";
-    const empty=document.createElement("p");empty.textContent="Voice and video call buttons will appear here after you and another approved student accept each other's connection. This keeps call invitations private and prevents unwanted calls.";empty.style.cssText="max-width:520px;margin:0 auto 16px;color:#475569;line-height:1.7";
-    const connectNow=document.createElement("button");connectNow.type="button";connectNow.textContent="Find students & send a connection request  →";connectNow.style.cssText="display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border:0;border-radius:10px;background:linear-gradient(135deg,#166534,#15803d);color:#fff;font-weight:900;cursor:pointer;box-shadow:0 4px 12px rgba(22,101,52,.18)";connectNow.addEventListener("click",()=>{if(typeof window.openAcademyPanel==="function")window.openAcademyPanel("connect",connectNow);else if(typeof openAcademyPanel==="function")openAcademyPanel("connect",connectNow);});
-    emptyCard.append(emptyIcon,emptyTitle,empty,connectNow);connectionList.appendChild(emptyCard);
-   }
+   callSection("Call all online students");
+   const broadcastCard=document.createElement("section");broadcastCard.style.cssText="padding:20px;border:1px solid #bbf7d0;border-radius:16px;background:linear-gradient(145deg,#f0fdf4,#eff6ff);box-shadow:0 5px 18px rgba(15,23,42,.05)";area.appendChild(broadcastCard);
+   const broadcastTitle=document.createElement("h3");broadcastTitle.textContent="OTG Open Call";broadcastTitle.style.cssText="margin:0 0 8px;color:#14532d;font-size:20px;font-weight:900";broadcastCard.appendChild(broadcastTitle);
+   const broadcastInfo=document.createElement("p");broadcastInfo.textContent="Tap once to ring every approved student currently online. The first student to accept joins the same call; the other invitations close automatically.";broadcastInfo.style.cssText="margin:0 0 14px;color:#334155;line-height:1.65";broadcastCard.appendChild(broadcastInfo);
+   const onlineSummary=document.createElement("p");onlineSummary.id="otgCallOnlineSummary";onlineSummary.setAttribute("role","status");onlineSummary.style.cssText="margin:0 0 14px;padding:10px 12px;border-radius:9px;background:#fff;color:#334155;font-weight:800";onlineSummary.textContent="Connecting to the online student list…";broadcastCard.appendChild(onlineSummary);
+   const onlineList=document.createElement("div");onlineList.id="otgCallOnlineList";onlineList.style.cssText="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:15px";broadcastCard.appendChild(onlineList);
+   const callActions=document.createElement("div");callActions.style.cssText="display:flex;gap:10px;flex-wrap:wrap";broadcastCard.appendChild(callActions);
+   const voiceAll=document.createElement("button");voiceAll.type="button";voiceAll.textContent="☎ Call everyone — Voice";voiceAll.style.cssText="padding:12px 15px;border:0;border-radius:10px;background:#0f766e;color:#fff;font-weight:900;cursor:pointer";
+   const videoAll=document.createElement("button");videoAll.type="button";videoAll.textContent="▣ Call everyone — Video";videoAll.style.cssText="padding:12px 15px;border:0;border-radius:10px;background:#1d4ed8;color:#fff;font-weight:900;cursor:pointer";
+   const broadcastStatus=document.createElement("p");broadcastStatus.id="otgCallBroadcastStatus";broadcastStatus.setAttribute("role","status");broadcastStatus.style.cssText="margin:12px 0 0;color:#475569;line-height:1.6";callActions.append(voiceAll,videoAll);broadcastCard.appendChild(broadcastStatus);
+   voiceAll.addEventListener("click",()=>{if(typeof window.otgStartBroadcastCall==="function")window.otgStartBroadcastCall("voice",broadcastStatus);else broadcastStatus.textContent="Call service is still loading. Refresh Student Hub and try again.";});
+   videoAll.addEventListener("click",()=>{if(typeof window.otgStartBroadcastCall==="function")window.otgStartBroadcastCall("video",broadcastStatus);else broadcastStatus.textContent="Call service is still loading. Refresh Student Hub and try again.";});
+   const refreshOnline=()=>{
+    const people=typeof window.otgGetOnlineStudents==="function"?window.otgGetOnlineStudents():[];
+    onlineSummary.textContent=people.length?people.length+" other approved student"+(people.length===1?" is":"s are")+" online and can receive your call.":"No other approved students are showing online yet. Students need to open Student Hub and keep it open.";
+    onlineList.replaceChildren();
+    if(!people.length){const empty=document.createElement("span");empty.textContent="Waiting for students to come online";empty.style.cssText="padding:7px 10px;border:1px dashed #94a3b8;border-radius:999px;color:#64748b;font-size:12px";onlineList.appendChild(empty);}
+    people.forEach(person=>{const pill=document.createElement("span");pill.textContent="● "+person.display_name;pill.style.cssText="padding:7px 10px;border-radius:999px;background:#dcfce7;color:#166534;font-size:12px;font-weight:800";onlineList.appendChild(pill);});
+   };
+   window.otgCallPanelRefresh=refreshOnline;refreshOnline();
    callSection("Recent call sessions");
-   const historyList=document.createElement("div");historyList.style.cssText="display:grid;gap:10px";area.appendChild(historyList);
+   const historyList=document.createElement("div");historyList.style.cssText="display:grid;gap:10px";area.appendChild(historyList);;area.appendChild(historyList);
    if(historyResult.error){const warn=document.createElement("p");warn.textContent="Call history could not load: "+historyResult.error.message;warn.style.cssText="padding:12px;border-radius:10px;background:#fff7ed;color:#9a3412";historyList.appendChild(warn);}
-   const history=historyResult.data||[];
+   const rawHistory=historyResult.data||[];
+   const statusRank={accepted:6,ringing:5,ended:4,missed:3,declined:2,cancelled:1};
+   const groupedHistory=new Map();rawHistory.forEach(call=>{const key=call.room_name||call.id;const prior=groupedHistory.get(key);if(!prior||(statusRank[call.status]||0)>(statusRank[prior.status]||0))groupedHistory.set(key,call);});
+   const history=Array.from(groupedHistory.values());
    if(!history.length&&!historyResult.error){const empty=document.createElement("p");empty.textContent="No call sessions yet. When you place or receive a call, it will appear here.";empty.style.cssText="padding:14px;border:1px dashed #cbd5e1;border-radius:12px;color:#64748b";historyList.appendChild(empty);}
    history.forEach(call=>{
     const outgoing=call.caller_id===userId;
@@ -3991,7 +3984,7 @@ const supabaseClient =
 (function(){
  "use strict";
  const client=supabaseClient;
- const state=window.otgCallState=window.otgCallState||{channel:null,userId:null,active:null,overlay:null,pollTimer:null};
+ const state=window.otgCallState=window.otgCallState||{channel:null,lobbyChannel:null,userId:null,active:null,overlay:null,pollTimer:null};
  function roomUrl(call){return "https://meet.jit.si/OTG-Student-Call-"+call.room_name+(call.call_type==="voice"?"#config.startAudioOnly=true":"");}
  function closeOverlay(){const el=document.getElementById("otgCallOverlay");if(el)el.remove();state.overlay=null;}
  function makeButton(label,color,fn){const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:11px 15px;border:0;border-radius:10px;background:"+color+";color:#fff;font-weight:800;font-size:14px;cursor:pointer";b.addEventListener("click",fn);return b;}
@@ -4036,7 +4029,10 @@ const supabaseClient =
   if(!call||!userId)return;
   const direction=call.caller_id===userId?"outgoing":"incoming";
   if(call.status==="ringing"||call.status==="accepted"){
-   if(state.active&&state.active.call.id!==call.id&&["ringing","accepted"].includes(state.active.call.status))return;
+   if(state.active&&state.active.call.id!==call.id&&["ringing","accepted"].includes(state.active.call.status)){
+    const sameBroadcast=state.active.call.room_name&&call.room_name&&state.active.call.room_name===call.room_name;
+    if(!sameBroadcast||call.status!=="accepted")return;
+   }
    const name=await getPeerName(call,userId);
    if(direction==="incoming"&&call.status==="ringing"&&document.hidden&&"Notification" in window&&Notification.permission==="granted"){
     try{const notice=new Notification("Incoming OTG "+(call.call_type==="voice"?"voice":"video")+" call",{body:name+" is calling you.",tag:"otg-call-"+call.id});notice.onclick=()=>{window.focus();notice.close();};}catch(_){}
@@ -4056,22 +4052,72 @@ const supabaseClient =
    if(String(calleeId)===String(state.userId)){if(statusEl)statusEl.textContent="You cannot call your own account.";return;}
    if(statusEl)statusEl.textContent="Connecting to OTG call service…";
    const randomRoom=(window.crypto&&window.crypto.randomUUID)?window.crypto.randomUUID():("otg"+Date.now().toString(36)+Math.random().toString(36).slice(2));
-   const r=await client.from("otg_student_calls").insert({caller_id:state.userId,callee_id:calleeId,call_type:mode,status:"ringing",room_name:randomRoom.replace(/[^a-zA-Z0-9-]/g,"")}).select("*").single();
+   const roomName=randomRoom.replace(/[^a-zA-Z0-9-]/g,"");
+   const r=await client.rpc("otg_start_broadcast_call",{p_callee_ids:[calleeId],p_call_type:mode,p_room_name:roomName});
    if(r.error)throw r.error;
-   showCall(r.data,"outgoing",peerName||"your OTG connection");if(statusEl)statusEl.textContent="Calling "+(peerName||"your connection")+"…";
-   window.setTimeout(async()=>{try{const check=await client.from("otg_student_calls").select("status").eq("id",r.data.id).maybeSingle();if(check.data&&check.data.status==="ringing")await client.from("otg_student_calls").update({status:"missed"}).eq("id",r.data.id);}catch(_){}},47000);
+   const call=Array.isArray(r.data)?r.data[0]:r.data;
+   if(!call)throw new Error("The call service did not create a call invitation.");
+   showCall(call,"outgoing",peerName||"your OTG connection");if(statusEl)statusEl.textContent="Calling "+(peerName||"your connection")+"…";
+   window.setTimeout(async()=>{try{await client.from("otg_student_calls").update({status:"missed"}).eq("room_name",roomName).eq("status","ringing");}catch(_){}},47000);
   }catch(e){console.error("OTG call start failed:",e);if(statusEl)statusEl.textContent="Call could not start: "+(e&&e.message?e.message:"Please try again. Check that both accounts are approved and connected.");}
  }
  window.otgStartStudentCall=startCall;
- window.otgStopCallNotifications=function(){if(state.channel){client.removeChannel(state.channel);state.channel=null;}if(state.pollTimer){window.clearInterval(state.pollTimer);state.pollTimer=null;}state.userId=null;state.active=null;closeOverlay();};
+ window.otgStopCallNotifications=function(){
+  if(state.channel){client.removeChannel(state.channel);state.channel=null;}
+  if(state.lobbyChannel){client.removeChannel(state.lobbyChannel);state.lobbyChannel=null;}
+  if(state.pollTimer){window.clearInterval(state.pollTimer);state.pollTimer=null;}
+  state.userId=null;state.active=null;closeOverlay();
+  window.dispatchEvent(new Event("otg-call-presence-updated"));
+ };
+ window.otgGetOnlineStudents=function(){
+  if(!state.lobbyChannel)return [];
+  const raw=state.lobbyChannel.presenceState()||{};const people=new Map();
+  Object.values(raw).flat().forEach(p=>{if(p&&p.user_id&&p.user_id!==state.userId)people.set(p.user_id,{user_id:p.user_id,display_name:p.display_name||"OTG student"});});
+  return Array.from(people.values());
+ };
+ window.addEventListener("otg-call-presence-updated",function(){if(typeof window.otgCallPanelRefresh==="function")window.otgCallPanelRefresh();});
+ window.otgStartBroadcastCall=async function(mode,statusEl){
+  try{
+   const sessionResult=await client.auth.getSession();
+   const signedInUser=sessionResult&&sessionResult.data&&sessionResult.data.session?sessionResult.data.session.user:null;
+   if(!signedInUser){if(statusEl)statusEl.textContent="Please sign in again before starting a call.";return;}
+   if(state.userId!==signedInUser.id||!state.lobbyChannel)window.otgInitCallNotifications(signedInUser);
+   const online=window.otgGetOnlineStudents();
+   if(!online.length){if(statusEl)statusEl.textContent="No other approved students are online right now. Ask students to open Student Hub and keep it open, then try again.";return;}
+   if(state.active&&["ringing","accepted"].includes(state.active.call.status)){if(statusEl)statusEl.textContent="You already have a call in progress. Finish it before starting another.";return;}
+   if(statusEl)statusEl.textContent="Sending the call invitation to "+online.length+" online student"+(online.length===1?"":"s")+"…";
+   const randomRoom=(window.crypto&&window.crypto.randomUUID)?window.crypto.randomUUID():("otg"+Date.now().toString(36)+Math.random().toString(36).slice(2));
+   const roomName=randomRoom.replace(/[^a-zA-Z0-9-]/g,"");
+   const result=await client.rpc("otg_start_broadcast_call",{p_callee_ids:online.map(p=>p.user_id),p_call_type:mode,p_room_name:roomName});
+   if(result.error)throw result.error;
+   const calls=Array.isArray(result.data)?result.data:[result.data].filter(Boolean);
+   if(!calls.length)throw new Error("No approved students were available to receive the call.");
+   showCall(calls[0],"outgoing","all online students");
+   if(statusEl)statusEl.textContent="Calling "+calls.length+" online student"+(calls.length===1?"":"s")+". The first student to accept will join the call.";
+   window.setTimeout(async()=>{try{await client.from("otg_student_calls").update({status:"missed"}).eq("room_name",roomName).eq("status","ringing");}catch(_){}},47000);
+  }catch(error){console.error("OTG broadcast call failed:",error);if(statusEl)statusEl.textContent="Call could not start: "+(error&&error.message?error.message:"Please refresh Student Hub and try again.");}
+ };
  window.otgInitCallNotifications=function(user){
-  if(!user||!user.id)return;if(state.userId===user.id&&state.channel)return;
+  if(!user||!user.id)return;if(state.userId===user.id&&state.channel&&state.lobbyChannel)return;
   window.otgStopCallNotifications();state.userId=user.id;
   state.channel=client.channel("otg-student-calls-"+user.id)
    .on("postgres_changes",{event:"INSERT",schema:"public",table:"otg_student_calls",filter:"callee_id=eq."+user.id},p=>handleRow(p.new,user.id))
    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"otg_student_calls",filter:"callee_id=eq."+user.id},p=>handleRow(p.new,user.id))
    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"otg_student_calls",filter:"caller_id=eq."+user.id},p=>handleRow(p.new,user.id))
    .subscribe((status,error)=>{if(status==="CHANNEL_ERROR"||status==="TIMED_OUT")console.warn("OTG call notifications:",status,error||"");});
+  state.lobbyChannel=client.channel("otg-student-call-lobby",{config:{presence:{key:user.id}}})
+   .on("presence",{event:"sync"},()=>window.dispatchEvent(new Event("otg-call-presence-updated")))
+   .subscribe(async status=>{
+    if(status!=="SUBSCRIBED")return;
+    try{
+     const approval=await client.from("profiles").select("approval_status").eq("id",user.id).maybeSingle();
+     if(approval.error||!approval.data||String(approval.data.approval_status).toLowerCase()!=="approved"){await state.lobbyChannel.untrack();window.dispatchEvent(new Event("otg-call-presence-updated"));return;}
+     const profile=await client.from("academy_student_profiles").select("display_name").eq("user_id",user.id).maybeSingle();
+     const metadata=user.user_metadata||{};
+     await state.lobbyChannel.track({user_id:user.id,display_name:(profile.data&&profile.data.display_name)||metadata.full_name||metadata.name||"OTG student",online_at:new Date().toISOString()});
+     window.dispatchEvent(new Event("otg-call-presence-updated"));
+    }catch(error){console.warn("OTG online call presence could not start:",error);}
+   });
   const checkIncoming=async()=>{try{const r=await client.from("otg_student_calls").select("*").eq("callee_id",user.id).eq("status","ringing").order("created_at",{ascending:false}).limit(1);if(!r.error&&r.data&&r.data.length){const call=r.data[0];if(!state.active||state.active.call.id!==call.id||state.active.call.status!==call.status)await handleRow(call,user.id);}}catch(e){console.warn("OTG incoming call check:",e);}};
   checkIncoming();
   if(state.pollTimer)window.clearInterval(state.pollTimer);
