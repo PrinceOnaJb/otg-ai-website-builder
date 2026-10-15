@@ -35,6 +35,7 @@ const academyPanels = {
  account:{title:"My Account",intro:"View your student account details.",icon:"👤",heading:"Account information",body:"View your account email, role and approval status. Use Profile & Settings to add your display name, country, introduction and learning interests.",action:"Profile settings",next:"settings"},
  achievements:{title:"Achievements",intro:"Celebrate milestones in your learning journey.",icon:"🏆",heading:"Your milestones",body:"Track completed lessons, saved projects, published websites and builder points from your real account activity.",action:"View achievements",next:"achievements"},
  notifications:{title:"Notifications",intro:"Keep up with important student updates.",icon:"🔔",heading:"Your updates",body:"Read academy announcements published by your coach. More personalised notifications can be added as the other dashboard workflows grow.",action:"Open account",next:"account"},
+ support:{title:"Customer Service",intro:"Get help from OTG Graphic Academy and track your support requests.",icon:"🎧",heading:"OTG Customer Service",body:"Send a private support request, follow its status and read replies from the academy team. You can also contact us directly by WhatsApp, phone or email.",action:"Open Customer Service",next:"support"},
  settings:{title:"Profile & Settings",intro:"Manage your profile and preferences.",icon:"⚙️",heading:"Profile and preferences",body:"Set your display name, country, introduction and learning interests. You can also choose whether other approved students can discover your profile.",action:"Edit profile",next:"settings"}
 };
 function openAcademyPanel(key,button){
@@ -189,6 +190,98 @@ async function loadAcademyPanelData(key,content){
     newsList.appendChild(card);
    });
   }
+  return;
+ }
+ if(key==="support"){
+  const top=document.createElement("div");
+  top.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:0 0 22px";
+  const contactCard=(title,detail,url,label)=>{
+   const card=document.createElement("article");card.style.cssText="padding:15px;border:1px solid #dbeafe;border-radius:12px;background:#fff;min-width:0";
+   const h=document.createElement("h4");h.textContent=title;h.style.cssText="margin:0 0 7px;color:#123b78;font-size:14px";
+   const p=document.createElement("p");p.textContent=detail;p.style.cssText="margin:0 0 12px;color:#475569;font-size:13px;overflow-wrap:anywhere";
+   const a=document.createElement("a");a.href=url;a.textContent=label;a.target=url.indexOf("http")===0?"_blank":"_self";a.rel="noopener noreferrer";a.style.cssText="display:inline-block;padding:8px 11px;border-radius:8px;background:#14532d;color:#fff;text-decoration:none;font-size:12px;font-weight:800";
+   card.append(h,p,a);top.appendChild(card);
+  };
+  contactCard("WhatsApp Support","+234 706 192 7671","https://wa.me/2347061927671","Chat on WhatsApp");
+  contactCard("Call Customer Care","+234 706 192 7671","tel:+2347061927671","Call support");
+  contactCard("Email Support","otggraphicacademy@gmail.com","mailto:otggraphicacademy@gmail.com?subject=OTG%20Academy%20Support","Send an email");
+  area.appendChild(top);
+  const statusLine=document.createElement("p");statusLine.setAttribute("role","status");statusLine.style.cssText="margin:0 0 16px;padding:11px 13px;border-radius:9px;background:#eff6ff;color:#1e3a8a;font-size:13px;line-height:1.6";
+  statusLine.textContent=admin?"Admin inbox: review requests, reply to students and update ticket status.":"Need help with your account, lessons, assignments or website builder? Send a request below and keep its reference number.";
+  area.appendChild(statusLine);
+  if(!userId){const msg=document.createElement("p");msg.textContent="Please log in to use ticket tracking. You can still contact OTG directly using the options above.";msg.style.cssText="padding:13px;background:#fff7ed;border-radius:9px;color:#9a3412";area.appendChild(msg);return;}
+  const ticketList=document.createElement("div");ticketList.style.cssText="display:grid;gap:14px";
+  const sectionHeading=document.createElement("h3");sectionHeading.textContent=admin?"Support Inbox":"My Support Requests";sectionHeading.style.cssText="margin:0 0 12px;color:#172554;font-size:20px";
+  area.appendChild(sectionHeading);
+  if(!admin){
+   const form=document.createElement("form");form.style.cssText="display:grid;gap:12px;margin:0 0 24px;padding:18px;border:1px solid #dbeafe;border-radius:13px;background:#f8fbff";
+   const formTitle=document.createElement("h4");formTitle.textContent="Create a support request";formTitle.style.cssText="margin:0;color:#123b78;font-size:16px";form.appendChild(formTitle);
+   const field=(labelText,control)=>{const label=document.createElement("label");label.style.cssText="display:grid;gap:6px;color:#334155;font-size:13px;font-weight:800";label.append(document.createTextNode(labelText),control);form.appendChild(label);return control;};
+   const subject=document.createElement("input");subject.type="text";subject.maxLength=160;subject.required=true;subject.minLength=4;subject.placeholder="Briefly describe what you need help with";subject.style.cssText="width:100%;box-sizing:border-box;padding:11px;border:1px solid #cbd5e1;border-radius:8px;font:inherit";
+   field("Subject",subject);
+   const category=document.createElement("select");category.style.cssText="width:100%;box-sizing:border-box;padding:11px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;font:inherit";
+   ["General enquiry","Account and login","Assignments and lessons","Website builder","Payment or pricing","Technical problem","Complaint","Other"].forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;category.appendChild(o);});field("Request category",category);
+   const message=document.createElement("textarea");message.required=true;message.minLength=10;message.maxLength=5000;message.rows=5;message.placeholder="Explain the issue and what you have tried. Please do not include your password.";message.style.cssText="width:100%;box-sizing:border-box;padding:11px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;resize:vertical";field("Message",message);
+   const submit=document.createElement("button");submit.type="submit";submit.textContent="Submit support request";submit.style.cssText="justify-self:start;padding:11px 16px;border:0;border-radius:8px;background:#14532d;color:#fff;font-weight:800;cursor:pointer";
+   const formStatus=document.createElement("p");formStatus.setAttribute("role","status");formStatus.style.cssText="margin:0;font-size:13px;color:#475569;white-space:pre-wrap";
+   form.append(submit,formStatus);area.appendChild(form);
+   form.addEventListener("submit",async function(event){
+    event.preventDefault();submit.disabled=true;submit.textContent="Submitting…";formStatus.textContent="";
+    try{
+     const result=await db.from("academy_support_tickets").insert({user_id:userId,subject:subject.value.trim(),category:category.value,message:message.value.trim()}).select("id,reference_code,subject,category,message,status,admin_reply,created_at,updated_at").single();
+     if(result.error)throw result.error;
+     formStatus.textContent="Request submitted successfully. Your reference number is "+result.data.reference_code+". Keep it for follow-up.";
+     subject.value="";message.value="";
+     await renderTickets();
+    }catch(error){formStatus.textContent="We could not submit the request. Please try again or contact us directly. "+(error&&error.message?error.message:"");}
+    finally{submit.disabled=false;submit.textContent="Submit support request";}
+   });
+  }
+  area.appendChild(ticketList);
+  async function renderTickets(){
+   ticketList.replaceChildren();
+   const loading=document.createElement("p");loading.textContent="Loading support requests…";loading.style.cssText="color:#64748b";ticketList.appendChild(loading);
+   let query=db.from("academy_support_tickets").select("id,reference_code,user_id,subject,category,message,status,admin_reply,replied_at,last_student_reply,last_student_reply_at,created_at,updated_at").order("created_at",{ascending:false}).limit(100);
+   if(!admin)query=query.eq("user_id",userId);
+   const result=await query;
+   ticketList.replaceChildren();
+   if(result.error){const error=document.createElement("p");error.textContent="Support requests could not load. Please refresh or contact us using the options above.";error.style.cssText="padding:13px;border-radius:9px;background:#fff7ed;color:#9a3412";ticketList.appendChild(error);return;}
+   const tickets=result.data||[];
+   if(!tickets.length){const empty=document.createElement("p");empty.textContent=admin?"No support requests have been received yet.":"You have not submitted any support requests yet.";empty.style.cssText="padding:16px;border:1px dashed #cbd5e1;border-radius:10px;color:#64748b";ticketList.appendChild(empty);return;}
+   let emailMap={};
+   if(admin){
+    const ids=[...new Set(tickets.map(t=>t.user_id).filter(Boolean))];
+    if(ids.length){const profiles=await db.from("profiles").select("id,email").in("id",ids);if(!profiles.error)(profiles.data||[]).forEach(p=>emailMap[p.id]=p.email||"");}
+   }
+   tickets.forEach(ticket=>{
+    const card=document.createElement("article");card.style.cssText="padding:17px;border:1px solid #dbeafe;border-radius:13px;background:#fff;min-width:0";
+    const head=document.createElement("div");head.style.cssText="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap";
+    const heading=document.createElement("h4");heading.textContent=ticket.subject||"Support request";heading.style.cssText="margin:0;color:#172554;font-size:16px;overflow-wrap:anywhere";
+    const status=document.createElement("span");const labels={open:"Open",in_progress:"In progress",awaiting_student:"Awaiting student",resolved:"Resolved",closed:"Closed"};status.textContent=labels[ticket.status]||ticket.status;status.style.cssText="padding:5px 9px;border-radius:20px;background:"+(ticket.status==="resolved"||ticket.status==="closed"?"#dcfce7":"#fef3c7")+";color:"+(ticket.status==="resolved"||ticket.status==="closed"?"#166534":"#92400e")+";font-size:11px;font-weight:900;white-space:nowrap";
+    head.append(heading,status);card.appendChild(head);
+    const meta=document.createElement("p");meta.textContent="Reference: "+ticket.reference_code+"  •  "+ticket.category+"  •  "+(ticket.created_at?new Date(ticket.created_at).toLocaleString():"");meta.style.cssText="margin:8px 0 12px;color:#64748b;font-size:12px;line-height:1.6;overflow-wrap:anywhere";card.appendChild(meta);
+    if(admin){const email=document.createElement("p");email.textContent="Student email: "+(emailMap[ticket.user_id]||"Not available");email.style.cssText="margin:0 0 10px;color:#475569;font-size:12px";card.appendChild(email);}
+    const body=document.createElement("p");body.textContent=ticket.message;body.style.cssText="margin:0;padding:12px;border-radius:9px;background:#f8fafc;color:#334155;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere";card.appendChild(body);
+    if(ticket.last_student_reply){const follow=document.createElement("p");follow.textContent="Student follow-up: "+ticket.last_student_reply;follow.style.cssText="margin:12px 0 0;padding:12px;border-radius:9px;background:#f0fdf4;color:#166534;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere";card.appendChild(follow);}
+    if(ticket.admin_reply){const reply=document.createElement("div");reply.style.cssText="margin-top:12px;padding:13px;border-left:4px solid #14532d;border-radius:8px;background:#f0fdf4";const replyTitle=document.createElement("strong");replyTitle.textContent="Reply from OTG Customer Service";replyTitle.style.cssText="display:block;margin-bottom:6px;color:#166534";const replyText=document.createElement("p");replyText.textContent=ticket.admin_reply;replyText.style.cssText="margin:0;color:#14532d;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere";reply.append(replyTitle,replyText);if(ticket.replied_at){const d=document.createElement("small");d.textContent="Replied "+new Date(ticket.replied_at).toLocaleString();d.style.cssText="display:block;margin-top:8px;color:#64748b";reply.appendChild(d);}card.appendChild(reply);}
+    if(admin){
+     const controls=document.createElement("div");controls.style.cssText="display:grid;gap:9px;margin-top:14px";
+     const replyInput=document.createElement("textarea");replyInput.rows=3;replyInput.maxLength=5000;replyInput.placeholder="Write an official reply to the student…";replyInput.value=ticket.admin_reply||"";replyInput.style.cssText="width:100%;box-sizing:border-box;padding:11px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;resize:vertical";
+     const statusSelect=document.createElement("select");statusSelect.style.cssText="padding:10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;font:inherit";[["open","Open"],["in_progress","In progress"],["awaiting_student","Awaiting student"],["resolved","Resolved"],["closed","Closed"]].forEach(pair=>{const o=document.createElement("option");o.value=pair[0];o.textContent=pair[1];statusSelect.appendChild(o);});statusSelect.value=ticket.status;
+     const save=document.createElement("button");save.type="button";save.textContent="Save reply and status";save.style.cssText="justify-self:start;padding:10px 14px;border:0;border-radius:8px;background:#14532d;color:#fff;font-weight:800;cursor:pointer";
+     const feedback=document.createElement("p");feedback.setAttribute("role","status");feedback.style.cssText="margin:0;color:#475569;font-size:12px";
+     save.addEventListener("click",async()=>{save.disabled=true;save.textContent="Saving…";feedback.textContent="";try{const update=await db.from("academy_support_tickets").update({admin_reply:replyInput.value.trim(),status:statusSelect.value}).eq("id",ticket.id);if(update.error)throw update.error;feedback.textContent="Reply and status saved.";await renderTickets();}catch(error){feedback.textContent="Could not save reply: "+(error&&error.message?error.message:"Please try again.");}finally{save.disabled=false;save.textContent="Save reply and status";}});
+     controls.append(replyInput,statusSelect,save,feedback);card.appendChild(controls);
+    }else if(ticket.status!=="resolved"&&ticket.status!=="closed"){
+     const followForm=document.createElement("form");followForm.style.cssText="display:grid;gap:8px;margin-top:13px";
+     const followInput=document.createElement("textarea");followInput.rows=2;followInput.maxLength=5000;followInput.placeholder="Add more details or answer a question from support…";followInput.style.cssText="width:100%;box-sizing:border-box;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;resize:vertical";
+     const followButton=document.createElement("button");followButton.type="submit";followButton.textContent="Send follow-up";followButton.style.cssText="justify-self:start;padding:9px 13px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#14532d;font-weight:800;cursor:pointer";
+     followForm.append(followInput,followButton);followForm.addEventListener("submit",async event=>{event.preventDefault();if(followInput.value.trim().length<3)return;followButton.disabled=true;try{const update=await db.from("academy_support_tickets").update({last_student_reply:followInput.value.trim()}).eq("id",ticket.id).eq("user_id",userId);if(update.error)throw update.error;await renderTickets();}catch(error){followButton.disabled=false;followButton.textContent="Could not send. Try again";}});card.appendChild(followForm);
+    }
+    ticketList.appendChild(card);
+   });
+  }
+  try{await renderTickets();}catch(error){const note=document.createElement("p");note.textContent="Could not load support requests. Please refresh or contact us directly.";note.style.cssText="color:#b91c1c";ticketList.replaceChildren(note);}
   return;
  }
  if(key==="codelab"){
@@ -3332,6 +3425,7 @@ header{
       <button class="academy-nav" onclick="openAcademyPanel('account',this)">👤 My Account</button>
       <button class="academy-nav" onclick="openAcademyPanel('achievements',this)">🏆 Achievements</button>
       <button class="academy-nav" onclick="openAcademyPanel('notifications',this)">🔔 Notifications</button>
+      <button class="academy-nav" id="otgCustomerServiceNav" onclick="openAcademyPanel('support',this)">🎧 Customer Service</button>
       <button class="academy-nav" onclick="openAcademyPanel('settings',this)">⚙ Profile &amp; Settings</button>
     </aside>
     <div class="academy-main">
