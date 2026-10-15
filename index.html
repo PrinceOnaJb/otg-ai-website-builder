@@ -33,6 +33,7 @@ const academyPanels = {
  discussion:{title:"Discussion",intro:"Ask questions and share learning ideas.",icon:"💬",heading:"Student discussions",body:"Create a discussion topic, read recent conversations and reply to other approved students.",action:"Open community",next:"community"},
  partners:{title:"Study Partners",intro:"Find people to learn and practise with.",icon:"🧑‍🤝‍🧑",heading:"Learn together",body:"Browse students who opted in to discovery and manage connection requests so you can find learning partners.",action:"Find study partners",next:"partners"},
  account:{title:"My Account",intro:"View your student account details.",icon:"👤",heading:"Account information",body:"View your account email, role and approval status. Use Profile & Settings to add your display name, country, introduction and learning interests.",action:"Profile settings",next:"settings"},
+ progress:{title:"Progress Report",intro:"Review your learning progress, assignment results and milestones in one place.",icon:"📊",heading:"Your learning progress",body:"See your completed lessons, assignment status, released marks and learning milestones from your OTG student account.",action:"View progress report",next:"progress"},
  achievements:{title:"Achievements",intro:"Celebrate milestones in your learning journey.",icon:"🏆",heading:"Your milestones",body:"Track completed lessons, saved projects, published websites and builder points from your real account activity.",action:"View achievements",next:"achievements"},
  notifications:{title:"Notifications",intro:"Keep up with important student updates.",icon:"🔔",heading:"Your updates",body:"Read academy announcements published by your coach. More personalised notifications can be added as the other dashboard workflows grow.",action:"Open account",next:"account"},
  support:{title:"Customer Service",intro:"Get help from OTG Graphic Academy and track your support requests.",icon:"🎧",heading:"OTG Customer Service",body:"Send a private support request, follow its status and read replies from the academy team. You can also contact us directly by WhatsApp, phone or email.",action:"Open Customer Service",next:"support"},
@@ -1017,6 +1018,41 @@ async function loadAcademyPanelData(key,content){
     else{const form=document.createElement("form");form.style.cssText="display:grid;gap:8px";const msg=document.createElement("input");msg.maxLength=500;msg.placeholder="Optional introduction message";msg.style.cssText="width:100%;box-sizing:border-box;padding:9px;border:1px solid #cbd5e1;border-radius:8px";const btn=document.createElement("button");btn.type="submit";btn.textContent="Request to connect";btn.style.cssText="padding:9px 12px;border:0;border-radius:8px;background:#1d4ed8;color:#fff;font-weight:800";const status=document.createElement("span");status.setAttribute("role","status");status.style.cssText="font-size:12px;color:#475569";form.append(msg,btn,status);form.addEventListener("submit",async e=>{e.preventDefault();btn.disabled=true;status.textContent="Sending request…";const {error}=await db.from("academy_connection_requests").insert({requester_id:userId,target_id:student.user_id,message:msg.value.trim(),status:"pending"});if(error){status.textContent="Could not send request: "+error.message;btn.disabled=false;return;}status.textContent="Request sent.";loadAcademyPanelData(key,content);});card.appendChild(form);}
     list.appendChild(card);
    });
+  }
+ }else if(key==="progress"){
+  if(!userId){const p=document.createElement("p");p.textContent="Please sign in again to view your personal progress report.";area.appendChild(p);}
+  else{
+   const [lr,cr,ar,sr,pr,certR]=await Promise.all([
+    db.from("academy_lessons").select("id,title,course").eq("is_published",true),
+    db.from("academy_lesson_progress").select("lesson_id,completed_at").eq("student_id",userId),
+    db.from("academy_assignments").select("id,title,course").eq("is_published",true),
+    db.from("academy_submissions").select("id,assignment_id,status,score,coach_feedback,submitted_at,reviewed_at").eq("student_id",userId).order("submitted_at",{ascending:false}),
+    db.from("projects").select("id,is_published").eq("user_id",userId),
+    db.from("academy_certificates").select("id").eq("student_id",userId).eq("status","issued")
+   ]);
+   const errors=[lr,cr,ar,sr,pr,certR].filter(x=>x.error);
+   if(errors.length){const warn=document.createElement("p");warn.textContent="Some progress details could not load: "+errors.map(x=>x.error.message).join(" · ");warn.style.cssText="padding:12px;border:1px solid #fed7aa;border-radius:10px;background:#fff7ed;color:#9a3412;line-height:1.6";area.appendChild(warn);}
+   const lessons=lr.data||[],done=new Set((cr.data||[]).filter(x=>x.completed_at).map(x=>String(x.lesson_id))),assignments=ar.data||[],subs=sr.data||[],projects=pr.data||[],certs=certR.data||[];
+   const released=subs.filter(x=>x.status==="approved"&&x.score!==null&&x.score!==undefined),pending=subs.filter(x=>["submitted","reviewing"].includes(x.status)),changes=subs.filter(x=>x.status==="needs_changes");
+   const avg=released.length?Math.round(released.reduce((sum,x)=>sum+Number(x.score||0),0)/released.length):null,percent=lessons.length?Math.min(100,Math.round(done.size/lessons.length*100)):0;
+   const grid=document.createElement("div");grid.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:14px 0";
+   [[done.size+"/"+lessons.length,"Lessons completed"],[subs.length,"Assignments submitted"],[released.length,"Results released"],[avg===null?"—":avg+"%","Average released score"],[pending.length,"Awaiting review"],[projects.filter(x=>x.is_published).length,"Published websites"],[certs.length,"Certificates earned"]].forEach(([v,label])=>{const c=document.createElement("article");c.style.cssText="padding:16px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;min-width:0";const n=document.createElement("strong");n.textContent=String(v);n.style.cssText="display:block;font-size:25px;color:#14532d;overflow-wrap:anywhere";const l=document.createElement("span");l.textContent=label;l.style.cssText="font-size:12px;color:#64748b;line-height:1.5";c.append(n,l);grid.appendChild(c);});area.appendChild(grid);
+   const pt=document.createElement("h4");pt.textContent="Lesson completion";pt.style.cssText="margin:22px 0 8px;color:#123d2b";area.appendChild(pt);
+   const track=document.createElement("div");track.setAttribute("role","progressbar");track.setAttribute("aria-valuemin","0");track.setAttribute("aria-valuemax","100");track.setAttribute("aria-valuenow",String(percent));track.setAttribute("aria-label","Published lesson completion");track.style.cssText="height:14px;border-radius:999px;background:#e2e8f0;overflow:hidden";
+   const fill=document.createElement("div");fill.style.cssText="height:100%;width:"+percent+"%;background:linear-gradient(90deg,#166534,#d4a72c);border-radius:999px";track.appendChild(fill);area.appendChild(track);
+   const pc=document.createElement("p");pc.textContent=lessons.length?percent+"% of published lessons completed. Keep going at your own pace.":"No published lessons are available to measure yet.";pc.style.cssText="margin:8px 0 18px;color:#64748b;font-size:13px;line-height:1.6";area.appendChild(pc);
+   const rt=document.createElement("h4");rt.textContent="Recent released assignment results";rt.style.cssText="margin:24px 0 10px;color:#123d2b";area.appendChild(rt);
+   const results=document.createElement("div");results.style.cssText="display:grid;gap:10px";area.appendChild(results);
+   const ids=[...new Set(released.slice(0,5).map(x=>x.assignment_id).filter(x=>x!==null&&x!==undefined))];
+   const {data:resultAssignments,error:resultError}=ids.length?await db.from("academy_assignments").select("id,title").in("id",ids):{data:[],error:null};
+   if(resultError){const p=document.createElement("p");p.textContent="Assignment titles could not load: "+resultError.message;results.appendChild(p);}
+   const byId=new Map((resultAssignments||[]).map(x=>[String(x.id),x]));
+   if(!released.length){const empty=document.createElement("p");empty.textContent="Your marked results will appear here after your coach reviews your work and releases the results.";empty.style.cssText="padding:14px;border:1px dashed #cbd5e1;border-radius:10px;color:#64748b;line-height:1.6";results.appendChild(empty);}
+   released.slice(0,5).forEach(x=>{const c=document.createElement("article");c.style.cssText="padding:14px;border:1px solid #e2e8f0;border-radius:11px;background:#fff";const h=document.createElement("strong");h.textContent=byId.get(String(x.assignment_id))?.title||"Assignment result";h.style.cssText="display:block;color:#172554;margin-bottom:6px";const score=document.createElement("p");score.textContent="Score: "+Number(x.score)+"%"+(x.reviewed_at?" · Released "+new Date(x.reviewed_at).toLocaleDateString():"");score.style.cssText="margin:0 0 6px;color:#166534;font-weight:800;font-size:14px";c.append(h,score);if(x.coach_feedback){const f=document.createElement("p");f.textContent="Coach feedback: "+x.coach_feedback;f.style.cssText="margin:0;color:#475569;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere";c.appendChild(f);}results.appendChild(c);});
+   const nt=document.createElement("h4");nt.textContent="Your next steps";nt.style.cssText="margin:24px 0 8px;color:#123d2b";area.appendChild(nt);
+   const steps=document.createElement("ul");steps.style.cssText="padding-left:22px;color:#475569;line-height:1.8";
+   [[done.size<lessons.length,"Continue with the next lesson in Learn."],[pending.length>0,"Your submitted work is waiting for review."],[changes.length>0,"Check assignments marked Changes requested and follow your coach’s feedback."],[!assignments.length,"Check back when your coach publishes assignments."]].filter(x=>x[0]).forEach(x=>{const li=document.createElement("li");li.textContent=x[1];steps.appendChild(li);});
+   if(!steps.children.length){const li=document.createElement("li");li.textContent="Great work—keep practising, publishing projects and checking your new assignments.";steps.appendChild(li);}area.appendChild(steps);
   }
  }else if(key==="achievements"){
   const {count:completedCount,error:progressError}=userId?await db.from("academy_lesson_progress").select("id",{count:"exact",head:true}).eq("student_id",userId):{count:null,error:{message:"Please sign in again."}};
@@ -3550,6 +3586,7 @@ header{
       <button class="academy-nav" onclick="openAcademyPanel('discussion',this)">💬 Discussion</button>
       <button class="academy-nav" onclick="openAcademyPanel('partners',this)">🧑‍🤝‍🧑 Study Partners</button>
       <button class="academy-nav" onclick="openAcademyPanel('account',this)">👤 My Account</button>
+      <button class="academy-nav" onclick="openAcademyPanel('progress',this)">📊 Progress Report</button>
       <button class="academy-nav" onclick="openAcademyPanel('achievements',this)">🏆 Achievements</button>
       <button class="academy-nav" onclick="openAcademyPanel('notifications',this)">🔔 Notifications</button>
       <button class="academy-nav" id="otgCustomerServiceNav" onclick="openAcademyPanel('support',this)">🎧 Customer Service</button>
@@ -7467,6 +7504,7 @@ supabaseClient
     discussion:["Discussion","Ask questions and share learning ideas.","💬","Student discussions","Create a topic or reply to a discussion."],
     partners:["Study Partners","Find people to learn and practise with.","🧑‍🤝‍🧑","Learn together","Find approved learners who want to practise together."],
     account:["My Account","View your student account details.","👤","Account information","Review your account details and approval status."],
+    progress:["Progress Report","Review your learning progress, assignment results and milestones.","📊","Your learning progress","See completed lessons, released assignment marks and your recent learning activity."],
     achievements:["Achievements","Celebrate milestones in your learning journey.","🏆","Your milestones","Track your learning and project achievements."],
     notifications:["Notifications","Keep up with important student updates.","🔔","Your updates","Read announcements published by your coach."],
     support:["Customer Service","Get help from OTG Graphic Academy and track your support requests.","🎧","OTG Customer Service","Send a private support request and follow its status."],
