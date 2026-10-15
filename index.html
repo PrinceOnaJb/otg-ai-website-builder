@@ -1921,6 +1921,11 @@ header{
 
     </form>
 
+    <div id="forgotPasswordWrap" style="margin-top:12px;text-align:right;">
+      <button type="button" id="forgotPasswordBtn" style="border:0;background:transparent;color:#1d4ed8;font-weight:700;cursor:pointer;padding:8px 0;">Forgot password?</button>
+    </div>
+    <p id="forgotPasswordStatus" role="status" aria-live="polite" style="margin:4px 0 12px;color:#334155;font-size:13px;line-height:1.5;"></p>
+
     <div id="confirmationHelp" style="margin-top:16px;padding:14px;border:1px solid #bfdbfe;border-radius:10px;background:#eff6ff;">
       <p id="confirmationHelpText" style="margin:0 0 10px;color:#1e3a8a;line-height:1.6;">Already created an account but have not received or confirmed your email? Enter the same email address above and request a new confirmation message. Check your inbox and spam folder.</p>
       <button type="button" id="resendConfirmationBtn" style="padding:10px 14px;border:0;border-radius:8px;background:#1d4ed8;color:#fff;font-weight:700;cursor:pointer;">Resend confirmation email</button>
@@ -1953,6 +1958,20 @@ header{
     </div>
   </section>
 
+</div>
+
+<div id="passwordResetScreen" class="hidden" style="position:fixed;inset:0;z-index:99999;overflow:auto;background:#f3f6fb;padding:24px;box-sizing:border-box;font-family:Arial,sans-serif;">
+  <div style="max-width:440px;margin:8vh auto;background:#fff;border-radius:18px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12);">
+    <div style="font-size:32px;margin-bottom:10px;">🔐</div>
+    <h2 style="margin:0 0 10px;color:#123b78;">Choose a New Password</h2>
+    <p style="color:#475569;line-height:1.6;">Enter your new password below. Use at least 8 characters and keep it private.</p>
+    <label for="newAccountPassword" style="display:block;margin:16px 0 6px;font-weight:700;">New password</label>
+    <input id="newAccountPassword" type="password" autocomplete="new-password" minlength="8" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd5e1;border-radius:9px;">
+    <label for="confirmAccountPassword" style="display:block;margin:14px 0 6px;font-weight:700;">Confirm new password</label>
+    <input id="confirmAccountPassword" type="password" autocomplete="new-password" minlength="8" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd5e1;border-radius:9px;">
+    <button type="button" id="saveNewPasswordBtn" style="width:100%;margin-top:18px;padding:13px;border:0;border-radius:9px;background:#123b78;color:#fff;font-weight:700;cursor:pointer;">Save new password</button>
+    <p id="passwordResetStatus" role="status" aria-live="polite" style="margin:12px 0 0;color:#334155;line-height:1.6;"></p>
+  </div>
 </div>
 
 <div id="approvalScreen" class="hidden" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#f3f6fb;font-family:Arial,sans-serif;">
@@ -6202,6 +6221,82 @@ function showConfirmationHelp(email, message){
   if(panel) panel.hidden = false;
 }
 
+async function requestPasswordReset(){
+  const emailInput = $("authEmail");
+  const email = emailInput ? emailInput.value.trim() : "";
+  const button = $("forgotPasswordBtn");
+  const status = $("forgotPasswordStatus");
+  if(!email){
+    if(status) status.textContent = "Enter your account email address above first.";
+    if(emailInput) emailInput.focus();
+    return;
+  }
+  if(button){ button.disabled = true; button.textContent = "Sending reset link…"; }
+  if(status) status.textContent = "Requesting a password reset email…";
+  try{
+    const redirectTo = window.location.origin + window.location.pathname + "?reset-password=1";
+    const {error} = await supabaseClient.auth.resetPasswordForEmail(email, {redirectTo});
+    if(error) throw error;
+    if(status) status.textContent = "If an account exists for that email, a password-reset link has been requested. Check your inbox and spam folder. Open the link on this website to choose a new password.";
+  }catch(error){
+    console.error("Password reset request failed:", error);
+    if(status) status.textContent = "We could not request the reset email: " + (error && error.message || "Please try again later.");
+  }finally{
+    if(button){ button.disabled = false; button.textContent = "Forgot password?"; }
+  }
+}
+
+async function finishPasswordReset(){
+  const passwordInput = $("newAccountPassword");
+  const confirmInput = $("confirmAccountPassword");
+  const button = $("saveNewPasswordBtn");
+  const status = $("passwordResetStatus");
+  const password = passwordInput ? passwordInput.value : "";
+  const confirm = confirmInput ? confirmInput.value : "";
+  if(password.length < 8){
+    if(status) status.textContent = "Choose a password with at least 8 characters.";
+    return;
+  }
+  if(password !== confirm){
+    if(status) status.textContent = "The passwords do not match. Please check them and try again.";
+    return;
+  }
+  if(button){ button.disabled = true; button.textContent = "Saving password…"; }
+  if(status) status.textContent = "Updating your password securely…";
+  try{
+    const {error} = await supabaseClient.auth.updateUser({password:password});
+    if(error) throw error;
+    if(status) status.textContent = "Your password has been changed. Returning to login…";
+    await supabaseClient.auth.signOut();
+    window.history.replaceState({}, document.title, window.location.pathname);
+    const resetScreen = $("passwordResetScreen");
+    if(resetScreen) resetScreen.classList.add("hidden");
+    const authScreen = $("authScreen");
+    if(authScreen) authScreen.classList.remove("hidden");
+    if(passwordInput) passwordInput.value = "";
+    if(confirmInput) confirmInput.value = "";
+    if($("authPassword")) $("authPassword").value = "";
+    if($("forgotPasswordStatus")) $("forgotPasswordStatus").textContent = "Password updated successfully. You can now log in with your new password.";
+    setAuthMode("login");
+  }catch(error){
+    console.error("Password update failed:", error);
+    if(status) status.textContent = "We could not update your password: " + (error && error.message || "Please reopen the reset link and try again.");
+  }finally{
+    if(button){ button.disabled = false; button.textContent = "Save new password"; }
+  }
+}
+
+function showPasswordResetScreen(){
+  const resetScreen = $("passwordResetScreen");
+  if(resetScreen) resetScreen.classList.remove("hidden");
+  const authScreen = $("authScreen");
+  const app = $("app");
+  const approval = $("approvalScreen");
+  if(authScreen) authScreen.classList.add("hidden");
+  if(app) app.classList.add("hidden");
+  if(approval) approval.classList.add("hidden");
+}
+
 async function resendConfirmationEmail(){
   const email = $("authEmail").value.trim();
   const button = $("resendConfirmationBtn");
@@ -6719,6 +6814,8 @@ $("authSwitchBtn")
   );
 
 $("resendConfirmationBtn").addEventListener("click", resendConfirmationEmail);
+$("forgotPasswordBtn").addEventListener("click", requestPasswordReset);
+$("saveNewPasswordBtn").addEventListener("click", finishPasswordReset);
 
 
 const saveModal =
@@ -6773,6 +6870,10 @@ supabaseClient
   .auth
   .onAuthStateChange(
     function(event,session){
+
+      if(event === "PASSWORD_RECOVERY"){
+        showPasswordResetScreen();
+      }
 
       if(
         event ===
