@@ -1049,6 +1049,29 @@ async function loadAcademyPanelData(key,content){
      respond("Accept","accepted");respond("Decline","declined");card.append(title,message,actions);area.appendChild(card);
     });
    }
+   const acceptedRequests=requests.filter(r=>r.status==="accepted"&&(r.requester_id===userId||r.target_id===userId));
+   const connectedIds=[...new Set(acceptedRequests.map(r=>r.requester_id===userId?r.target_id:r.requester_id).filter(id=>id&&id!==userId))];
+   const connectedHeading=document.createElement("h3");connectedHeading.textContent="My Connected Students";connectedHeading.style.cssText="margin:22px 0 6px;color:#14532d;font-size:21px;font-weight:900";area.appendChild(connectedHeading);
+   const connectedIntro=document.createElement("p");connectedIntro.textContent="Your accepted connections appear here. Use the buttons below to start an internet voice or video call.";connectedIntro.style.cssText="margin:0 0 12px;color:#64748b;line-height:1.6";area.appendChild(connectedIntro);
+   const connectedList=document.createElement("div");connectedList.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px";area.appendChild(connectedList);
+   if(!connectedIds.length){const emptyConnected=document.createElement("p");emptyConnected.textContent="No accepted connections yet. Send or accept a connection request first; call buttons appear here after the connection is accepted.";emptyConnected.style.cssText="padding:14px;border:1px dashed #bbf7d0;border-radius:12px;background:#f0fdf4;color:#166534;line-height:1.6";connectedList.appendChild(emptyConnected);}
+   else{
+    const {data:connectedProfiles,error:connectedProfilesError}=await db.from("academy_student_profiles").select("user_id,display_name,country,bio").in("user_id",connectedIds);
+    const connectedById=new Map((connectedProfiles||[]).map(p=>[p.user_id,p]));
+    connectedIds.forEach(otherId=>{
+     const profile=connectedById.get(otherId)||{};
+     const connectedCard=document.createElement("article");connectedCard.style.cssText="padding:16px;border:1px solid #bbf7d0;border-radius:14px;background:#f0fdf4";
+     const connectedName=document.createElement("h4");connectedName.textContent=profile.display_name||"Connected OTG student";connectedName.style.cssText="margin:0 0 6px;color:#14532d;font-size:17px;font-weight:900";
+     const connectedCountry=document.createElement("p");connectedCountry.textContent=profile.country||"OTG Student Hub connection";connectedCountry.style.cssText="margin:0 0 12px;color:#64748b;font-size:12px";
+     const connectedStatus=document.createElement("p");connectedStatus.textContent="✓ Connection accepted";connectedStatus.style.cssText="margin:0 0 12px;color:#15803d;font-weight:800";
+     const callActions=document.createElement("div");callActions.style.cssText="display:flex;gap:8px;flex-wrap:wrap";
+     const voiceBtn=document.createElement("button");voiceBtn.type="button";voiceBtn.textContent="☎ Voice call";voiceBtn.style.cssText="padding:10px 12px;border:0;border-radius:9px;background:#0f766e;color:#fff;font-weight:900;cursor:pointer";voiceBtn.addEventListener("click",()=>window.otgStartStudentCall(otherId,profile.display_name||"Connected OTG student","voice",connectedStatus));
+     const videoBtn=document.createElement("button");videoBtn.type="button";videoBtn.textContent="▣ Video call";videoBtn.style.cssText="padding:10px 12px;border:0;border-radius:9px;background:#1d4ed8;color:#fff;font-weight:900;cursor:pointer";videoBtn.addEventListener("click",()=>window.otgStartStudentCall(otherId,profile.display_name||"Connected OTG student","video",connectedStatus));
+     callActions.append(voiceBtn,videoBtn);connectedCard.append(connectedName,connectedCountry,connectedStatus,callActions);
+     if(connectedProfilesError){const warning=document.createElement("small");warning.textContent="Profile details are unavailable, but you can still try calling this connection.";warning.style.cssText="display:block;margin-top:8px;color:#92400e";connectedCard.appendChild(warning);}
+     connectedList.appendChild(connectedCard);
+    });
+   }
    const listTitle=document.createElement("h4");listTitle.textContent="Discoverable students";listTitle.style.cssText="margin:22px 0 10px;color:#172554";area.appendChild(listTitle);
    const list=document.createElement("div");list.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px";area.appendChild(list);
    const visibleStudents=(studentProfiles||[]).filter(p=>p.user_id!==userId);
