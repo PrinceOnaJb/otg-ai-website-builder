@@ -39,6 +39,7 @@ const academyPanels = {
 };
 function openAcademyPanel(key,button){
  const panel=academyPanels[key]||academyPanels.home;
+ if(key==="assignments"&&window.otgAcademyIsAdmin===true)panel.title="Publish Student Assignment";
  document.querySelectorAll(".academy-nav").forEach(function(item){item.classList.remove("active");});
  if(button && button.classList) button.classList.add("active");
  const title=document.getElementById("academyPanelTitle");
@@ -81,7 +82,7 @@ async function loadAcademyPanelData(key,content){
   admin=false;
   window.otgAcademyIsAdmin=false;
  }
- const reviewNav=document.getElementById("otgReviewSubmissionsNav");if(reviewNav)reviewNav.hidden=!admin;
+ const reviewNav=document.getElementById("otgReviewSubmissionsNav");if(reviewNav)reviewNav.hidden=!admin;const publishNav=document.getElementById("otgPublishAssignmentNav");if(publishNav)publishNav.hidden=!admin;
  if(key==="submission-review"&&!admin){openAcademyPanel("home");return;}
  const esc=v=>String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
  const appendLessonInline=(parent,value)=>{const text=String(value==null?"":value);const pattern=/\*\*[^*]+\*\*|\*[^*]+\*/g;let cursor=0,match;while((match=pattern.exec(text))){if(match.index>cursor)parent.appendChild(document.createTextNode(text.slice(cursor,match.index)));const token=match[0];const node=document.createElement(token.startsWith("**")?"strong":"em");node.textContent=token.startsWith("**")?token.slice(2,-2):token.slice(1,-1);parent.appendChild(node);cursor=pattern.lastIndex;}if(cursor<text.length)parent.appendChild(document.createTextNode(text.slice(cursor)));};
@@ -3230,8 +3231,9 @@ header{
       <button class="academy-nav active" onclick="openAcademyPanel('home',this)">🏠 Home</button>
       <button class="academy-nav" onclick="openAcademyPanel('learn',this)">📚 Learn</button>
       <button class="academy-nav" onclick="openAcademyPanel('watch',this)">▶ Watch &amp; Learn</button>
-      <button class="academy-nav" onclick="openAcademyPanel('assignments',this)">📝 Submit Assignment</button>
-      <button class="academy-nav" id="otgReviewSubmissionsNav" hidden onclick="openAcademyPanel('submission-review',this)">📋 Review Submissions</button>
+      <button class="academy-nav" id="otgStudentAssignmentsNav" onclick="openAcademyPanel(window.otgAcademyIsAdmin===true?'submission-review':'assignments',this)">📝 Submit Assignment</button>
+      <button class="academy-nav" id="otgReviewSubmissionsNav" hidden onclick="openAcademyPanel('submission-review',this)">📝 Submit Assignment</button>
+      <button class="academy-nav" id="otgPublishAssignmentNav" hidden onclick="openAcademyPanel('assignments',this)">📤 Publish Student Assignment</button>
       <button class="academy-nav" onclick="openAcademyPanel('codelab',this)">💻 Code Lab</button>
       <button class="academy-nav" onclick="openAcademyPanel('projects',this)">🗂 My Projects</button>
       <button class="academy-nav" onclick="openAcademyPanel('how',this)">🧭 How it works</button>
