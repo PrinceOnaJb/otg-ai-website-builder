@@ -543,9 +543,11 @@ async function loadAcademyPanelData(key,content){
     instructions.appendChild(p);
    });
    questionBlocks.forEach(question=>{
-    // Keep the administrator's assignment preview readable. Student question cards are
-    // rendered together with their own answer controls below, exam-style.
-    if(!admin)return;
+    // Admins always see the full preview. For students, show questions here before
+    // the timed exam starts (and after it closes); during an active exam each question
+    // is displayed beside its answer controls inside the form below.
+    const showStudentReadOnlyQuestions=!admin&&timedDuration>0&&(!examAttempt||timedAttemptSubmitted||existingSubmission);
+    if(!admin&&!showStudentReadOnlyQuestions)return;
     const q=document.createElement("section");q.style.cssText="padding:14px;border:1px solid #dbe3ef;border-radius:12px;background:#f8fafc;color:#334155;line-height:1.65";
     const questionTitle=document.createElement("h5");questionTitle.textContent=question.title;questionTitle.style.cssText="margin:0 0 8px;color:#172554;font-size:15px;line-height:1.5";
     q.appendChild(questionTitle);
