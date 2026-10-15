@@ -4035,9 +4035,17 @@ const supabaseClient =
   }else if(status==="accepted"){
    title.textContent="Call accepted";detail.textContent=name+" accepted. Join your "+(call.call_type==="voice"?"voice":"video")+" call right here inside OTG Academy.";
    actions.append(makeButton("Join call","#0f766e",()=>startEmbeddedCall(call,direction,name)),makeButton("End call","#b91c1c",()=>changeStatus(call,"ended",detail)));
+  }else if(status==="starting"){
+   title.textContent="Opening OTG Open Call…";
+   detail.textContent="Preparing your in-app "+(call.call_type==="voice"?"voice":"video")+" call. Please keep Student Hub open.";
+   actions.append(makeButton("Close","#334155",()=>{closeOverlay();state.active=null;}));
   }else if(status==="no-online"){
    title.textContent="No students available yet";
    detail.textContent="OTG could not detect another approved student online, so no call was sent. Ask another approved student to sign in and keep Student Hub open, then tap Refresh calls and try again.";
+   actions.append(makeButton("Close","#334155",()=>{closeOverlay();state.active=null;}));
+  }else if(status==="call-error"){
+   title.textContent="Call could not start";
+   detail.textContent="The call request could not be completed. Please close this message, check your connection, and try again.";
    actions.append(makeButton("Close","#334155",()=>{closeOverlay();state.active=null;}));
   }else{
    title.textContent=({declined:"Call declined",missed:"Missed call",cancelled:"Call cancelled",ended:"Call ended"})[status]||"Call finished";
@@ -4110,15 +4118,18 @@ const supabaseClient =
  };
  window.addEventListener("otg-call-presence-updated",function(){if(typeof window.otgCallPanelRefresh==="function")window.otgCallPanelRefresh();});
  window.otgStartBroadcastCall=async function(mode,statusEl){
+  const startingCallId="otg-call-starting-"+Date.now();
   try{
+   if(state.active&&["ringing","accepted"].includes(state.active.call.status)){if(statusEl)statusEl.textContent="You already have a call in progress. Finish it before starting another.";return;}
+   showCall({id:startingCallId,call_type:mode,status:"starting",room_name:""},"outgoing","OTG students");
    const sessionResult=await client.auth.getSession();
    const signedInUser=sessionResult&&sessionResult.data&&sessionResult.data.session?sessionResult.data.session.user:null;
-   if(!signedInUser){if(statusEl)statusEl.textContent="Please sign in again before starting a call.";return;}
+   if(!signedInUser)throw new Error("Please sign in again before starting a call.");
+   if(!state.active||state.active.call.id!==startingCallId)return;
    if(state.userId!==signedInUser.id||!state.lobbyChannel)window.otgInitCallNotifications(signedInUser);
    let online=window.otgGetOnlineStudents();
-   if(!online.length){await new Promise(resolve=>window.setTimeout(resolve,1500));online=window.otgGetOnlineStudents();}
+   if(!online.length){await new Promise(resolve=>window.setTimeout(resolve,1800));if(!state.active||state.active.call.id!==startingCallId)return;online=window.otgGetOnlineStudents();}
    if(!online.length){if(statusEl)statusEl.textContent="No other approved students are currently detected online, so no call invitation was sent. Keep Student Hub open on another approved student account and use Refresh calls to check again.";showCall({id:"otg-no-online-"+Date.now(),call_type:mode,status:"no-online",room_name:""}, "outgoing", "other approved students");return;}
-   if(state.active&&["ringing","accepted"].includes(state.active.call.status)){if(statusEl)statusEl.textContent="You already have a call in progress. Finish it before starting another.";return;}
    if(statusEl)statusEl.textContent="Sending the call invitation to "+online.length+" online student"+(online.length===1?"":"s")+"…";
    const randomRoom=(window.crypto&&window.crypto.randomUUID)?window.crypto.randomUUID():("otg"+Date.now().toString(36)+Math.random().toString(36).slice(2));
    const roomName="OTGBroadcast-"+randomRoom.replace(/[^a-zA-Z0-9-]/g,"");
@@ -4129,7 +4140,7 @@ const supabaseClient =
    showCall(calls[0],"outgoing","all online students");
    if(statusEl)statusEl.textContent="Calling "+calls.length+" online student"+(calls.length===1?"":"s")+". The first student to accept will join the call.";
    window.setTimeout(async()=>{try{await client.from("otg_student_calls").update({status:"missed"}).eq("room_name",roomName).eq("status","ringing");}catch(_){}},47000);
-  }catch(error){console.error("OTG broadcast call failed:",error);if(statusEl)statusEl.textContent="Call could not start: "+(error&&error.message?error.message:"Please refresh Student Hub and try again.");}
+  }catch(error){console.error("OTG broadcast call failed:",error);if(statusEl)statusEl.textContent="Call could not start: "+(error&&error.message?error.message:"Please refresh Student Hub and try again.");if(state.active&&state.active.call.id===startingCallId)showCall({id:"otg-call-error-"+Date.now(),call_type:mode,status:"call-error",room_name:""},"outgoing","OTG call service");}
  };
  window.otgInitCallNotifications=function(user){
   if(!user||!user.id)return;if(state.userId===user.id&&state.channel&&state.lobbyChannel)return;
