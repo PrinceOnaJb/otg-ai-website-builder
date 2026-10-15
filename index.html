@@ -2784,9 +2784,15 @@ header{
       placeholder="Category e.g. Fashion"
       style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
 
+    <label for="otgProductImage" style="display:block;margin-top:8px;font-weight:700;">Product image URL (optional)</label>
     <input id="otgProductImage" type="url"
-      placeholder="Product image URL (https://...)"
+      placeholder="Paste an image URL (https://...)"
       style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+
+    <label for="otgProductImageFile" style="display:block;margin-top:8px;font-weight:700;">Or upload a product image</label>
+    <input id="otgProductImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif"
+      style="display:block;width:100%;padding:12px;margin:8px 0;border:1px dashed #94a3b8;border-radius:8px;box-sizing:border-box;background:#f8fafc;">
+    <small style="display:block;margin:0 0 12px;color:#64748b;line-height:1.5;">JPG, PNG, WebP or GIF · Maximum 5 MB. Uploading a file replaces the image URL above.</small>
 
     <input id="otgProductWhatsApp" type="text"
       placeholder="WhatsApp number e.g. 2348012345678"
@@ -3105,6 +3111,7 @@ header{
     $("otgProductPrice").value = "";
     $("otgProductCategory").value = "";
     $("otgProductImage").value = "";
+    if ($("otgProductImageFile")) $("otgProductImageFile").value = "";
     $("otgProductWhatsApp").value = "";
     $("otgProductDescription").value = "";
 
@@ -3122,7 +3129,10 @@ header{
     const name = $("otgProductName").value.trim();
     const price = $("otgProductPrice").value.trim();
     const category = $("otgProductCategory").value.trim();
-    const image_url = $("otgProductImage").value.trim();
+    let image_url = $("otgProductImage").value.trim();
+    const imageFile = $("otgProductImageFile") && $("otgProductImageFile").files
+      ? $("otgProductImageFile").files[0]
+      : null;
     const whatsapp_number = $("otgProductWhatsApp").value.trim();
     const description = $("otgProductDescription").value.trim();
 
@@ -3136,14 +3146,22 @@ header{
       return;
     }
 
-    if (image_url) {
+    if (imageFile) {
+      const allowedImageTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+      if (!allowedImageTypes.includes(imageFile.type)) {
+        showMessage("Please upload a JPG, PNG, WebP or GIF image.", true);
+        return;
+      }
+      if (imageFile.size > 5 * 1024 * 1024) {
+        showMessage("Your product image must be 5 MB or smaller.", true);
+        return;
+      }
+    }
+
+    if (image_url && !imageFile) {
       try {
         const parsedURL = new URL(image_url);
-
-        if (
-          parsedURL.protocol !== "https:" &&
-          parsedURL.protocol !== "http:"
-        ) {
+        if (parsedURL.protocol !== "https:" && parsedURL.protocol !== "http:") {
           throw new Error();
         }
       } catch (_) {
@@ -3172,6 +3190,25 @@ header{
         throw new Error(
           "The selected website was not found in your account."
         );
+      }
+
+      if (imageFile) {
+        const safeFileName = imageFile.name
+          .replace(/[^a-zA-Z0-9._-]/g, "-")
+          .slice(-80) || "product-image";
+        const storagePath = user.id + "/products/" + Date.now() + "-" + safeFileName;
+        const uploadResult = await db.storage
+          .from("otg-product-images")
+          .upload(storagePath, imageFile, {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: imageFile.type
+          });
+        if (uploadResult.error) throw uploadResult.error;
+        const publicImage = db.storage
+          .from("otg-product-images")
+          .getPublicUrl(storagePath);
+        image_url = publicImage.data.publicUrl;
       }
 
       const productData = {
@@ -3263,6 +3300,7 @@ header{
       $("otgProductPrice").value = product.price || "";
       $("otgProductCategory").value = product.category || "";
       $("otgProductImage").value = product.image_url || "";
+      if ($("otgProductImageFile")) $("otgProductImageFile").value = "";
       $("otgProductWhatsApp").value = product.whatsapp_number || "";
       $("otgProductDescription").value = product.description || "";
 
