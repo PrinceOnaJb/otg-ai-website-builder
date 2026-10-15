@@ -410,7 +410,7 @@ async function loadAcademyPanelData(key,content){
   if(error){const msg=document.createElement("p");msg.textContent="Lessons could not load: "+error.message;msg.style.cssText="padding:16px;border:1px solid #fecaca;border-radius:12px;background:#fff7f7;color:#991b1b";list.appendChild(msg);}
   else if(!data||!data.length){const empty=document.createElement("div");empty.style.cssText="padding:28px;border:1px dashed #cbd5e1;border-radius:16px;background:#f8fafc;color:#475569";empty.innerHTML=key==="watch"?"<strong>No video lessons yet</strong><p style='margin:8px 0 0;line-height:1.7'>Your coach's video lessons will appear here when a video link is added to a published lesson.</p>":"<strong>No published lessons yet</strong><p style='margin:8px 0 0;line-height:1.7'>Your coach's published lessons will appear here when available.</p>";list.appendChild(empty);}
   else {
-   let activeLearningStage="";
+   let activeLearningStage="",activeModuleLessonContainer=null;
    data.forEach((x,index)=>{
    const title=cleanLessonText(x.title)||"Untitled lesson";
    const courseName=cleanLessonText(x.course)||"Getting Started";
@@ -436,22 +436,55 @@ async function loadAcademyPanelData(key,content){
       advanced:{title:"ADVANCED  •  PROFESSIONAL PRACTICE",intro:"Develop brand identity, business materials, presentation skills and client-ready work.",number:"03"},
       additional:{title:"ADDITIONAL LEARNING",intro:"Explore more lessons and special topics from your OTG coach.",number:"04"}
      }[stageKey];
-     const stageHeader=document.createElement("section");
-     stageHeader.setAttribute("aria-label",stageDetails.title);
-     stageHeader.style.cssText="display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:13px;padding:16px 18px;border:1px solid #dbe4f0;border-radius:14px;background:linear-gradient(120deg,#f8fafc,#eef4ff);";
-     const stageNumber=document.createElement("span");
-     stageNumber.textContent=stageDetails.number;
-     stageNumber.style.cssText="display:grid;place-items:center;min-width:42px;height:42px;padding:0 8px;border-radius:11px;background:#172b52;color:#f6d27a;font-size:12px;font-weight:900;letter-spacing:.5px;";
-     const stageCopy=document.createElement("div");
-     const stageTitle=document.createElement("h3");
-     stageTitle.textContent=stageDetails.title;
-     stageTitle.style.cssText="margin:0 0 4px;color:#172b52;font-size:13px;letter-spacing:.8px;line-height:1.5;";
-     const stageIntro=document.createElement("p");
-     stageIntro.textContent=stageDetails.intro;
-     stageIntro.style.cssText="margin:0;color:#52617a;font-size:13px;line-height:1.65;";
-     stageCopy.append(stageTitle,stageIntro);
-     stageHeader.append(stageNumber,stageCopy);
-     list.appendChild(stageHeader);
+     activeModuleLessonContainer=null;
+     if(moduleMatch){
+      const moduleDetails=document.createElement("details");
+      moduleDetails.className="otg-learning-module";
+      moduleDetails.style.cssText="overflow:hidden;border:1px solid #d7e0eb;border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.055);";
+      const moduleSummary=document.createElement("summary");
+      moduleSummary.style.cssText="display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;padding:18px;cursor:pointer;list-style:none;background:linear-gradient(120deg,#f8fafc,#eef4ff);";
+      const moduleNumber=document.createElement("span");
+      moduleNumber.textContent=stageDetails.number;
+      moduleNumber.style.cssText="display:grid;place-items:center;width:48px;height:48px;border-radius:13px;background:#172b52;color:#f6d27a;font-size:14px;font-weight:900;letter-spacing:.5px;";
+      const moduleCopy=document.createElement("span");
+      moduleCopy.style.cssText="display:grid;gap:5px;min-width:0;";
+      const moduleTitle=document.createElement("span");
+      moduleTitle.textContent=stageDetails.title;
+      moduleTitle.style.cssText="display:block;color:#172b52;font-size:15px;font-weight:900;letter-spacing:.3px;line-height:1.45;";
+      const moduleIntro=document.createElement("span");
+      moduleIntro.textContent=stageDetails.intro;
+      moduleIntro.style.cssText="display:block;color:#52617a;font-size:13px;line-height:1.65;";
+      const moduleCount=document.createElement("span");
+      const moduleLessonCount=data.filter(item=>String(cleanLessonText(item.course)||"").trim()===String(courseName).trim()).length;
+      moduleCount.textContent=moduleLessonCount+" lessons";
+      moduleCount.style.cssText="display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:7px 10px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;color:#334155;font-size:12px;font-weight:800;";
+      moduleCopy.append(moduleTitle,moduleIntro);
+      moduleSummary.append(moduleNumber,moduleCopy,moduleCount);
+      moduleDetails.appendChild(moduleSummary);
+      const modulePanel=document.createElement("div");
+      modulePanel.className="otg-learning-module-lessons";
+      modulePanel.style.cssText="display:grid;gap:16px;padding:16px;background:#f8fafc;border-top:1px solid #dbe4f0;";
+      moduleDetails.appendChild(modulePanel);
+      list.appendChild(moduleDetails);
+      activeModuleLessonContainer=modulePanel;
+     }else{
+      const stageHeader=document.createElement("section");
+      stageHeader.setAttribute("aria-label",stageDetails.title);
+      stageHeader.style.cssText="display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:13px;padding:16px 18px;border:1px solid #dbe4f0;border-radius:14px;background:linear-gradient(120deg,#f8fafc,#eef4ff);";
+      const stageNumber=document.createElement("span");
+      stageNumber.textContent=stageDetails.number;
+      stageNumber.style.cssText="display:grid;place-items:center;min-width:42px;height:42px;padding:0 8px;border-radius:11px;background:#172b52;color:#f6d27a;font-size:12px;font-weight:900;letter-spacing:.5px;";
+      const stageCopy=document.createElement("div");
+      const stageTitle=document.createElement("h3");
+      stageTitle.textContent=stageDetails.title;
+      stageTitle.style.cssText="margin:0 0 4px;color:#172b52;font-size:13px;letter-spacing:.8px;line-height:1.5;";
+      const stageIntro=document.createElement("p");
+      stageIntro.textContent=stageDetails.intro;
+      stageIntro.style.cssText="margin:0;color:#52617a;font-size:13px;line-height:1.65;";
+      stageCopy.append(stageTitle,stageIntro);
+      stageHeader.append(stageNumber,stageCopy);
+      list.appendChild(stageHeader);
+     }
     }
    const description=cleanLessonText(x.description);
    const lessonText=cleanLessonText(x.content);
@@ -574,7 +607,7 @@ async function loadAcademyPanelData(key,content){
    });
    footer.appendChild(completeBtn);
    const topLink=document.createElement("button");topLink.type="button";topLink.textContent="Back to top ↑";topLink.style.cssText="border:1px solid #cbd5e1;border-radius:9px;padding:8px 12px;background:#fff;color:#334155;font-weight:700;cursor:pointer";topLink.addEventListener("click",()=>card.scrollIntoView({behavior:"smooth",block:"start"}));footer.appendChild(topLink);card.appendChild(footer);
-   list.appendChild(card);
+   (activeModuleLessonContainer||list).appendChild(card);
    });
   }
   if(data&&data.length)updateProgressDisplay(data.length);
