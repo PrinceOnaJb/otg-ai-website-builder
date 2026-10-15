@@ -431,7 +431,112 @@ button:focus-visible,a:focus-visible,select:focus-visible,textarea:focus-visible
 }
 </style>
 
-</head><body>"+htmlEditor.value+"<scr"+"ipt>"+js+"</scr"+"ipt></body></html>";status.textContent="Preview updated. Your code has not been published.";};
+</head><body>"+htmlEditor.value+"<scr"+"ipt>"+js+"</scr"+"ipt>
+<!-- OTG PROFESSIONAL DASHBOARD REFINEMENT: presentation-only CSS; existing features and scripts preserved -->
+<style id="otg-professional-dashboard-refinement">
+:root{--otg-deep-green:#14532d;--otg-green:#166534;--otg-gold:#c99a2e;--otg-ink:#172033;--otg-muted:#64748b;--otg-line:#e4e9e2}
+@media(min-width:1101px){
+  .navbar{gap:14px;padding:13px 20px}
+  .navbar .logo{font-size:19px;letter-spacing:-.35px}
+  .nav-links{flex-wrap:nowrap;gap:2px;min-width:0}
+  .nav-links button{padding:8px 9px;font-size:13px;white-space:nowrap}
+  .otg-sticky-welcome{max-width:245px;padding:6px 9px;gap:8px;border-color:#ead9a9;background:#fffdf6;box-shadow:0 3px 10px rgba(20,83,45,.06)}
+  .otg-sticky-welcome img{width:38px;height:38px;flex-basis:38px}
+  .otg-sticky-welcome-copy{font-size:11px;color:#244333}
+}
+.hero{padding:clamp(46px,6vw,76px) 22px;background:linear-gradient(125deg,#124b2a 0%,#176238 58%,#1f6b42 100%);position:relative;isolation:isolate}
+.hero:before{content:"";position:absolute;z-index:-1;inset:0;background:radial-gradient(circle at 85% 14%,rgba(231,190,91,.16),transparent 30%),linear-gradient(90deg,transparent 60%,rgba(255,255,255,.025));pointer-events:none}
+.hero-inner{gap:clamp(28px,4vw,52px)}
+.hero h1{max-width:720px;font-size:clamp(34px,4.7vw,54px);line-height:1.12;letter-spacing:-1.2px;margin-bottom:17px;text-wrap:balance}
+.hero p{max-width:590px;font-size:clamp(15px,1.4vw,17px);line-height:1.8;color:rgba(255,255,255,.9)}
+.hero-actions{gap:11px;margin-top:25px}
+.hero-actions .primary-btn{background:#fff;color:#14532d;box-shadow:0 5px 15px rgba(0,0,0,.12)}
+.hero-actions .primary-btn:hover{background:#fff8e6;transform:translateY(-1px)}
+.hero-actions .secondary-btn{border-color:rgba(255,255,255,.52);background:rgba(255,255,255,.08)}
+.hero-actions .secondary-btn:hover{background:rgba(255,255,255,.16)}
+.hero-actions button{transition:transform .18s ease,background .18s ease,box-shadow .18s ease}
+.hero-card{padding:clamp(22px,3vw,30px);border:1px solid rgba(238,204,120,.45);border-radius:17px;background:rgba(255,255,255,.96);color:var(--otg-ink);box-shadow:0 18px 48px rgba(3,25,12,.16);backdrop-filter:blur(8px)}
+.hero-card h3{color:#19452d;font-size:20px;margin-bottom:10px}
+.hero-card p,.hero-card li{color:#536356;line-height:1.75}
+.hero-card strong{color:#14532d}
+.section-heading h2{letter-spacing:-.45px}
+.stat-card,.project-card,.about-card,.generator{border-color:var(--otg-line);box-shadow:0 5px 18px rgba(20,35,25,.035)}
+.stat-card,.project-card{transition:transform .18s ease,box-shadow .18s ease}
+.stat-card:hover,.project-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(20,35,25,.08)}
+.stat-card strong,.project-actions button.primary{color:#14532d}
+.project-actions button.primary{background:#e7f3e9}
+.project-actions button.primary:hover{background:#d5ead9}
+#academyDashboard .academy-layout{gap:20px}
+#academyDashboard .academy-sidebar{background:linear-gradient(180deg,#153d2a,#102f21);border:1px solid rgba(201,154,46,.28);box-shadow:0 10px 28px rgba(16,47,33,.12)}
+#academyDashboard .academy-brand{border-bottom-color:rgba(255,255,255,.16)}
+#academyDashboard .academy-brand>span{background:#e7c36b;color:#173c29;border-radius:12px}
+#academyDashboard .academy-nav{border-left:3px solid transparent;padding:9px 10px;color:#e0eadf}
+#academyDashboard .academy-nav:hover,#academyDashboard .academy-nav.active{background:rgba(255,255,255,.11);border-left-color:#e7c36b;color:#fff;transform:none}
+#academyDashboard .academy-welcome{border-color:#ead9a9;background:linear-gradient(120deg,#fffdf7,#f6f8f2);box-shadow:0 5px 18px rgba(20,35,25,.04)}
+#academyDashboard .academy-eyebrow{color:#8a6718}
+#academyDashboard .academy-welcome h3{font-size:clamp(21px,2.2vw,27px);line-height:1.25;letter-spacing:-.4px;color:#173c29}
+#academyDashboard .academy-avatar{background:#e9f1e7;color:#173c29;border:1px solid #e4d4a4}
+#academyDashboard .academy-stat{border-color:#e4e9e2;border-radius:13px;box-shadow:0 4px 14px rgba(20,35,25,.035)}
+#academyDashboard .academy-stat strong{color:#176238}
+#academyDashboard .academy-content-card{border-color:#e4e9e2;border-radius:16px;box-shadow:0 6px 20px rgba(20,35,25,.035)}
+#academyDashboard .academy-content-card h3{color:#173c29}
+#academyDashboard .academy-content-card .primary-btn{background:#176238;color:#fff}
+#academyDashboard .academy-content-card .primary-btn:hover{background:#124b2a}
+#academyDashboard .otg-home-hero{border-color:#e6d8b2;background:radial-gradient(circle at 92% 10%,rgba(231,195,107,.18),transparent 32%),linear-gradient(125deg,#fffdf7,#f5f8f1);box-shadow:0 7px 22px rgba(20,35,25,.04)}
+#academyDashboard .otg-home-eyebrow{color:#8a6718}
+#academyDashboard .otg-home-hero h3{font-size:clamp(23px,2.5vw,31px);letter-spacing:-.5px}
+#academyDashboard .otg-home-shortcut{border-color:#e2e8df;box-shadow:0 4px 12px rgba(20,35,25,.025)}
+#academyDashboard .otg-home-shortcut:hover{border-color:#d5bc78;box-shadow:0 9px 20px rgba(20,35,25,.07)}
+#academyDashboard .otg-home-shortcut-number{background:#f8efd7;color:#6d5316}
+#academyDashboard .otg-home-shortcut-arrow{color:#176238}
+#academyDashboard .otg-home-section-title{color:#173c29}
+@media(max-width:1100px){
+ .navbar{gap:12px}
+ .nav-links{gap:3px}
+ .nav-links button{padding:8px 9px;font-size:13px}
+ .otg-sticky-welcome{max-width:100%}
+}
+@media(max-width:900px){
+ .navbar{align-items:center;flex-wrap:wrap}
+ .nav-links{order:3;width:100%;flex-wrap:wrap}
+ .otg-sticky-welcome{order:2;margin-left:auto}
+ .hero{padding:48px 20px}
+ .hero h1{font-size:clamp(32px,6vw,45px);max-width:680px}
+}
+@media(max-width:650px){
+ .navbar{align-items:stretch;gap:10px;padding:12px 15px}
+ .navbar .logo{align-self:flex-start}
+ .nav-links{gap:5px}
+ .nav-links button{padding:8px 9px;font-size:12px}
+ .otg-sticky-welcome{align-self:stretch;max-width:100%;margin-left:0;border-radius:11px}
+ .hero{padding:42px 17px}
+ .hero h1{font-size:clamp(30px,8vw,39px);letter-spacing:-.7px;line-height:1.14}
+ .hero p{font-size:15px}
+ .hero-card{padding:21px;border-radius:14px}
+ .hero-actions{display:grid;grid-template-columns:1fr;max-width:330px}
+ .hero-actions button{width:100%;min-height:46px}
+ #academyDashboard .academy-sidebar{grid-template-columns:repeat(2,minmax(0,1fr));padding:12px;gap:5px}
+ #academyDashboard .academy-nav{font-size:12px;line-height:1.45;padding:9px 8px;overflow-wrap:anywhere}
+ #academyDashboard .academy-welcome{align-items:flex-start;gap:10px;padding:17px}
+ #academyDashboard .academy-avatar{flex:0 0 44px;width:44px;height:44px;overflow:hidden}
+ #academyDashboard .academy-avatar img{width:44px!important;height:44px!important}
+ #academyDashboard .academy-content-card{padding:21px}
+ #academyDashboard .otg-home-hero{padding:20px;gap:12px}
+ #academyDashboard .otg-home-mark img{width:54px;height:54px}
+}
+@media(max-width:380px){
+ #academyDashboard .academy-sidebar{grid-template-columns:1fr}
+ #academyDashboard .academy-brand{grid-column:1}
+ .hero h1{font-size:29px}
+}
+@media(prefers-reduced-motion:reduce){
+ .hero-actions button,.stat-card,.project-card{transition:none!important}
+ .stat-card:hover,.project-card:hover{transform:none}
+}
+</style>
+<!-- END OTG PROFESSIONAL DASHBOARD REFINEMENT -->
+
+</body></html>";status.textContent="Preview updated. Your code has not been published.";};
   makeButton("▶ Run code",true,runCode);
   makeButton("Save draft on this device",false,()=>{try{localStorage.setItem("otgAcademyCodeLabDraft",JSON.stringify({html:htmlEditor.value,css:cssEditor.value,js:jsEditor.value}));status.textContent="Draft saved on this device only.";}catch(e){status.textContent="This browser did not allow a local draft to be saved.";}}); 
   makeButton("Load saved draft",false,()=>{try{const raw=localStorage.getItem("otgAcademyCodeLabDraft");if(!raw){status.textContent="No saved draft was found on this device.";return;}const d=JSON.parse(raw);htmlEditor.value=d.html||"";cssEditor.value=d.css||"";jsEditor.value=d.js||"";runCode();status.textContent="Saved draft loaded from this device.";}catch(e){status.textContent="Could not load the saved draft.";}}); 
