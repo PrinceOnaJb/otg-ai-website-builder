@@ -6919,34 +6919,39 @@ function ensureAdminPanel(){
     panel.id = "otgAdminApprovalPanel";
     panel.className = "otg-admin-approval";
     panel.innerHTML = '<style id="otgAdminApprovalStyles">' +
-      '#otgAdminApprovalPanel{box-sizing:border-box;width:calc(100% - 24px);max-width:1120px;margin:18px auto 24px;padding:0!important;background:#fff;border:1px solid #dbe3ef!important;border-radius:18px!important;box-shadow:0 10px 32px rgba(15,23,42,.08)!important;overflow:hidden;color:#172033;font-family:Arial,Helvetica,sans-serif}' +
+      '#otgAdminApprovalPanel{box-sizing:border-box;width:calc(100% - 24px);max-width:1120px;margin:28px auto 34px;padding:0!important;background:#fffdf8;border:1px solid #d9e4d8!important;border-radius:20px!important;box-shadow:0 16px 42px rgba(18,59,40,.12)!important;overflow:hidden;color:#172033;font-family:Arial,Helvetica,sans-serif}' +
       '#otgAdminApprovalPanel *{box-sizing:border-box}' +
-      '#otgAdminApprovalPanel .otg-ap-head{padding:22px 22px 18px;background:linear-gradient(135deg,#f8fbff,#eef4ff);border-bottom:1px solid #dbe3ef}' +
-      '#otgAdminApprovalPanel .otg-ap-kicker{font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#64748b;margin:0 0 8px}' +
-      '#otgAdminApprovalPanel h2{font-size:clamp(22px,4vw,30px);line-height:1.2;margin:0;color:#17346b;font-weight:800}' +
-      '#otgAdminApprovalPanel .otg-ap-desc{font-size:14px;line-height:1.6;color:#526176;margin:8px 0 0;max-width:620px}' +
-      '#otgAdminApprovalPanel .otg-ap-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid #e8edf5;background:#fff}' +
-      '#otgAdminApprovalPanel .otg-ap-count{font-size:13px;color:#526176;font-weight:700}' +
-      '#otgAdminApprovalPanel #otgRefreshApprovals{margin:0!important;padding:10px 14px!important;border:1px solid #cbd8ec!important;border-radius:9px!important;background:#173b75!important;color:#fff!important;font-size:13px;font-weight:800;cursor:pointer}' +
+      '#otgAdminApprovalPanel .otg-ap-head{padding:25px 24px 21px;background:linear-gradient(135deg,#123b28,#205b3c);border-bottom:3px solid #d8b45a}' +
+      '#otgAdminApprovalPanel .otg-ap-kicker{font-size:11px;font-weight:850;letter-spacing:1.7px;text-transform:uppercase;color:#e7cb78;margin:0 0 9px}' +
+      '#otgAdminApprovalPanel h2{font-size:clamp(22px,4vw,30px);line-height:1.2;margin:0;color:#fff;font-weight:850;letter-spacing:-.35px}' +
+      '#otgAdminApprovalPanel .otg-ap-desc{font-size:14px;line-height:1.7;color:#e0eee3;margin:9px 0 0;max-width:650px}' +
+      '#otgAdminApprovalPanel .otg-ap-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:15px 20px;border-bottom:1px solid #e9e4d7;background:#fffdf8}' +
+      '#otgAdminApprovalPanel .otg-ap-count{font-size:13px;line-height:1.7;color:#345443;font-weight:800}' +
+      '#otgAdminApprovalPanel #otgRefreshApprovals{margin:0!important;padding:10px 15px!important;border:1px solid #c5a044!important;border-radius:10px!important;background:#e2c267!important;color:#173b2a!important;font-size:13px;font-weight:850;cursor:pointer;box-shadow:0 3px 8px rgba(18,59,40,.08)}' +
       '#otgAdminApprovalPanel #otgApprovalList{padding:8px 16px 16px}' +
       '#otgAdminApprovalPanel .otg-ap-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px;padding:16px 4px;border-bottom:1px solid #edf1f6}' +
       '#otgAdminApprovalPanel .otg-ap-row:last-child{border-bottom:0}' +
       '#otgAdminApprovalPanel .otg-ap-email{display:block;min-width:0;font-size:14px;line-height:1.5;font-weight:750;color:#1e293b;overflow-wrap:anywhere;word-break:break-word}' +
       '#otgAdminApprovalPanel .otg-ap-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:7px}' +
       '#otgAdminApprovalPanel .otg-ap-status{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;font-size:11px;line-height:1.2;font-weight:800;text-transform:capitalize}' +
-      '#otgAdminApprovalPanel .otg-ap-status.approved{background:#dcfce7;color:#166534}' +
-      '#otgAdminApprovalPanel .otg-ap-status.pending{background:#fff7d6;color:#854d0e}' +
+      '#otgAdminApprovalPanel .otg-ap-status.approved{background:#dff4e5;color:#17613b}' +
+      '#otgAdminApprovalPanel .otg-ap-status.pending{background:#fff1c7;color:#805b0b}' +
       '#otgAdminApprovalPanel .otg-ap-status.rejected{background:#fee2e2;color:#991b1b}' +
       '#otgAdminApprovalPanel .otg-ap-date{font-size:11px;color:#8290a3}' +
       '#otgAdminApprovalPanel .otg-ap-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}' +
       '#otgAdminApprovalPanel .otg-ap-action{min-height:38px;padding:9px 12px;border:1px solid transparent;border-radius:9px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}' +
-      '#otgAdminApprovalPanel .otg-ap-approve{background:#167347;color:#fff}' +
+      '#otgAdminApprovalPanel .otg-ap-approve{background:#17613b;color:#fff}' +
       '#otgAdminApprovalPanel .otg-ap-reject{background:#fff;color:#b4232c;border-color:#f1c4c7}' +
-      '#otgAdminApprovalPanel .otg-ap-empty{padding:26px 10px;text-align:center;color:#64748b;font-size:14px;line-height:1.6}' +
+      '#otgAdminApprovalPanel .otg-ap-empty{padding:28px 12px;text-align:center;color:#617568;font-size:14px;line-height:1.7}' +
       '@media(max-width:560px){#otgAdminApprovalPanel{width:calc(100% - 16px);margin:12px auto 20px;border-radius:14px!important}#otgAdminApprovalPanel .otg-ap-head{padding:18px 16px 15px}#otgAdminApprovalPanel .otg-ap-tools{padding:12px 14px}#otgAdminApprovalPanel #otgApprovalList{padding:4px 12px 12px}#otgAdminApprovalPanel .otg-ap-row{grid-template-columns:minmax(0,1fr);gap:11px;padding:15px 2px}#otgAdminApprovalPanel .otg-ap-actions{justify-content:flex-start}#otgAdminApprovalPanel .otg-ap-action{min-height:36px;padding:9px 13px}}' +
-      '</style><header class="otg-ap-head"><p class="otg-ap-kicker">OTG GRAPHIC ACADEMY · ADMINISTRATION</p><h2>Student account approvals</h2><p class="otg-ap-desc">Review registrations and manage access to the Student Hub. Only approved students can enter the builder.</p></header><div class="otg-ap-tools"><span id="otgApprovalCount" class="otg-ap-count">Loading student accounts…</span><button type="button" id="otgRefreshApprovals">↻ Refresh list</button></div><div id="otgApprovalList" aria-live="polite"><div class="otg-ap-empty">Loading student accounts…</div></div>';
+      '</style><header class="otg-ap-head"><p class="otg-ap-kicker">OTG GRAPHIC ACADEMY · ADMIN CONTROL CENTRE</p><h2>Student account approvals</h2><p class="otg-ap-desc">Review new registrations, manage student access and keep the Student Hub secure. Only approved students can enter the learning workspace.</p></header><div class="otg-ap-tools"><span id="otgApprovalCount" class="otg-ap-count">Loading student accounts…</span><button type="button" id="otgRefreshApprovals">↻ Refresh list</button></div><div id="otgApprovalList" aria-live="polite"><div class="otg-ap-empty">Loading student accounts…</div></div>';
     const app = $("app");
-    app.insertBefore(panel, app.firstChild);
+    const academyDashboard = $("academyDashboard");
+    if(academyDashboard && academyDashboard.parentElement === app){
+      academyDashboard.insertAdjacentElement("afterend", panel);
+    }else{
+      app.appendChild(panel);
+    }
     $("otgRefreshApprovals").addEventListener("click", loadAdminApprovals);
   }
   loadAdminApprovals();
