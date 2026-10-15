@@ -145,6 +145,8 @@ async function loadAcademyPanelData(key,content){
    ["Lessons completed",()=>db.from("academy_lesson_progress").select("id",{count:"exact",head:true}).eq("student_id",userId).not("completed_at","is",null)],
    ["Available assignments",()=>db.from("academy_assignments").select("id",{count:"exact",head:true}).eq("is_published",true)],
    ["My submissions",()=>db.from("academy_submissions").select("id",{count:"exact",head:true}).eq("student_id",userId)],
+   ["Awaiting review",()=>db.from("academy_submissions").select("id",{count:"exact",head:true}).eq("student_id",userId).in("status",["submitted","reviewing"])],
+   ["Results released",()=>db.from("academy_submissions").select("id",{count:"exact",head:true}).eq("student_id",userId).eq("status","approved")],
    ["My websites",()=>db.from("projects").select("id",{count:"exact",head:true}).eq("user_id",userId)]
   ];
   const results=await Promise.all(stats.map(async item=>{try{return {label:item[0],result:await item[1]()};}catch(error){return {label:item[0],result:{count:null,error}};}}));
