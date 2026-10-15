@@ -1041,7 +1041,7 @@ async function loadAcademyPanelData(key,content){
    const broadcastTitle=document.createElement("h3");broadcastTitle.textContent="OTG Open Call";broadcastTitle.style.cssText="margin:0 0 8px;color:#14532d;font-size:20px;font-weight:900";broadcastCard.appendChild(broadcastTitle);
    const broadcastInfo=document.createElement("p");broadcastInfo.textContent="Tap once to ring every approved student currently online. The first student to accept joins the same call; the other invitations close automatically.";broadcastInfo.style.cssText="margin:0 0 14px;color:#334155;line-height:1.65";broadcastCard.appendChild(broadcastInfo);
    const onlineSummary=document.createElement("p");onlineSummary.id="otgCallOnlineSummary";onlineSummary.setAttribute("role","status");onlineSummary.style.cssText="margin:0 0 14px;padding:10px 12px;border-radius:9px;background:#fff;color:#334155;font-weight:800";onlineSummary.textContent="Connecting to the online student list…";broadcastCard.appendChild(onlineSummary);
-   const onlineList=document.createElement("div");onlineList.id="otgCallOnlineList";onlineList.style.cssText="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:15px";broadcastCard.appendChild(onlineList);
+   const onlineList=document.createElement("div");onlineList.id="otgCallOnlineList";onlineList.style.cssText="display:none";broadcastCard.appendChild(onlineList);
    const callActions=document.createElement("div");callActions.style.cssText="display:flex;gap:10px;flex-wrap:wrap";broadcastCard.appendChild(callActions);
    const voiceAll=document.createElement("button");voiceAll.type="button";voiceAll.textContent="☎ Call everyone — Voice";voiceAll.style.cssText="padding:12px 15px;border:0;border-radius:10px;background:#0f766e;color:#fff;font-weight:900;cursor:pointer";
    const videoAll=document.createElement("button");videoAll.type="button";videoAll.textContent="▣ Call everyone — Video";videoAll.style.cssText="padding:12px 15px;border:0;border-radius:10px;background:#1d4ed8;color:#fff;font-weight:900;cursor:pointer";
@@ -1052,8 +1052,6 @@ async function loadAcademyPanelData(key,content){
     const people=typeof window.otgGetOnlineStudents==="function"?window.otgGetOnlineStudents():[];
     onlineSummary.textContent=people.length?people.length+" other approved student"+(people.length===1?" is":"s are")+" online and can receive your call.":"No other approved students are showing online yet. Students need to keep OTG Academy open and stay signed in.";
     onlineList.replaceChildren();
-    if(!people.length){const empty=document.createElement("span");empty.textContent="Waiting for students to come online";empty.style.cssText="padding:7px 10px;border:1px dashed #94a3b8;border-radius:999px;color:#64748b;font-size:12px";onlineList.appendChild(empty);}
-    people.forEach(person=>{const pill=document.createElement("span");pill.textContent="● "+person.display_name;pill.style.cssText="padding:7px 10px;border-radius:999px;background:#dcfce7;color:#166534;font-size:12px;font-weight:800";onlineList.appendChild(pill);});
    };
    window.otgCallPanelRefresh=refreshOnline;refreshOnline();
    callSection("Recent call sessions");
