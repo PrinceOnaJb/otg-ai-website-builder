@@ -4035,6 +4035,10 @@ const supabaseClient =
   }else if(status==="accepted"){
    title.textContent="Call accepted";detail.textContent=name+" accepted. Join your "+(call.call_type==="voice"?"voice":"video")+" call right here inside OTG Academy.";
    actions.append(makeButton("Join call","#0f766e",()=>startEmbeddedCall(call,direction,name)),makeButton("End call","#b91c1c",()=>changeStatus(call,"ended",detail)));
+  }else if(status==="no-online"){
+   title.textContent="No students available yet";
+   detail.textContent="OTG could not detect another approved student online, so no call was sent. Ask another approved student to sign in and keep Student Hub open, then tap Refresh calls and try again.";
+   actions.append(makeButton("Close","#334155",()=>{closeOverlay();state.active=null;}));
   }else{
    title.textContent=({declined:"Call declined",missed:"Missed call",cancelled:"Call cancelled",ended:"Call ended"})[status]||"Call finished";
    detail.textContent=status==="declined"?name+" declined the call.":status==="missed"?"There was no answer. You can try again later.":status==="cancelled"?"The caller cancelled this call.":"This call has ended.";
