@@ -7325,8 +7325,33 @@ supabaseClient
     var btn=document.getElementById('otgInstallAppButton');
     if(btn) btn.hidden=true;
   });
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addInstallButton,{once:true});
-  else addInstallButton();
+  function setupConnectionNotice(){
+    var notice=document.getElementById('otgConnectionNotice');
+    if(!notice){
+      notice=document.createElement('div');
+      notice.id='otgConnectionNotice';
+      notice.setAttribute('role','status');
+      notice.setAttribute('aria-live','polite');
+      notice.hidden=true;
+      notice.style.cssText='box-sizing:border-box;position:fixed;z-index:100000;top:0;left:0;right:0;padding:11px 16px;background:#7f1d1d;color:#fff;text-align:center;font:700 14px/1.45 Arial,sans-serif;box-shadow:0 3px 14px rgba(0,0,0,.18);display:none';
+      document.body.appendChild(notice);
+    }
+    function refreshConnectionNotice(){
+      var offline=!navigator.onLine;
+      notice.hidden=!offline;
+      notice.style.display=offline?'block':'none';
+      notice.textContent=offline?'You are offline. Some Student Hub features need internet access. Reconnect and try again.':'';
+    }
+    window.addEventListener('offline',refreshConnectionNotice);
+    window.addEventListener('online',refreshConnectionNotice);
+    refreshConnectionNotice();
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',function(){addInstallButton();setupConnectionNotice();},{once:true});
+  }else{
+    addInstallButton();
+    setupConnectionNotice();
+  }
 })();
 </script>
 
