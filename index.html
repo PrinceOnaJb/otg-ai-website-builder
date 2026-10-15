@@ -2447,6 +2447,22 @@ header{
 
     </div>
 
+    <div class="example-card">
+
+      <h3>
+        Product Store
+      </h3>
+
+      <p>
+        Create a polished storefront for products and services.
+      </p>
+
+      <button onclick="loadExample('store')">
+        Use Example
+      </button>
+
+    </div>
+
   </div>
 
 </section>
@@ -4505,7 +4521,10 @@ function loadExample(type){
       "Create a professional portfolio website for me as a graphic designer.",
 
     restaurant:
-      "Create a beautiful website for my restaurant with an about section, menu and contact information."
+      "Create a beautiful website for my restaurant with an about section, menu and contact information.",
+
+    store:
+      "Create a premium, mobile-friendly online product store for my graphic design business. Use an elegant green and warm gold palette, a polished hero section, product category highlights, a clean product catalogue area, clear prices, product descriptions, WhatsApp enquiry calls to action, trust-building information, and a professional footer. Do not invent real products or prices; leave the catalogue ready for my saved products."
 
   };
 
@@ -4614,14 +4633,16 @@ async function generateWithAI(){
         }
       );
 
-    if(!response.ok){
-      throw new Error(
-        "AI request failed"
-      );
-    }
-
     const data =
       await response.json();
+
+    if(!response.ok){
+      throw new Error(
+        data && data.error
+          ? data.error
+          : "AI generation is temporarily unavailable. Please try again."
+      );
+    }
 
     website = {
       html:data.html || "",
@@ -4730,7 +4751,7 @@ async function generateWithAI(){
     });
 
     showToast(
-      "Website created successfully."
+      "AI generation is unavailable right now, so a starter template was loaded instead. Please review and customise it before publishing."
     );
 
   }finally{
