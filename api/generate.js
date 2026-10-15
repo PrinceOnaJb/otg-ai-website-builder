@@ -21,6 +21,24 @@ export default async function handler(req, res) {
       });
     }
 
+    if (String(prompt).length > 5000) {
+      return res.status(413).json({
+        error: "Please keep your website description under 5,000 characters."
+      });
+    }
+
+    if ([html, css, js].some(value => String(value || "").length > 40000)) {
+      return res.status(413).json({
+        error: "The existing website code is too large to process in one request. Please simplify it or start with a smaller section."
+      });
+    }
+
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(503).json({
+        error: "AI generation is not configured yet. Please contact OTG support."
+      });
+    }
+
     function normalizeWhatsApp(number) {
       if (!number) return "";
 
