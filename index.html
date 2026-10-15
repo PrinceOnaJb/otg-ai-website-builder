@@ -4175,6 +4175,23 @@ templates.school || templates.business;
 templates.event =
 templates.event || templates.business;
 
+/* Professional finishing layer for the eight built-in templates. Existing saved projects are not changed. */
+const otgTemplateThemes = {
+  business:{accent:"#147a45",hero:"linear-gradient(135deg,#0b3d2e 0%,#147a45 55%,#1b8b67 100%)",soft:"#eef7f1"},
+  portfolio:{accent:"#b7791f",hero:"linear-gradient(135deg,#111827 0%,#312e81 55%,#6d28d9 100%)",soft:"#f5f3ff"},
+  fashion:{accent:"#9f1239",hero:"linear-gradient(135deg,#18181b 0%,#3f1727 58%,#9f1239 100%)",soft:"#fff1f2"},
+  restaurant:{accent:"#9a3412",hero:"linear-gradient(135deg,#431407 0%,#7c2d12 55%,#c2410c 100%)",soft:"#fff7ed"},
+  agency:{accent:"#4338ca",hero:"linear-gradient(135deg,#172554 0%,#3730a3 55%,#6d28d9 100%)",soft:"#eef2ff"},
+  school:{accent:"#1d4ed8",hero:"linear-gradient(135deg,#102a56 0%,#1d4ed8 55%,#0891b2 100%)",soft:"#eff6ff"},
+  event:{accent:"#a16207",hero:"linear-gradient(135deg,#1c1917 0%,#713f12 55%,#a16207 100%)",soft:"#fffbeb"},
+  personal:{accent:"#0f766e",hero:"linear-gradient(135deg,#042f2e 0%,#115e59 55%,#0f766e 100%)",soft:"#f0fdfa"}
+};
+const otgTemplateFinishingCss = "*{box-sizing:border-box}\nhtml{scroll-behavior:smooth}\nbody{margin:0!important;font-family:Inter,Arial,Helvetica,sans-serif!important;color:#172033!important;background:#f8fafc!important;line-height:1.7!important;-webkit-font-smoothing:antialiased}\nsection{position:relative;isolation:isolate;padding:clamp(42px,7vw,88px) clamp(18px,5vw,32px)!important;overflow:hidden}\nsection:first-of-type{background:__HERO__!important;color:#fff!important;text-align:center!important;padding-top:clamp(68px,10vw,112px)!important;padding-bottom:clamp(68px,10vw,112px)!important}\nsection:first-of-type h1{max-width:1000px;margin:0 auto 16px!important;font-size:clamp(34px,6vw,64px)!important;font-weight:850!important;line-height:1.08!important;letter-spacing:-.045em!important;color:#fff!important}\nsection:first-of-type p{max-width:760px;margin:0 auto 18px!important;color:rgba(255,255,255,.88)!important;font-size:clamp(16px,2vw,21px)!important;line-height:1.75!important}\nsection:nth-of-type(2),section:nth-of-type(4),section:nth-of-type(6){background:#fff!important;color:#172033!important}\nsection:nth-of-type(3),section:nth-of-type(5),section:nth-of-type(7){background:__SOFT__!important;color:#172033!important}\nsection h2{font-size:clamp(26px,4vw,38px)!important;line-height:1.2!important;letter-spacing:-.025em!important;color:#172033!important;margin:0 0 18px!important}\nsection h3{font-size:clamp(19px,2.6vw,24px)!important;line-height:1.35!important;color:#172033!important;margin:30px 0 10px!important}\nsection p,section li{font-size:16px!important;line-height:1.85!important;color:#475569!important}\nsection ul{padding-left:24px!important}\nsection a:not(#whatsappButton){display:inline-block!important;background:__ACCENT__!important;color:#fff!important;text-decoration:none!important;border-radius:10px!important;padding:12px 18px!important;font-weight:800!important;box-shadow:0 8px 18px rgba(15,23,42,.12)!important}\nsection a:not(#whatsappButton):hover{filter:brightness(1.08);transform:translateY(-1px)}\nsection div[style*=\"border-radius\"]{border:1px solid rgba(148,163,184,.22)!important;box-shadow:0 12px 30px rgba(15,23,42,.07)!important}\nsection [style*=\"display:grid\"]{gap:clamp(14px,2vw,24px)!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))!important}\n#whatsappButton{display:inline-block!important;margin:18px 0 0!important;border-radius:10px!important;padding:13px 20px!important;font-weight:800!important;box-shadow:0 8px 18px rgba(0,0,0,.16)!important}\nimg,video,iframe{max-width:100%;height:auto}\na,button{transition:transform .18s ease,filter .18s ease,box-shadow .18s ease}\na:focus-visible,button:focus-visible{outline:3px solid __ACCENT__;outline-offset:3px}\n@media(max-width:600px){section{padding-left:18px!important;padding-right:18px!important}section:first-of-type h1{letter-spacing:-.025em!important}section p,section li{font-size:15px!important}section [style*=\"display:grid\"]{grid-template-columns:1fr!important}}\n@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}";
+Object.keys(otgTemplateThemes).forEach(function(name){
+  const theme=otgTemplateThemes[name];
+  const finishing=otgTemplateFinishingCss.replace(/__ACCENT__/g,theme.accent).replace(/__HERO__/g,theme.hero).replace(/__SOFT__/g,theme.soft);
+  templates[name].css=(templates[name].css||"")+"\n"+finishing;
+});
 function loadTemplate(name){
 
   const template =
