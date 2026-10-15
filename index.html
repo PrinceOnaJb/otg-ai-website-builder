@@ -3912,7 +3912,7 @@ const supabaseClient =
  "use strict";
  const client=supabaseClient;
  const state=window.otgCallState=window.otgCallState||{channel:null,userId:null,active:null,overlay:null};
- function roomUrl(call){return "https://meet.jit.si/OTG-Student-Call-"+call.room_name;}
+ function roomUrl(call){return "https://meet.jit.si/OTG-Student-Call-"+call.room_name+(call.call_type==="voice"?"#config.startAudioOnly=true":"");}
  function closeOverlay(){const el=document.getElementById("otgCallOverlay");if(el)el.remove();state.overlay=null;}
  function makeButton(label,color,fn){const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:11px 15px;border:0;border-radius:10px;background:"+color+";color:#fff;font-weight:800;font-size:14px;cursor:pointer";b.addEventListener("click",fn);return b;}
  function showCall(call,direction,peerName){
@@ -3957,7 +3957,11 @@ const supabaseClient =
   const direction=call.caller_id===userId?"outgoing":"incoming";
   if(call.status==="ringing"||call.status==="accepted"){
    if(state.active&&state.active.call.id!==call.id&&["ringing","accepted"].includes(state.active.call.status))return;
-   const name=await getPeerName(call,userId);showCall(call,direction,name);return;
+   const name=await getPeerName(call,userId);
+   if(direction==="incoming"&&call.status==="ringing"&&document.hidden&&"Notification" in window&&Notification.permission==="granted"){
+    try{const notice=new Notification("Incoming OTG "+(call.call_type==="voice"?"voice":"video")+" call",{body:name+" is calling you.",tag:"otg-call-"+call.id});notice.onclick=()=>{window.focus();notice.close();};}catch(_){}
+   }
+   showCall(call,direction,name);return;
   }
   if(state.active&&state.active.call.id===call.id){showCall(call,direction,state.active.peerName||"your OTG connection");}
  }
