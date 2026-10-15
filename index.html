@@ -3983,7 +3983,7 @@ const supabaseClient =
  "use strict";
  const client=supabaseClient;
  const state=window.otgCallState=window.otgCallState||{channel:null,lobbyChannel:null,userId:null,active:null,overlay:null,pollTimer:null};
- function roomUrl(call){return "https://meet.jit.si/OTG-Student-Call-"+call.room_name+(call.call_type==="voice"?"#config.startAudioOnly=true":"");}
+ function roomUrl(call){const config=["config.prejoinPageEnabled=false"];if(call.call_type==="voice")config.push("config.startAudioOnly=true");return "https://meet.jit.si/OTG-Student-Call-"+encodeURIComponent(call.room_name)+"#"+config.join("&");}
  function closeOverlay(){const el=document.getElementById("otgCallOverlay");if(el)el.remove();state.overlay=null;}
  function makeButton(label,color,fn){const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:11px 15px;border:0;border-radius:10px;background:"+color+";color:#fff;font-weight:800;font-size:14px;cursor:pointer";b.addEventListener("click",fn);return b;}
  function startEmbeddedCall(call,direction,peerName){
@@ -3995,7 +3995,7 @@ const supabaseClient =
   const heading=document.createElement("strong");heading.textContent=(call.call_type==="voice"?"☎ OTG Voice Call":"▣ OTG Video Call");heading.style.cssText="font-size:16px;line-height:1.3";
   const endButton=makeButton("End call","#b91c1c",()=>changeStatus(call,"ended",heading));endButton.style.cssText+=";white-space:nowrap;flex-shrink:0";
   bar.append(heading,endButton);
-  const frame=document.createElement("iframe");frame.title="OTG Academy voice and video call";frame.src=roomUrl(call)+"&config.prejoinPageEnabled=false";frame.allow="camera; microphone; fullscreen; display-capture; autoplay";frame.allowFullscreen=true;frame.referrerPolicy="strict-origin-when-cross-origin";frame.style.cssText="display:block;width:100%;height:100%;min-height:0;flex:1;border:0;background:#071426";
+  const frame=document.createElement("iframe");frame.title="OTG Academy voice and video call";frame.src=roomUrl(call);frame.allow="camera; microphone; fullscreen; display-capture; autoplay";frame.allowFullscreen=true;frame.referrerPolicy="strict-origin-when-cross-origin";frame.style.cssText="display:block;width:100%;height:100%;min-height:0;flex:1;border:0;background:#071426";
   const hint=document.createElement("p");hint.textContent="Your call is inside OTG Academy. If your phone asks, allow microphone or camera access.";hint.style.cssText="margin:0;padding:8px 12px;background:#0b2341;color:#dbeafe;font-size:12px;text-align:center;line-height:1.4;flex-shrink:0";
   box.append(bar,frame,hint);overlay.appendChild(box);document.body.appendChild(overlay);state.overlay=overlay;
  }
