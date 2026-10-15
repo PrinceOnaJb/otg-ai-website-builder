@@ -414,11 +414,23 @@ async function loadAcademyPanelData(key,content){
    data.forEach((x,index)=>{
    const title=cleanLessonText(x.title)||"Untitled lesson";
    const courseName=cleanLessonText(x.course)||"Getting Started";
+    const moduleMatch=String(courseName).match(/^\s*module\s*(\d+)\s*[—-]\s*(.+)$/i);
     const stageMatch=String(courseName).match(/^\s*(beginner|intermediate|advanced)\b/i);
-    const stageKey=stageMatch?stageMatch[1].toLowerCase():"additional";
+    const stageKey=moduleMatch?"module"+moduleMatch[1]:(stageMatch?stageMatch[1].toLowerCase():"additional");
     if(stageKey!==activeLearningStage){
      activeLearningStage=stageKey;
-     const stageDetails={
+     const moduleIntros={
+      "1":"Build your foundation in PixelLab, design principles, colour, shapes, backgrounds and fonts.",
+      "2":"Develop advanced photo editing, background blending and professional visual effects.",
+      "3":"Learn to plan, compose, refine, size and prepare church flyers for sharing and print.",
+      "4":"Practise professional promotional designs for birthdays, property, skincare, data and training.",
+      "5":"Create e-book covers, school materials, calendars, invitations and framed-picture designs."
+     };
+     const stageDetails=moduleMatch?{
+      title:"MODULE "+moduleMatch[1]+"  •  "+moduleMatch[2].trim().toUpperCase(),
+      intro:moduleIntros[moduleMatch[1]]||"Work through the lessons and practical exercises in this module.",
+      number:String(moduleMatch[1]).padStart(2,"0")
+     }:{
       beginner:{title:"BEGINNER  •  FOUNDATIONS",intro:"Build confidence with essential tools, design principles and guided practice.",number:"01"},
       intermediate:{title:"INTERMEDIATE  •  APPLIED DESIGN",intro:"Apply your skills to real-world flyers, promotions and event materials.",number:"02"},
       advanced:{title:"ADVANCED  •  PROFESSIONAL PRACTICE",intro:"Develop brand identity, business materials, presentation skills and client-ready work.",number:"03"},
