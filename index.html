@@ -7607,5 +7607,71 @@ supabaseClient
 })();
 </script>
 <!-- OTG LIVE NEWSPAPER TICKER END -->
+
+<!-- OTG STUDENT HUB NAVIGATION SAFEGUARD -->
+<script id="otg-student-hub-navigation-safeguard">
+(function(){
+  var fallbackPanels={
+    home:["Welcome to your Student Hub","Learn new skills, practise with projects and grow your digital portfolio.","🚀","Start learning with OTG","Choose a section from the menu to explore your learning space."],
+    learn:["Learn","Study published OTG Graphic Academy lessons and track your progress.","📚","Your learning library","Open published lessons, read lesson notes and complete practice activities."],
+    watch:["Watch & Learn","Watch published video lessons and guided demonstrations.","▶️","Your video learning library","Choose a video lesson and follow the guided demonstration."],
+    assignments:["Submit Assignment","View tasks and submit your work.","📝","Assignments and assessments","Open published tasks, answer each question and submit your work."],
+    "submission-review":["Review Submissions","Review student responses, marking and feedback.","📋","Student submission review","Review submitted work and release feedback when ready."],
+    codelab:["Code Lab","Practise HTML, CSS and JavaScript.","💻","Practice your code","Write code and use the live preview to test your work."],
+    projects:["My Projects","Continue building and reviewing your work.","🗂","Your saved projects","Open your saved projects in the website builder."],
+    how:["How it works","A simple path from learning to publishing.","🧭","Learn • Practise • Publish","Study a lesson, practise the skill, submit assignments and build projects."],
+    earn:["Create & Earn","Turn your digital skills into useful services.","✨","Build skills that create opportunities","Add products in Builder → My Products and share your published website."],
+    websites:["My Websites","Find your saved website projects and publishing status.","🌐","Your website workspace","Open the builder to view your saved projects."],
+    find:["Find my websites","Search your own saved website projects.","🔎","Find your website projects","Use My Projects to locate your saved websites."],
+    reviews:["Website Reviews","Get constructive feedback on your designs.","⭐","Feedback and reviews","Request feedback on your website projects."],
+    analytics:["Website Analytics","Understand how people interact with your websites.","📈","Website performance","Review the available website and learning activity summaries."],
+    certificates:["My Certificates","Keep track of certificates you earn.","🎓","Your certificates","View certificates issued by your coach."],
+    community:["Community","Learn and grow alongside other OTG students.","👥","OTG learning community","Share learning ideas and take part in discussions."],
+    connect:["Connect","Build helpful connections with fellow learners.","🤝","Connect with learners","Find approved learners and manage connection requests."],
+    discussion:["Discussion","Ask questions and share learning ideas.","💬","Student discussions","Create a topic or reply to a discussion."],
+    partners:["Study Partners","Find people to learn and practise with.","🧑‍🤝‍🧑","Learn together","Find approved learners who want to practise together."],
+    account:["My Account","View your student account details.","👤","Account information","Review your account details and approval status."],
+    achievements:["Achievements","Celebrate milestones in your learning journey.","🏆","Your milestones","Track your learning and project achievements."],
+    notifications:["Notifications","Keep up with important student updates.","🔔","Your updates","Read announcements published by your coach."],
+    support:["Customer Service","Get help from OTG Graphic Academy and track your support requests.","🎧","OTG Customer Service","Send a private support request and follow its status."],
+    settings:["Profile & Settings","Manage your profile and preferences.","⚙️","Profile and preferences","Review your profile details and available settings."]
+  };
+  function renderFallback(key,button){
+    var panel=fallbackPanels[key]||fallbackPanels.home;
+    var title=document.getElementById("academyPanelTitle");
+    var intro=document.getElementById("academyPanelIntro");
+    var content=document.getElementById("academyPanelContent");
+    document.querySelectorAll(".academy-nav").forEach(function(item){item.classList.remove("active");});
+    if(button&&button.classList)button.classList.add("active");
+    if(title)title.textContent=panel[0];
+    if(intro)intro.textContent=panel[1];
+    if(content){
+      content.replaceChildren();
+      var icon=document.createElement("span");icon.className="academy-card-icon";icon.textContent=panel[2];
+      var heading=document.createElement("h3");heading.textContent=panel[3];
+      var body=document.createElement("p");body.textContent=panel[4];
+      content.append(icon,heading,body);
+      var note=document.createElement("p");note.setAttribute("role","status");note.style.cssText="margin-top:16px;padding:12px;border-radius:8px;background:#eff6ff;color:#1e3a8a";note.textContent="Navigation is responding. If this section normally loads account data, refresh the page and try again.";content.appendChild(note);
+    }
+  }
+  var original=window.openAcademyPanel;
+  window.openAcademyPanel=function(key,button){
+    var title=document.getElementById("academyPanelTitle");
+    var content=document.getElementById("academyPanelContent");
+    var beforeTitle=title?title.textContent:"";
+    var beforeContent=content?content.innerHTML:"";
+    var failed=false;
+    if(typeof original==="function"){
+      try{original(key,button);}catch(error){failed=true;console.error("OTG Student Hub navigation error:",error);}
+    }else failed=true;
+    var currentTitle=document.getElementById("academyPanelTitle");
+    var currentContent=document.getElementById("academyPanelContent");
+    if(failed||!currentTitle||!currentContent||(currentTitle.textContent===beforeTitle&&currentContent.innerHTML===beforeContent)){
+      renderFallback(key,button);
+    }
+  };
+})();
+</script>
+
 </body>
 </html>
