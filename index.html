@@ -71,6 +71,7 @@ async function loadAcademyPanelData(key,content){
  const authResult=await db.auth.getUser();
  const activeUser=authResult&&authResult.data?authResult.data.user:null;
  const userId=(activeUser&&activeUser.id)||window.otgAcademyUserId||null;
+ if(activeUser&&typeof window.otgInitCallNotifications==="function"){window.otgInitCallNotifications(activeUser);}
  if(activeUser){
   try{
    const {data:roleProfile,error:roleProfileError}=await db.from("profiles").select("role,approval_status").eq("id",activeUser.id).maybeSingle();
@@ -3983,7 +3984,7 @@ const supabaseClient =
 (function(){
  "use strict";
  const client=supabaseClient;
- const state=window.otgCallState=window.otgCallState||{channel:null,userId:null,active:null,overlay:null};
+ const state=window.otgCallState=window.otgCallState||{channel:null,userId:null,active:null,overlay:null,pollTimer:null};
  function roomUrl(call){return "https://meet.jit.si/OTG-Student-Call-"+call.room_name+(call.call_type==="voice"?"#config.startAudioOnly=true":"");}
  function closeOverlay(){const el=document.getElementById("otgCallOverlay");if(el)el.remove();state.overlay=null;}
  function makeButton(label,color,fn){const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:11px 15px;border:0;border-radius:10px;background:"+color+";color:#fff;font-weight:800;font-size:14px;cursor:pointer";b.addEventListener("click",fn);return b;}
@@ -4038,20 +4039,24 @@ const supabaseClient =
   if(state.active&&state.active.call.id===call.id){showCall(call,direction,state.active.peerName||"your OTG connection");}
  }
  async function startCall(calleeId,peerName,mode,statusEl){
-  if(!state.userId){if(statusEl)statusEl.textContent="Please sign in again before calling.";return;}
-  if(state.active&&["ringing","accepted"].includes(state.active.call.status)){if(statusEl)statusEl.textContent="You already have a call in progress. Finish it before starting another.";return;}
-  if(String(calleeId)===String(state.userId)){if(statusEl)statusEl.textContent="You cannot call your own account.";return;}
   try{
-   if(statusEl)statusEl.textContent="Starting "+mode+" call…";
+   /* Refresh the signed-in identity at click time so a delayed auth event cannot leave call buttons inert. */
+   const sessionResult=await client.auth.getSession();
+   const signedInUser=sessionResult&&sessionResult.data&&sessionResult.data.session?sessionResult.data.session.user:null;
+   if(signedInUser&&signedInUser.id){state.userId=signedInUser.id;if(!state.channel)window.otgInitCallNotifications(signedInUser);}
+   if(!state.userId){if(statusEl)statusEl.textContent="Call unavailable: your sign-in session was not found. Please sign out and sign in again.";return;}
+   if(state.active&&["ringing","accepted"].includes(state.active.call.status)){if(statusEl)statusEl.textContent="You already have a call in progress. Finish it before starting another.";return;}
+   if(String(calleeId)===String(state.userId)){if(statusEl)statusEl.textContent="You cannot call your own account.";return;}
+   if(statusEl)statusEl.textContent="Connecting to OTG call service…";
    const randomRoom=(window.crypto&&window.crypto.randomUUID)?window.crypto.randomUUID():("otg"+Date.now().toString(36)+Math.random().toString(36).slice(2));
    const r=await client.from("otg_student_calls").insert({caller_id:state.userId,callee_id:calleeId,call_type:mode,status:"ringing",room_name:randomRoom.replace(/[^a-zA-Z0-9-]/g,"")}).select("*").single();
    if(r.error)throw r.error;
    showCall(r.data,"outgoing",peerName||"your OTG connection");if(statusEl)statusEl.textContent="Calling "+(peerName||"your connection")+"…";
    window.setTimeout(async()=>{try{const check=await client.from("otg_student_calls").select("status").eq("id",r.data.id).maybeSingle();if(check.data&&check.data.status==="ringing")await client.from("otg_student_calls").update({status:"missed"}).eq("id",r.data.id);}catch(_){}},47000);
-  }catch(e){if(statusEl)statusEl.textContent="Call could not start: "+(e&&e.message?e.message:"Please try again.");}
+  }catch(e){console.error("OTG call start failed:",e);if(statusEl)statusEl.textContent="Call could not start: "+(e&&e.message?e.message:"Please try again. Check that both accounts are approved and connected.");}
  }
  window.otgStartStudentCall=startCall;
- window.otgStopCallNotifications=function(){if(state.channel){client.removeChannel(state.channel);state.channel=null;}state.userId=null;state.active=null;closeOverlay();};
+ window.otgStopCallNotifications=function(){if(state.channel){client.removeChannel(state.channel);state.channel=null;}if(state.pollTimer){window.clearInterval(state.pollTimer);state.pollTimer=null;}state.userId=null;state.active=null;closeOverlay();};
  window.otgInitCallNotifications=function(user){
   if(!user||!user.id)return;if(state.userId===user.id&&state.channel)return;
   window.otgStopCallNotifications();state.userId=user.id;
@@ -4060,7 +4065,10 @@ const supabaseClient =
    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"otg_student_calls",filter:"callee_id=eq."+user.id},p=>handleRow(p.new,user.id))
    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"otg_student_calls",filter:"caller_id=eq."+user.id},p=>handleRow(p.new,user.id))
    .subscribe((status,error)=>{if(status==="CHANNEL_ERROR"||status==="TIMED_OUT")console.warn("OTG call notifications:",status,error||"");});
-  client.from("otg_student_calls").select("*").eq("callee_id",user.id).eq("status","ringing").order("created_at",{ascending:false}).limit(1).then(async r=>{if(!r.error&&r.data&&r.data.length&&!state.active)await handleRow(r.data[0],user.id);});
+  const checkIncoming=async()=>{try{const r=await client.from("otg_student_calls").select("*").eq("callee_id",user.id).eq("status","ringing").order("created_at",{ascending:false}).limit(1);if(!r.error&&r.data&&r.data.length){const call=r.data[0];if(!state.active||state.active.call.id!==call.id||state.active.call.status!==call.status)await handleRow(call,user.id);}}catch(e){console.warn("OTG incoming call check:",e);}};
+  checkIncoming();
+  if(state.pollTimer)window.clearInterval(state.pollTimer);
+  state.pollTimer=window.setInterval(checkIncoming,5000);
  };
  client.auth.onAuthStateChange((event,session)=>{window.setTimeout(()=>{if(session&&session.user)window.otgInitCallNotifications(session.user);else if(event==="SIGNED_OUT")window.otgStopCallNotifications();},0);});
  client.auth.getSession().then(r=>{if(r.data&&r.data.session&&r.data.session.user)window.otgInitCallNotifications(r.data.session.user);});
