@@ -536,6 +536,65 @@ button:focus-visible,a:focus-visible,select:focus-visible,textarea:focus-visible
 </style>
 <!-- END OTG PROFESSIONAL DASHBOARD REFINEMENT -->
 
+
+<!-- OTG STUDENT HUB MENU CLICK RECOVERY -->
+<style id="otg-student-hub-menu-click-recovery">
+/* Keep the Student Hub menu above decorative dashboard layers and make it tappable on phones. */
+#academyDashboard .academy-layout,
+#academyDashboard .academy-sidebar{position:relative;z-index:20;pointer-events:auto}
+#academyDashboard .academy-nav{position:relative;z-index:21;display:block;width:100%;pointer-events:auto;touch-action:manipulation;cursor:pointer}
+#academyDashboard .academy-sidebar button{pointer-events:auto;touch-action:manipulation}
+</style>
+<script id="otg-student-hub-menu-click-recovery-script">
+(function(){
+  function attachRecovery(){
+    if(document.documentElement.dataset.otgHubMenuRecovery==="ready")return;
+    document.documentElement.dataset.otgHubMenuRecovery="ready";
+    document.addEventListener("click",function(event){
+      var button=event.target&&event.target.closest?event.target.closest("#academyDashboard .academy-nav"):null;
+      if(!button)return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      var key="";
+      if(button.id==="otgStudentAssignmentsNav"){
+        key=window.otgAcademyIsAdmin===true?"submission-review":"assignments";
+      }else if(button.id==="otgPublishAssignmentNav"){
+        key="assignments";
+      }else{
+        var inline=button.getAttribute("onclick")||"";
+        var match=inline.match(/openAcademyPanel\(['"]([^'"]+)['"]/);
+        if(match)key=match[1];
+      }
+      if(!key)key="home";
+      try{
+        if(typeof window.openAcademyPanel==="function"){
+          window.openAcademyPanel(key,button);
+        }else{
+          var title=document.getElementById("academyPanelTitle");
+          var intro=document.getElementById("academyPanelIntro");
+          var content=document.getElementById("academyPanelContent");
+          if(title)title.textContent="Student Hub";
+          if(intro)intro.textContent="The menu is responding, but this section needs a page refresh. Please refresh and try again.";
+          if(content)content.textContent="Please refresh OTG Graphic Academy and select this menu item again.";
+        }
+      }catch(error){
+        console.error("OTG Student Hub menu click:",error);
+        var content=document.getElementById("academyPanelContent");
+        if(content){
+          var notice=document.createElement("p");
+          notice.setAttribute("role","alert");
+          notice.style.cssText="padding:12px;border:1px solid #fecaca;border-radius:8px;background:#fff7f7;color:#991b1b";
+          notice.textContent="This section could not open. Please refresh the page and try again.";
+          content.appendChild(notice);
+        }
+      }
+    },true);
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",attachRecovery,{once:true});
+  else attachRecovery();
+})();
+</script>
+
 </body></html>";status.textContent="Preview updated. Your code has not been published.";};
   makeButton("▶ Run code",true,runCode);
   makeButton("Save draft on this device",false,()=>{try{localStorage.setItem("otgAcademyCodeLabDraft",JSON.stringify({html:htmlEditor.value,css:cssEditor.value,js:jsEditor.value}));status.textContent="Draft saved on this device only.";}catch(e){status.textContent="This browser did not allow a local draft to be saved.";}}); 
