@@ -214,6 +214,66 @@ async function loadAcademyPanelData(key,content){
   const sectionHeading=document.createElement("h3");sectionHeading.textContent=admin?"Support Inbox":"My Support Requests";sectionHeading.style.cssText="margin:0 0 12px;color:#172554;font-size:20px";
   area.appendChild(sectionHeading);
   if(!admin){
+   /* OTG Virtual Assistant: guided support and one-click escalation to the existing ticket form. */
+   const botCard=document.createElement("section");
+   botCard.setAttribute("aria-label","OTG AI Help Assistant");
+   botCard.style.cssText="margin:0 0 22px;padding:17px;border:1px solid #b9dfc8;border-radius:14px;background:linear-gradient(145deg,#f0fdf4,#ffffff);box-shadow:0 6px 20px rgba(20,83,45,.06)";
+   const botHead=document.createElement("div");botHead.style.cssText="display:flex;align-items:center;gap:11px;margin-bottom:10px";
+   const botIcon=document.createElement("span");botIcon.textContent="🤖";botIcon.style.cssText="display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:#dcfce7;font-size:23px";
+   const botHeadText=document.createElement("div");
+   const botTitle=document.createElement("h3");botTitle.textContent="OTG Virtual Help Assistant";botTitle.style.cssText="margin:0;color:#14532d;font-size:18px";
+   const botSubtitle=document.createElement("p");botSubtitle.textContent="Quick answers before contacting the academy team";botSubtitle.style.cssText="margin:4px 0 0;color:#64748b;font-size:12px";
+   botHeadText.append(botTitle,botSubtitle);botHead.append(botIcon,botHeadText);botCard.appendChild(botHead);
+   const botNotice=document.createElement("p");botNotice.textContent="Choose a topic or type your question. This first version uses OTG’s prepared help guidance; if it cannot resolve your issue, you can send the conversation to the Administrator.";botNotice.style.cssText="margin:0 0 12px;color:#475569;font-size:13px;line-height:1.55";botCard.appendChild(botNotice);
+   const chatLog=document.createElement("div");chatLog.setAttribute("aria-live","polite");chatLog.style.cssText="display:grid;gap:9px;max-height:260px;overflow:auto;margin:0 0 12px;padding:10px;border:1px solid #e2e8f0;border-radius:10px;background:#fff";
+   const addChatLine=(who,text)=>{const line=document.createElement("div");line.style.cssText="justify-self:"+(who==="You"?"end":"start")+";max-width:92%;padding:10px 12px;border-radius:10px;background:"+(who==="You"?"#dcfce7":"#f1f5f9")+";color:#1e293b;font-size:13px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere";const label=document.createElement("strong");label.textContent=who+": ";const body=document.createElement("span");body.textContent=text;line.append(label,body);chatLog.appendChild(line);chatLog.scrollTop=chatLog.scrollHeight;};
+   addChatLine("OTG Assistant","Hello! I can help with account approval, login, lessons, assignments, certificates and website builder questions. What do you need help with?");
+   botCard.appendChild(chatLog);
+   const quickTopics=document.createElement("div");quickTopics.style.cssText="display:flex;flex-wrap:wrap;gap:7px;margin:0 0 12px";
+   const botInput=document.createElement("input");botInput.type="text";botInput.maxLength=600;botInput.placeholder="Type your question here…";botInput.setAttribute("aria-label","Ask the OTG Virtual Help Assistant");botInput.style.cssText="flex:1;min-width:170px;box-sizing:border-box;padding:11px;border:1px solid #cbd5e1;border-radius:9px;font:inherit";
+   const botSend=document.createElement("button");botSend.type="button";botSend.textContent="Ask assistant";botSend.style.cssText="padding:10px 13px;border:0;border-radius:9px;background:#14532d;color:#fff;font-weight:800;cursor:pointer";
+   const botInputRow=document.createElement("div");botInputRow.style.cssText="display:flex;flex-wrap:wrap;gap:8px";botInputRow.append(botInput,botSend);botCard.append(quickTopics,botInputRow);
+   const botEscalate=document.createElement("button");botEscalate.type="button";botEscalate.textContent="Transfer this conversation to the Administrator";botEscalate.style.cssText="display:none;margin-top:12px;padding:11px 13px;border:1px solid #14532d;border-radius:9px;background:#fff;color:#14532d;font-weight:800;cursor:pointer";
+   botCard.appendChild(botEscalate);
+   const botTranscript=[];
+   const faq=[
+    {keys:["approval","approve","pending","waiting","access dashboard","not approved","registration"],title:"Account approval",category:"Account and login",answer:"New student accounts must be approved by the academy Administrator before dashboard access is granted. If your account is still pending, please wait for approval. If it has been pending unusually long, choose Transfer to Administrator so the team can check your account."},
+    {keys:["login","log in","sign in","password","forgot password","can't enter","cannot enter"],title:"Login help",category:"Account and login",answer:"Check that you are using the email address registered with OTG Academy and that your password is entered correctly. If you forgot your password, use the password-reset option on the login screen. Never send your password to support. If login still fails, transfer this conversation to the Administrator."},
+    {keys:["lesson","learn","course","watch","video"],title:"Lessons and learning",category:"Assignments and lessons",answer:"Open Learn for published lessons or Watch & Learn for video lessons. Open a lesson and follow its instructions. If a lesson is missing or will not open, tell the Administrator the lesson title and what you see on screen."},
+    {keys:["assignment","submit","exam","question","mark","score","grade","answer"],title:"Assignments and submissions",category:"Assignments and lessons",answer:"Open Submit Assignment in your Student Hub to view published tasks. Read each question and enter your answer in its answer box, then use the submission button. If you already submitted work, the Administrator can check its review status."},
+    {keys:["certificate","qr code","signature","cac"],title:"Certificates",category:"General enquiry",answer:"Certificates are available under My Certificates when the academy has issued one to your account. Open the certificate to review its details and use its print/save option if available. If a certificate is missing or has incorrect details, transfer the issue to the Administrator."},
+    {keys:["website","builder","publish","project","product","flyer"],title:"Website builder",category:"Website builder",answer:"Open the main Builder to create or continue a website. Save your project before leaving, and use Preview to inspect it. Use the publishing controls when your website is ready. If a saved product or project is missing, transfer the issue and include its name."},
+    {keys:["profile","email change","change email","account details"],title:"Profile and account",category:"Account and login",answer:"Open My Account or Profile & Settings in the Student Hub to review your account details and available profile settings. For changes that are not available there, ask the Administrator for help."},
+    {keys:["payment","price","pay","money","fee"],title:"Payment and pricing",category:"Payment or pricing",answer:"For payment or pricing questions, please do not share card details, PINs or passwords in chat. Tell us the service or item you are asking about, then transfer the request to the Administrator for confirmation."}
+   ];
+   const sendBotQuestion=(raw)=>{
+    const question=String(raw||"").trim();if(!question)return;
+    botTranscript.push({who:"You",text:question});addChatLine("You",question);botInput.value="";
+    const q=question.toLowerCase();
+    let match=null,best=0;
+    faq.forEach(item=>{let score=0;item.keys.forEach(k=>{if(q.includes(k))score+=k.includes(" ")?2:1;});if(score>best){best=score;match=item;}});
+    const answer=match?match.answer:"I’m not certain I have the right answer for that question yet. Please try a topic such as account approval, login, lessons, assignments, certificates or website builder. If you prefer, transfer this conversation to the Administrator.";
+    botTranscript.push({who:"OTG Assistant",text:answer,category:match?match.category:"General enquiry",title:match?match.title:"Help needed"});
+    addChatLine("OTG Assistant",answer);botEscalate.style.display="inline-block";
+   };
+   [["Account approval","How long does account approval take?"],["Login help","I cannot log in"],["Assignments","How do I submit an assignment?"],["Certificates","Where is my certificate?"],["Website builder","I need help with my website"]].forEach(([label,question])=>{const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:7px 9px;border:1px solid #bbf7d0;border-radius:20px;background:#fff;color:#166534;font-size:12px;font-weight:700;cursor:pointer";b.addEventListener("click",()=>sendBotQuestion(question));quickTopics.appendChild(b);});
+   botSend.addEventListener("click",()=>sendBotQuestion(botInput.value));
+   botInput.addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();sendBotQuestion(botInput.value);}});
+   botEscalate.addEventListener("click",()=>{
+    const ticketForm=area.querySelector("form");
+    if(!ticketForm){addChatLine("OTG Assistant","Please use the support request form below, or contact the academy directly using WhatsApp, phone or email.");return;}
+    const latest=botTranscript.filter(item=>item.who==="You").slice(-1)[0];
+    const categoryField=ticketForm.querySelector("select");
+    const subjectField=ticketForm.querySelector("input");
+    const messageField=ticketForm.querySelector("textarea");
+    if(subjectField)subjectField.value="Help request: "+(latest?latest.text.slice(0,135):"Virtual assistant escalation");
+    if(categoryField){const chosen=botTranscript.slice().reverse().find(item=>item.who==="OTG Assistant"&&item.category);categoryField.value=chosen?chosen.category:"General enquiry";}
+    if(messageField)messageField.value="Student requested Administrator assistance after using the OTG Virtual Help Assistant.\n\nConversation transcript:\n"+botTranscript.map(item=>item.who+": "+item.text).join("\n\n");
+    ticketForm.scrollIntoView({behavior:"smooth",block:"center"});
+    if(messageField)messageField.focus({preventScroll:true});
+    const formNote=ticketForm.querySelector('[role="status"]');if(formNote)formNote.textContent="The assistant conversation has been added. Review the details and submit the support request to create a reference number.";
+   });
+   area.appendChild(botCard);
    const form=document.createElement("form");form.style.cssText="display:grid;gap:12px;margin:0 0 24px;padding:18px;border:1px solid #dbeafe;border-radius:13px;background:#f8fbff";
    const formTitle=document.createElement("h4");formTitle.textContent="Create a support request";formTitle.style.cssText="margin:0;color:#123b78;font-size:16px";form.appendChild(formTitle);
    const field=(labelText,control)=>{const label=document.createElement("label");label.style.cssText="display:grid;gap:6px;color:#334155;font-size:13px;font-weight:800";label.append(document.createTextNode(labelText),control);form.appendChild(label);return control;};
