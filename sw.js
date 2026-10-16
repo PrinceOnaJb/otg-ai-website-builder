@@ -1,4 +1,4 @@
-const CACHE_NAME = "otg-academy-v32";
+const CACHE_NAME = "otg-academy-v33";
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
@@ -33,8 +33,14 @@ self.addEventListener("fetch", event => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
+  // Always fetch the latest app shell for page navigations so an installed
+  // OTG Academy app cannot keep an old calling screen from its HTTP cache.
+  const networkRequest = (request.mode === "navigate" || url.pathname === "/index.html")
+    ? new Request(request, { cache: "no-store" })
+    : request;
+
   event.respondWith(
-    fetch(request).then(response => {
+    fetch(networkRequest).then(response => {
       if (response && response.ok && response.type === "basic") {
         const copy = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
