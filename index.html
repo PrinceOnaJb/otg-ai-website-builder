@@ -797,8 +797,8 @@ async function loadAcademyPanelData(key,content){
   let assignmentsQuery=db.from("academy_assignments").select("id,title,course,instructions,due_at,is_published,assigned_to,duration_minutes").order("created_at",{ascending:false});
   if(!admin)assignmentsQuery=assignmentsQuery.eq("is_published",true);
   const {data,error}=await assignmentsQuery;
-  const {data:mySubmissionRows,error:mySubmissionError}=userId?await db.from("academy_submissions").select("id,assignment_id,submission_text,file_url,status,coach_feedback,submitted_at,score").eq("student_id",userId):{data:[],error:null};
-  const mySubmissionByAssignment=new Map((mySubmissionRows||[]).map(row=>[String(row.assignment_id),row]));
+  const {data:mySubmissionRows,error:mySubmissionError}=userId?await db.from("academy_submissions").select("id,assignment_id,submission_text,file_url,status,coach_feedback,submitted_at,score").eq("student_id",userId).order("submitted_at",{ascending:false}):{data:[],error:null};
+  const mySubmissionByAssignment=new Map();(mySubmissionRows||[]).forEach(row=>{const assignmentKey=String(row.assignment_id);if(!mySubmissionByAssignment.has(assignmentKey))mySubmissionByAssignment.set(assignmentKey,row);});
   const mySubmissionIds=(mySubmissionRows||[]).map(row=>row.id).filter(id=>id!==null&&id!==undefined);
   const {data:myQuestionScoreRows,error:myQuestionScoresError}=mySubmissionIds.length?await db.from("academy_submission_question_scores").select("submission_id,question_number,question_text,answer_text,correct_answer,score,max_score,feedback").in("submission_id",mySubmissionIds):{data:[],error:null};
   const myQuestionScoresBySubmission=new Map();(myQuestionScoreRows||[]).forEach(row=>{const k=String(row.submission_id);if(!myQuestionScoresBySubmission.has(k))myQuestionScoresBySubmission.set(k,[]);myQuestionScoresBySubmission.get(k).push(row);});
