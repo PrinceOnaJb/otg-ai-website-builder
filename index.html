@@ -7892,20 +7892,43 @@ async function showApp(approvalAlreadyChecked){
     .remove("hidden");
 
   if(currentUser){
-
-    const email =
-      currentUser.email ||
-      "";
-
-    if($("welcomeText")){
-
-      $("welcomeText").textContent =
-        "Welcome back, " +
-        email +
-        ".";
-
+    let academyDisplayName = "";
+    try{
+      const {data:studentIdentity} = await supabaseClient
+        .from("academy_student_profiles")
+        .select("display_name")
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
+      academyDisplayName = studentIdentity && studentIdentity.display_name
+        ? String(studentIdentity.display_name).trim()
+        : "";
+    }catch(identityError){
+      console.warn("OTG welcome name lookup:", identityError);
     }
 
+    const metadata = currentUser.user_metadata || {};
+    const profileName = academyDisplayName ||
+      metadata.first_name ||
+      metadata.full_name ||
+      metadata.name ||
+      metadata.display_name ||
+      metadata.nickname ||
+      "";
+    const emailName = currentUser.email
+      ? String(currentUser.email).split("@")[0].replace(/[._-]+/g, " ").trim()
+      : "";
+    const firstName = String(profileName || emailName || "Student").trim().split(/\s+/)[0];
+    const shortName = firstName
+      ? firstName.charAt(0).toLocaleUpperCase() + firstName.slice(1)
+      : "Student";
+    const isAdmin = currentProfile &&
+      String(currentProfile.role || "").toLowerCase() === "admin";
+
+    if($("welcomeText")){
+      $("welcomeText").textContent = isAdmin
+        ? "Welcome back, Coach."
+        : "Welcome back, " + shortName + "! 👋";
+    }
   }
 
   renderProjects();
