@@ -2464,6 +2464,18 @@ html{scroll-behavior:auto}
 
     <form id="authForm">
 
+      <div id="authFullNameWrap" hidden>
+        <label for="authFullName">Full Name</label>
+        <input
+          type="text"
+          id="authFullName"
+          placeholder="Enter your full name"
+          autocomplete="name"
+          maxlength="100"
+          style="width:100%;box-sizing:border-box;"
+        >
+      </div>
+
       <label for="authEmail">
         Email Address
       </label>
@@ -7357,7 +7369,12 @@ function setAuthMode(mode){
   const switchButton =
     $("authSwitchBtn");
 
+  const fullNameWrap = $("authFullNameWrap");
+  const fullNameInput = $("authFullName");
+
   if(authMode === "signup"){
+    if(fullNameWrap) fullNameWrap.hidden = false;
+    if(fullNameInput) fullNameInput.required = true;
 
     if(subtitle){
       subtitle.textContent =
@@ -7380,6 +7397,8 @@ function setAuthMode(mode){
     }
 
   }else{
+    if(fullNameWrap) fullNameWrap.hidden = true;
+    if(fullNameInput) fullNameInput.required = false;
 
     if(subtitle){
       subtitle.textContent =
@@ -7572,6 +7591,9 @@ async function handleAuthSubmit(event){
             email:email,
             password:password,
             options: {
+              data: {
+                full_name: String($("authFullName") && $("authFullName").value || "").trim()
+              },
               emailRedirectTo: window.location.origin
             }
           });
