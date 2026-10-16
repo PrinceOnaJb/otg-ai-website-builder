@@ -1,4 +1,4 @@
-const CACHE_NAME = "otg-academy-v33";
+const CACHE_NAME = "otg-academy-v34";
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
@@ -31,6 +31,12 @@ self.addEventListener("fetch", event => {
   const request = event.request;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
+  // Prevent any stale page or installed app from sending OTG students to Jitsi.
+  // Return them to the academy if a Jitsi page navigation is attempted.
+  if (request.mode === "navigate" && /(^|\.)jitsi\./i.test(url.hostname)) {
+    event.respondWith(Response.redirect(new URL("/", self.location.origin).href, 302));
+    return;
+  }
   if (url.origin !== self.location.origin) return;
 
   // Always fetch the latest app shell for page navigations so an installed
