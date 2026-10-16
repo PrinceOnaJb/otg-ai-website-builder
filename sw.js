@@ -36,14 +36,15 @@ self.addEventListener("push", event => {
     payload = { body: event.data ? event.data.text() : "" };
   }
 
+  const isTest = payload.type === "test";
   const callId = typeof payload.callId === "string" ? payload.callId : "";
   const callerName = typeof payload.callerName === "string" && payload.callerName.trim()
     ? payload.callerName.trim()
     : "An OTG student";
   const callType = payload.callType === "video" ? "video" : "voice";
-  const title = callType === "video" ? "Incoming OTG video call" : "Incoming OTG voice call";
+  const title = isTest ? "OTG call alerts are working" : (callType === "video" ? "Incoming OTG video call" : "Incoming OTG voice call");
   const options = {
-    body: payload.body || callerName + " is calling you.",
+    body: payload.body || (isTest ? "This device can receive background notifications from OTG GRAPHIC Academy." : callerName + " is calling you."),
     icon: "/otg-app-icon-192.png",
     badge: "/otg-app-icon-192.png",
     tag: callId ? "otg-call-" + callId : "otg-incoming-call",
@@ -56,7 +57,7 @@ self.addEventListener("push", event => {
       url: "/?otgIncomingCall=" + encodeURIComponent(callId) +
         "&otgCallType=" + encodeURIComponent(callType)
     },
-    actions: [
+    actions: isTest ? [{ action: "dismiss", title: "Dismiss" }] : [
       { action: "open-call", title: "Open call" },
       { action: "dismiss", title: "Dismiss" }
     ]
