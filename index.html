@@ -3982,9 +3982,9 @@ const supabaseClient =
 (function(){
  "use strict";
  const client=supabaseClient;
- const state=window.otgCallState=window.otgCallState||{channel:null,lobbyChannel:null,userId:null,active:null,overlay:null,jitsiApi:null,pollTimer:null};
+ const state=window.otgCallState=window.otgCallState||{channel:null,lobbyChannel:null,userId:null,active:null,overlay:null,pollTimer:null};
  function closeOverlay(){
-  if(state.jitsiApi){try{state.jitsiApi.dispose();}catch(_){}state.jitsiApi=null;}
+ 
   if(state.rtcPeers){Object.values(state.rtcPeers).forEach(function(entry){try{entry.pc.close();}catch(_){}if(entry.tile)entry.tile.remove();});state.rtcPeers={};}
   if(state.rtcChannel){try{client.removeChannel(state.rtcChannel);}catch(_){}state.rtcChannel=null;}
   if(state.localMedia){state.localMedia.getTracks().forEach(function(track){try{track.stop();}catch(_){}});state.localMedia=null;}
