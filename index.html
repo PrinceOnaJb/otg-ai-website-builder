@@ -187,9 +187,12 @@ async function loadAcademyPanelData(key,content){
   const heroCopy=document.createElement("div");heroCopy.className="otg-home-hero-copy";
   const heroEyebrow=document.createElement("span");heroEyebrow.className="otg-home-eyebrow";heroEyebrow.textContent=admin?"ACADEMY ADMINISTRATION":"YOUR STUDENT WORKSPACE";
   const heroTitle=document.createElement("h3");
-  const profileName=activeUser&&activeUser.user_metadata&&(activeUser.user_metadata.full_name||activeUser.user_metadata.name||activeUser.user_metadata.display_name);
-  const shortName=String(profileName||"").trim().split(/\s+/)[0];
-  heroTitle.textContent=admin?"Welcome back, Coach":("Welcome"+(shortName?" back, "+shortName:" to OTG")+"!");
+  const userMetadata=activeUser&&activeUser.user_metadata?activeUser.user_metadata:{};
+  const profileName=userMetadata.first_name||userMetadata.full_name||userMetadata.name||userMetadata.display_name||userMetadata.nickname||"";
+  const emailName=activeUser&&activeUser.email?String(activeUser.email).split("@")[0].replace(/[._-]+/g," ").trim():"";
+  const greetingName=String(profileName||emailName||"").trim().split(/\s+/)[0];
+  const shortName=greetingName?greetingName.charAt(0).toLocaleUpperCase()+greetingName.slice(1):"Student";
+  heroTitle.textContent=admin?"Welcome back, Coach":("Welcome back, "+shortName+"! 👋");
   const heroText=document.createElement("p");
   heroText.textContent=admin?"Your academy overview brings student approvals, learning content and assignment reviews together in one place.":"This is your personal learning space. Continue a lesson, submit your work, and track your progress as you build practical digital skills.";
   const heroMeta=document.createElement("div");heroMeta.className="otg-home-meta";heroMeta.textContent=admin?"OTG GRAPHIC ACADEMY  •  COACH WORKSPACE":"OTG GRAPHIC ACADEMY  •  LEARN  •  PRACTISE  •  GROW";
