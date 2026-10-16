@@ -4304,29 +4304,79 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
  document.addEventListener("pointerdown",function(){if(state.userId&&"Notification" in window&&Notification.permission==="granted"){ensureOtgBackgroundPush({id:state.userId},false);}}, {passive:true});
  function showOtgPushSetupPrompt(user){
   if(!user||!user.id||!document.body)return;
-  const existing=document.getElementById("otgGlobalPushSetupPrompt");
-  if(existing)existing.remove();
+  if(document.getElementById("otgGlobalPushSetupPrompt"))return;
   if(!("Notification" in window)||!("serviceWorker" in navigator)||!("PushManager" in window))return;
   const banner=document.createElement("section");
   banner.id="otgGlobalPushSetupPrompt";
   banner.setAttribute("role","status");
-  banner.style.cssText="position:fixed;z-index:2147483000;left:12px;right:12px;bottom:12px;max-width:720px;margin:0 auto;padding:16px;border-radius:16px;background:#10251d;color:#fff;box-shadow:0 12px 40px rgba(0,0,0,.28);font-family:system-ui,sans-serif";
+  banner.style.cssText="position:relative;display:block;width:100%;box-sizing:border-box;margin:0 0 12px;padding:10px 12px;border:1px solid #c9e7ce;border-radius:12px;background:#f0f9f1;color:#173b25;font-family:system-ui,sans-serif;box-shadow:0 2px 8px rgba(16,50,25,.06);";
+  const head=document.createElement("div");
+  head.style.cssText="display:flex;align-items:center;gap:8px;flex-wrap:wrap;";
   const title=document.createElement("strong");
-  title.textContent="🔔 OTG background call alerts";
-  title.style.cssText="display:block;font-size:16px;margin-bottom:6px";
+  title.textContent="🔔 OTG call alerts";
+  title.style.cssText="font-size:14px;line-height:1.3;";
+  const status=document.createElement("span");
+  status.style.cssText="font-size:12px;line-height:1.4;flex:1;min-width:130px;";
+  status.textContent=Notification.permission==="granted"?"Checking this phone…":Notification.permission==="denied"?"Notifications blocked":"Enable once for calls outside Student Hub";
+  const toggle=document.createElement("button");
+  toggle.type="button";
+  toggle.textContent="Details";
+  toggle.setAttribute("aria-expanded","false");
+  toggle.style.cssText="border:1px solid #9fc8a8;border-radius:8px;padding:6px 9px;background:#fff;color:#173b25;font-weight:800;font-size:12px;cursor:pointer;";
+  head.append(title,status,toggle);
+  const details=document.createElement("div");
+  details.hidden=true;
+  details.style.cssText="padding-top:10px;";
   const message=document.createElement("p");
-  message.textContent=Notification.permission==="denied"?"Notifications are blocked for this website. Allow them in browser/site settings, then tap Check setup again.":Notification.permission==="granted"?"Checking this device's background alert registration…":"Enable notifications once so OTG can alert you about calls when Student Hub is not open.";
-  message.style.cssText="margin:0 0 12px;line-height:1.5;font-size:14px";
-  const actions=document.createElement("div");actions.style.cssText="display:flex;gap:8px;flex-wrap:wrap";
-  const enable=document.createElement("button");enable.type="button";enable.textContent=Notification.permission==="granted"?"Check setup":"Enable call alerts";
-  enable.style.cssText="border:0;border-radius:9px;padding:11px 14px;background:#d5f36a;color:#10251d;font-weight:900;cursor:pointer";
-  enable.addEventListener("click",async()=>{enable.disabled=true;enable.textContent="Checking…";const ok=await ensureOtgBackgroundPush(user,true);if(ok){message.textContent="This device is registered for OTG background alerts. Use Test alert to confirm this phone displays them.";enable.textContent="Setup confirmed";}else if(Notification.permission==="denied"){message.textContent="Notifications are blocked. Open this site's browser settings, set Notifications to Allow, return here, then tap Check setup again.";enable.textContent="Check setup";}else{message.textContent="Registration did not complete. Check internet access and browser notification permission, then try again.";enable.textContent="Try setup again";}enable.disabled=false;});
-  const test=document.createElement("button");test.type="button";test.textContent="Test background alert";
-  test.style.cssText="border:1px solid #d5f36a;border-radius:9px;padding:11px 14px;background:transparent;color:#fff;font-weight:800;cursor:pointer";
-  test.addEventListener("click",async()=>{test.disabled=true;test.textContent="Checking phone…";const ready=await ensureOtgBackgroundPush(user,true);if(!ready){message.textContent="Test not sent: this device is not registered. Enable notifications first.";test.disabled=false;test.textContent="Test background alert";return;}try{const registration=await navigator.serviceWorker.ready;if(typeof registration.showNotification!=="function")throw new Error("This browser cannot display service-worker notifications");await registration.showNotification("OTG phone notification check",{body:"Phone display test: if you can see this, the device can show OTG notifications.",icon:"/otg-app-icon-192.png",badge:"/otg-app-icon-192.png",tag:"otg-local-display-check",requireInteraction:true});const result=await client.functions.invoke("otg-call-push",{body:{action:"test-push"}});if(result.error)throw result.error;const data=result.data||{};const push=data.push||{};if(push.sent>0){message.textContent="Phone display check was triggered, and the push server accepted "+push.sent+" background test message(s). If you saw the first notification but not “OTG call alerts are working” after leaving the app, the issue is in background push delivery or the service worker—not setup."; }else{message.textContent="Phone display check was triggered, but background push was not accepted. Registered: "+(push.subscriptions||0)+", failed: "+(push.failed||0)+". "+(data.error||"Please retry setup.");}}catch(error){message.textContent="Notification check failed: "+(error&&error.message?error.message:"browser or push error")+". The exact failure is now shown here."; }test.disabled=false;test.textContent="Test background alert";});
-  const close=document.createElement("button");close.type="button";close.textContent="Later";close.style.cssText="border:1px solid #94a3b8;border-radius:9px;padding:11px 14px;background:transparent;color:#fff;font-weight:700;cursor:pointer";close.addEventListener("click",()=>banner.remove());
-  actions.append(enable,test,close);banner.append(title,message,actions);document.body.appendChild(banner);
-  if(Notification.permission==="granted"){ensureOtgBackgroundPush(user,false).then(ok=>{message.textContent=ok?"This device is registered for OTG background alerts. Tap Test background alert to check notification display.":"Notifications are allowed, but this device is not registered yet. Tap Check setup to retry.";});}
+  message.style.cssText="margin:0 0 9px;font-size:13px;line-height:1.45;color:#294a32;";
+  message.textContent=Notification.permission==="denied"?"Notifications are blocked for this website. Allow them in your browser/site settings, then retry setup.":Notification.permission==="granted"?"OTG is checking whether this phone is registered to receive background call alerts.":"Allow notifications once so OTG can alert you about calls when Student Hub is not open.";
+  const actions=document.createElement("div");
+  actions.style.cssText="display:flex;gap:7px;flex-wrap:wrap;";
+  const buttonStyle="border:1px solid #9fc8a8;border-radius:8px;padding:8px 10px;background:#fff;color:#173b25;font-weight:800;font-size:12px;cursor:pointer;";
+  const enable=document.createElement("button");
+  enable.type="button";enable.textContent=Notification.permission==="granted"?"Retry setup":"Enable call alerts";enable.style.cssText=buttonStyle;
+  enable.addEventListener("click",async()=>{
+   enable.disabled=true;enable.textContent="Checking…";
+   const ok=await ensureOtgBackgroundPush(user,true);
+   if(ok){status.textContent="Alerts enabled";message.textContent="This phone is registered for OTG background call alerts.";enable.textContent="Setup confirmed";}
+   else if(Notification.permission==="denied"){status.textContent="Notifications blocked";message.textContent="Allow notifications for this website in browser settings, then return and retry.";enable.textContent="Retry setup";}
+   else{status.textContent="Setup needs attention";message.textContent="Registration did not complete. Check the connection and browser permission, then retry.";enable.textContent="Try again";}
+   enable.disabled=false;
+  });
+  const test=document.createElement("button");
+  test.type="button";test.textContent="Test alert";test.style.cssText=buttonStyle;
+  test.addEventListener("click",async()=>{
+   test.disabled=true;test.textContent="Testing…";
+   const ready=await ensureOtgBackgroundPush(user,true);
+   if(!ready){message.textContent="Test not sent: this phone is not registered yet. Use Retry setup first.";test.disabled=false;test.textContent="Test alert";return;}
+   try{
+    const registration=await navigator.serviceWorker.ready;
+    if(typeof registration.showNotification!=="function")throw new Error("This browser cannot display service-worker notifications");
+    await registration.showNotification("OTG phone notification check",{body:"This phone can display OTG notifications.",icon:"/otg-app-icon-192.png",badge:"/otg-app-icon-192.png",tag:"otg-local-display-check",requireInteraction:true});
+    const result=await client.functions.invoke("otg-call-push",{body:{action:"test-push"}});
+    if(result.error)throw result.error;
+    const data=result.data||{},push=data.push||{};
+    message.textContent=push.sent>0?"Phone display check triggered; the push server accepted "+push.sent+" background test message(s).":"Phone display check triggered, but background push was not accepted. Registered: "+(push.subscriptions||0)+", failed: "+(push.failed||0)+". "+(data.error||"Retry setup.");
+    status.textContent=push.sent>0?"Background push test accepted":"Push test needs attention";
+   }catch(error){message.textContent="Notification test failed: "+(error&&error.message?error.message:"browser or push error");status.textContent="Test failed";}
+   test.disabled=false;test.textContent="Test alert";
+  });
+  const close=document.createElement("button");
+  close.type="button";close.textContent="Hide";close.style.cssText=buttonStyle;
+  close.addEventListener("click",()=>banner.remove());
+  actions.append(enable,test,close);
+  details.append(message,actions);
+  toggle.addEventListener("click",()=>{details.hidden=!details.hidden;toggle.setAttribute("aria-expanded",String(!details.hidden));toggle.textContent=details.hidden?"Details":"Hide details";});
+  banner.append(head,details);
+  const mount=document.querySelector("#academyDashboard .academy-main")||document.querySelector("#academyDashboard")||document.body;
+  mount.insertBefore(banner,mount.firstChild);
+  if(Notification.permission!=="granted")details.hidden=false;
+  if(Notification.permission==="granted"){
+   ensureOtgBackgroundPush(user,false).then(ok=>{
+    if(ok){status.textContent="Alerts enabled on this phone";message.textContent="This phone is registered for OTG background call alerts. You can leave Student Hub after setup.";}
+    else{status.textContent="Finish phone setup";message.textContent="Permission is allowed, but this phone is not yet confirmed as registered. Open Details and tap Retry setup.";}
+   });
+  }
  }
  window.otgInitCallNotifications=function(user){
   if(!user||!user.id)return;
