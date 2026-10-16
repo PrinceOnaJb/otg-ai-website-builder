@@ -37,27 +37,29 @@ self.addEventListener("push", event => {
   }
 
   const isTest = payload.type === "test";
+  const isAssessmentResult = payload.type === "assessment-result";
   const callId = typeof payload.callId === "string" ? payload.callId : "";
   const callerName = typeof payload.callerName === "string" && payload.callerName.trim()
     ? payload.callerName.trim()
     : "An OTG student";
   const callType = payload.callType === "video" ? "video" : "voice";
-  const title = isTest ? "OTG call alerts are working" : (callType === "video" ? "Incoming OTG video call" : "Incoming OTG voice call");
+  const title = isAssessmentResult ? (payload.title || "OTG assessment results released") : (isTest ? "OTG call alerts are working" : (callType === "video" ? "Incoming OTG video call" : "Incoming OTG voice call"));
   const options = {
-    body: payload.body || (isTest ? "This device can receive background notifications from OTG GRAPHIC Academy." : callerName + " is calling you."),
+    body: payload.body || (isAssessmentResult ? "Your Coach has released your assessment results. Open Assessment Results to view them." : (isTest ? "This device can receive background notifications from OTG GRAPHIC Academy." : callerName + " is calling you.")),
     icon: "/otg-app-icon-192.png",
     badge: "/otg-app-icon-192.png",
-    tag: callId ? "otg-call-" + callId : "otg-incoming-call",
+    tag: isAssessmentResult ? "otg-assessment-result" : (callId ? "otg-call-" + callId : "otg-incoming-call"),
     renotify: true,
     requireInteraction: true,
     data: {
+      type: isAssessmentResult ? "assessment-result" : (isTest ? "test" : "call"),
       callId,
       callerName,
       callType,
-      url: "/?otgIncomingCall=" + encodeURIComponent(callId) +
+      url: isAssessmentResult ? (typeof payload.url === "string" ? payload.url : "/?otgAssessmentResults=1") : "/?otgIncomingCall=" + encodeURIComponent(callId) +
         "&otgCallType=" + encodeURIComponent(callType)
     },
-    actions: isTest ? [{ action: "dismiss", title: "Dismiss" }] : [
+    actions: (isTest || isAssessmentResult) ? [{ action: "dismiss", title: "Dismiss" }] : [
       { action: "open-call", title: "Open call" },
       { action: "dismiss", title: "Dismiss" }
     ]
@@ -82,12 +84,16 @@ self.addEventListener("notificationclick", event => {
     for (const client of windows) {
       if (new URL(client.url).origin === self.location.origin) {
         await client.focus();
-        client.postMessage({
-          type: "OTG_INCOMING_CALL_NOTIFICATION_CLICK",
-          callId: typeof data.callId === "string" ? data.callId : "",
-          callerName: typeof data.callerName === "string" ? data.callerName : "OTG Student",
-          callType: data.callType === "video" ? "video" : "voice"
-        });
+        if (data.type === "assessment-result") {
+          client.postMessage({ type: "OTG_ASSESSMENT_RESULT_NOTIFICATION_CLICK" });
+        } else if (data.type !== "test") {
+          client.postMessage({
+            type: "OTG_INCOMING_CALL_NOTIFICATION_CLICK",
+            callId: typeof data.callId === "string" ? data.callId : "",
+            callerName: typeof data.callerName === "string" ? data.callerName : "OTG Student",
+            callType: data.callType === "video" ? "video" : "voice"
+          });
+        }
         if ("navigate" in client) {
           await client.navigate(targetUrl.href);
         }
