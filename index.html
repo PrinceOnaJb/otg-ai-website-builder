@@ -5763,6 +5763,87 @@ ${html}
 <script>
 ${js}
 <\/script>
+
+<!-- OTG STUDENT FIRST: welcome shortcuts, Student Hub, then website builder -->
+<script id="otg-student-first-page-order">
+(function(){
+  "use strict";
+  function arrange(){
+    var app=document.getElementById("app");
+    var hero=app&&app.querySelector(".hero");
+    var hub=document.getElementById("academyDashboard");
+    if(!app||!hero||!hub)return;
+    var quick=document.getElementById("otgWelcomeQuickStart");
+    if(!quick){
+      quick=document.createElement("section");
+      quick.id="otgWelcomeQuickStart";
+      quick.setAttribute("aria-label","Student welcome and quick links");
+      quick.style.cssText="max-width:1200px;margin:22px auto;padding:0 20px;box-sizing:border-box;font-family:Inter,Arial,sans-serif;color:#172554";
+      var card=document.createElement("div");
+      card.style.cssText="padding:clamp(20px,3vw,30px);border:1px solid #dbeafe;border-radius:20px;background:linear-gradient(135deg,#eff6ff 0%,#fff 65%,#f0fdf4 100%);box-shadow:0 8px 24px rgba(15,23,42,.06)";
+      var title=document.createElement("h2");
+      title.id="otgWelcomeQuickStartTitle";
+      title.textContent="Welcome back!";
+      title.style.cssText="margin:0 0 7px;font-size:clamp(23px,3vw,30px);line-height:1.25;font-weight:900;color:#123b78";
+      var subtitle=document.createElement("p");
+      subtitle.textContent="OTG GRAPHIC Academy · Your learning journey continues.";
+      subtitle.style.cssText="margin:0 0 20px;color:#475569;line-height:1.6";
+      var cards=document.createElement("div");
+      cards.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px";
+      function makeShortcut(heading,description,label,key){
+        var button=document.createElement("button");
+        button.type="button";
+        button.style.cssText="display:block;width:100%;min-height:105px;text-align:left;padding:17px;border:1px solid #dbe4f0;border-radius:14px;background:#fff;color:#172554;cursor:pointer;box-shadow:0 3px 10px rgba(15,23,42,.035)";
+        var h=document.createElement("strong");h.textContent=heading;h.style.cssText="display:block;margin-bottom:7px;font-size:17px;font-weight:900";
+        var p=document.createElement("span");p.textContent=description;p.style.cssText="display:block;color:#475569;font-size:14px;line-height:1.55";
+        var action=document.createElement("span");action.textContent=label+" →";action.style.cssText="display:block;margin-top:12px;color:#1d4ed8;font-size:13px;font-weight:800";
+        button.append(h,p,action);
+        button.addEventListener("click",function(){
+          var hubNode=document.getElementById("academyDashboard");
+          if(typeof window.openAcademyPanel==="function"){
+            window.openAcademyPanel(key,button);
+            if(hubNode)hubNode.scrollIntoView({behavior:"smooth",block:"start"});
+          }else if(hubNode){hubNode.scrollIntoView({behavior:"smooth",block:"start"});}
+        });
+        return button;
+      }
+      cards.append(
+        makeShortcut("Continue Learning","Pick up where you left off.","Open lessons","learn"),
+        makeShortcut("Your Assessments","Check tasks and released results.","View assessments","assessment-results")
+      );
+      card.append(title,subtitle,cards);
+      quick.appendChild(card);
+    }
+    /* Final order: welcome shortcuts -> Student Hub -> website-builder hero. */
+    app.insertBefore(quick,hero);
+    app.insertBefore(hub,hero);
+    function setName(user){
+      if(!user)return;
+      var meta=user.user_metadata||{};
+      var raw=meta.first_name||meta.full_name||meta.name||meta.display_name||meta.nickname||"";
+      if(!raw&&user.email)raw=String(user.email).split("@")[0].replace(/[._-]+/g," ");
+      var first=String(raw||"Student").trim().split(/\s+/)[0];
+      if(first)title.textContent="Welcome back, "+first.charAt(0).toLocaleUpperCase()+first.slice(1)+"! 👋";
+    }
+    var title=document.getElementById("otgWelcomeQuickStartTitle");
+    try{
+      if(typeof supabaseClient!=="undefined"&&supabaseClient&&supabaseClient.auth){
+        supabaseClient.auth.getUser().then(function(result){
+          var user=result&&result.data&&result.data.user;
+          setName(user);
+          if(user&&user.id){
+            supabaseClient.from("academy_student_profiles").select("display_name").eq("user_id",user.id).maybeSingle().then(function(profileResult){
+              var display=profileResult&&profileResult.data&&profileResult.data.display_name;
+              if(display&&String(display).trim())title.textContent="Welcome back, "+String(display).trim().split(/\s+/)[0]+"! 👋";
+            }).catch(function(){});
+          }
+        }).catch(function(){});
+      }
+    }catch(_){}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arrange,{once:true});else arrange();
+})();
+</script>
 </body>
 </html>
 `;
