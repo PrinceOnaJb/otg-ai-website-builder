@@ -235,6 +235,44 @@ async function loadAcademyPanelData(key,content){
   const results=await Promise.all(stats.map(async item=>{try{return {label:item[0],result:await item[1]()};}catch(error){return {label:item[0],result:{count:null,error}};}}));
   results.forEach(item=>{const card=document.createElement("article");card.style.cssText="padding:17px;border:1px solid #dbeafe;border-radius:13px;background:#fff;min-width:0";const number=document.createElement("strong");number.textContent=item.result.error?"—":String(item.result.count==null?0:item.result.count);number.style.cssText="display:block;font-size:27px;line-height:1.2;color:#1d4ed8";const label=document.createElement("span");label.textContent=item.label;label.style.cssText="display:block;margin-top:7px;font-size:12px;font-weight:800;color:#475569";card.append(number,label);if(item.result.error){const note=document.createElement("small");note.textContent="Could not load";note.style.cssText="display:block;margin-top:6px;color:#b91c1c";card.appendChild(note);}grid.appendChild(card);});
   area.appendChild(grid);
+  // Dashboard answer review: show marked answers and model answers after the coach releases results.
+  if(!admin&&userId){
+   const officialHeading=document.createElement("h3");officialHeading.textContent="Official Assignment Results & Answer Review";officialHeading.style.cssText="margin:26px 0 8px;color:#14532d;font-size:20px;font-weight:900";area.appendChild(officialHeading);
+   const officialIntro=document.createElement("p");officialIntro.textContent="After your Coach releases results, check your score, the answer you submitted, the correct answer and question feedback here.";officialIntro.style.cssText="margin:0 0 12px;color:#475569;line-height:1.65";area.appendChild(officialIntro);
+   const officialList=document.createElement("div");officialList.style.cssText="display:grid;gap:12px";area.appendChild(officialList);
+   const {data:releasedRows,error:releasedError}=await db.from("academy_submissions").select("id,assignment_id,submission_text,status,score,coach_feedback,reviewed_at,submitted_at").eq("student_id",userId).eq("status","approved").not("score","is",null).order("reviewed_at",{ascending:false}).limit(5);
+   if(releasedError){const warn=document.createElement("p");warn.textContent="Official results could not load right now. Please refresh or open Submit Assignment.";warn.style.cssText="padding:12px;border:1px solid #fed7aa;border-radius:10px;background:#fff7ed;color:#9a3412";officialList.appendChild(warn);}
+   else if(!releasedRows||!releasedRows.length){const empty=document.createElement("p");empty.textContent="No official results released yet. Your marked scores and answer review will appear here after your Coach approves them.";empty.style.cssText="padding:14px;border:1px dashed #cbd5e1;border-radius:10px;color:#64748b;line-height:1.6";officialList.appendChild(empty);}
+   else{
+    const resultIds=releasedRows.map(row=>row.id);const assignmentIds=[...new Set(releasedRows.map(row=>row.assignment_id))];
+    const [resultTitles,resultDetails]=await Promise.all([db.from("academy_assignments").select("id,title").in("id",assignmentIds),db.from("academy_submission_question_scores").select("submission_id,question_number,question_text,answer_text,correct_answer,score,max_score,feedback").in("submission_id",resultIds)]);
+    const titleById=new Map((resultTitles.data||[]).map(row=>[String(row.id),row.title]));const detailsById=new Map();(resultDetails.data||[]).forEach(row=>{const k=String(row.submission_id);if(!detailsById.has(k))detailsById.set(k,[]);detailsById.get(k).push(row);});
+    releasedRows.forEach(row=>{
+     const card=document.createElement("article");card.style.cssText="padding:15px;border:2px solid #bbf7d0;border-radius:13px;background:#f0fdf4";
+     const title=document.createElement("h4");title.textContent=titleById.get(String(row.assignment_id))||"Assignment";title.style.cssText="margin:0 0 7px;color:#14532d;font-size:17px;font-weight:900";
+     const score=document.createElement("p");score.textContent="Your official assignment score is "+Number(row.score)+"%.";score.style.cssText="margin:0 0 10px;color:#166534;font-size:18px;font-weight:900;line-height:1.5";card.append(title,score);
+     if(row.coach_feedback){const overall=document.createElement("p");overall.textContent="Coach feedback: "+row.coach_feedback;overall.style.cssText="margin:0 0 12px;padding:10px;border-radius:8px;background:#fffbeb;color:#78350f;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere";card.appendChild(overall);}
+     const questionRows=(detailsById.get(String(row.id))||[]).sort((a,b)=>Number(a.question_number)-Number(b.question_number));
+     if(resultDetails.error){const warn=document.createElement("p");warn.textContent="Your overall score is available, but the answer-by-answer review could not load. Please open Submit Assignment or try again later.";warn.style.cssText="margin:0;color:#9a3412;line-height:1.6";card.appendChild(warn);}
+     else if(!questionRows.length){const warn=document.createElement("p");warn.textContent="Your score has been released, but your Coach did not save a question-by-question breakdown for this submission.";warn.style.cssText="margin:0;color:#92400e;line-height:1.6";card.appendChild(warn);}
+     else{
+      const detailsHeading=document.createElement("h5");detailsHeading.textContent="Your answers and the correct answers";detailsHeading.style.cssText="margin:6px 0 2px;color:#14532d;font-size:15px;font-weight:900";card.appendChild(detailsHeading);
+      questionRows.forEach(item=>{
+       const line=document.createElement("section");line.style.cssText="display:grid;gap:7px;margin-top:8px;padding:12px;border:1px solid #d1d5db;border-radius:10px;background:#fff";
+       const earned=Number(item.score),maximum=Number(item.max_score),fullyCorrect=item.score!==null&&item.score!==undefined&&maximum>0&&earned>=maximum,incorrect=item.score!==null&&item.score!==undefined&&earned<=0;
+       const badge=document.createElement("strong");badge.textContent=fullyCorrect?"✅ CORRECT":incorrect?"❌ INCORRECT":"🟡 PARTIALLY CORRECT";badge.style.cssText="font-size:15px;font-weight:900;color:"+(fullyCorrect?"#166534":incorrect?"#b91c1c":"#92400e");line.appendChild(badge);
+       const qtitle=document.createElement("strong");qtitle.textContent="Question "+item.question_number+" · "+(item.score===null||item.score===undefined?"Not scored":item.score+" / "+item.max_score+" marks");qtitle.style.cssText="color:#172554;font-size:13px";line.appendChild(qtitle);
+       if(item.question_text){const prompt=document.createElement("p");prompt.textContent=item.question_text;prompt.style.cssText="margin:0;color:#334155;line-height:1.55";line.appendChild(prompt);}
+       const chosen=document.createElement("p");chosen.textContent="Your answer: "+(item.answer_text||"(No written answer recorded)");chosen.style.cssText="margin:0;padding:10px;border-radius:8px;background:"+(fullyCorrect?"#f0fdf4":incorrect?"#fef2f2":"#fffbeb")+";border:1px solid "+(fullyCorrect?"#86efac":incorrect?"#fca5a5":"#fcd34d")+";color:#1f2937;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere";line.appendChild(chosen);
+       if(item.correct_answer){const correct=document.createElement("p");correct.textContent="Correct answer: "+item.correct_answer;correct.style.cssText="margin:0;padding:10px;border:1px solid #bbf7d0;border-radius:8px;background:#f0fdf4;color:#166534;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere";line.appendChild(correct);}
+       if(item.feedback){const fb=document.createElement("p");fb.textContent="Coach feedback: "+item.feedback;fb.style.cssText="margin:0;color:#166534;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere";line.appendChild(fb);}
+       card.appendChild(line);
+      });
+     }
+     officialList.appendChild(card);
+    });
+   }
+  }
   const note=document.createElement("p");note.textContent=admin?"Tip: open Learn to publish lesson notes and video links, Submit Assignment to publish tasks and review submissions, or Notifications to post an academy announcement.":"Recommended next step: open Learn and complete the published Introduction to Graphic Design lesson. Your progress stays connected to your account.";note.style.cssText="margin:16px 0 0;padding:14px 16px;border-left:4px solid #2563eb;border-radius:8px;background:#eff6ff;color:#1e3a8a;line-height:1.7";area.appendChild(note);
   const newsHeading=document.createElement("h3");
   newsHeading.textContent="Latest News & Updates";
