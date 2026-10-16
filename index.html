@@ -1548,6 +1548,24 @@ header{
   background:#075b24!important;
   color:#fff!important;
 }
+.refresh-app-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  min-height:38px;
+  padding:8px 11px!important;
+  border:1px solid #cbd5e1!important;
+  border-radius:9px!important;
+  background:#f8fafc!important;
+  color:#17452b!important;
+  font-size:14px;
+  font-weight:800!important;
+  white-space:nowrap;
+}
+.refresh-app-btn:hover{background:#eaf5ed!important;border-color:#86b99a!important}
+.refresh-app-btn:focus-visible{outline:3px solid #86b99a;outline-offset:2px}
+.refresh-app-btn .refresh-app-icon{font-size:18px;line-height:1}
 
 /* Clean, natural website-style welcome reveal */
 .otg-sticky-welcome{display:flex;align-items:center;gap:9px;flex:0 0 auto;max-width:380px;padding:7px 11px;border:1px solid #dbeafe;border-radius:14px;background:linear-gradient(110deg,#eff6ff,#fff7ed);box-shadow:0 4px 14px rgba(30,58,138,.10);order:3}
@@ -2577,6 +2595,17 @@ html{scroll-behavior:auto}
 
       <button onclick="showSection('about')">
         About OTG
+      </button>
+
+      <button
+        type="button"
+        class="refresh-app-btn"
+        title="Refresh OTG app"
+        aria-label="Refresh OTG app"
+        onclick="window.location.reload()"
+      >
+        <span class="refresh-app-icon" aria-hidden="true">↻</span>
+        <span>Refresh</span>
       </button>
 
       <button
