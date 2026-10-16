@@ -2635,6 +2635,86 @@ html{scroll-behavior:auto}
 </header>
 
 
+<!-- OTG ACADEMY STUDENT DASHBOARD START -->
+<section class="section" id="academyDashboard">
+  <style id="otg-live-news-static-style">
+    @keyframes otgNewsTickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    #otgLiveNewspaperTicker .otg-news-track{display:flex;width:max-content;animation:otgNewsTickerScroll 75s linear infinite;will-change:transform}
+    #otgLiveNewspaperTicker:hover .otg-news-track{animation-play-state:paused}
+     #otgLiveNewspaperTicker:focus-within .otg-news-track{animation-play-state:paused}
+    @media(prefers-reduced-motion:reduce){#otgLiveNewspaperTicker .otg-news-track{animation-duration:150s!important}}
+  </style>
+  <div id="otgLiveNewspaperTicker" aria-label="Live newspaper headlines" style="display:block!important;visibility:visible!important;position:relative;z-index:5;margin:0 auto 18px;padding:12px 0;border:1px solid #dbeafe;border-radius:12px;background:#fff;overflow:hidden;box-shadow:0 3px 14px rgba(15,23,42,.06);max-width:1200px;color:#172554">
+    <div style="display:flex;align-items:center;gap:9px;padding:0 14px 9px;flex-wrap:wrap">
+      <span style="flex:none;background:#123b78;color:#fff;border-radius:4px;padding:5px 8px;font-size:11px;font-weight:900;letter-spacing:.5px">🔴 LIVE NEWS</span>
+      <strong style="color:#172554;font-size:13px;line-height:1.5">Punch · AIT · ARISE News · BBC · Technology</strong>
+      <button id="otgLiveNewsPause" type="button" aria-pressed="false" style="margin-left:auto;border:1px solid #cbd5e1;border-radius:7px;background:#fff;padding:5px 9px;color:#334155;font-size:11px;font-weight:800;cursor:pointer">Pause</button>
+    </div>
+    <div tabindex="0" aria-label="Scrolling news headlines; focus to pause" style="display:block;overflow:hidden;white-space:nowrap;border-top:1px solid #dbeafe;border-bottom:1px solid #dbeafe;background:#f8fbff;padding:11px 0">
+      <div id="otgLiveNewsTrack" class="otg-news-track" style="display:flex;width:max-content;align-items:center;gap:34px;will-change:transform"><span style="padding:0 16px;color:#64748b;font-size:13px">Connecting to live headlines…</span></div>
+    </div>
+    <p id="otgLiveNewsStatus" role="status" style="margin:8px 14px 0;color:#64748b;font-size:11px;line-height:1.5">Connecting to live newspaper headlines…</p>
+  </div>
+
+  <div class="section-heading" style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+    <div>
+      <h2>OTG GRAPHIC Academy</h2>
+      <p>Your learning space for lessons, assignments, projects and community.</p>
+    </div>
+    </div>
+  <div class="academy-layout">
+    <aside class="academy-sidebar" aria-label="Student dashboard navigation">
+      <div class="academy-brand"><span>OTG</span><div><strong>Student Hub</strong><small>Learn • Build • Earn</small></div></div>
+      <button type="button" aria-label="Open voice and video call centre" onclick="openAcademyPanel('calls',this)" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:4px 0 9px;padding:15px 12px;border:2px solid #f6c453;border-radius:12px;background:linear-gradient(135deg,#f6c453,#ffe6a0);color:#172554;font-size:15px;font-weight:900;letter-spacing:.2px;cursor:pointer;box-shadow:0 5px 16px rgba(0,0,0,.18)"><span aria-hidden="true" style="font-size:21px">☎</span><span>VOICE &amp; VIDEO CALLS</span><span aria-hidden="true">›</span></button>
+      <button class="academy-nav active" onclick="openAcademyPanel('home',this)">🏠 Home</button>
+      <button class="academy-nav" onclick="openAcademyPanel('learn',this)">📚 Learn</button>
+      <button class="academy-nav" onclick="openAcademyPanel('watch',this)">▶ Watch &amp; Learn</button>
+      <button class="academy-nav" id="otgStudentAssignmentsNav" onclick="openAcademyPanel(window.otgAcademyIsAdmin===true?'submission-review':'assignments',this)">📝 Submit Assignment</button>
+      <button class="academy-nav" id="otgAssessmentResultsNav" onclick="openAcademyPanel('assessment-results',this)">🧾 Assessment Results</button>
+      <button class="academy-nav" id="otgPublishAssignmentNav" hidden style="display:none" onclick="openAcademyPanel('assignments',this)">📤 Publish Student Assignment</button>
+      <button class="academy-nav" onclick="openAcademyPanel('codelab',this)">💻 Code Lab</button>
+      <button class="academy-nav" onclick="openAcademyPanel('projects',this)">🗂 My Projects</button>
+      <button class="academy-nav" onclick="openAcademyPanel('how',this)">🧭 How it works</button>
+      <button class="academy-nav" onclick="openAcademyPanel('earn',this)">✨ Create &amp; Earn</button>
+      <button class="academy-nav" onclick="openAcademyPanel('websites',this)">🌐 My Websites</button>
+      <button class="academy-nav" onclick="openAcademyPanel('find',this)">🔎 Find my websites</button>
+      <button class="academy-nav" onclick="openAcademyPanel('reviews',this)">⭐ Website Reviews</button>
+      <button class="academy-nav" onclick="openAcademyPanel('analytics',this)">📈 Website Analytics</button>
+      <button class="academy-nav" onclick="openAcademyPanel('certificates',this)">🎓 My Certificates</button>
+      <button class="academy-nav" onclick="openAcademyPanel('community',this)">👥 Community</button>
+      <button class="academy-nav" onclick="openAcademyPanel('connect',this)">🤝 Connect</button>
+
+      <button class="academy-nav" onclick="openAcademyPanel('discussion',this)">💬 Discussion</button>
+      <button class="academy-nav" onclick="openAcademyPanel('partners',this)">🧑‍🤝‍🧑 Study Partners</button>
+      <button class="academy-nav" onclick="openAcademyPanel('account',this)">👤 My Account</button>
+      <button class="academy-nav" onclick="openAcademyPanel('progress',this)">📊 Progress Report</button>
+      <button class="academy-nav" onclick="openAcademyPanel('achievements',this)">🏆 Achievements</button>
+      <button class="academy-nav" onclick="openAcademyPanel('notifications',this)">🔔 Notifications</button>
+      <button class="academy-nav" id="otgCustomerServiceNav" onclick="openAcademyPanel('support',this)">🎧 Customer Service</button>
+      <button class="academy-nav" onclick="openAcademyPanel('settings',this)">⚙ Profile &amp; Settings</button>
+    </aside>
+    <div class="academy-main">
+      <div class="academy-welcome">
+        <div><span class="academy-eyebrow">YOUR LEARNING JOURNEY</span><h3 id="academyPanelTitle">Welcome to OTG Graphic Academy AI Website Builder</h3><p id="academyPanelIntro">Learn new skills, practise with projects and grow your digital portfolio.</p></div>
+        <div class="academy-avatar" id="academyAvatar"><img src="/otg-app-icon.svg?v=8" alt="OTG Graphic Academy app icon" width="58" height="58" style="display:block;width:58px;height:58px;object-fit:contain;border-radius:14px"></div>
+      </div>
+      <div class="academy-stats">
+        <div class="academy-stat"><span>Learning points</span><strong id="academyPoints">0</strong><small>Earn points from published websites and certificates</small></div>
+        <div class="academy-stat"><span>My projects</span><strong id="academyProjects">—</strong><small>Your saved website projects</small></div>
+        <div class="academy-stat"><span>Certificates</span><strong id="academyCertificates">0</strong><small>Certificates issued by your coach</small></div>
+      </div>
+      <div class="academy-content-card" id="academyPanelContent">
+        <span class="academy-card-icon">🚀</span>
+        <h3>Start learning with OTG</h3>
+        <p>Choose a section from the menu to explore your learning space. Lessons, assignments, certificates and community tools are available when enabled for your account.</p>
+        <button class="primary-btn" onclick="openAcademyPanel('learn',document.querySelector('.academy-nav:nth-of-type(3)'))">Explore learning</button>
+      </div>
+      <p class="academy-note">Your account access is protected by the OTG student approval system.</p>
+    </div>
+  </div>
+</section>
+<!-- OTG ACADEMY STUDENT DASHBOARD END -->
+
 <section class="hero">
 
   <div class="hero-inner">
@@ -3980,85 +4060,7 @@ html{scroll-behavior:auto}
 
 
 </style>
-<!-- OTG ACADEMY STUDENT DASHBOARD START -->
-<section class="section" id="academyDashboard">
-  <style id="otg-live-news-static-style">
-    @keyframes otgNewsTickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-    #otgLiveNewspaperTicker .otg-news-track{display:flex;width:max-content;animation:otgNewsTickerScroll 75s linear infinite;will-change:transform}
-    #otgLiveNewspaperTicker:hover .otg-news-track{animation-play-state:paused}
-     #otgLiveNewspaperTicker:focus-within .otg-news-track{animation-play-state:paused}
-    @media(prefers-reduced-motion:reduce){#otgLiveNewspaperTicker .otg-news-track{animation-duration:150s!important}}
-  </style>
-  <div id="otgLiveNewspaperTicker" aria-label="Live newspaper headlines" style="display:block!important;visibility:visible!important;position:relative;z-index:5;margin:0 auto 18px;padding:12px 0;border:1px solid #dbeafe;border-radius:12px;background:#fff;overflow:hidden;box-shadow:0 3px 14px rgba(15,23,42,.06);max-width:1200px;color:#172554">
-    <div style="display:flex;align-items:center;gap:9px;padding:0 14px 9px;flex-wrap:wrap">
-      <span style="flex:none;background:#123b78;color:#fff;border-radius:4px;padding:5px 8px;font-size:11px;font-weight:900;letter-spacing:.5px">🔴 LIVE NEWS</span>
-      <strong style="color:#172554;font-size:13px;line-height:1.5">Punch · AIT · ARISE News · BBC · Technology</strong>
-      <button id="otgLiveNewsPause" type="button" aria-pressed="false" style="margin-left:auto;border:1px solid #cbd5e1;border-radius:7px;background:#fff;padding:5px 9px;color:#334155;font-size:11px;font-weight:800;cursor:pointer">Pause</button>
-    </div>
-    <div tabindex="0" aria-label="Scrolling news headlines; focus to pause" style="display:block;overflow:hidden;white-space:nowrap;border-top:1px solid #dbeafe;border-bottom:1px solid #dbeafe;background:#f8fbff;padding:11px 0">
-      <div id="otgLiveNewsTrack" class="otg-news-track" style="display:flex;width:max-content;align-items:center;gap:34px;will-change:transform"><span style="padding:0 16px;color:#64748b;font-size:13px">Connecting to live headlines…</span></div>
-    </div>
-    <p id="otgLiveNewsStatus" role="status" style="margin:8px 14px 0;color:#64748b;font-size:11px;line-height:1.5">Connecting to live newspaper headlines…</p>
-  </div>
 
-  <div class="section-heading" style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
-    <div>
-      <h2>OTG GRAPHIC Academy</h2>
-      <p>Your learning space for lessons, assignments, projects and community.</p>
-    </div>
-    </div>
-  <div class="academy-layout">
-    <aside class="academy-sidebar" aria-label="Student dashboard navigation">
-      <div class="academy-brand"><span>OTG</span><div><strong>Student Hub</strong><small>Learn • Build • Earn</small></div></div>
-      <button type="button" aria-label="Open voice and video call centre" onclick="openAcademyPanel('calls',this)" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:4px 0 9px;padding:15px 12px;border:2px solid #f6c453;border-radius:12px;background:linear-gradient(135deg,#f6c453,#ffe6a0);color:#172554;font-size:15px;font-weight:900;letter-spacing:.2px;cursor:pointer;box-shadow:0 5px 16px rgba(0,0,0,.18)"><span aria-hidden="true" style="font-size:21px">☎</span><span>VOICE &amp; VIDEO CALLS</span><span aria-hidden="true">›</span></button>
-      <button class="academy-nav active" onclick="openAcademyPanel('home',this)">🏠 Home</button>
-      <button class="academy-nav" onclick="openAcademyPanel('learn',this)">📚 Learn</button>
-      <button class="academy-nav" onclick="openAcademyPanel('watch',this)">▶ Watch &amp; Learn</button>
-      <button class="academy-nav" id="otgStudentAssignmentsNav" onclick="openAcademyPanel(window.otgAcademyIsAdmin===true?'submission-review':'assignments',this)">📝 Submit Assignment</button>
-      <button class="academy-nav" id="otgAssessmentResultsNav" onclick="openAcademyPanel('assessment-results',this)">🧾 Assessment Results</button>
-      <button class="academy-nav" id="otgPublishAssignmentNav" hidden style="display:none" onclick="openAcademyPanel('assignments',this)">📤 Publish Student Assignment</button>
-      <button class="academy-nav" onclick="openAcademyPanel('codelab',this)">💻 Code Lab</button>
-      <button class="academy-nav" onclick="openAcademyPanel('projects',this)">🗂 My Projects</button>
-      <button class="academy-nav" onclick="openAcademyPanel('how',this)">🧭 How it works</button>
-      <button class="academy-nav" onclick="openAcademyPanel('earn',this)">✨ Create &amp; Earn</button>
-      <button class="academy-nav" onclick="openAcademyPanel('websites',this)">🌐 My Websites</button>
-      <button class="academy-nav" onclick="openAcademyPanel('find',this)">🔎 Find my websites</button>
-      <button class="academy-nav" onclick="openAcademyPanel('reviews',this)">⭐ Website Reviews</button>
-      <button class="academy-nav" onclick="openAcademyPanel('analytics',this)">📈 Website Analytics</button>
-      <button class="academy-nav" onclick="openAcademyPanel('certificates',this)">🎓 My Certificates</button>
-      <button class="academy-nav" onclick="openAcademyPanel('community',this)">👥 Community</button>
-      <button class="academy-nav" onclick="openAcademyPanel('connect',this)">🤝 Connect</button>
-
-      <button class="academy-nav" onclick="openAcademyPanel('discussion',this)">💬 Discussion</button>
-      <button class="academy-nav" onclick="openAcademyPanel('partners',this)">🧑‍🤝‍🧑 Study Partners</button>
-      <button class="academy-nav" onclick="openAcademyPanel('account',this)">👤 My Account</button>
-      <button class="academy-nav" onclick="openAcademyPanel('progress',this)">📊 Progress Report</button>
-      <button class="academy-nav" onclick="openAcademyPanel('achievements',this)">🏆 Achievements</button>
-      <button class="academy-nav" onclick="openAcademyPanel('notifications',this)">🔔 Notifications</button>
-      <button class="academy-nav" id="otgCustomerServiceNav" onclick="openAcademyPanel('support',this)">🎧 Customer Service</button>
-      <button class="academy-nav" onclick="openAcademyPanel('settings',this)">⚙ Profile &amp; Settings</button>
-    </aside>
-    <div class="academy-main">
-      <div class="academy-welcome">
-        <div><span class="academy-eyebrow">YOUR LEARNING JOURNEY</span><h3 id="academyPanelTitle">Welcome to OTG Graphic Academy AI Website Builder</h3><p id="academyPanelIntro">Learn new skills, practise with projects and grow your digital portfolio.</p></div>
-        <div class="academy-avatar" id="academyAvatar"><img src="/otg-app-icon.svg?v=8" alt="OTG Graphic Academy app icon" width="58" height="58" style="display:block;width:58px;height:58px;object-fit:contain;border-radius:14px"></div>
-      </div>
-      <div class="academy-stats">
-        <div class="academy-stat"><span>Learning points</span><strong id="academyPoints">0</strong><small>Earn points from published websites and certificates</small></div>
-        <div class="academy-stat"><span>My projects</span><strong id="academyProjects">—</strong><small>Your saved website projects</small></div>
-        <div class="academy-stat"><span>Certificates</span><strong id="academyCertificates">0</strong><small>Certificates issued by your coach</small></div>
-      </div>
-      <div class="academy-content-card" id="academyPanelContent">
-        <span class="academy-card-icon">🚀</span>
-        <h3>Start learning with OTG</h3>
-        <p>Choose a section from the menu to explore your learning space. Lessons, assignments, certificates and community tools are available when enabled for your account.</p>
-        <button class="primary-btn" onclick="openAcademyPanel('learn',document.querySelector('.academy-nav:nth-of-type(3)'))">Explore learning</button>
-      </div>
-      <p class="academy-note">Your account access is protected by the OTG student approval system.</p>
-    </div>
-  </div>
-</section>
-<!-- OTG ACADEMY STUDENT DASHBOARD END -->
 
 
 <section id="about" class="section" style="padding:56px 20px;max-width:1100px;margin:auto;color:#172033;line-height:1.8;">
