@@ -5,8 +5,8 @@
 (function(){
   function isExternalMeetingApp(value){
     var raw=String(value||"");
-    if(/meet\\.jit\\.si|(^|[/:.@])jitsi([/:.@]|$)/i.test(raw))return true;
-    try{return /(^|\\.)jitsi\\./i.test(new URL(raw,window.location.href).hostname);}catch(_){return false;}
+    if(/meet\.jit\.si|(^|[/:.@])jitsi([/:.@]|$)/i.test(raw))return true;
+    try{return /(^|\.)jitsi\./i.test(new URL(raw,window.location.href).hostname);}catch(_){return false;}
   }
   function showNotice(){
     try{
