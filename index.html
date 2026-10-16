@@ -7650,30 +7650,55 @@ async function refreshApprovalStatus(){
   approvalCheckPromise = (async()=>{
     const message = $("approvalMessage");
     if(message) message.textContent = "Checking your account status…";
+
+    let profile;
     try{
-      const profile = await fetchCurrentProfile();
-      if((String(profile.role || "").toLowerCase() === "admin" || String(profile.role || "").toLowerCase() === "student") && String(profile.approval_status || "").toLowerCase() === "approved"){
-        hideAllAccessScreens();
-        await showApp(true);
-        return;
-      }
+      profile = await fetchCurrentProfile();
+    }catch(error){
+      console.error("OTG profile verification failed:", error);
       hideAllAccessScreens();
       $("approvalScreen").classList.remove("hidden");
-      if(profile.approval_status === "rejected"){
+      if(message){
+        const detail = String(error && error.message || "").trim();
+        message.textContent = detail
+          ? "We could not verify your approval status (" + detail + "). Please check your connection and try again."
+          : "We could not verify your approval status. Please check your internet connection and try again. If this continues, contact the administrator.";
+      }
+      return;
+    }
+
+    const role = String(profile.role || "").toLowerCase();
+    const status = String(profile.approval_status || "").toLowerCase();
+
+    if((role === "admin" || role === "student") && status === "approved"){
+      hideAllAccessScreens();
+      try{
+        await showApp(true);
+      }catch(appError){
+        // A dashboard rendering error must not falsely tell an approved user
+        // that their account approval could not be verified.
+        console.error("OTG dashboard startup failed after approval was verified:", appError);
+        $("authScreen").classList.add("hidden");
+        $("approvalScreen").classList.add("hidden");
+        $("app").classList.remove("hidden");
+        showToast("Your account is approved, but part of the dashboard did not finish loading. Please refresh the page.");
+      }
+      return;
+    }
+
+    hideAllAccessScreens();
+    $("approvalScreen").classList.remove("hidden");
+    if(message){
+      if(status === "rejected"){
         message.textContent = "Your account request was not approved. Please contact the OTG administrator for assistance.";
       }else{
         message.textContent = "Your free account has been created successfully. Please wait while the OTG administrator reviews and approves your account. Your dashboard will remain locked until approval.";
       }
-    }catch(error){
-      console.error("Approval status check failed:", error);
-      hideAllAccessScreens();
-      $("approvalScreen").classList.remove("hidden");
-      if(message) message.textContent = "We could not verify your approval status. Please check your internet connection and try again. If this continues, contact the administrator.";
-    }finally{
-      approvalCheckInProgress = false;
-      approvalCheckPromise = null;
     }
-  })();
+  })().finally(()=>{
+    approvalCheckInProgress = false;
+    approvalCheckPromise = null;
+  });
   return approvalCheckPromise;
 }
 
