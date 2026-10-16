@@ -835,7 +835,8 @@ async function loadAcademyPanelData(key,content){
       questionCard.style.cssText="display:grid;gap:10px;padding:16px;border:1px solid #cbd5e1;border-radius:12px;background:#fff;box-shadow:0 2px 7px rgba(15,23,42,.04)";
       const questionTitle=document.createElement("h5");questionTitle.textContent=question.title;questionTitle.style.cssText="margin:0;color:#172554;font-size:15px;line-height:1.55";
       questionCard.appendChild(questionTitle);
-      question.details.forEach(detail=>{const p=document.createElement("p");p.textContent=detail;p.style.cssText="margin:0;color:#334155;line-height:1.7;white-space:pre-wrap";questionCard.appendChild(p);});
+      const objectiveOptionLineCount=question.details.filter(detail=>/^[A-E][.)]\s*\S+/i.test(detail)).length;
+      question.details.filter(detail=>!(objectiveOptionLineCount>=2&&/^[A-E][.)]\s*/i.test(detail))).forEach(detail=>{const p=document.createElement("p");p.textContent=detail;p.style.cssText="margin:0;color:#334155;line-height:1.7;white-space:pre-wrap";questionCard.appendChild(p);});
      }
      const label=document.createElement("label");label.style.cssText="display:grid;gap:7px;font-size:13px;font-weight:700;color:#1e3a8a";
      label.textContent=questionBlocks.length?"Select answer for Question "+(questionBlocks[i]&&questionBlocks[i].number||i+1):"Your answer";
