@@ -4423,7 +4423,7 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
  document.addEventListener("pointerdown",function(){if(state.userId&&"Notification" in window&&Notification.permission==="granted"){ensureOtgBackgroundPush({id:state.userId},false);}}, {passive:true});
  function showOtgPushSetupPrompt(user){
   if(!user||!user.id||!document.body)return;
-  try{if(localStorage.getItem("otg-call-push-setup:"+user.id)==="1"||sessionStorage.getItem("otg-call-push-prompt-hidden:"+user.id)==="1")return;}catch(_){}
+  try{if(localStorage.getItem("otg-call-push-setup:"+user.id)==="1"||localStorage.getItem("otg-call-push-prompt-hidden:"+user.id)==="1")return;}catch(_){}
   if(document.getElementById("otgGlobalPushSetupPrompt"))return;
   if(!("Notification" in window)||!("serviceWorker" in navigator)||!("PushManager" in window))return;
   const banner=document.createElement("section");
@@ -4483,7 +4483,7 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
   });
   const close=document.createElement("button");
   close.type="button";close.textContent="Hide";close.style.cssText=buttonStyle;
-  close.addEventListener("click",()=>{try{sessionStorage.setItem("otg-call-push-prompt-hidden:"+user.id,"1");}catch(_){}banner.remove();});
+  close.addEventListener("click",()=>{try{localStorage.setItem("otg-call-push-prompt-hidden:"+user.id,"1");}catch(_){}banner.remove();});
   actions.append(enable,test,close);
   details.append(message,actions);
   toggle.addEventListener("click",()=>{details.hidden=!details.hidden;toggle.setAttribute("aria-expanded",String(!details.hidden));toggle.textContent=details.hidden?"Details":"Hide details";});
