@@ -100,6 +100,50 @@ function openAcademyPanel(key,button){
  }
 }
 
+async function otgShowLatestAnnouncementPopup(db,userId){
+ if(!userId||window.otgLatestAnnouncementPopupShownFor===userId)return;
+ let seenId="";
+ try{seenId=localStorage.getItem("otgLatestAnnouncementSeen:"+userId)||"";}catch(e){}
+ try{
+  const {data,error}=await db.from("academy_announcements").select("id,title,message,created_at").eq("is_published",true).order("created_at",{ascending:false}).limit(1).maybeSingle();
+  if(error||!data||String(data.id)===String(seenId))return;
+  if(!document.body)return;
+  window.otgLatestAnnouncementPopupShownFor=userId;
+  try{localStorage.setItem("otgLatestAnnouncementSeen:"+userId,String(data.id));}catch(e){}
+  const overlay=document.createElement("div");
+  overlay.id="otgLatestAnnouncementPopup";
+  overlay.setAttribute("role","dialog");
+  overlay.setAttribute("aria-modal","true");
+  overlay.setAttribute("aria-labelledby","otgLatestAnnouncementPopupTitle");
+  overlay.style.cssText="position:fixed;inset:0;z-index:100500;background:rgba(8,18,38,.72);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box";
+  const card=document.createElement("section");
+  card.style.cssText="width:min(100%,560px);max-height:min(86vh,760px);overflow:auto;background:#fff;border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,.3);padding:22px;box-sizing:border-box;border-top:6px solid #d4a63c";
+  const badge=document.createElement("div");
+  badge.textContent="🔔  LATEST OTG ACADEMY UPDATE";
+  badge.style.cssText="font-size:12px;font-weight:900;letter-spacing:.07em;color:#166534;margin-bottom:10px";
+  const title=document.createElement("h2");
+  title.id="otgLatestAnnouncementPopupTitle";
+  title.textContent=data.title||"Latest Academy Update";
+  title.style.cssText="font-size:21px;line-height:1.35;color:#123b78;margin:0 0 12px;overflow-wrap:anywhere";
+  const message=document.createElement("div");
+  message.textContent=data.message||"There is a new update from OTG GRAPHIC Academy.";
+  message.style.cssText="white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;color:#334155;font-size:14px";
+  const date=document.createElement("p");
+  date.textContent=data.created_at?new Date(data.created_at).toLocaleString():"OTG GRAPHIC Academy";
+  date.style.cssText="font-size:12px;color:#64748b;margin:14px 0";
+  const actions=document.createElement("div");
+  actions.style.cssText="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px";
+  const makeButton=(label,primary,handler)=>{const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:12px 15px;border-radius:10px;border:1px solid "+(primary?"#166534":"#cbd5e1")+";background:"+(primary?"#166534":"#fff")+";color:"+(primary?"#fff":"#334155")+";font-weight:800;cursor:pointer;min-height:44px";b.addEventListener("click",handler);actions.appendChild(b);return b;};
+  const close=()=>{overlay.remove();};
+  makeButton("Open Notifications",true,()=>{close();if(typeof window.openAcademyPanel==="function")window.openAcademyPanel("notifications");});
+  makeButton("Close",false,close);
+  card.append(badge,title,message,date,actions);
+  overlay.appendChild(card);
+  overlay.addEventListener("click",e=>{if(e.target===overlay)close();});
+  document.body.appendChild(overlay);
+ }catch(e){console.warn("OTG latest announcement popup:",e);}
+}
+
 async function loadAcademyPanelData(key,content){
  const db=supabaseClient;
  let admin=window.otgAcademyIsAdmin===true;
@@ -122,6 +166,7 @@ async function loadAcademyPanelData(key,content){
   admin=false;
   window.otgAcademyIsAdmin=false;
  }
+ if(activeUser&&!admin){otgShowLatestAnnouncementPopup(db,activeUser.id);}
  const publishNav=document.getElementById("otgPublishAssignmentNav");if(publishNav){publishNav.hidden=!admin;publishNav.style.display=admin?"flex":"none";}
  if(key==="submission-review"&&!admin){openAcademyPanel("home");return;}
  const esc=v=>String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
