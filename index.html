@@ -811,7 +811,7 @@ async function loadAcademyPanelData(key,content){
      if(!assignmentQuestions.length)assignmentQuestions.push({text:"Assignment response",details:[]});
      const answerByNumber={};const rawSubmission=String(sub.submission_text||"");
      if(/^Answer \d+:/m.test(rawSubmission)){rawSubmission.split(/\n\n(?=Answer \d+:)/).forEach(block=>{const match=block.match(/^Answer (\d+):[ \t]?([\s\S]*)$/);if(match)answerByNumber[Number(match[1])]=match[2].replace(/\n+$/,"");});}else answerByNumber[1]=rawSubmission;
-     const savedScores=new Map((sub.status==="submitted"?[]:(scoresBySubmission.get(String(sub.id))||[])).map(item=>[Number(item.question_number),item]));
+     const savedScores=new Map((scoresBySubmission.get(String(sub.id))||[]).map(item=>[Number(item.question_number),item]));
       const assignmentAnswerKey=answerKeyByAssignment.get(String(sub.assignment_id))||{};
       const normalizeAutoAnswer=value=>String(value==null?"":value).normalize("NFKC").toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu," ").trim().replace(/\s+/g," ");const autoAnswerMatches=(student,accepted)=>{const response=normalizeAutoAnswer(student);if(!response)return false;const keys=Array.isArray(accepted)?accepted:(typeof accepted==="string"?accepted.split("|"):[]);return keys.some(group=>{const terms=String(group).split("&").map(normalizeAutoAnswer).filter(Boolean);return terms.length>0&&terms.every(term=>response===term||(" "+response+" ").includes(" "+term+" "));});};
       let autoCorrectCount=0,autoIncorrectCount=0,manualReviewCount=0;
