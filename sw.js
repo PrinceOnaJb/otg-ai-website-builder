@@ -1,4 +1,4 @@
-const CACHE_NAME = "otg-academy-v39";
+const CACHE_NAME = "otg-academy-v40";
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
@@ -25,6 +25,76 @@ self.addEventListener("activate", event => {
     ))
   );
   self.clients.claim();
+});
+
+// Show genuine OS-level notifications delivered by the Web Push service.
+self.addEventListener("push", event => {
+  let payload = {};
+  try {
+    payload = event.data ? event.data.json() : {};
+  } catch (_) {
+    payload = { body: event.data ? event.data.text() : "" };
+  }
+
+  const callId = typeof payload.callId === "string" ? payload.callId : "";
+  const callerName = typeof payload.callerName === "string" && payload.callerName.trim()
+    ? payload.callerName.trim()
+    : "An OTG student";
+  const callType = payload.callType === "video" ? "video" : "voice";
+  const title = callType === "video" ? "Incoming OTG video call" : "Incoming OTG voice call";
+  const options = {
+    body: payload.body || callerName + " is calling you.",
+    icon: "/otg-app-icon-192.png",
+    badge: "/otg-app-icon-192.png",
+    tag: callId ? "otg-call-" + callId : "otg-incoming-call",
+    renotify: true,
+    requireInteraction: true,
+    data: {
+      callId,
+      callerName,
+      callType,
+      url: "/?otgIncomingCall=" + encodeURIComponent(callId) +
+        "&otgCallType=" + encodeURIComponent(callType)
+    },
+    actions: [
+      { action: "open-call", title: "Open call" },
+      { action: "dismiss", title: "Dismiss" }
+    ]
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  if (event.action === "dismiss") return;
+
+  const data = event.notification.data || {};
+  const targetUrl = new URL(
+    typeof data.url === "string" ? data.url : "/",
+    self.location.origin
+  );
+  if (targetUrl.origin !== self.location.origin) targetUrl.href = self.location.origin + "/";
+
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    for (const client of windows) {
+      if (new URL(client.url).origin === self.location.origin) {
+        await client.focus();
+        client.postMessage({
+          type: "OTG_INCOMING_CALL_NOTIFICATION_CLICK",
+          callId: typeof data.callId === "string" ? data.callId : "",
+          callerName: typeof data.callerName === "string" ? data.callerName : "OTG Student",
+          callType: data.callType === "video" ? "video" : "voice"
+        });
+        if ("navigate" in client) {
+          await client.navigate(targetUrl.href);
+        }
+        return;
+      }
+    }
+    await self.clients.openWindow(targetUrl.href);
+  })());
 });
 
 self.addEventListener("fetch", event => {
