@@ -808,6 +808,25 @@ async function loadAcademyPanelData(key,content){
   const timedAssignmentIds=(data||[]).filter(item=>!admin&&Number(item.duration_minutes)>0).map(item=>item.id);
   const {data:attemptRows,error:attemptLoadError}=timedAssignmentIds.length?await db.from("academy_assignment_attempts").select("assignment_id,started_at,expires_at,submitted_at").in("assignment_id",timedAssignmentIds):{data:[],error:null};
   const attemptByAssignment=new Map((attemptRows||[]).map(row=>[String(row.assignment_id),row]));
+  // Put every coach-released score at the very top of the student assignment panel.
+  // Only approved submissions with a saved score count as official results.
+  if(!admin){
+   const officialResults=(data||[]).map(assignment=>({assignment,submission:mySubmissionByAssignment.get(String(assignment.id))})).filter(item=>item.submission&&item.submission.status==="approved"&&item.submission.score!==null&&item.submission.score!==undefined&&Number.isFinite(Number(item.submission.score)));
+   if(officialResults.length){
+    const officialWrap=document.createElement("section");officialWrap.setAttribute("aria-label","Official assignment results");officialWrap.style.cssText="display:grid;gap:10px;margin:0 0 18px;padding:16px;border:2px solid #15803d;border-radius:14px;background:linear-gradient(135deg,#f0fdf4,#fffbeb);box-shadow:0 5px 16px rgba(21,128,61,.10)";
+    const officialHeading=document.createElement("h3");officialHeading.textContent="Your Official Assignment Scores";officialHeading.style.cssText="margin:0;color:#14532d;font-size:19px;font-weight:900;line-height:1.4";
+    const officialIntro=document.createElement("p");officialIntro.textContent="These are the scores your coach has marked and officially released.";officialIntro.style.cssText="margin:0;color:#365314;font-size:13px;line-height:1.6";
+    officialWrap.append(officialHeading,officialIntro);
+    officialResults.forEach(({assignment,submission})=>{
+     const resultCard=document.createElement("article");resultCard.style.cssText="padding:13px;border:1px solid #bbf7d0;border-radius:10px;background:#fff";
+     const resultText=document.createElement("p");resultText.textContent="Your official assignment score for "+(assignment.title||"this assignment")+" is "+Number(submission.score)+"%.";resultText.style.cssText="margin:0;color:#14532d;font-size:17px;font-weight:900;line-height:1.55;overflow-wrap:anywhere";
+     resultCard.appendChild(resultText);
+     if(submission.coach_feedback){const resultFeedback=document.createElement("p");resultFeedback.textContent="Coach feedback: "+submission.coach_feedback;resultFeedback.style.cssText="margin:7px 0 0;color:#334155;font-size:13px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere";resultCard.appendChild(resultFeedback);}
+     officialWrap.appendChild(resultCard);
+    });
+    area.appendChild(officialWrap);
+   }
+  }
   const list=document.createElement("div");
   if(mySubmissionError){const warning=document.createElement("p");warning.textContent="Your previous submission details could not load: "+mySubmissionError.message;warning.style.cssText="color:#b91c1c;font-size:13px";list.appendChild(warning);}if(error)list.textContent="Assignments could not load: "+error.message;else if(!data||!data.length)list.textContent="No assignments published yet.";else data.forEach(x=>{
    const existingSubmission=mySubmissionByAssignment.get(String(x.id));
