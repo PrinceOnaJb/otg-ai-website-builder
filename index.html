@@ -7956,6 +7956,12 @@ async function showApp(approvalAlreadyChecked){
   renderProjects();
   ensureAdminPanel();
 
+  // Load the Home panel immediately after approved login so the personalized
+  // welcome hero and panel title are rendered without requiring a Home click.
+  if(typeof window.openAcademyPanel === "function"){
+    window.openAcademyPanel("home", document.querySelector('.academy-nav[onclick*="openAcademyPanel(\'home\'"]'));
+  }
+
 }
 
 
