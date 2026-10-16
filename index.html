@@ -4216,9 +4216,19 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
    const roomName="OTGDirect-"+randomRoom.replace(/[^a-zA-Z0-9-]/g,"");
    const r=await client.rpc("otg_start_broadcast_call",{p_callee_ids:[calleeId],p_call_type:mode,p_room_name:roomName});
    if(r.error)throw r.error;
-   const call=Array.isArray(r.data)?r.data[0]:r.data;
+   const calls=(Array.isArray(r.data)?r.data:[r.data]).filter(item=>item&&item.id);
+   const call=calls[0];
    if(!call)throw new Error("The call service did not create a call invitation.");
-   client.functions.invoke("otg-call-push",{body:{action:"send-call",callId:call.id}}).then(result=>{if(result.error)console.warn("OTG background call push:",result.error);else console.log("OTG background call push result:",result.data);}).catch(error=>console.warn("OTG background call push failed:",error));
+   // Broadcast RPCs can create one call row per recipient. Send a push for EVERY
+   // created row; sending only the first row leaves the other students unalerted.
+   Promise.all(calls.map(async item=>{
+    try{
+     const result=await client.functions.invoke("otg-call-push",{body:{action:"send-call",callId:item.id}});
+     if(result.error)console.warn("OTG background call push failed for recipient call:",result.error);
+     else console.log("OTG background call push result:",result.data);
+     return result;
+    }catch(error){console.warn("OTG background call push failed:",error);return {error};}
+   }));
    showCall(call,"outgoing",peerName||"your OTG connection");if(statusEl)statusEl.textContent="Calling "+(peerName||"your connection")+"…";
    window.setTimeout(async()=>{try{await client.from("otg_student_calls").update({status:"missed"}).eq("room_name",roomName).eq("status","ringing");}catch(_){}},47000);
   }catch(e){console.error("OTG call start failed:",e);if(statusEl)statusEl.textContent="Call could not start: "+(e&&e.message?e.message:"Please try again. Check that both accounts are approved and connected.");}
