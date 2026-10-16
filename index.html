@@ -102,7 +102,7 @@ function openAcademyPanel(key,button){
   if(key==="learn"||key==="watch")window.otgLogAcademyActivity("lesson_area_opened",key==="watch"?"Watch & Learn":"Learn");
   else if(key==="codelab")window.otgLogAcademyActivity("code_lab_opened","Code Lab opened");
   else if(key==="projects"||key==="websites"||key==="find")window.otgLogAcademyActivity("project_opened","Website project area opened");
-  else if(key==="community"||key==="discussion"||key==="partners")window.otgLogAcademyActivity(key==="discussion"?"discussion_posted":"community_opened",key+" section opened");
+  else if(key==="community"||key==="discussion"||key==="partners")window.otgLogAcademyActivity("community_opened",key+" section opened");
  }
  if(key==="assignments"&&window.otgAcademyIsAdmin===true)panel.title="Publish Student Assignment";
  if(key==="submission-review"&&window.otgAcademyIsAdmin===true){panel.title="Submit Assignment";panel.intro="Student responses, attachments, marking and feedback in one place.";}
@@ -813,6 +813,7 @@ async function loadAcademyPanelData(key,content){
        completeBtn.style.color="#166534";
        completeBtn.style.cursor="default";
        completeBtn.title="Completion was saved to your account.";
+       if(typeof window.otgLogAcademyActivity==="function")window.otgLogAcademyActivity("lesson_completed",x.title);
        updateProgressDisplay(data.length);
        progressHint.textContent="Saved successfully. Refresh this page to verify that your completion remains recorded.";
      }catch(saveError){
