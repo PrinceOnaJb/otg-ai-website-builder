@@ -3983,39 +3983,107 @@ const supabaseClient =
  "use strict";
  const client=supabaseClient;
  const state=window.otgCallState=window.otgCallState||{channel:null,lobbyChannel:null,userId:null,active:null,overlay:null,jitsiApi:null,pollTimer:null};
- function roomUrl(call){const config=["config.prejoinPageEnabled=false"];if(call.call_type==="voice")config.push("config.startAudioOnly=true");return "https://meet.jit.si/OTG-Student-Call-"+encodeURIComponent(call.room_name)+"#"+config.join("&");}
- function closeOverlay(){if(state.jitsiApi){try{state.jitsiApi.dispose();}catch(_){}state.jitsiApi=null;}const el=document.getElementById("otgCallOverlay");if(el)el.remove();state.overlay=null;}
+ function closeOverlay(){
+  if(state.jitsiApi){try{state.jitsiApi.dispose();}catch(_){}state.jitsiApi=null;}
+  if(state.rtcPeers){Object.values(state.rtcPeers).forEach(function(entry){try{entry.pc.close();}catch(_){}if(entry.tile)entry.tile.remove();});state.rtcPeers={};}
+  if(state.rtcChannel){try{client.removeChannel(state.rtcChannel);}catch(_){}state.rtcChannel=null;}
+  if(state.localMedia){state.localMedia.getTracks().forEach(function(track){try{track.stop();}catch(_){}});state.localMedia=null;}
+  const el=document.getElementById("otgCallOverlay");if(el)el.remove();state.overlay=null;
+ }
  function makeButton(label,color,fn){const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:11px 15px;border:0;border-radius:10px;background:"+color+";color:#fff;font-weight:800;font-size:14px;cursor:pointer";b.addEventListener("click",fn);return b;}
  function startEmbeddedCall(call,direction,peerName){
-  state.active={call,direction,peerName:peerName||"your OTG connection"};
+  state.active={call:call,direction:direction,peerName:peerName||"your OTG connection"};
   closeOverlay();
-  const overlay=document.createElement("div");overlay.id="otgCallOverlay";overlay.style.cssText="position:fixed;inset:0;z-index:2147483000;background:#071426;display:flex;align-items:stretch;justify-content:center;padding:0;box-sizing:border-box";
-  const box=document.createElement("section");box.setAttribute("role","dialog");box.setAttribute("aria-modal","true");box.setAttribute("aria-label","OTG in-app call");box.style.cssText="width:100%;height:100%;max-width:1200px;display:flex;flex-direction:column;box-sizing:border-box;background:#071426;color:#fff;font-family:Arial,sans-serif;overflow:hidden";
-  const bar=document.createElement("header");bar.style.cssText="min-height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;box-sizing:border-box;background:#0b2341;color:#fff;flex-shrink:0";
-  const heading=document.createElement("strong");heading.textContent=(call.call_type==="voice"?"☎ OTG Voice Call":"▣ OTG Video Call");heading.style.cssText="font-size:16px;line-height:1.3";
-  const endButton=makeButton("End call","#b91c1c",()=>changeStatus(call,"ended",heading));endButton.style.cssText+=";white-space:nowrap;flex-shrink:0";
-  bar.append(heading,endButton);
-  const stage=document.createElement("div");stage.style.cssText="display:block;width:100%;height:100%;min-height:0;flex:1;background:#071426;overflow:hidden";
-  const hint=document.createElement("p");hint.textContent="Connecting your call inside OTG Academy…";hint.style.cssText="margin:0;padding:8px 12px;background:#0b2341;color:#dbeafe;font-size:12px;text-align:center;line-height:1.4;flex-shrink:0";
-  box.append(bar,stage,hint);overlay.appendChild(box);document.body.appendChild(overlay);state.overlay=overlay;
-  const launchCall=()=>{
-   if(!overlay.isConnected)return;
-   try{
-    const roomName="OTG-Student-Call-"+String(call.room_name||call.id).replace(/[^A-Za-z0-9_-]/g,"-");
-    state.jitsiApi=new window.JitsiMeetExternalAPI("meet.jit.si",{roomName:roomName,parentNode:stage,width:"100%",height:"100%",configOverwrite:{prejoinPageEnabled:false,disableDeepLinking:true,enableWelcomePage:false,startAudioOnly:call.call_type==="voice",startWithAudioMuted:false,startWithVideoMuted:call.call_type==="voice"},interfaceConfigOverwrite:{MOBILE_APP_PROMO:true,SHOW_JITSI_WATERMARK:false},userInfo:{displayName:peerName||"OTG Academy student"}});
-    hint.textContent="Your call is inside OTG Academy. Allow microphone or camera access if your phone asks.";
-    state.jitsiApi.addListener("readyToClose",()=>{if(state.overlay===overlay)closeOverlay();});
-   }catch(e){hint.textContent="The in-app call could not start. Please close this window and try again.";console.error("OTG in-app call failed",e);}
-  };
-  if(window.JitsiMeetExternalAPI){launchCall();return;}
-  let apiScript=document.querySelector("script[data-otg-jitsi-api]");
-  if(apiScript){
-   apiScript.addEventListener("load",launchCall,{once:true});
-   apiScript.addEventListener("error",()=>{hint.textContent="The call service could not load. Check your connection and try again."},{once:true});
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.RTCPeerConnection){
+   showCall({...call,status:"call-error"},"outgoing","your device");
    return;
   }
-  apiScript=document.createElement("script");apiScript.src="https://meet.jit.si/external_api.js";apiScript.async=true;apiScript.dataset.otgJitsiApi="true";
-  apiScript.onload=launchCall;apiScript.onerror=()=>{hint.textContent="The call service could not load. Check your connection and try again.";};document.head.appendChild(apiScript);
+  const overlay=document.createElement("div");overlay.id="otgCallOverlay";overlay.style.cssText="position:fixed;inset:0;z-index:2147483000;background:#071426;display:flex;align-items:stretch;justify-content:center;padding:0;box-sizing:border-box";
+  const box=document.createElement("section");box.setAttribute("role","dialog");box.setAttribute("aria-modal","true");box.setAttribute("aria-label","OTG private in-app call");box.style.cssText="width:100%;height:100%;max-width:1200px;display:flex;flex-direction:column;box-sizing:border-box;background:#071426;color:#fff;font-family:Arial,sans-serif;overflow:hidden";
+  const bar=document.createElement("header");bar.style.cssText="min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;box-sizing:border-box;background:#0b2341;color:#fff;flex-shrink:0";
+  const heading=document.createElement("strong");heading.textContent=(call.call_type==="voice"?"☎ OTG Voice Call":"▣ OTG Video Call");heading.style.cssText="font-size:16px;line-height:1.3";
+  const controls=document.createElement("div");controls.style.cssText="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end";
+  const endButton=makeButton("End call","#b91c1c",()=>changeStatus(call,"ended",heading));endButton.style.cssText+=";white-space:nowrap;flex-shrink:0";
+  const muteButton=makeButton("Mute mic","#334155",()=>{});const cameraButton=makeButton("Turn camera off","#334155",()=>{});
+  controls.append(muteButton);if(call.call_type==="video")controls.append(cameraButton);controls.append(endButton);bar.append(heading,controls);
+  const status=document.createElement("p");status.textContent="Requesting microphone"+(call.call_type==="video"?" and camera":"")+" permission…";status.style.cssText="margin:0;padding:10px 12px;background:#102b4b;color:#dbeafe;font-size:13px;text-align:center;line-height:1.45;flex-shrink:0";
+  const grid=document.createElement("div");grid.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:10px;padding:10px;align-content:center;flex:1;min-height:0;overflow:auto;background:#071426";
+  const localTile=document.createElement("div");localTile.style.cssText="position:relative;min-height:150px;aspect-ratio:4/3;overflow:hidden;border-radius:14px;background:#13263e;border:1px solid #29415f";
+  const localVideo=document.createElement("video");localVideo.autoplay=true;localVideo.playsInline=true;localVideo.muted=true;localVideo.style.cssText="width:100%;height:100%;object-fit:cover;display:block";
+  const localLabel=document.createElement("span");localLabel.textContent="You";localLabel.style.cssText="position:absolute;left:10px;bottom:10px;padding:5px 8px;border-radius:7px;background:#071426cc;color:#fff;font-size:12px;font-weight:700";
+  localTile.append(localVideo,localLabel);grid.appendChild(localTile);
+  box.append(bar,status,grid);overlay.appendChild(box);document.body.appendChild(overlay);state.overlay=overlay;state.rtcPeers={};
+  const sendSignal=async function(payload){if(!state.rtcChannel)return;try{await state.rtcChannel.send({type:"broadcast",event:"signal",payload:Object.assign({from:state.userId,room:call.room_name},payload)});}catch(e){console.warn("OTG call signal could not be sent",e);}};
+  const makePeer=async function(peerId,peerDisplayName){
+   if(!peerId||peerId===state.userId||!state.localMedia||!state.rtcChannel)return null;
+   if(state.rtcPeers[peerId])return state.rtcPeers[peerId];
+   const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun.cloudflare.com:3478"}]});
+   const tile=document.createElement("div");tile.style.cssText="position:relative;min-height:150px;aspect-ratio:4/3;overflow:hidden;border-radius:14px;background:#13263e;border:1px solid #29415f";
+   const video=document.createElement("video");video.autoplay=true;video.playsInline=true;video.style.cssText="width:100%;height:100%;object-fit:cover;display:block";
+   const label=document.createElement("span");label.textContent=peerDisplayName||"OTG student";label.style.cssText="position:absolute;left:10px;bottom:10px;padding:5px 8px;border-radius:7px;background:#071426cc;color:#fff;font-size:12px;font-weight:700";
+   tile.append(video,label);grid.appendChild(tile);
+   const entry={pc:pc,tile:tile,video:video,displayName:peerDisplayName||"OTG student",candidateQueue:[],offerSent:false};
+   state.rtcPeers[peerId]=entry;
+   state.localMedia.getTracks().forEach(track=>pc.addTrack(track,state.localMedia));
+   pc.ontrack=function(ev){if(ev.streams&&ev.streams[0])video.srcObject=ev.streams[0];};
+   pc.oniceconnectionstatechange=function(){if(["failed","disconnected","closed"].includes(pc.iceConnectionState)){label.textContent=(entry.displayName||"OTG student")+" · "+pc.iceConnectionState;}};
+   pc.onicecandidate=function(ev){if(ev.candidate)sendSignal({to:peerId,type:"candidate",candidate:ev.candidate});};
+   if(String(state.userId)<String(peerId)){
+    try{
+     entry.offerSent=true;const offer=await pc.createOffer();await pc.setLocalDescription(offer);
+     await sendSignal({to:peerId,type:"offer",description:pc.localDescription});
+    }catch(e){console.error("OTG WebRTC offer failed",e);status.textContent="Could not start a secure peer connection. Check your connection and try again.";}
+   }
+   return entry;
+  };
+  const handleSignal=async function(payload){
+   if(!payload||payload.to!==state.userId||payload.from===state.userId||payload.room!==call.room_name)return;
+   try{
+    let entry=state.rtcPeers[payload.from];
+    if(!entry)entry=await makePeer(payload.from,payload.displayName||"OTG student");
+    if(!entry)return;
+    const pc=entry.pc;
+    if(payload.type==="offer"){
+     if(pc.signalingState!=="stable")return;
+     await pc.setRemoteDescription(new RTCSessionDescription(payload.description));
+     const answer=await pc.createAnswer();await pc.setLocalDescription(answer);
+     await sendSignal({to:payload.from,type:"answer",description:pc.localDescription});
+    }else if(payload.type==="answer"){
+     if(pc.signalingState==="have-local-offer")await pc.setRemoteDescription(new RTCSessionDescription(payload.description));
+    }else if(payload.type==="candidate"&&payload.candidate){
+     try{await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));}catch(e){console.warn("OTG ICE candidate was skipped",e);}
+    }
+   }catch(e){console.error("OTG WebRTC signaling failed",e);status.textContent="The in-app connection is still negotiating. Please wait a moment or rejoin the call.";}
+  };
+  (async function(){
+   try{
+    const sessionResult=await client.auth.getSession();const user=sessionResult&&sessionResult.data&&sessionResult.data.session?sessionResult.data.session.user:null;
+    if(!user)throw new Error("Please sign in again before joining the call.");
+    state.userId=user.id;
+    state.localMedia=await navigator.mediaDevices.getUserMedia({audio:true,video:call.call_type==="video"?{facingMode:"user"}:false});
+    localVideo.srcObject=state.localMedia;
+    muteButton.onclick=()=>{const track=state.localMedia&&state.localMedia.getAudioTracks()[0];if(track){track.enabled=!track.enabled;muteButton.textContent=track.enabled?"Mute mic":"Unmute mic";}};
+    cameraButton.onclick=()=>{const track=state.localMedia&&state.localMedia.getVideoTracks()[0];if(track){track.enabled=!track.enabled;cameraButton.textContent=track.enabled?"Turn camera off":"Turn camera on";}};
+    const channelName="otg-webrtc-"+String(call.room_name||call.id).replace(/[^A-Za-z0-9_-]/g,"-").slice(0,180);
+    state.rtcChannel=client.channel(channelName,{config:{broadcast:{self:false},presence:{key:user.id}}})
+      .on("broadcast",{event:"signal"},({payload})=>{handleSignal(payload);})
+      .on("presence",{event:"sync"},()=>{
+       const presence=state.rtcChannel?state.rtcChannel.presenceState():{};
+       const peers=new Map();
+       Object.values(presence||{}).flat().forEach(p=>{if(p&&p.user_id&&p.user_id!==state.userId)peers.set(p.user_id,p.display_name||"OTG student");});
+       peers.forEach((displayName,peerId)=>{makePeer(peerId,displayName);});
+      })
+      .subscribe(async channelStatus=>{
+       if(channelStatus==="SUBSCRIBED"){
+        try{await state.rtcChannel.track({user_id:user.id,display_name:peerName||"OTG student",joined_at:new Date().toISOString()});status.textContent="Connected to OTG call room. Waiting for the other participant"+(call.call_type==="video"?" and video":"")+"…";}
+        catch(e){status.textContent="Could not join the call room. Please try again.";console.error(e);}
+       }else if(channelStatus==="CHANNEL_ERROR"||channelStatus==="TIMED_OUT"){status.textContent="Connection interrupted. Check your internet and rejoin the call.";}
+      });
+   }catch(e){
+    console.error("OTG native call failed:",e);
+    status.textContent=(e&&e.name==="NotAllowedError")?"Microphone/camera permission was denied. Allow permission in your browser and rejoin.":"Could not start the in-app call: "+(e&&e.message?e.message:"check your connection and device permissions");
+   }
+  })();
  }
  function showCall(call,direction,peerName){
   state.active={call,direction,peerName:peerName||"your OTG connection"};closeOverlay();
