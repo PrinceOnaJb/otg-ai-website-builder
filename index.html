@@ -4103,11 +4103,12 @@ const supabaseClient =
   }catch(e){console.error("OTG call start failed:",e);if(statusEl)statusEl.textContent="Call could not start: "+(e&&e.message?e.message:"Please try again. Check that both accounts are approved and connected.");}
  }
  window.otgStartStudentCall=startCall;
- window.otgStopCallNotifications=function(){
+ window.otgStopCallNotifications=function(preserveActiveCall){
   if(state.channel){client.removeChannel(state.channel);state.channel=null;}
   if(state.lobbyChannel){client.removeChannel(state.lobbyChannel);state.lobbyChannel=null;}
   if(state.pollTimer){window.clearInterval(state.pollTimer);state.pollTimer=null;}
-  state.userId=null;state.active=null;closeOverlay();
+  state.userId=null;
+  if(!preserveActiveCall){state.active=null;closeOverlay();}
   window.dispatchEvent(new Event("otg-call-presence-updated"));
  };
  window.otgGetOnlineStudents=function(){
@@ -4144,7 +4145,7 @@ const supabaseClient =
  };
  window.otgInitCallNotifications=function(user){
   if(!user||!user.id)return;if(state.userId===user.id&&state.channel&&state.lobbyChannel)return;
-  window.otgStopCallNotifications();state.userId=user.id;
+  window.otgStopCallNotifications(true);state.userId=user.id;
   state.channel=client.channel("otg-student-calls-"+user.id)
    .on("postgres_changes",{event:"INSERT",schema:"public",table:"otg_student_calls",filter:"callee_id=eq."+user.id},p=>handleRow(p.new,user.id))
    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"otg_student_calls",filter:"callee_id=eq."+user.id},p=>handleRow(p.new,user.id))
