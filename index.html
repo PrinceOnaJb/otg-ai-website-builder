@@ -4017,7 +4017,8 @@ const supabaseClient =
 (function(){
  "use strict";
  const client=supabaseClient;
- const state=window.otgCallState=window.otgCallState||{channel:null,lobbyChannel:null,userId:null,active:null,overlay:null,pollTimer:null};
+ const state=window.otgCallState=window.otgCallState||{channel:null,lobbyChannel:null,userId:null,active:null,overlay:null,pollTimer:null,iceServers:null};
+ async function loadOtgIceServers(){if(state.iceServers)return state.iceServers;const fallback=[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun.cloudflare.com:3478"}];try{const response=await fetch("/api/ice-servers",{cache:"no-store",credentials:"same-origin"});if(response.ok){const data=await response.json();if(Array.isArray(data.iceServers)&&data.iceServers.length){state.iceServers=data.iceServers;state.turnConfigured=!!data.turnConfigured;return state.iceServers;}}}catch(error){console.warn("OTG relay configuration unavailable; using STUN fallback.",error);}state.iceServers=fallback;state.turnConfigured=false;return fallback;}
  function closeOverlay(){
  
   if(state.rtcPeers){Object.values(state.rtcPeers).forEach(function(entry){try{entry.pc.close();}catch(_){}if(entry.tile)entry.tile.remove();});state.rtcPeers={};}
@@ -4058,7 +4059,7 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
   const makePeer=async function(peerId,peerDisplayName){
    if(!peerId||peerId===state.userId||!state.localMedia||!state.rtcChannel)return null;
    if(state.rtcPeers[peerId])return state.rtcPeers[peerId];
-   const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun.cloudflare.com:3478"}]});
+   const pc=new RTCPeerConnection({iceServers:state.iceServers||[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun.cloudflare.com:3478"}]});
    const tile=document.createElement("div");tile.style.cssText="position:relative;min-height:150px;aspect-ratio:4/3;overflow:hidden;border-radius:14px;background:#13263e;border:1px solid #29415f";
    const video=document.createElement("video");video.autoplay=true;video.playsInline=true;video.style.cssText="width:100%;height:100%;object-fit:cover;display:block";
    const label=document.createElement("span");label.textContent=peerDisplayName||"OTG student";label.style.cssText="position:absolute;left:10px;bottom:10px;padding:5px 8px;border-radius:7px;background:#071426cc;color:#fff;font-size:12px;font-weight:700";
@@ -4067,7 +4068,8 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
    state.rtcPeers[peerId]=entry;
    state.localMedia.getTracks().forEach(track=>pc.addTrack(track,state.localMedia));
    pc.ontrack=function(ev){if(ev.streams&&ev.streams[0])video.srcObject=ev.streams[0];};
-   pc.oniceconnectionstatechange=function(){if(["failed","disconnected","closed"].includes(pc.iceConnectionState)){label.textContent=(entry.displayName||"OTG student")+" · "+pc.iceConnectionState;}};
+   pc.oniceconnectionstatechange=function(){if(["failed","disconnected","closed"].includes(pc.iceConnectionState)){label.textContent=(entry.displayName||"OTG student")+" · "+pc.iceConnectionState;if(pc.iceConnectionState==="failed"&&status){status.textContent=state.turnConfigured?"The internet connection could not be established. Please check both networks and rejoin.":"This network needs a TURN relay for long-distance calls. The relay service is not configured yet; please try another network for now.";}else if(pc.iceConnectionState==="disconnected"&&status){status.textContent="Reconnecting to "+(entry.displayName||"the other student")+"…";}}};
+   pc.onconnectionstatechange=function(){if(pc.connectionState==="connected"){label.textContent=(entry.displayName||"OTG student")+" · connected";if(status)status.textContent="Secure in-app connection established with "+(entry.displayName||"the other student")+".";}else if(pc.connectionState==="failed"&&status&&!state.turnConfigured){status.textContent="Connection failed because some networks require a TURN relay. OTG relay credentials still need to be configured.";}};
    pc.onicecandidate=function(ev){if(ev.candidate)sendSignal({to:peerId,type:"candidate",candidate:ev.candidate});};
    if(String(state.userId)<String(peerId)){
     try{
@@ -4103,6 +4105,7 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
     const sessionResult=await client.auth.getSession();const user=sessionResult&&sessionResult.data&&sessionResult.data.session?sessionResult.data.session.user:null;
     if(!user)throw new Error("Please sign in again before joining the call.");
     state.userId=user.id;
+    await loadOtgIceServers();
     state.localMedia=await navigator.mediaDevices.getUserMedia({audio:true,video:call.call_type==="video"?{facingMode:"user"}:false});
     localVideo.srcObject=state.localMedia;
     muteButton.onclick=()=>{const track=state.localMedia&&state.localMedia.getAudioTracks()[0];if(track){track.enabled=!track.enabled;muteButton.textContent=track.enabled?"Mute mic":"Unmute mic";}};
@@ -4118,7 +4121,7 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
       })
       .subscribe(async channelStatus=>{
        if(channelStatus==="SUBSCRIBED"){
-        try{await state.rtcChannel.track({user_id:user.id,display_name:peerName||"OTG student",joined_at:new Date().toISOString()});status.textContent="Connected to OTG call room. Waiting for the other participant"+(call.call_type==="video"?" and video":"")+"…";}
+        try{const identity=await client.from("academy_student_profiles").select("display_name").eq("user_id",user.id).maybeSingle();const displayName=(identity.data&&identity.data.display_name&&String(identity.data.display_name).trim())||peerName||((user.user_metadata||{}).full_name)||((user.user_metadata||{}).name)||"OTG Student";await state.rtcChannel.track({user_id:user.id,display_name:displayName,joined_at:new Date().toISOString()});localLabel.textContent=displayName+" (You)";status.textContent="Connected to OTG call room. Waiting for the other participant"+(call.call_type==="video"?" and video":"")+"…";}
         catch(e){status.textContent="Could not join the call room. Please try again.";console.error(e);}
        }else if(channelStatus==="CHANNEL_ERROR"||channelStatus==="TIMED_OUT"){status.textContent="Connection interrupted. Check your internet and rejoin the call.";}
       });
@@ -4174,7 +4177,7 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
  }
  async function getPeerName(call,userId){
   const other=call.caller_id===userId?call.callee_id:call.caller_id;
-  try{const r=await client.from("academy_student_profiles").select("display_name").eq("user_id",other).maybeSingle();return r.data&&r.data.display_name?r.data.display_name:"your OTG connection";}catch(_){return "your OTG connection";}
+  try{const r=await client.from("academy_student_profiles").select("display_name").eq("user_id",other).maybeSingle();if(r.data&&r.data.display_name&&String(r.data.display_name).trim())return String(r.data.display_name).trim();const p=await client.from("profiles").select("email").eq("id",other).maybeSingle();if(p.data&&p.data.email)return String(p.data.email).split("@")[0];return "OTG Student";}catch(_){return "OTG Student";}
  }
  async function handleRow(call,userId){
   if(!call||!userId)return;
