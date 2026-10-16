@@ -202,7 +202,41 @@ async function loadAcademyPanelData(key,content){
  content.querySelectorAll(".otg-academy-data-area").forEach(el=>el.remove());
  const cleanLessonText=v=>String(v==null?"":v).replace(/^\s*(?:lesson\s*title|title|course\s*name|course|short\s*description|description|lesson\s*notes|notes)\s*:\s*/i,"").trim();
  const area=document.createElement("div");area.className="otg-academy-data-area";area.style.cssText="margin-top:24px;padding-top:20px;border-top:1px solid #e2e8f0";content.appendChild(area);
- if(!admin&&userId&&key==="home"){
+ if(key==="student-activity"){
+   if(!admin){area.textContent="Administrator access is required to view student activity.";return;}
+   area.innerHTML='<h3 style="margin:0 0 8px;color:#172554">Student Activity &amp; Daily Attendance</h3><p style="color:#64748b;line-height:1.6">Visits are counted once per student per browser tab per day. Learning activity is tracked separately.</p><div style="display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin:14px 0"><label style="display:grid;gap:6px;font-weight:800;font-size:13px">Report date<input id="otgActivityReportDate" type="date" style="padding:10px;border:1px solid #cbd5e1;border-radius:8px"></label><button id="otgActivityRefresh" type="button" style="padding:11px 15px;border:0;border-radius:9px;background:#1d4ed8;color:white;font-weight:800">Refresh report</button></div><p id="otgActivityReportStatus" role="status" style="color:#64748b"></p><div id="otgActivitySummary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:12px 0"></div><div id="otgActivityRows" style="display:grid;gap:9px"></div>';
+   const dateInput=area.querySelector("#otgActivityReportDate"),refresh=area.querySelector("#otgActivityRefresh"),status=area.querySelector("#otgActivityReportStatus"),summary=area.querySelector("#otgActivitySummary"),rows=area.querySelector("#otgActivityRows");
+   const dateValue=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+   dateInput.value=dateValue(new Date());
+   const learningTypes=["lesson_area_opened","lesson_completed","code_lab_opened","project_opened","community_opened","discussion_posted"];
+   const addCard=(label,value)=>{const n=document.createElement("div");n.style.cssText="padding:13px;border:1px solid #dbeafe;border-radius:11px;background:#fff";const v=document.createElement("strong");v.textContent=String(value);v.style.cssText="display:block;font-size:24px;color:#1d4ed8";const l=document.createElement("span");l.textContent=label;l.style.cssText="display:block;margin-top:5px;font-size:12px;font-weight:800;color:#475569";n.append(v,l);summary.appendChild(n);};
+   const runReport=async()=>{
+    const p=String(dateInput.value||"").split("-").map(Number);if(p.length!==3||!p[0]){status.textContent="Choose a valid date.";return;}
+    const start=new Date(p[0],p[1]-1,p[2]),end=new Date(p[0],p[1]-1,p[2]+1),startISO=start.toISOString(),endISO=end.toISOString();
+    status.textContent="Loading report…";summary.replaceChildren();rows.replaceChildren();refresh.disabled=true;
+    try{
+     const [sr,er,ar]=await Promise.all([
+      db.from("profiles").select("id,email").eq("role","student").eq("approval_status","approved").order("created_at",{ascending:false}).limit(1000),
+      db.from("academy_student_activity").select("user_id,event_type,created_at").gte("created_at",startISO).lt("created_at",endISO).order("created_at",{ascending:false}).limit(10000),
+      db.from("academy_submissions").select("student_id,submitted_at").gte("submitted_at",startISO).lt("submitted_at",endISO).not("submitted_at","is",null).limit(5000)
+     ]);
+     if(sr.error)throw sr.error;if(er.error)throw er.error;if(ar.error)throw ar.error;
+     const students=sr.data||[],ids=students.map(s=>s.id);let nameRows=[];
+     if(ids.length){const nr=await db.from("academy_student_profiles").select("user_id,display_name").in("user_id",ids);if(!nr.error)nameRows=nr.data||[];}
+     const names=new Map(nameRows.map(x=>[String(x.user_id),String(x.display_name||"").trim()])),visits=new Map(),actions=new Map(),last=new Map(),submitted=new Map();
+     (er.data||[]).forEach(e=>{const id=String(e.user_id);if(e.event_type==="visit")visits.set(id,(visits.get(id)||0)+1);if(learningTypes.includes(e.event_type))actions.set(id,(actions.get(id)||0)+1);if(!last.has(id)||new Date(e.created_at)>new Date(last.get(id)))last.set(id,e.created_at);});
+     (ar.data||[]).forEach(s=>{const id=String(s.student_id);submitted.set(id,(submitted.get(id)||0)+1);if(s.submitted_at&&(!last.has(id)||new Date(s.submitted_at)>new Date(last.get(id))))last.set(id,s.submitted_at);});
+     const visited=students.filter(s=>(visits.get(String(s.id))||0)>0).length,learning=students.filter(s=>(actions.get(String(s.id))||0)>0||(submitted.get(String(s.id))||0)>0).length,noVisit=students.length-visited,idle=students.filter(s=>(visits.get(String(s.id))||0)>0&&(actions.get(String(s.id))||0)===0&&(submitted.get(String(s.id))||0)===0).length;
+     addCard("Approved students",students.length);addCard("Visited this day",visited);addCard("Learning activity recorded",learning);addCard("Visited, no learning recorded",idle);addCard("No visit recorded",noVisit);
+     students.forEach(s=>{const id=String(s.id),v=visits.get(id)||0,a=actions.get(id)||0,sub=submitted.get(id)||0,engaged=a>0||sub>0,item=document.createElement("article");item.style.cssText="padding:13px;border:1px solid #e2e8f0;border-radius:11px;background:#fff";const name=document.createElement("strong");name.textContent=names.get(id)||String(s.email||"").split("@")[0]||"OTG Student";name.style.cssText="display:block;color:#172554;font-size:15px";const detail=document.createElement("p");detail.style.cssText="margin:6px 0;color:#475569;line-height:1.6;font-size:13px";detail.textContent="Visits: "+v+" · Learning actions: "+a+" · Assignments submitted: "+sub;const state=document.createElement("span");state.textContent=engaged?"Learning activity recorded":v>0?"Visited — no learning activity recorded":"No visit recorded";state.style.cssText="font-size:12px;font-weight:800;color:"+(engaged?"#166534":v>0?"#92400e":"#64748b");const when=document.createElement("small");when.style.cssText="display:block;margin-top:5px;color:#64748b";when.textContent=last.has(id)?"Last activity on selected day: "+new Date(last.get(id)).toLocaleString():"No activity recorded on this date";item.append(name,detail,state,when);rows.appendChild(item);});
+     if(!students.length){const empty=document.createElement("p");empty.textContent="No approved student accounts were found.";rows.appendChild(empty);}
+     status.textContent="Daily report for "+start.toLocaleDateString()+". Learning activity means a learning section was opened, a lesson completed, Code Lab/projects/community opened, or an assignment submitted. This is an engagement indicator, not proof of time spent studying.";
+    }catch(err){status.textContent="The report could not load: "+(err&&err.message?err.message:"Please refresh and try again.");status.style.color="#b91c1c";}
+    finally{refresh.disabled=false;}
+   };
+   refresh.addEventListener("click",runReport);dateInput.addEventListener("change",runReport);runReport();return;
+  }
+  if(!admin&&userId&&key==="home"){
   try{const {data:pendingNotices,error:pendingNoticeError}=await db.from("academy_submissions").select("id,assignment_id,status,score,reviewed_at").eq("student_id",userId).in("status",["submitted","reviewing","needs_changes"]).not("score","is",null).order("reviewed_at",{ascending:false}).limit(3);
    if(!pendingNoticeError&&pendingNotices&&pendingNotices.length){const ids=[...new Set(pendingNotices.map(x=>x.assignment_id))];const {data:noticeAssignments}=await db.from("academy_assignments").select("id,title").in("id",ids);const titles=new Map((noticeAssignments||[]).map(x=>[String(x.id),x.title]));const notice=document.createElement("section");notice.setAttribute("role","status");notice.style.cssText="margin:0 0 18px;padding:16px;border:2px solid #d97706;border-left:8px solid #d97706;border-radius:13px;background:#fffbeb;color:#78350f;box-shadow:0 4px 14px rgba(217,119,6,.12)";const nh=document.createElement("h3");nh.textContent="📣 Marking completed — results awaiting release";nh.style.cssText="margin:0 0 7px;font-size:18px;font-weight:1000;line-height:1.4";const np=document.createElement("p");np.textContent="Your Coach has saved marks for "+pendingNotices.map(x=>titles.get(String(x.assignment_id))||"an assignment").join(", ")+". The official scores and answer review will appear when results are released.";np.style.cssText="margin:0 0 12px;line-height:1.65";const nb=document.createElement("button");nb.type="button";nb.textContent="Open Assessment Results";nb.style.cssText="padding:11px 15px;border:0;border-radius:9px;background:#92400e;color:#fff;font-weight:900;cursor:pointer";nb.addEventListener("click",()=>openAcademyPanel("assessment-results",assessmentResultsNav));notice.append(nh,np,nb);area.appendChild(notice);}
   }catch(noticeError){console.warn("OTG pending assessment notice:",noticeError);}
@@ -2731,7 +2765,7 @@ html{scroll-behavior:auto}
       <button class="academy-nav" onclick="openAcademyPanel('achievements',this)">🏆 Achievements</button>
       <button class="academy-nav" onclick="openAcademyPanel('notifications',this)">🔔 Notifications</button>
       <button class="academy-nav" id="otgCustomerServiceNav" onclick="openAcademyPanel('support',this)">🎧 Customer Service</button>
-      <button class="academy-nav" onclick="openAcademyPanel('settings',this)"><button class="academy-nav" id="otgStudentActivityNav" hidden style="display:none" onclick="openAcademyPanel('student-activity',this)">📊 Student Activity</button>
+      <button class="academy-nav" id="otgStudentActivityNav" hidden style="display:none" onclick="openAcademyPanel('student-activity',this)">📊 Student Activity</button>
        <button class="academy-nav" onclick="openAcademyPanel('settings',this)">⚙ Profile &amp; Settings</button>
     </aside>
     <div class="academy-main">
