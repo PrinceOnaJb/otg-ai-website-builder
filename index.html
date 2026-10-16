@@ -4046,12 +4046,14 @@ const supabaseClient =
     if(payload.type==="offer"){
      if(pc.signalingState!=="stable")return;
      await pc.setRemoteDescription(new RTCSessionDescription(payload.description));
+     while(entry.candidateQueue.length){const queued=entry.candidateQueue.shift();try{await pc.addIceCandidate(new RTCIceCandidate(queued));}catch(e){console.warn("OTG queued ICE candidate was skipped",e);}}
      const answer=await pc.createAnswer();await pc.setLocalDescription(answer);
      await sendSignal({to:payload.from,type:"answer",description:pc.localDescription});
     }else if(payload.type==="answer"){
-     if(pc.signalingState==="have-local-offer")await pc.setRemoteDescription(new RTCSessionDescription(payload.description));
+     if(pc.signalingState==="have-local-offer"){await pc.setRemoteDescription(new RTCSessionDescription(payload.description));while(entry.candidateQueue.length){const queued=entry.candidateQueue.shift();try{await pc.addIceCandidate(new RTCIceCandidate(queued));}catch(e){console.warn("OTG queued ICE candidate was skipped",e);}}}
     }else if(payload.type==="candidate"&&payload.candidate){
-     try{await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));}catch(e){console.warn("OTG ICE candidate was skipped",e);}
+     if(pc.remoteDescription){try{await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));}catch(e){console.warn("OTG ICE candidate was skipped",e);}}
+     else{entry.candidateQueue.push(payload.candidate);}
     }
    }catch(e){console.error("OTG WebRTC signaling failed",e);status.textContent="The in-app connection is still negotiating. Please wait a moment or rejoin the call.";}
   };
