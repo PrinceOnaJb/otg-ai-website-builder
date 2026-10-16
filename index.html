@@ -4211,6 +4211,7 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
    if(r.error)throw r.error;
    const call=Array.isArray(r.data)?r.data[0]:r.data;
    if(!call)throw new Error("The call service did not create a call invitation.");
+   client.functions.invoke("otg-call-push",{body:{action:"send-call",callId:call.id}}).then(result=>{if(result.error)console.warn("OTG background call push:",result.error);else console.log("OTG background call push result:",result.data);}).catch(error=>console.warn("OTG background call push failed:",error));
    showCall(call,"outgoing",peerName||"your OTG connection");if(statusEl)statusEl.textContent="Calling "+(peerName||"your connection")+"…";
    window.setTimeout(async()=>{try{await client.from("otg_student_calls").update({status:"missed"}).eq("room_name",roomName).eq("status","ringing");}catch(_){}},47000);
   }catch(e){console.error("OTG call start failed:",e);if(statusEl)statusEl.textContent="Call could not start: "+(e&&e.message?e.message:"Please try again. Check that both accounts are approved and connected.");}
@@ -4251,14 +4252,38 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
    if(result.error)throw result.error;
    const calls=Array.isArray(result.data)?result.data:[result.data].filter(Boolean);
    if(!calls.length)throw new Error("No approved students were available to receive the call.");
+   calls.forEach(call=>{client.functions.invoke("otg-call-push",{body:{action:"send-call",callId:call.id}}).then(result=>{if(result.error)console.warn("OTG broadcast push:",result.error);}).catch(error=>console.warn("OTG broadcast push failed:",error));});
    showCall(calls[0],"outgoing","all online students");
    if(statusEl)statusEl.textContent="Calling "+calls.length+" online student"+(calls.length===1?"":"s")+". The first student to accept will join the call.";
    window.setTimeout(async()=>{try{await client.from("otg_student_calls").update({status:"missed"}).eq("room_name",roomName).eq("status","ringing");}catch(_){}},47000);
   }catch(error){console.error("OTG broadcast call failed:",error);if(statusEl)statusEl.textContent="Call could not start: "+(error&&error.message?error.message:"Please refresh Student Hub and try again.");if(state.active&&state.active.call.id===startingCallId)showCall({id:"otg-call-error-"+Date.now(),call_type:mode,status:"call-error",room_name:""},"outgoing","OTG call service");}
  };
+ async function ensureOtgBackgroundPush(user, requestPermission){
+  try{
+   if(!user||!user.id||!("serviceWorker" in navigator)||!("PushManager" in window)||!("Notification" in window))return false;
+   if(!window.isSecureContext)return false;
+   if(Notification.permission==="default"&&requestPermission){const permission=await Notification.requestPermission();if(permission!=="granted")return false;}
+   if(Notification.permission!=="granted")return false;
+   const registration=await navigator.serviceWorker.register("/sw.js",{scope:"/"});
+   await navigator.serviceWorker.ready;
+   let subscription=await registration.pushManager.getSubscription();
+   if(!subscription){
+    const keyResult=await client.functions.invoke("otg-call-push",{body:{action:"public-key"}});
+    if(keyResult.error||!keyResult.data||!keyResult.data.publicKey)throw new Error("Push service public key is unavailable");
+    const decodeKey=(value)=>{const padding="=".repeat((4-value.length%4)%4);const raw=atob((value+padding).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(raw,c=>c.charCodeAt(0));};
+    subscription=await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:decodeKey(keyResult.data.publicKey)});
+   }
+   const saved=await client.functions.invoke("otg-call-push",{body:{action:"subscribe",subscription:subscription.toJSON()}});
+   if(saved.error)throw saved.error;
+   return true;
+  }catch(error){console.warn("OTG background call notifications could not be enabled:",error);return false;}
+ }
+ window.otgEnableBackgroundCallNotifications=function(){return ensureOtgBackgroundPush({id:state.userId},true);};
+ document.addEventListener("pointerdown",function(){if(state.userId&&"Notification" in window&&Notification.permission==="granted"){ensureOtgBackgroundPush({id:state.userId},false);}}, {passive:true});
  window.otgInitCallNotifications=function(user){
   if(!user||!user.id)return;if(state.userId===user.id&&state.channel&&state.lobbyChannel)return;
   window.otgStopCallNotifications(true);state.userId=user.id;
+  ensureOtgBackgroundPush(user,false);
   state.channel=client.channel("otg-student-calls-"+user.id)
    .on("postgres_changes",{event:"INSERT",schema:"public",table:"otg_student_calls",filter:"callee_id=eq."+user.id},p=>handleRow(p.new,user.id))
    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"otg_student_calls",filter:"callee_id=eq."+user.id},p=>handleRow(p.new,user.id))
