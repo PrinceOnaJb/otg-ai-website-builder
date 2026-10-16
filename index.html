@@ -3990,7 +3990,13 @@ const supabaseClient =
   if(state.localMedia){state.localMedia.getTracks().forEach(function(track){try{track.stop();}catch(_){}});state.localMedia=null;}
   const el=document.getElementById("otgCallOverlay");if(el)el.remove();state.overlay=null;
  }
- function makeButton(label,color,fn){const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:11px 15px;border:0;border-radius:10px;background:"+color+";color:#fff;font-weight:800;font-size:14px;cursor:pointer";b.addEventListener("click",fn);return b;}
+ let otgRingContext=null,otgRingTimer=null,otgRingNodes=[];
+function stopOtgRingtone(){if(otgRingTimer){clearInterval(otgRingTimer);otgRingTimer=null;}otgRingNodes.forEach(n=>{try{n.stop();}catch(_){}});otgRingNodes=[];if(otgRingContext){try{otgRingContext.close();}catch(_){}otgRingContext=null;}}
+function playOtgRingBurst(){try{const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;if(!otgRingContext)otgRingContext=new Ctx();if(otgRingContext.state==="suspended")otgRingContext.resume().catch(()=>{});const ctx=otgRingContext;const now=ctx.currentTime;[0,0.22,0.72].forEach((offset,index)=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type="sine";osc.frequency.value=index===1?1046:880;gain.gain.setValueAtTime(0.0001,now+offset);gain.gain.exponentialRampToValueAtTime(0.22,now+offset+0.025);gain.gain.setValueAtTime(0.22,now+offset+0.16);gain.gain.exponentialRampToValueAtTime(0.0001,now+offset+0.24);osc.connect(gain);gain.connect(ctx.destination);osc.start(now+offset);osc.stop(now+offset+0.25);otgRingNodes.push(osc);});}catch(e){console.warn("OTG ringtone unavailable until sound is enabled:",e);}}
+function startOtgRingtone(){if(otgRingTimer)return;playOtgRingBurst();otgRingTimer=setInterval(playOtgRingBurst,1500);}
+function enableOtgCallSounds(){try{const Ctx=window.AudioContext||window.webkitAudioContext;if(Ctx&&!otgRingContext)otgRingContext=new Ctx();if(otgRingContext&&otgRingContext.state==="suspended")otgRingContext.resume().catch(()=>{});if("Notification" in window&&Notification.permission==="default")Notification.requestPermission().catch(()=>{});}catch(_){}}
+document.addEventListener("pointerdown",enableOtgCallSounds,{passive:true});
+function makeButton(label,color,fn){const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:11px 15px;border:0;border-radius:10px;background:"+color+";color:#fff;font-weight:800;font-size:14px;cursor:pointer";b.addEventListener("click",fn);return b;}
  function startEmbeddedCall(call,direction,peerName){
   state.active={call:call,direction:direction,peerName:peerName||"your OTG connection"};
   closeOverlay();
@@ -4087,8 +4093,7 @@ const supabaseClient =
    }
   })();
  }
- function showCall(call,direction,peerName){
-  state.active={call,direction,peerName:peerName||"your OTG connection"};closeOverlay();
+ function showCall(call,direction,peerName){if(!(call&&call.status==="ringing"&&direction==="incoming"))stopOtgRingtone();state.active={call,direction,peerName:peerName||"your OTG connection"};closeOverlay();
   const overlay=document.createElement("div");overlay.id="otgCallOverlay";overlay.style.cssText="position:fixed;inset:0;z-index:2147483000;background:rgba(8,20,42,.76);display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box";
   const box=document.createElement("section");box.setAttribute("role","dialog");box.setAttribute("aria-modal","true");box.style.cssText="width:min(100%,420px);box-sizing:border-box;padding:24px;border-radius:22px;background:#fff;box-shadow:0 24px 80px rgba(0,0,0,.3);font-family:Arial,sans-serif;text-align:center;color:#172554";
   const icon=document.createElement("div");icon.textContent=call.call_type==="voice"?"☎":"▣";icon.style.cssText="width:68px;height:68px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:#e0f2fe;color:#075985;font-size:30px;font-weight:800";
@@ -4139,7 +4144,7 @@ const supabaseClient =
  async function handleRow(call,userId){
   if(!call||!userId)return;
   const direction=call.caller_id===userId?"outgoing":"incoming";
-  if(call.status==="ringing"||call.status==="accepted"){
+  if(direction==="incoming"&&call.status==="ringing"){startOtgRingtone();}else{stopOtgRingtone();}if(call.status==="ringing"||call.status==="accepted"){
    if(state.active&&state.active.call.id!==call.id&&["ringing","accepted"].includes(state.active.call.status)){
     const sameBroadcast=state.active.call.room_name&&call.room_name&&state.active.call.room_name===call.room_name;
     if(!sameBroadcast||call.status!=="accepted")return;
