@@ -509,7 +509,38 @@ async function loadAcademyPanelData(key,content){
   const status=document.createElement("p");status.setAttribute("role","status");status.setAttribute("aria-live","polite");status.style.cssText="margin:10px 0 0;color:#475569;font-size:13px";
   const makeButton=(label,primary,fn)=>{const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:10px 15px;border-radius:9px;border:1px solid "+(primary?"#1d4ed8":"#cbd5e1")+";background:"+(primary?"#1d4ed8":"#fff")+";color:"+(primary?"#fff":"#1e293b")+";font-weight:800;cursor:pointer";b.addEventListener("click",fn);controls.appendChild(b);return b;};
   const preview=document.createElement("iframe");preview.title="Code Lab live preview";preview.setAttribute("sandbox","allow-scripts");preview.setAttribute("referrerpolicy","no-referrer");preview.style.cssText="display:block;width:100%;height:340px;border:1px solid #cbd5e1;border-radius:12px;background:#fff";
-  const runCode=()=>{const css=cssEditor.value;const js=jsEditor.value.replace(/<\/script/gi,"<\\/script");preview.srcdoc="<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style>"+css+"</style></head><body>"+htmlEditor.value+"<script>"+js+"<\/script></body></html>";status.textContent="Preview updated. Your code has not been published.";};
+  const runCode=()=>{const css=cssEditor.value;const js=jsEditor.value.replace(/<\/script/gi,"<\\/script");preview.srcdoc="<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style>"+css+"</style></head><body>"+htmlEditor.value+"<script>"+js+"<\/script><script id="otg-academy-dashboard-view-mode">
+(function(){
+  var dashboard=document.getElementById("academyDashboard");
+  var button=document.getElementById("otgDashboardViewToggle");
+  if(!dashboard||!button)return;
+  function isWideMode(){return dashboard.classList.contains("otg-dashboard-fullscreen")||document.fullscreenElement===dashboard;}
+  function updateButton(){
+    var wide=isWideMode();
+    button.innerHTML=wide?'<span aria-hidden="true">↙</span> Window mode':'<span aria-hidden="true">⛶</span> Full screen';
+    button.setAttribute("aria-pressed",wide?"true":"false");
+    button.title=wide?"Return to the normal dashboard window":"Expand the Student Hub dashboard to full screen";
+  }
+  window.otgToggleAcademyFullscreen=async function(){
+    var wasWide=isWideMode();
+    if(wasWide){
+      if(document.fullscreenElement&&document.exitFullscreen){
+        try{await document.exitFullscreen();}catch(error){console.warn("Could not exit browser fullscreen:",error);}
+      }
+      dashboard.classList.remove("otg-dashboard-fullscreen");
+    }else{
+      dashboard.classList.add("otg-dashboard-fullscreen");
+      if(dashboard.requestFullscreen){
+        try{await dashboard.requestFullscreen();}catch(error){console.warn("Browser fullscreen unavailable; using expanded dashboard mode:",error);}
+      }
+    }
+    updateButton();
+  };
+  document.addEventListener("fullscreenchange",updateButton);
+  updateButton();
+})();
+</script>
+</body></html>";status.textContent="Preview updated. Your code has not been published.";};
   makeButton("▶ Run code",true,runCode);
   makeButton("Save draft on this device",false,()=>{try{localStorage.setItem("otgAcademyCodeLabDraft",JSON.stringify({html:htmlEditor.value,css:cssEditor.value,js:jsEditor.value}));status.textContent="Draft saved on this device only.";}catch(e){status.textContent="This browser did not allow a local draft to be saved.";}}); 
   makeButton("Load saved draft",false,()=>{try{const raw=localStorage.getItem("otgAcademyCodeLabDraft");if(!raw){status.textContent="No saved draft was found on this device.";return;}const d=JSON.parse(raw);htmlEditor.value=d.html||"";cssEditor.value=d.css||"";jsEditor.value=d.js||"";runCode();status.textContent="Saved draft loaded from this device.";}catch(e){status.textContent="Could not load the saved draft.";}}); 
@@ -3969,6 +4000,22 @@ html{scroll-behavior:auto}
   box-shadow:0 12px 24px rgba(27,75,45,.09);
 }
 #academyDashboard .otg-home-shortcut-arrow{color:#267344}
+#academyDashboard.otg-dashboard-fullscreen{
+  position:fixed!important;inset:0!important;z-index:2147483000!important;
+  width:100vw!important;height:100vh!important;height:100dvh!important;
+  max-width:none!important;margin:0!important;padding:16px!important;
+  overflow:auto!important;background:#f8fafc!important;box-sizing:border-box!important;
+}
+#academyDashboard.otg-dashboard-fullscreen .academy-layout{min-height:calc(100vh - 150px)}
+#academyDashboard .otg-dashboard-view-toggle{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  min-height:42px;padding:10px 14px;border:1px solid #cbd5e1;border-radius:10px;
+  background:#fff;color:#17452b;font-size:13px;font-weight:900;cursor:pointer;
+  box-shadow:0 3px 10px rgba(15,23,42,.06);white-space:nowrap
+}
+#academyDashboard .otg-dashboard-view-toggle:hover{background:#f0fdf4;border-color:#86b99a}
+#academyDashboard .otg-dashboard-view-toggle:focus-visible{outline:3px solid #86b99a;outline-offset:2px}
+@media(max-width:600px){#academyDashboard.otg-dashboard-fullscreen{padding:8px!important}#academyDashboard .otg-dashboard-view-toggle{min-height:40px;padding:9px 11px}}
 
 </style>
 <!-- OTG ACADEMY STUDENT DASHBOARD START -->
@@ -3992,9 +4039,12 @@ html{scroll-behavior:auto}
     <p id="otgLiveNewsStatus" role="status" style="margin:8px 14px 0;color:#64748b;font-size:11px;line-height:1.5">Connecting to live newspaper headlines…</p>
   </div>
 
-  <div class="section-heading">
-    <h2>OTG GRAPHIC Academy</h2>
-    <p>Your learning space for lessons, assignments, projects and community.</p>
+  <div class="section-heading" style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+    <div>
+      <h2>OTG GRAPHIC Academy</h2>
+      <p>Your learning space for lessons, assignments, projects and community.</p>
+    </div>
+    <button type="button" id="otgDashboardViewToggle" class="otg-dashboard-view-toggle" aria-pressed="false" onclick="window.otgToggleAcademyFullscreen && window.otgToggleAcademyFullscreen()"><span aria-hidden="true">⛶</span> Full screen</button>
   </div>
   <div class="academy-layout">
     <aside class="academy-sidebar" aria-label="Student dashboard navigation">
