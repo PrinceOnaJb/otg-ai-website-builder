@@ -7365,150 +7365,310 @@ async function publishFromNewProject(){
 function renderPublicSite(data, products){
 
   document.body.innerHTML = "";
+  document.body.style.margin = "0";
+  document.body.style.background = "#f5f6f8";
+  document.body.style.color = "#202124";
+  document.body.style.fontFamily = "Arial,Helvetica,sans-serif";
 
-  document.body.style.margin =
-    "0";
+  const wrapper = document.createElement("div");
+  wrapper.className = "publicSite";
+  wrapper.style.cssText = "min-height:100vh;background:#f5f6f8";
 
-  document.body.style.background =
-    "#fff";
+  const header = document.createElement("header");
+  header.className = "publicSiteHeader";
+  header.textContent = data.title || "OTG Online Store";
+  header.style.cssText = "position:relative;z-index:2;padding:18px clamp(16px,4vw,48px);background:#fff;border-bottom:1px solid #e5e7eb;color:#202124;font-size:clamp(19px,3vw,27px);font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,.035)";
 
-  const wrapper =
-    document.createElement("div");
+  const content = document.createElement("main");
+  content.className = "publicSiteContent";
+  content.style.cssText = "background:#fff";
+  const style = document.createElement("style");
+  style.textContent = data.css || "";
+  content.innerHTML = data.html || "";
+  wrapper.append(header, style, content);
+  document.body.appendChild(wrapper);
 
-  wrapper.className =
-    "publicSite";
-
-  const header =
-    document.createElement("div");
-
-  header.className =
-    "publicSiteHeader";
-
-  header.textContent =
-    data.title ||
-    "OTG Website";
-
-  const content =
-    document.createElement("div");
-
-  content.className =
-    "publicSiteContent";
-
-  const style =
-    document.createElement("style");
-
-  style.textContent =
-    data.css || "";
-
-  content.innerHTML =
-    data.html || "";
-
-  wrapper.appendChild(
-    header
-  );
-
-  wrapper.appendChild(
-    style
-  );
-
-  wrapper.appendChild(
-    content
-  );
-
-  document.body.appendChild(
-    wrapper
-  );
-
-  // Add a product catalogue only when this published website has products.
-  // Build cards with DOM text nodes so product content is not interpreted as HTML.
-  if(Array.isArray(products) && products.length){
-    const catalogue=document.createElement("section");
+  const productList = Array.isArray(products) ? products : [];
+  if(productList.length){
+    const catalogue = document.createElement("section");
+    catalogue.id = "otgPublicShop";
     catalogue.setAttribute("aria-label","Products and services");
-    catalogue.style.cssText="max-width:1180px;margin:0 auto;padding:30px 18px 42px;font-family:Arial,sans-serif;color:#172033";
-    const heading=document.createElement("h2");
-    heading.textContent="Products & Services";
-    heading.style.cssText="margin:0 0 8px;font-size:clamp(23px,4vw,32px);line-height:1.2";
-    const intro=document.createElement("p");
-    intro.textContent="Browse the available products and contact us to order.";
-    intro.style.cssText="margin:0 0 22px;color:#64748b;line-height:1.6";
-    const grid=document.createElement("div");
-    grid.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:18px";
-    products.forEach(function(product){
-      const card=document.createElement("article");
-      card.style.cssText="min-width:0;overflow:hidden;border:1px solid #e2e8f0;border-radius:14px;background:#fff;box-shadow:0 4px 14px rgba(15,23,42,.06)";
-      const imageURL=String(product.image_url||"");
+    catalogue.style.cssText = "max-width:1320px;margin:0 auto;padding:clamp(20px,4vw,42px) clamp(12px,3vw,28px) 90px;font-family:Arial,Helvetica,sans-serif;color:#202124;box-sizing:border-box";
+
+    const top = document.createElement("div");
+    top.style.cssText = "display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:20px";
+    const headingWrap = document.createElement("div");
+    const eyebrow = document.createElement("p");
+    eyebrow.textContent = "SHOP THE COLLECTION";
+    eyebrow.style.cssText = "margin:0 0 7px;color:#f68b1e;font-size:11px;font-weight:900;letter-spacing:1.5px";
+    const heading = document.createElement("h2");
+    heading.textContent = "Products & Services";
+    heading.style.cssText = "margin:0;font-size:clamp(24px,4vw,34px);line-height:1.2;color:#202124;font-weight:800";
+    const intro = document.createElement("p");
+    intro.textContent = "Explore available items, compare prices and add your favourites to your cart.";
+    intro.style.cssText = "margin:9px 0 0;color:#6b7280;line-height:1.6;font-size:14px";
+    headingWrap.append(eyebrow,heading,intro);
+    const cartHint = document.createElement("span");
+    cartHint.textContent = productList.length + (productList.length===1 ? " item available" : " items available");
+    cartHint.style.cssText = "font-size:12px;font-weight:700;color:#6b7280;background:#fff;padding:9px 12px;border:1px solid #e5e7eb;border-radius:999px";
+    top.append(headingWrap,cartHint);
+
+    const tools = document.createElement("div");
+    tools.style.cssText = "display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px;margin-bottom:20px";
+    const search = document.createElement("input");
+    search.type = "search";
+    search.placeholder = "Search products...";
+    search.setAttribute("aria-label","Search products");
+    search.style.cssText = "width:100%;min-height:44px;box-sizing:border-box;padding:12px 14px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#202124;font-size:14px;outline-color:#f68b1e";
+    const categorySelect = document.createElement("select");
+    categorySelect.setAttribute("aria-label","Filter by category");
+    categorySelect.style.cssText = "width:100%;min-height:44px;box-sizing:border-box;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#202124;font-size:14px";
+    const allOption = document.createElement("option");
+    allOption.value = "";
+    allOption.textContent = "All categories";
+    categorySelect.appendChild(allOption);
+    Array.from(new Set(productList.map(function(p){return String(p.category||"").trim();}).filter(Boolean))).sort().forEach(function(category){
+      const option = document.createElement("option");
+      option.value = category;
+      option.textContent = category;
+      categorySelect.appendChild(option);
+    });
+    const sort = document.createElement("select");
+    sort.setAttribute("aria-label","Sort products");
+    sort.style.cssText = categorySelect.style.cssText;
+    [["newest","Sort: Newest"],["price-low","Price: Low to high"],["price-high","Price: High to low"],["name","Name: A to Z"]].forEach(function(pair){
+      const option=document.createElement("option");option.value=pair[0];option.textContent=pair[1];sort.appendChild(option);
+    });
+    tools.append(search,categorySelect,sort);
+
+    const grid = document.createElement("div");
+    grid.id = "otgPublicProductGrid";
+    grid.style.cssText = "display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,215px),1fr));gap:16px;align-items:stretch";
+    const empty = document.createElement("p");
+    empty.textContent = "No products match your search.";
+    empty.style.cssText = "display:none;grid-column:1/-1;padding:30px;text-align:center;color:#6b7280;background:#fff;border:1px dashed #d1d5db;border-radius:12px";
+
+    function numericPrice(value){
+      const match=String(value||"").replace(/,/g,"").match(/(?:₦|NGN|N)?\s*(\d+(?:\.\d{1,2})?)/i);
+      return match ? Number(match[1]) : 0;
+    }
+    function money(value){
+      return "₦"+Number(value||0).toLocaleString("en-NG",{maximumFractionDigits:2});
+    }
+    function safeImage(value){
+      try{const u=new URL(String(value||""));return (u.protocol==="https:"||u.protocol==="http:")?u.href:"";}catch(e){return "";}
+    }
+    const cards = [];
+    productList.forEach(function(product,index){
+      const card = document.createElement("article");
+      card.className = "otg-market-product product-card";
+      card.setAttribute("data-product-card","true");
+      card.setAttribute("data-product-id",String(product.id||index));
+      card.style.cssText = "min-width:0;display:flex;flex-direction:column;overflow:hidden;border:1px solid #e5e7eb;border-radius:10px;background:#fff;box-shadow:0 2px 7px rgba(0,0,0,.045);transition:box-shadow .18s,transform .18s";
+      card.onmouseenter=function(){card.style.boxShadow="0 8px 24px rgba(0,0,0,.10)";card.style.transform="translateY(-2px)";};
+      card.onmouseleave=function(){card.style.boxShadow="0 2px 7px rgba(0,0,0,.045)";card.style.transform="none";};
+      const imageWrap = document.createElement("div");
+      imageWrap.style.cssText = "position:relative;display:flex;align-items:center;justify-content:center;aspect-ratio:1/1;background:#fff;padding:10px;box-sizing:border-box;border-bottom:1px solid #f0f0f0";
+      const imageURL = safeImage(product.image_url);
       if(imageURL){
-        try{
-          const parsed=new URL(imageURL);
-          if(parsed.protocol==="https:"||parsed.protocol==="http:"){
-            const image=document.createElement("img");
-            image.src=parsed.href;
-            image.alt=String(product.name||"Product image");
-            image.loading="lazy";
-            image.referrerPolicy="no-referrer";
-            image.style.cssText="display:block;width:100%;height:190px;object-fit:cover;background:#f1f5f9";
-            card.appendChild(image);
-          }
-        }catch(ignoreImageURL){}
+        const image = document.createElement("img");
+        image.src = imageURL;
+        image.alt = String(product.name||"Product image");
+        image.loading = "lazy";
+        image.referrerPolicy = "no-referrer";
+        image.style.cssText = "display:block;width:100%;height:100%;object-fit:contain;object-position:center";
+        imageWrap.appendChild(image);
+      }else{
+        const placeholder=document.createElement("div");
+        placeholder.textContent="🛍️";
+        placeholder.setAttribute("aria-label","No product image uploaded");
+        placeholder.style.cssText="font-size:42px;color:#9ca3af";
+        imageWrap.appendChild(placeholder);
       }
-      const details=document.createElement("div");
-      details.style.cssText="padding:15px;display:flex;flex-direction:column;gap:9px";
+      const details = document.createElement("div");
+      details.style.cssText = "display:flex;flex:1;flex-direction:column;align-items:stretch;gap:8px;padding:13px";
       if(product.category){
         const category=document.createElement("span");
         category.textContent=String(product.category);
-        category.style.cssText="color:#1d4ed8;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em";
+        category.style.cssText="align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#6b7280;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px";
         details.appendChild(category);
       }
-      const name=document.createElement("h3");
-      name.textContent=String(product.name||"Product");
-      name.style.cssText="margin:0;font-size:18px;line-height:1.35;overflow-wrap:anywhere";
+      const name = document.createElement("h3");
+      name.textContent = String(product.name||"Product");
+      name.setAttribute("data-product-name","true");
+      name.style.cssText = "margin:0;min-height:38px;font-size:14px;font-weight:500;line-height:1.45;color:#333;overflow-wrap:anywhere";
       details.appendChild(name);
-      if(product.price){
-        const price=document.createElement("p");
-        price.textContent=String(product.price);
-        price.style.cssText="margin:0;font-size:17px;font-weight:800;color:#075b24";
-        details.appendChild(price);
-      }
+      const price = document.createElement("p");
+      price.className = "product-price";
+      price.setAttribute("data-product-price","true");
+      price.textContent = String(product.price||"Price on request");
+      price.style.cssText = "margin:0;font-size:19px;font-weight:800;line-height:1.3;color:#202124";
+      details.appendChild(price);
       if(product.description){
         const description=document.createElement("p");
         description.textContent=String(product.description);
-        description.style.cssText="margin:0;color:#475569;line-height:1.6;overflow-wrap:anywhere";
+        description.style.cssText="margin:0;color:#6b7280;font-size:12px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden";
         details.appendChild(description);
       }
-      const phone=String(product.whatsapp_number||"").replace(/\D/g,"");
-      const normalizedPhone=(phone.length===11 && phone.charAt(0)==="0")?"234"+phone.slice(1):phone;
-      if(normalizedPhone.length>=8 && normalizedPhone.length<=15){
-        const order=document.createElement("a");
-        order.href="https://wa.me/"+normalizedPhone;
-        order.target="_blank";
-        order.rel="noopener noreferrer";
-        order.textContent="Order via WhatsApp";
-        order.style.cssText="display:inline-flex;align-items:center;justify-content:center;margin-top:3px;padding:11px 14px;border-radius:9px;background:#075b24;color:#fff;font-weight:700;text-decoration:none;text-align:center";
-        details.appendChild(order);
-      }
-      card.appendChild(details);
+      const add = document.createElement("button");
+      add.type="button";
+      add.className="otgAddToCart";
+      add.textContent="🛒 Add to Cart";
+      add.style.cssText="width:100%;margin-top:auto;padding:11px 10px;border:0;border-radius:6px;background:#f68b1e;color:#fff;font-size:13px;font-weight:800;cursor:pointer";
+      add.onmouseenter=function(){add.style.background="#e8790b";};
+      add.onmouseleave=function(){add.style.background="#f68b1e";};
+      add.onclick=function(){window.otgPublicAddToCart({id:String(product.id||index),name:String(product.name||"Product"),price:numericPrice(product.price),priceText:String(product.price||""),image:imageURL,phone:String(product.whatsapp_number||"")});};
+      details.appendChild(add);
+      card.append(imageWrap,details);
+      card.dataset.search=(String(product.name||"")+" "+String(product.category||"")+" "+String(product.description||"")).toLowerCase();
+      card.dataset.category=String(product.category||"").trim();
+      card.dataset.price=String(numericPrice(product.price));
+      card.dataset.created=String(product.created_at||"");
+      cards.push(card);
       grid.appendChild(card);
     });
-    catalogue.appendChild(heading);
-    catalogue.appendChild(intro);
-    catalogue.appendChild(grid);
+
+    function applyFilters(){
+      const term=search.value.trim().toLowerCase();
+      const cat=categorySelect.value;
+      const mode=sort.value;
+      const sorted=cards.slice().sort(function(a,b){
+        if(mode==="price-low")return Number(a.dataset.price)-Number(b.dataset.price);
+        if(mode==="price-high")return Number(b.dataset.price)-Number(a.dataset.price);
+        if(mode==="name")return a.querySelector("[data-product-name]").textContent.localeCompare(b.querySelector("[data-product-name]").textContent);
+        return String(b.dataset.created).localeCompare(String(a.dataset.created));
+      });
+      sorted.forEach(function(card){grid.appendChild(card);});
+      let visible=0;
+      cards.forEach(function(card){
+        const show=(!term||card.dataset.search.includes(term))&&(!cat||card.dataset.category===cat);
+        card.hidden=!show;
+        if(show)visible++;
+      });
+      empty.style.display=visible?"none":"block";
+    }
+    search.addEventListener("input",applyFilters);
+    categorySelect.addEventListener("change",applyFilters);
+    sort.addEventListener("change",applyFilters);
+    catalogue.append(top,tools,grid,empty);
     wrapper.appendChild(catalogue);
   }
 
-  if(data.js){
-
-    const script =
-      document.createElement("script");
-
-    script.textContent =
-      data.js;
-
-    document.body.appendChild(
-      script
-    );
-
+  function getPhone(value){
+    let digits=String(value||"").replace(/\D/g,"");
+    if(digits.length===11&&digits.charAt(0)==="0")digits="234"+digits.slice(1);
+    return digits.length>=8&&digits.length<=15?digits:"";
   }
+  function getNumberFromLinks(){
+    const links=Array.from(content.querySelectorAll('a[href*="wa.me/"],a[href*="api.whatsapp.com"]'));
+    for(let i=0;i<links.length;i++){
+      const match=String(links[i].href||"").match(/(?:wa\.me\/|phone=)(\+?\d{8,15})/i);
+      if(match){const n=getPhone(match[1]);if(n)return n;}
+    }
+    return "";
+  }
+  const sitePhone=getNumberFromLinks();
+  const cartKey="otg-public-cart-v2-"+String(data.id||data.slug||"store");
+  let cart=[];
+  try{cart=JSON.parse(localStorage.getItem(cartKey)||"[]");if(!Array.isArray(cart))cart=[];}catch(e){cart=[];}
+  function saveCart(){try{localStorage.setItem(cartKey,JSON.stringify(cart));}catch(e){}}
+  function cartPrice(item){return Number(item.price)||0;}
+  function cartTotal(){return cart.reduce(function(sum,item){return sum+cartPrice(item)*Number(item.qty||1);},0);}
+  function cartCount(){return cart.reduce(function(sum,item){return sum+Number(item.qty||1);},0);}
+  function addToCart(item){
+    const existing=cart.find(function(entry){return entry.id===item.id&&entry.phone===item.phone;});
+    if(existing)existing.qty=Number(existing.qty||1)+1;
+    else cart.push({id:item.id,name:item.name,price:Number(item.price)||0,priceText:item.priceText||"",image:item.image||"",phone:getPhone(item.phone)||sitePhone,qty:1});
+    saveCart();
+    renderCart();
+    if(cartToggle)cartToggle.textContent="🛒 Cart ("+cartCount()+") · Added";
+    if(cartToggle)window.setTimeout(function(){if(cartToggle)cartToggle.textContent="🛒 Cart ("+cartCount()+")";},1200);
+  }
+  window.otgPublicAddToCart=addToCart;
+  const cartToggle=document.createElement("button");
+  cartToggle.type="button";
+  cartToggle.id="otgPublicCartToggle";
+  cartToggle.textContent="🛒 Cart ("+cartCount()+")";
+  cartToggle.style.cssText="position:fixed;right:16px;bottom:16px;z-index:2147483000;border:0;border-radius:999px;background:#f68b1e;color:#fff;padding:14px 18px;font-weight:900;font-size:14px;box-shadow:0 7px 24px rgba(0,0,0,.2);cursor:pointer";
+  const panel=document.createElement("aside");
+  panel.id="otgPublicCartPanel";
+  panel.setAttribute("aria-label","Shopping cart");
+  panel.style.cssText="position:fixed;z-index:2147483001;right:0;top:0;height:100dvh;width:min(420px,100vw);box-sizing:border-box;background:#fff;color:#202124;box-shadow:-8px 0 32px rgba(0,0,0,.2);transform:translateX(105%);transition:transform .22s;display:flex;flex-direction:column;font:14px Arial,Helvetica,sans-serif";
+  panel.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;padding:17px;border-bottom:1px solid #e5e7eb"><strong style="font-size:20px">Your shopping cart</strong><button type="button" id="otgPublicCartClose" aria-label="Close cart" style="border:0;background:#f3f4f6;border-radius:50%;width:34px;height:34px;font-size:18px;cursor:pointer">×</button></div><div id="otgPublicCartItems" style="overflow:auto;flex:1;padding:14px"></div><div style="padding:15px;border-top:1px solid #e5e7eb;display:grid;gap:10px"><label style="display:grid;gap:5px;font-size:12px;color:#6b7280">Your name (optional)<input id="otgPublicBuyerName" maxlength="80" placeholder="Enter your name" style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #d1d5db;border-radius:7px"></label><label style="display:grid;gap:5px;font-size:12px;color:#6b7280">Delivery address, size or colour (optional)<input id="otgPublicBuyerNote" maxlength="300" placeholder="Add order details" style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #d1d5db;border-radius:7px"></label><div id="otgPublicCartTotal" style="font-size:18px;font-weight:900">Total: ₦0</div><button id="otgPublicCheckout" type="button" style="border:0;border-radius:7px;padding:13px;background:#f68b1e;color:#fff;font-weight:900;font-size:14px;cursor:pointer">Continue to WhatsApp</button><small style="color:#6b7280;line-height:1.5">Your order request will be sent to the seller. Payment and delivery are confirmed directly with the seller.</small></div>';
+  document.body.append(cartToggle,panel);
+  cartToggle.onclick=function(){panel.style.transform="translateX(0)";};
+  panel.querySelector("#otgPublicCartClose").onclick=function(){panel.style.transform="translateX(105%)";};
+  panel.querySelector("#otgPublicCheckout").onclick=function(){
+    if(!cart.length){window.alert("Your cart is empty. Add a product first.");return;}
+    const phoneNumbers=Array.from(new Set(cart.map(function(item){return getPhone(item.phone)||sitePhone;}).filter(Boolean)));
+    if(!phoneNumbers.length){window.alert("The seller has not added a WhatsApp number yet. Please contact the seller using the contact details on this website.");return;}
+    if(phoneNumbers.length>1){window.alert("Your cart contains products with different seller WhatsApp numbers. Please remove items from other sellers and check out one seller at a time.");return;}
+    const phone=phoneNumbers[0];
+    const buyer=panel.querySelector("#otgPublicBuyerName").value.trim();
+    const note=panel.querySelector("#otgPublicBuyerNote").value.trim();
+    let message="Hello, I would like to place an order from "+String(data.title||"your store")+":\n\n";
+    cart.forEach(function(item){message+="• "+item.name+" × "+Number(item.qty||1)+" — "+(item.price?money(item.price*Number(item.qty||1)):(item.priceText||"Price on request"))+"\n";});
+    message+="\nEstimated total: "+money(cartTotal());
+    if(buyer)message+="\nCustomer: "+buyer;
+    if(note)message+="\nDelivery / size / colour: "+note;
+    message+="\n\nPlease confirm availability, delivery and payment details.";
+    window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(message),"_blank","noopener,noreferrer");
+  };
+  function money(value){return "₦"+Number(value||0).toLocaleString("en-NG",{maximumFractionDigits:2});}
+  function renderCart(){
+    cartToggle.textContent="🛒 Cart ("+cartCount()+")";
+    const itemsBox=panel.querySelector("#otgPublicCartItems");
+    itemsBox.replaceChildren();
+    if(!cart.length){
+      const empty=document.createElement("p");empty.textContent="Your cart is empty. Add your favourite items to get started.";empty.style.cssText="padding:18px;color:#6b7280;line-height:1.6";itemsBox.appendChild(empty);
+    }
+    cart.forEach(function(item,index){
+      const row=document.createElement("div");
+      row.style.cssText="display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #e5e7eb";
+      if(item.image){const img=document.createElement("img");img.src=item.image;img.alt=item.name;img.style.cssText="width:58px;height:58px;object-fit:contain;border:1px solid #f0f0f0;border-radius:6px";row.appendChild(img);}
+      else{const ph=document.createElement("span");ph.textContent="🛍️";ph.style.fontSize="28px";row.appendChild(ph);}
+      const info=document.createElement("div");
+      const name=document.createElement("strong");name.textContent=item.name;name.style.cssText="display:block;line-height:1.4;overflow-wrap:anywhere";
+      const price=document.createElement("span");price.textContent=item.price?money(item.price):item.priceText||"Price on request";price.style.cssText="display:block;margin:5px 0;font-weight:800";
+      const qty=document.createElement("div");qty.style.cssText="display:flex;align-items:center;gap:8px";
+      const minus=document.createElement("button");minus.type="button";minus.textContent="−";minus.setAttribute("aria-label","Decrease quantity");minus.style.cssText="width:28px;height:28px;border:1px solid #d1d5db;border-radius:5px;background:#fff;cursor:pointer";minus.onclick=function(){item.qty=Number(item.qty||1)-1;if(item.qty<=0)cart.splice(index,1);saveCart();renderCart();};
+      const count=document.createElement("span");count.textContent=String(item.qty||1);
+      const plus=document.createElement("button");plus.type="button";plus.textContent="+";plus.setAttribute("aria-label","Increase quantity");plus.style.cssText=minus.style.cssText;plus.onclick=function(){item.qty=Number(item.qty||1)+1;saveCart();renderCart();};
+      qty.append(minus,count,plus);info.append(name,price,qty);row.appendChild(info);
+      const remove=document.createElement("button");remove.type="button";remove.textContent="Remove";remove.style.cssText="border:0;background:transparent;color:#b42318;font-size:11px;font-weight:700;cursor:pointer";remove.onclick=function(){cart.splice(index,1);saveCart();renderCart();};row.appendChild(remove);
+      itemsBox.appendChild(row);
+    });
+    panel.querySelector("#otgPublicCartTotal").textContent="Estimated total: "+money(cartTotal());
+  }
+  renderCart();
 
+  // Also enable cart actions on product cards that were created by the AI template.
+  const generatedCards = content.querySelectorAll('[data-product-card],.product-card,.product-item,.shop-item,.product-grid article,.products-grid article,.product-list article');
+  generatedCards.forEach(function(card,index){
+    if(card.closest("#otgPublicShop")||card.querySelector(".otgAddToCart"))return;
+    const titleNode=card.querySelector("[data-product-name],h2,h3,h4,.product-title,.product-name,.title");
+    const priceNode=card.querySelector("[data-product-price],.price,.product-price,[class*=price]");
+    if(!titleNode||!priceNode)return;
+    const imageNode=card.querySelector("img");
+    const name=String(titleNode.textContent||"").trim().slice(0,140)||"Product";
+    const priceText=String(priceNode.textContent||"").trim();
+    const price=numericGeneratedPrice(priceText);
+    const image=imageNode?(imageNode.currentSrc||imageNode.src||""):"";
+    const add=document.createElement("button");add.type="button";add.className="otgAddToCart";add.textContent="🛒 Add to Cart";add.style.cssText="display:block;width:100%;margin:10px 0;padding:11px 12px;border:0;border-radius:6px;background:#f68b1e;color:#fff;font-weight:800;cursor:pointer";
+    add.onclick=function(){window.otgPublicAddToCart({id:"generated-"+index+"-"+name,name:name,price:price,priceText:priceText,image:image,phone:sitePhone});};
+    card.appendChild(add);
+  });
+  function numericGeneratedPrice(value){
+    const match=String(value||"").replace(/,/g,"").match(/(?:₦|NGN|N)?\s*(\d+(?:\.\d{1,2})?)/i);
+    return match?Number(match[1]):0;
+  }
+  if(!productList.length && !content.querySelector('[data-product-card],.product-card,.product-item,.shop-item,.product-grid article,.products-grid article,.product-list article')){
+    return;
+  }
+  if(!productList.length){
+    // Even AI-generated product cards get the cart toggle; remove the catalogue's hidden empty area.
+    cartToggle.style.display="block";
+  }
 }
 
 
