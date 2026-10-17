@@ -263,8 +263,8 @@ async function loadAcademyPanelData(key,content){
  const db=supabaseClient;
  let admin=window.otgAcademyIsAdmin===true;
  const authResult=await db.auth.getUser();
- const activeUser=authResult&&authResult.data?authResult.data.user:null;
- const userId=(activeUser&&activeUser.id)||window.otgAcademyUserId||null;
+ const activeUser=(authResult&&authResult.data&&authResult.data.user)||currentUser||null;
+ const userId=(activeUser&&activeUser.id)||window.otgAcademyUserId||(currentUser&&currentUser.id)||null;
  if(activeUser&&typeof window.otgInitCallNotifications==="function"){window.otgInitCallNotifications(activeUser);}
  if(activeUser){
   try{
