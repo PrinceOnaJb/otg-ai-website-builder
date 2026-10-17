@@ -1095,9 +1095,9 @@ async function loadAcademyPanelData(key,content){
     const showStudentReadOnlyQuestions=!admin&&timedDuration>0&&(timedAttemptSubmitted||existingSubmission);
     if(!admin&&!showStudentReadOnlyQuestions)return;
     const q=document.createElement("section");q.style.cssText="padding:14px;border:1px solid #dbe3ef;border-radius:12px;background:#f8fafc;color:#334155;line-height:1.65";
-    const questionTitle=document.createElement("h5");questionTitle.textContent=question.title;questionTitle.style.cssText="margin:0 0 8px;color:#172554;font-size:15px;line-height:1.5";
+    const questionTitle=document.createElement("h5");questionTitle.className="otg-assessment-question-prompt";questionTitle.textContent=question.title;questionTitle.style.cssText="margin:0 0 8px;color:#172554;font-size:15px;line-height:1.5";
     q.appendChild(questionTitle);
-    question.details.forEach(detail=>{const p=document.createElement("p");p.textContent=detail;p.style.cssText="margin:6px 0 0;line-height:1.7;white-space:pre-wrap";q.appendChild(p);});
+    question.details.forEach(detail=>{const p=document.createElement("p");p.className="otg-assessment-question-prompt";p.textContent=detail;p.style.cssText="margin:6px 0 0;line-height:1.7;white-space:pre-wrap";q.appendChild(p);});
     instructions.appendChild(q);
    });
    if(!instructionLines.length){const p=document.createElement("p");p.textContent="No additional instructions provided.";instructions.appendChild(p);}
@@ -1119,6 +1119,7 @@ async function loadAcademyPanelData(key,content){
     }
     // Keep an on-device draft so answers survive Android gallery/file-picker returns.
     const draftKey="otg-assignment-draft-"+String(userId||"guest")+"-"+String(x.id);
+    const saveAssignmentDraft=()=>{try{const values=[...form.querySelectorAll('textarea[name="answer"]')].map(field=>field.value);localStorage.setItem(draftKey,JSON.stringify({answers:values,savedAt:new Date().toISOString()}));}catch(_draftError){}};
     let draftAnswers=[];
     try{const cachedDraft=JSON.parse(localStorage.getItem(draftKey)||"null");if(Array.isArray(cachedDraft))draftAnswers=cachedDraft;else if(cachedDraft&&Array.isArray(cachedDraft.answers))draftAnswers=cachedDraft.answers;}catch(_draftError){}
     const answerCount=questionBlocks.length||1;
@@ -1129,14 +1130,14 @@ async function loadAcademyPanelData(key,content){
       if(timedDuration>0&&(timedAttemptSubmitted||existingSubmission))continue;
       questionCard=document.createElement("section");
       questionCard.style.cssText="display:grid;gap:10px;padding:16px;border:1px solid #cbd5e1;border-radius:12px;background:#fff;box-shadow:0 2px 7px rgba(15,23,42,.04)";
-      const questionTitle=document.createElement("h5");questionTitle.textContent=question.title;questionTitle.style.cssText="margin:0;color:#172554;font-size:15px;line-height:1.55";
+      const questionTitle=document.createElement("h5");questionTitle.className="otg-assessment-question-prompt";questionTitle.textContent=question.title;questionTitle.style.cssText="margin:0;color:#172554;font-size:15px;line-height:1.55";
       questionCard.appendChild(questionTitle);
-      question.details.forEach(detail=>{const p=document.createElement("p");p.textContent=detail;p.style.cssText="margin:0;color:#334155;line-height:1.7;white-space:pre-wrap";questionCard.appendChild(p);});
+      question.details.forEach(detail=>{const p=document.createElement("p");p.className="otg-assessment-question-prompt";p.textContent=detail;p.style.cssText="margin:0;color:#334155;line-height:1.7;white-space:pre-wrap";questionCard.appendChild(p);});
      }
      const label=document.createElement("label");label.style.cssText="display:grid;gap:7px;font-size:13px;font-weight:700;color:#1e3a8a";
      label.textContent=questionBlocks.length?"Select your answer for Question "+(questionBlocks[i]&&questionBlocks[i].displayNumber||i+1):"Your answer";label.style.minWidth="0";label.style.width="100%";label.style.boxSizing="border-box";
      const input=document.createElement("textarea");input.name="answer";input.required=false;input.maxLength=20000;input.placeholder=questionBlocks.length?"Write your answer to Question "+(questionBlocks[i]&&questionBlocks[i].displayNumber||i+1)+" here...":"Write your answer here...";input.value=typeof draftAnswers[i]==="string"?draftAnswers[i]:(questionBlocks.length?(savedAnswers[i]||""):(savedText&&!/^Answer \d+:/.test(savedText)?savedText:""));
-     input.addEventListener("input",()=>{try{localStorage.setItem(draftKey,JSON.stringify([...form.querySelectorAll('textarea[name="answer"]')].map(field=>field.value)));}catch(_draftError){}});
+     input.addEventListener("input",saveAssignmentDraft);
      input.style.cssText="width:100%;box-sizing:border-box;min-height:110px;padding:12px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:#0f172a;font:inherit;line-height:1.6;resize:vertical";
      const choiceDetails=questionBlocks[i]&&questionBlocks[i].details||[];const choiceOptions=choiceDetails.map(detail=>detail.match(/^([A-E])[.)]\s*(.*)$/i)).filter(Boolean);const isObjectiveChoice=choiceOptions.length>=2&&choiceOptions.length===choiceDetails.length;
      if(isObjectiveChoice){input.style.display="none";input.setAttribute("aria-label","Selected option for Question "+(questionBlocks[i].displayNumber||i+1));const optionsWrap=document.createElement("div");optionsWrap.style.cssText="display:grid;gap:8px;margin-top:4px;width:100%;min-width:0;box-sizing:border-box";choiceOptions.forEach(option=>{const optionLabel=document.createElement("label");optionLabel.style.cssText="display:flex;align-items:flex-start;gap:9px;padding:10px;width:100%;min-width:0;box-sizing:border-box;border:1px solid #dbeafe;border-radius:9px;background:#fff;color:#334155;font-size:13px;font-weight:500;cursor:pointer";const radio=document.createElement("input");radio.type="radio";radio.name="otg_choice_"+x.id+"_"+(questionBlocks[i].number||i+1);radio.value=option[1].toUpperCase();const savedChoice=String(input.value||"").trim();radio.checked=savedChoice.toUpperCase()===radio.value||savedChoice.toLowerCase()===String(option[2]||"").trim().toLowerCase();if(radio.checked)input.value=radio.value;radio.style.cssText="margin-top:3px;flex-shrink:0";radio.addEventListener("change",()=>{input.value=radio.value;input.dispatchEvent(new Event("input",{bubbles:true}));});const optionText=document.createElement("span");optionText.style.cssText="display:block;flex:1;min-width:0;overflow-wrap:anywhere;word-break:normal;line-height:1.5";optionText.textContent=radio.value;optionLabel.append(radio,optionText);optionsWrap.appendChild(optionLabel);});label.append(input,optionsWrap);}else label.appendChild(input);if(questionCard){questionCard.appendChild(label);form.appendChild(questionCard);}else form.appendChild(label);
@@ -9468,6 +9469,43 @@ async function otgShareAcademyLink(){
 }
 @media (prefers-reduced-motion: reduce) { #academyDashboard * { scroll-behavior: auto !important; } }
 </style>
+
+
+<style id="otg-assessment-question-copy-deterrence">
+.otg-assessment-question-prompt {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none;
+}
+</style>
+<script id="otg-assessment-draft-and-question-protection">
+(function(){
+  function isQuestionPrompt(target){
+    return !!(target && target.closest && target.closest(".otg-assessment-question-prompt"));
+  }
+  document.addEventListener("copy",function(event){
+    if(isQuestionPrompt(event.target)||(window.getSelection&&isQuestionPrompt(window.getSelection().anchorNode&&window.getSelection().anchorNode.parentElement))){event.preventDefault();}
+  },true);
+  document.addEventListener("contextmenu",function(event){if(isQuestionPrompt(event.target))event.preventDefault();},true);
+  document.addEventListener("dragstart",function(event){if(isQuestionPrompt(event.target))event.preventDefault();},true);
+  document.addEventListener("keydown",function(event){
+    if((event.ctrlKey||event.metaKey)&&["c","x"].includes(String(event.key||"").toLowerCase())&&
+       (isQuestionPrompt(event.target)||(window.getSelection&&isQuestionPrompt(window.getSelection().anchorNode&&window.getSelection().anchorNode.parentElement))))event.preventDefault();
+  },true);
+  function saveVisibleAssignmentDrafts(){
+    document.querySelectorAll(".otgSubmitForm").forEach(function(form){
+      try{
+        var id=form.dataset.id;if(!id)return;var currentKey=null;
+        for(var i=0;i<localStorage.length;i++){var key=localStorage.key(i);if(key&&key.indexOf("otg-assignment-draft-")===0&&key.endsWith("-"+id)){currentKey=key;break;}}
+        if(currentKey){var answers=Array.from(form.querySelectorAll('textarea[name="answer"]')).map(function(field){return field.value;});localStorage.setItem(currentKey,JSON.stringify({answers:answers,savedAt:new Date().toISOString()}));}
+      }catch(_error){}
+    });
+  }
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")saveVisibleAssignmentDrafts();});
+  window.addEventListener("pagehide",saveVisibleAssignmentDrafts);
+  window.addEventListener("beforeunload",saveVisibleAssignmentDrafts);
+})();
+</script>
 
 </body>
 </html>
