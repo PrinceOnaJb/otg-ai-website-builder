@@ -3200,6 +3200,84 @@ html{scroll-behavior:auto}
 
 </section>
 
+<section
+  class="section"
+  id="projects"
+>
+  <style id="otg-project-workspace-styles">
+    #projects{position:relative}
+    #projects .section-heading{max-width:1120px;margin:0 auto 22px;text-align:left;padding:0 0 18px;border-bottom:1px solid #e5eadf}
+    #projects .section-heading h2{color:#153f2b;font-size:clamp(26px,3.5vw,36px);letter-spacing:-.6px;margin:0 0 8px;font-weight:850}
+    #projects .section-heading p{color:#627166;font-size:14px;line-height:1.7;margin:0;max-width:680px}
+    #projects .otg-project-intro{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:0 0 20px;padding:18px 20px;border:1px solid #dce7d8;border-radius:16px;background:linear-gradient(115deg,#f3f8f1,#fffdf5);box-shadow:0 5px 18px rgba(22,65,42,.045)}
+    #projects .otg-project-intro-copy{min-width:0;flex:1}
+    #projects .otg-project-eyebrow{display:block;color:#8a6a18;font-size:10px;font-weight:900;letter-spacing:1.6px;text-transform:uppercase;margin-bottom:6px}
+    #projects .otg-project-intro strong{display:block;color:#1b4b31;font-size:16px;line-height:1.4;margin-bottom:4px}
+    #projects .otg-project-intro p{margin:0;color:#5d6e62;font-size:13px;line-height:1.65}
+    #projects .otg-project-mark{display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:14px;background:#e4eedf;color:#205b3c;border:1px solid #d4e2cf}
+    #projects .projects-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:18px}
+    #projects .project-card{position:relative;display:flex;flex-direction:column;min-width:0;min-height:215px;padding:22px;border:1px solid #e0e7df;border-radius:17px;background:linear-gradient(180deg,#fff 0%,#fdfefb 100%);box-shadow:0 5px 18px rgba(21,63,43,.045);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;overflow:hidden}
+    #projects .project-card:before{content:"";position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,var(--project-accent,#1d623d),var(--project-highlight,#d9b957))}
+    #projects .project-card:nth-child(6n+1){--project-accent:#1d623d;--project-highlight:#d9b957;--project-wash:#f3f8f1;--project-border:#dce8d8;--project-title:#17452d;background:linear-gradient(155deg,#fff 0%,var(--project-wash) 100%);border-color:var(--project-border)}
+    #projects .project-card:nth-child(6n+2){--project-accent:#2458a6;--project-highlight:#7bb8f2;--project-wash:#f0f6ff;--project-border:#d5e4fa;--project-title:#183d75;background:linear-gradient(155deg,#fff 0%,var(--project-wash) 100%);border-color:var(--project-border)}
+    #projects .project-card:nth-child(6n+3){--project-accent:#7543a5;--project-highlight:#d3a5f1;--project-wash:#f8f2ff;--project-border:#e7d8f5;--project-title:#542d7b;background:linear-gradient(155deg,#fff 0%,var(--project-wash) 100%);border-color:var(--project-border)}
+    #projects .project-card:nth-child(6n+4){--project-accent:#087f8c;--project-highlight:#83d8d2;--project-wash:#effbfa;--project-border:#cdebe8;--project-title:#075e66;background:linear-gradient(155deg,#fff 0%,var(--project-wash) 100%);border-color:var(--project-border)}
+    #projects .project-card:nth-child(6n+5){--project-accent:#b34d68;--project-highlight:#f4b2bd;--project-wash:#fff3f5;--project-border:#f2d7df;--project-title:#85344a;background:linear-gradient(155deg,#fff 0%,var(--project-wash) 100%);border-color:var(--project-border)}
+    #projects .project-card:nth-child(6n+6){--project-accent:#a96813;--project-highlight:#f2d27d;--project-wash:#fff9eb;--project-border:#f0e2bd;--project-title:#80500f;background:linear-gradient(155deg,#fff 0%,var(--project-wash) 100%);border-color:var(--project-border)}
+    #projects .project-card:hover{transform:translateY(-3px);border-color:var(--project-highlight,#c9d9c7);box-shadow:0 14px 30px rgba(21,63,43,.10)}
+    #projects .project-card h3{color:var(--project-title,#183b29);font-size:18px;line-height:1.45;margin:0 0 8px;font-weight:800;overflow-wrap:anywhere}
+    #projects .project-meta{color:#778579;font-size:12px;margin-bottom:17px}
+    #projects .status{letter-spacing:.6px;padding:6px 10px;border:1px solid transparent}
+    #projects .status.published{background:#e6f5e9;color:#17613b;border-color:#c9e7d0}
+    #projects .status.draft{background:#f3f4f0;color:#59655d;border-color:#e0e4dc}
+    #projects .project-actions{margin-top:auto;padding-top:14px;border-top:1px solid #edf1e9;gap:8px}
+    #projects .project-actions button{min-height:36px;padding:9px 12px;border:1px solid #dfe6dd;border-radius:9px;background:#f7f9f5;color:#33473a;font-size:12px;font-weight:800;transition:background .15s ease,border-color .15s ease}
+    #projects .project-actions button:hover{background:#edf4e9;border-color:#c4d7bf}
+    #projects .project-actions button.primary{background:#195a37;color:#fff;border-color:#195a37}
+    #projects .project-actions button.primary:hover{background:#12462a}
+    #projects .project-actions button.danger{background:#fff7f6;color:#a52b2b;border-color:#f0d4d1}
+    #projects .project-actions button.danger:hover{background:#ffedeb;border-color:#e8b8b4}
+    #projects .empty-state{grid-column:1/-1;border:1px dashed #cbd9c8;background:linear-gradient(135deg,#fbfdf9,#fff);border-radius:17px;padding:42px 22px}
+    @media(max-width:600px){#projects .section-heading{padding-bottom:14px}#projects .otg-project-intro{padding:16px;border-radius:13px}#projects .project-card{padding:19px;min-height:0}#projects .project-actions button{flex:1 1 auto}}
+    @media(prefers-reduced-motion:reduce){#projects .project-card,#projects .project-actions button{transition:none}#projects .project-card:hover{transform:none}}
+  </style>
+
+  <div class="section-heading">
+
+    <h2>
+      Published Websites &amp; My Projects
+    </h2>
+
+    <p>
+      Your published websites and saved drafts, organised in one place. Open live links, copy them to share, or continue editing a draft.
+    </p>
+
+  </div>
+
+  <div class="otg-project-intro">
+    <div class="otg-project-intro-copy">
+      <span class="otg-project-eyebrow">OTG GRAPHIC ACADEMY · PROJECT WORKSPACE</span>
+      <strong>Your website portfolio, organised.</strong>
+      <p>Continue editing a draft, publish a finished website, or share your live work with clients and collaborators.</p>
+    </div>
+    <div class="otg-project-mark" aria-hidden="true">⌘</div>
+  </div>
+
+  <div
+    id="projectsContainer"
+    class="projects-grid"
+  >
+
+    <div class="empty-state">
+      Loading your projects...
+    </div>
+
+  </div>
+
+</section>
+
+
+
 
 
 
@@ -3520,6 +3598,15 @@ html{scroll-behavior:auto}
         </button>
 
         <button
+          type="button"
+          class="preview"
+          onclick="openResponsivePreview()"
+          style="background:#172b52;color:#fff;"
+        >
+          Device Preview
+        </button>
+
+        <button
           class="save"
           onclick="openSaveModal()"
         >
@@ -3540,81 +3627,7 @@ html{scroll-behavior:auto}
 </section>
 
 
-<section
-  class="section"
-  id="projects"
->
-  <style id="otg-project-workspace-styles">
-    #projects{position:relative}
-    #projects .section-heading{max-width:1120px;margin:0 auto 22px;text-align:left;padding:0 0 18px;border-bottom:1px solid #e5eadf}
-    #projects .section-heading h2{color:#153f2b;font-size:clamp(26px,3.5vw,36px);letter-spacing:-.6px;margin:0 0 8px;font-weight:850}
-    #projects .section-heading p{color:#627166;font-size:14px;line-height:1.7;margin:0;max-width:680px}
-    #projects .otg-project-intro{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:0 0 20px;padding:18px 20px;border:1px solid #dce7d8;border-radius:16px;background:linear-gradient(115deg,#f3f8f1,#fffdf5);box-shadow:0 5px 18px rgba(22,65,42,.045)}
-    #projects .otg-project-intro-copy{min-width:0;flex:1}
-    #projects .otg-project-eyebrow{display:block;color:#8a6a18;font-size:10px;font-weight:900;letter-spacing:1.6px;text-transform:uppercase;margin-bottom:6px}
-    #projects .otg-project-intro strong{display:block;color:#1b4b31;font-size:16px;line-height:1.4;margin-bottom:4px}
-    #projects .otg-project-intro p{margin:0;color:#5d6e62;font-size:13px;line-height:1.65}
-    #projects .otg-project-mark{display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:14px;background:#e4eedf;color:#205b3c;border:1px solid #d4e2cf}
-    #projects .projects-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:18px}
-    #projects .project-card{position:relative;display:flex;flex-direction:column;min-width:0;min-height:215px;padding:22px;border:1px solid #e0e7df;border-radius:17px;background:linear-gradient(180deg,#fff 0%,#fdfefb 100%);box-shadow:0 5px 18px rgba(21,63,43,.045);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;overflow:hidden}
-    #projects .project-card:before{content:"";position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,var(--project-accent,#1d623d),var(--project-highlight,#d9b957))}
-    #projects .project-card:nth-child(6n+1){--project-accent:#1d623d;--project-highlight:#d9b957;--project-wash:#f3f8f1;--project-border:#dce8d8;--project-title:#17452d;background:linear-gradient(155deg,#fff 0%,var(--project-wash) 100%);border-color:var(--project-border)}
-    #projects .project-card:nth-child(6n+2){--project-accent:#2458a6;--project-highlight:#7bb8f2;--project-wash:#f0f6ff;--project-border:#d5e4fa;--project-title:#183d75;background:linear-gradient(155deg,#fff 0%,var(--project-wash) 100%);border-color:var(--project-border)}
-    #projects .project-card:nth-child(6n+3){--project-accent:#7543a5;--project-highlight:#d3a5f1;--project-wash:#f8f2ff;--project-border:#e7d8f5;--project-title:#542d7b;background:linear-gradient(155deg,#fff 0%,var(--project-wash) 100%);border-color:var(--project-border)}
-    #projects .project-card:nth-child(6n+4){--project-accent:#087f8c;--project-highlight:#83d8d2;--project-wash:#effbfa;--project-border:#cdebe8;--project-title:#075e66;background:linear-gradient(155deg,#fff 0%,var(--project-wash) 100%);border-color:var(--project-border)}
-    #projects .project-card:nth-child(6n+5){--project-accent:#b34d68;--project-highlight:#f4b2bd;--project-wash:#fff3f5;--project-border:#f2d7df;--project-title:#85344a;background:linear-gradient(155deg,#fff 0%,var(--project-wash) 100%);border-color:var(--project-border)}
-    #projects .project-card:nth-child(6n+6){--project-accent:#a96813;--project-highlight:#f2d27d;--project-wash:#fff9eb;--project-border:#f0e2bd;--project-title:#80500f;background:linear-gradient(155deg,#fff 0%,var(--project-wash) 100%);border-color:var(--project-border)}
-    #projects .project-card:hover{transform:translateY(-3px);border-color:var(--project-highlight,#c9d9c7);box-shadow:0 14px 30px rgba(21,63,43,.10)}
-    #projects .project-card h3{color:var(--project-title,#183b29);font-size:18px;line-height:1.45;margin:0 0 8px;font-weight:800;overflow-wrap:anywhere}
-    #projects .project-meta{color:#778579;font-size:12px;margin-bottom:17px}
-    #projects .status{letter-spacing:.6px;padding:6px 10px;border:1px solid transparent}
-    #projects .status.published{background:#e6f5e9;color:#17613b;border-color:#c9e7d0}
-    #projects .status.draft{background:#f3f4f0;color:#59655d;border-color:#e0e4dc}
-    #projects .project-actions{margin-top:auto;padding-top:14px;border-top:1px solid #edf1e9;gap:8px}
-    #projects .project-actions button{min-height:36px;padding:9px 12px;border:1px solid #dfe6dd;border-radius:9px;background:#f7f9f5;color:#33473a;font-size:12px;font-weight:800;transition:background .15s ease,border-color .15s ease}
-    #projects .project-actions button:hover{background:#edf4e9;border-color:#c4d7bf}
-    #projects .project-actions button.primary{background:#195a37;color:#fff;border-color:#195a37}
-    #projects .project-actions button.primary:hover{background:#12462a}
-    #projects .project-actions button.danger{background:#fff7f6;color:#a52b2b;border-color:#f0d4d1}
-    #projects .project-actions button.danger:hover{background:#ffedeb;border-color:#e8b8b4}
-    #projects .empty-state{grid-column:1/-1;border:1px dashed #cbd9c8;background:linear-gradient(135deg,#fbfdf9,#fff);border-radius:17px;padding:42px 22px}
-    @media(max-width:600px){#projects .section-heading{padding-bottom:14px}#projects .otg-project-intro{padding:16px;border-radius:13px}#projects .project-card{padding:19px;min-height:0}#projects .project-actions button{flex:1 1 auto}}
-    @media(prefers-reduced-motion:reduce){#projects .project-card,#projects .project-actions button{transition:none}#projects .project-card:hover{transform:none}}
-  </style>
 
-  <div class="section-heading">
-
-    <h2>
-      My Projects
-    </h2>
-
-    <p>
-      Your professional website workspace — manage saved drafts, published websites and project links in one place.
-    </p>
-
-  </div>
-
-  <div class="otg-project-intro">
-    <div class="otg-project-intro-copy">
-      <span class="otg-project-eyebrow">OTG GRAPHIC ACADEMY · PROJECT WORKSPACE</span>
-      <strong>Your website portfolio, organised.</strong>
-      <p>Continue editing a draft, publish a finished website, or share your live work with clients and collaborators.</p>
-    </div>
-    <div class="otg-project-mark" aria-hidden="true">⌘</div>
-  </div>
-
-  <div
-    id="projectsContainer"
-    class="projects-grid"
-  >
-
-    <div class="empty-state">
-      Loading your projects...
-    </div>
-
-  </div>
-
-</section>
 
 
 
@@ -6245,6 +6258,85 @@ async function previewWebsite(){
 
 }
 
+function openResponsivePreview(){
+  saveEditorChanges();
+  if(!website.html || !website.html.trim()){
+    showToast("Please generate or load a website before opening Device Preview.");
+    return;
+  }
+  const existing=document.getElementById("otgResponsivePreviewModal");
+  if(existing)existing.remove();
+  const overlay=document.createElement("div");
+  overlay.id="otgResponsivePreviewModal";
+  overlay.setAttribute("role","dialog");
+  overlay.setAttribute("aria-modal","true");
+  overlay.setAttribute("aria-label","Responsive website preview");
+  overlay.style.cssText="position:fixed;inset:0;z-index:2147482000;display:flex;flex-direction:column;background:rgba(15,23,42,.78);padding:clamp(8px,2vw,22px);box-sizing:border-box;font-family:Arial,sans-serif";
+  const panel=document.createElement("section");
+  panel.style.cssText="display:flex;flex-direction:column;min-height:0;width:100%;height:100%;margin:auto;max-width:1600px;border-radius:16px;overflow:hidden;background:#f1f5f9;box-shadow:0 24px 80px rgba(0,0,0,.35)";
+  const top=document.createElement("header");
+  top.style.cssText="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 16px;background:#fff;border-bottom:1px solid #dbe3ee";
+  const title=document.createElement("strong");
+  title.textContent="Preview your website on different screens";
+  title.style.cssText="color:#172b52;font-size:14px;line-height:1.4";
+  const close=document.createElement("button");
+  close.type="button";close.textContent="✕ Close";
+  close.style.cssText="padding:9px 12px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:#334155;font-weight:800;cursor:pointer";
+  const controls=document.createElement("div");
+  controls.style.cssText="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:12px;background:#fff;border-bottom:1px solid #dbe3ee";
+  const stage=document.createElement("div");
+  stage.style.cssText="display:flex;justify-content:center;align-items:flex-start;overflow:auto;min-height:0;flex:1;padding:14px;background:#e2e8f0";
+  const viewport=document.createElement("div");
+  viewport.style.cssText="width:100%;height:100%;min-height:420px;max-width:1440px;flex:0 0 auto;background:#fff;border:1px solid #cbd5e1;border-radius:10px;overflow:hidden;box-shadow:0 8px 28px rgba(15,23,42,.12);transition:width .18s ease";
+  const frame=document.createElement("iframe");
+  frame.title="Responsive website preview";
+  frame.style.cssText="display:block;width:100%;height:100%;min-height:420px;border:0;background:#fff";
+  frame.setAttribute("sandbox","allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox");
+  frame.srcdoc=buildPreviewDocument();
+  viewport.appendChild(frame);stage.appendChild(viewport);
+  const modes=[
+    {id:"mobile",label:"📱 Mobile",width:390},
+    {id:"tablet",label:"▣ Tablet",width:768},
+    {id:"desktop",label:"🖥 Desktop",width:0}
+  ];
+  const modeButtons=[];
+  function setMode(mode){
+    const chosen=modes.find(item=>item.id===mode)||modes[2];
+    viewport.style.width=chosen.width?chosen.width+"px":"100%";
+    viewport.style.maxWidth=chosen.width?"none":"1440px";
+    viewport.style.height=chosen.width?"min(780px, 100%)":"100%";
+    viewport.style.minHeight=chosen.width?"620px":"420px";
+    frame.style.minHeight=chosen.width?"620px":"420px";
+    modeButtons.forEach(item=>{
+      const active=item.dataset.mode===chosen.id;
+      item.style.background=active?"#1d4ed8":"#fff";
+      item.style.color=active?"#fff":"#334155";
+      item.style.borderColor=active?"#1d4ed8":"#cbd5e1";
+      item.setAttribute("aria-pressed",active?"true":"false");
+    });
+    viewport.style.margin=chosen.width?"0 auto":"0";
+  }
+  modes.forEach(mode=>{
+    const button=document.createElement("button");
+    button.type="button";button.dataset.mode=mode.id;button.textContent=mode.label;
+    button.style.cssText="padding:9px 13px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:#334155;font-size:12px;font-weight:800;cursor:pointer";
+    button.addEventListener("click",()=>setMode(mode.id));
+    modeButtons.push(button);controls.appendChild(button);
+  });
+  const note=document.createElement("span");
+  note.textContent="Check spacing, text and navigation at each width.";
+  note.style.cssText="color:#64748b;font-size:11px;text-align:center";
+  controls.appendChild(note);
+  top.append(title,close);panel.append(top,controls,stage);overlay.appendChild(panel);document.body.appendChild(overlay);
+  function closeModal(){overlay.remove();document.removeEventListener("keydown",onKey);}
+  function onKey(event){if(event.key==="Escape")closeModal();}
+  close.addEventListener("click",closeModal);
+  overlay.addEventListener("click",event=>{if(event.target===overlay)closeModal();});
+  document.addEventListener("keydown",onKey);
+  setMode("desktop");
+}
+
+
 async function saveProject(){
 
   saveEditorChanges();
@@ -8350,9 +8442,9 @@ function ensureAdminPanel(){
     const app = $("app");
     const academyDashboard = $("academyDashboard");
     if(academyDashboard && academyDashboard.parentElement === app){
-      academyDashboard.insertAdjacentElement("afterend", panel);
+      academyDashboard.insertAdjacentElement("beforebegin", panel);
     }else{
-      app.appendChild(panel);
+      app.insertBefore(panel, app.firstChild);
     }
     $("otgRefreshApprovals").addEventListener("click", loadAdminApprovals);
   }
