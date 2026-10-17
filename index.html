@@ -9250,6 +9250,20 @@ supabaseClient
           note.textContent="The call-centre script did not load. Refresh the Student Hub and try again.";
           note.style.background="#fff7ed";note.style.color="#9a3412";
         }
+      }else if(typeof loadAcademyPanelData==="function"){
+        // If normal panel navigation fails, still run the real data loader instead of
+        // leaving students/admins on the static empty fallback card.
+        note.textContent="Loading your existing Student Hub data…";
+        loadAcademyPanelData(key,content).then(function(){
+          if(note.isConnected)note.remove();
+        }).catch(function(error){
+          note.textContent="Student Hub data could not load: "+(error&&error.message?error.message:"Please try again.");
+          note.style.background="#fff7ed";note.style.color="#9a3412";
+          console.error("OTG fallback data loading failed:",error);
+        });
+      }else{
+        note.textContent="The Student Hub data loader did not start. Please refresh and try again.";
+        note.style.background="#fff7ed";note.style.color="#9a3412";
       }
     }
   }
