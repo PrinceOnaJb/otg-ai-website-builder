@@ -1285,11 +1285,41 @@ async function loadAcademyPanelData(key,content){
    });
   }
  }else if(key==="websites"||key==="find"){
-  const note=document.createElement("p");note.textContent=key==="find"?"Search your saved website projects. Only your own projects are shown.":"Your saved websites and publishing status.";note.style.cssText="margin:8px 0 14px;color:#64748b";area.appendChild(note);
+  const note=document.createElement("p");note.textContent=key==="find"?"Search your saved website projects. Only your own projects are shown.":"Manage your websites, open published pages, and copy shareable links.";note.style.cssText="margin:8px 0 16px;color:#64748b;line-height:1.7";area.appendChild(note);
   const {data,error}=userId?await db.from("projects").select("id,title,slug,is_published,updated_at").eq("user_id",userId).order("updated_at",{ascending:false}):{data:null,error:{message:"Please sign in again."}};
   if(error){const p=document.createElement("p");p.textContent="Websites could not load: "+error.message;area.appendChild(p);}
-  else if(!data||!data.length){const p=document.createElement("p");p.textContent="No saved websites yet. Create and save a project in the Builder first.";area.appendChild(p);}
-  else{const search=document.createElement("input");search.type="search";search.placeholder="Search website projects";search.style.cssText="width:100%;max-width:520px;padding:11px;margin-bottom:14px;border:1px solid #cbd5e1;border-radius:9px";if(key==="find")area.appendChild(search);const list=document.createElement("div");list.style.cssText="display:grid;gap:10px";const render=()=>{list.replaceChildren();const rows=data.filter(x=>String(x.title||"").toLowerCase().includes(search.value.toLowerCase())||String(x.slug||"").toLowerCase().includes(search.value.toLowerCase()));if(!rows.length){const p=document.createElement("p");p.textContent="No matching websites found.";list.appendChild(p);}rows.forEach(x=>{const c=document.createElement("article");c.style.cssText="padding:14px 16px;border:1px solid #e2e8f0;border-radius:11px;background:#fff";const h=document.createElement("h4");h.textContent=x.title||"Untitled website";h.style.color="#172554";const st=document.createElement("p");st.textContent=x.is_published?"Published":"Saved draft";st.style.cssText="margin:4px 0;color:"+(x.is_published?"#15803d":"#64748b")+";font-size:13px;font-weight:700";const dt=document.createElement("small");dt.textContent="Last updated: "+new Date(x.updated_at).toLocaleString();dt.style.color="#64748b";c.append(h,st,dt);list.appendChild(c);});};search.addEventListener("input",render);render();area.appendChild(list);}
+  else if(!data||!data.length){const empty=document.createElement("div");empty.style.cssText="padding:24px;border:1px dashed #cbd5e1;border-radius:14px;background:#f8fafc;color:#64748b;line-height:1.7";empty.textContent="No saved websites yet. Create and save a project in the Builder first, and it will appear here.";area.appendChild(empty);}
+  else{
+   const search=document.createElement("input");search.type="search";search.placeholder="Search by website name or slug…";search.setAttribute("aria-label","Search website projects");search.style.cssText="display:block;width:100%;max-width:520px;box-sizing:border-box;padding:12px 14px;margin:0 0 18px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;font:inherit";area.appendChild(search);
+   const list=document.createElement("div");list.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:16px;align-items:stretch";area.appendChild(list);
+   const render=()=>{
+    list.replaceChildren();
+    const term=search.value.trim().toLowerCase();
+    const rows=data.filter(x=>String(x.title||"").toLowerCase().includes(term)||String(x.slug||"").toLowerCase().includes(term));
+    if(!rows.length){const p=document.createElement("p");p.textContent="No matching websites found.";p.style.cssText="color:#64748b;padding:14px 0";list.appendChild(p);return;}
+    rows.forEach(x=>{
+     const published=x.is_published===true;
+     const c=document.createElement("article");c.style.cssText="display:flex;flex-direction:column;min-width:0;gap:13px;padding:18px;border:1px solid #e2e8f0;border-radius:16px;background:linear-gradient(180deg,#fff 0%,#fbfdff 100%);box-shadow:0 5px 18px rgba(15,23,42,.045)";
+     const top=document.createElement("div");top.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap";
+     const icon=document.createElement("span");icon.textContent="🌐";icon.setAttribute("aria-hidden","true");icon.style.cssText="display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:#eff6ff;font-size:21px";
+     const badge=document.createElement("span");badge.textContent=published?"● Published":"● Saved draft";badge.style.cssText="display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;background:"+(published?"#dcfce7":"#f1f5f9")+";color:"+(published?"#166534":"#475569")+";font-size:11px;font-weight:800;letter-spacing:.2px";
+     top.append(icon,badge);
+     const h=document.createElement("h3");h.textContent=x.title||"Untitled website";h.style.cssText="margin:0;color:#172554;font-size:18px;line-height:1.4;overflow-wrap:anywhere";
+     const slug=document.createElement("p");slug.textContent=x.slug?"Link ID: "+x.slug:"No website link ID yet";slug.style.cssText="margin:-6px 0 0;color:#64748b;font-size:12px;overflow-wrap:anywhere";
+     const dt=document.createElement("p");dt.textContent="Last updated · "+(x.updated_at&&!Number.isNaN(Date.parse(x.updated_at))?new Date(x.updated_at).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"}):"Date unavailable");dt.style.cssText="margin:0;color:#64748b;font-size:12px";
+     const actions=document.createElement("div");actions.style.cssText="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:4px";
+     const makeAction=(label,primary,fn)=>{const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="flex:1 1 125px;min-height:40px;padding:10px 12px;border:1px solid "+(primary?"#1d4ed8":"#cbd5e1")+";border-radius:9px;background:"+(primary?"#1d4ed8":"#fff")+";color:"+(primary?"#fff":"#1e3a8a")+";font-size:12px;font-weight:800;cursor:pointer";b.addEventListener("click",fn);return b;};
+     if(published&&x.slug){
+      const open=makeAction("Open website ↗",true,()=>{window.open(location.origin+location.pathname+"?site="+encodeURIComponent(x.slug),"_blank","noopener,noreferrer");});
+      const copy=makeAction("Copy link",false,async()=>{const url=location.origin+location.pathname+"?site="+encodeURIComponent(x.slug);try{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(url);copy.textContent="Link copied ✓";}else{window.prompt("Copy your website link:",url);}}catch(e){window.prompt("Copy your website link:",url);}});actions.append(open,copy);
+     }else{
+      const draft=makeAction("Continue in Builder",true,()=>{const target=document.querySelector("#dashboard")||document.querySelector("#generator");if(target){target.scrollIntoView({behavior:"smooth",block:"start"});}else{location.hash="dashboard";}});actions.appendChild(draft);
+     }
+     c.append(top,h,slug,dt,actions);list.appendChild(c);
+    });
+   };
+   search.addEventListener("input",render);render();
+  }
  }else if(key==="community"||key==="discussion"){
   const heading=document.createElement("h3");heading.textContent="OTG Student Discussions";heading.style.cssText="margin:0 0 8px;color:#172554;font-size:22px";
   const intro=document.createElement("p");intro.textContent="Ask questions, share learning tips, and reply respectfully. Never post passwords or private personal details.";intro.style.cssText="margin:0 0 16px;color:#64748b;line-height:1.7";area.append(heading,intro);
