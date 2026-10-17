@@ -664,36 +664,6 @@ async function loadAcademyPanelData(key,content){
   const makeButton=(label,primary,fn)=>{const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:10px 15px;border-radius:9px;border:1px solid "+(primary?"#1d4ed8":"#cbd5e1")+";background:"+(primary?"#1d4ed8":"#fff")+";color:"+(primary?"#fff":"#1e293b")+";font-weight:800;cursor:pointer";b.addEventListener("click",fn);controls.appendChild(b);return b;};
   const preview=document.createElement("iframe");preview.title="Code Lab live preview";preview.setAttribute("sandbox","allow-scripts");preview.setAttribute("referrerpolicy","no-referrer");preview.style.cssText="display:block;width:100%;height:340px;border:1px solid #cbd5e1;border-radius:12px;background:#fff";
   const runCode=()=>{const css=cssEditor.value;const js=jsEditor.value.replace(/<\/script/gi,"<\\/script");preview.srcdoc="<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><style>"+css+"</style></head><body>"+htmlEditor.value+"<script>"+js+"<\/script>
-<script id="otg-academy-share-link">
-async function otgShareAcademyLink(){
-  var link = "https://otg-ai-website-builder.vercel.app/";
-  var button = document.getElementById("otgAcademyShareLink");
-  try {
-    if (navigator.share) {
-      await navigator.share({title:"OTG GRAPHIC Academy",text:"Join OTG GRAPHIC Academy. Open the website here:",url:link});
-      return;
-    }
-  } catch (err) {
-    if (err && err.name === "AbortError") return;
-  }
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(link);
-    } else {
-      var field=document.createElement("textarea");
-      field.value=link;field.setAttribute("readonly","");
-      field.style.position="fixed";field.style.opacity="0";
-      document.body.appendChild(field);field.select();
-      var copied=document.execCommand("copy");field.remove();
-      if(!copied) throw new Error("Copy not available");
-    }
-    if(button){button.innerHTML='<span aria-hidden="true">✓</span><span>Link Copied!</span>';setTimeout(function(){button.innerHTML='<span aria-hidden="true">🔗</span><span>Copy Link</span>';},2200);}
-    else { alert("OTG Academy link copied: " + link); }
-  } catch (err) {
-    window.prompt("Copy the OTG Academy website link:",link);
-  }
-}
-</script>
 </body></html>";status.textContent="Preview updated. Your code has not been published.";};
   makeButton("▶ Run code",true,runCode);
   makeButton("Save draft on this device",false,()=>{try{localStorage.setItem("otgAcademyCodeLabDraft",JSON.stringify({html:htmlEditor.value,css:cssEditor.value,js:jsEditor.value}));status.textContent="Draft saved on this device only.";}catch(e){status.textContent="This browser did not allow a local draft to be saved.";}}); 
@@ -9331,6 +9301,37 @@ supabaseClient
  const header=document.getElementById("otgPortfolioHeader"),bio=document.getElementById("otgPortfolioBio"),box=document.getElementById("otgPortfolioItems"),status=document.getElementById("otgPortfolioStatus"),fail=m=>{header.querySelector("h1").textContent="Portfolio unavailable";status.textContent=m;};
  (async()=>{try{const db=window.supabase.createClient("https://actwvvokfdemobgsfctx.supabase.co","sb_publishable_5ays9IaAaJNqu02LAbJVGw_BV5B5Gq5");const {data:p,error}=await db.from("otg_student_portfolios").select("user_id,headline,bio,skills").eq("public_slug",slug).eq("is_published",true).maybeSingle();if(error||!p){fail("This portfolio does not exist or is not published.");return;}header.querySelector("h1").textContent=p.headline||"OTG Student Portfolio";if(p.bio){const x=document.createElement("p");x.textContent=p.bio;bio.append(x);}if(p.skills){const x=document.createElement("p"),b=document.createElement("strong");b.textContent="Skills: ";x.append(b,document.createTextNode(p.skills));bio.append(x);}const {data:items,error:ie}=await db.from("otg_student_portfolio_items").select("title,description,image_url,external_url,item_type,is_featured").eq("user_id",p.user_id).eq("is_public",true).order("is_featured",{ascending:false}).order("created_at",{ascending:false});if(ie){status.textContent="Some work could not be loaded.";return;}if(!items||!items.length){box.textContent="This student has not shared any work yet.";return;}items.forEach(i=>{const c=document.createElement("article");c.style.cssText="overflow:hidden;border:1px solid #e2e8f0;border-radius:14px;background:#fff;padding-bottom:14px";if(i.image_url){const img=document.createElement("img");img.src=i.image_url;img.alt=i.title;img.loading="lazy";img.style.cssText="width:100%;max-height:280px;object-fit:cover";img.onerror=()=>img.remove();c.append(img);}const b=document.createElement("div");b.style.padding="14px";const h=document.createElement("h3");h.textContent=i.title;const d=document.createElement("p");d.textContent=i.description||"";d.style.cssText="white-space:pre-wrap;line-height:1.6;color:#475569";b.append(h,d);if(i.is_featured){const f=document.createElement("strong");f.textContent="FEATURED";f.style.color="#166534";b.prepend(f);}if(i.external_url){try{const u=new URL(i.external_url);if(/^https?:$/.test(u.protocol)){const a=document.createElement("a");a.href=u.href;a.target="_blank";a.rel="noopener noreferrer";a.textContent="View work ↗";b.append(a);}}catch(e){}}c.append(b);box.append(c);});if(!p.bio&&!p.skills)bio.textContent="Welcome to this student's OTG portfolio.";}catch(e){fail("Could not load this portfolio. Please try again later.");}})();
 })();
+</script>
+
+<script id="otg-academy-share-link">
+async function otgShareAcademyLink(){
+  var link = "https://otg-ai-website-builder.vercel.app/";
+  var button = document.getElementById("otgAcademyShareLink");
+  try {
+    if (navigator.share) {
+      await navigator.share({title:"OTG GRAPHIC Academy",text:"Join OTG GRAPHIC Academy. Open the website here:",url:link});
+      return;
+    }
+  } catch (err) {
+    if (err && err.name === "AbortError") return;
+  }
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(link);
+    } else {
+      var field=document.createElement("textarea");
+      field.value=link;field.setAttribute("readonly","");
+      field.style.position="fixed";field.style.opacity="0";
+      document.body.appendChild(field);field.select();
+      var copied=document.execCommand("copy");field.remove();
+      if(!copied) throw new Error("Copy not available");
+    }
+    if(button){button.innerHTML='<span aria-hidden="true">✓</span><span>Link Copied!</span>';setTimeout(function(){button.innerHTML='<span aria-hidden="true">🔗</span><span>Copy Link</span>';},2200);}
+    else { alert("OTG Academy link copied: " + link); }
+  } catch (err) {
+    window.prompt("Copy the OTG Academy website link:",link);
+  }
+}
 </script>
 
 </body>
