@@ -3094,6 +3094,85 @@ html{scroll-behavior:auto}
 </section>
 
 
+ <!-- OTG PRODUCT MANAGEMENT START -->
+
+<section class="section" id="products">
+
+  <div class="section-heading">
+    <h2>My Products</h2>
+    <p>Add and manage products for your saved websites.</p>
+  </div>
+
+  <div style="background:#fff;padding:20px;border-radius:16px;margin-top:20px;box-shadow:0 4px 18px rgba(0,0,0,0.08);">
+
+    <h3 id="otgProductFormTitle">Add Product</h3>
+
+    <label for="otgProductProject">Choose Website</label>
+
+    <select id="otgProductProject"
+      style="width:100%;padding:12px;margin:8px 0 15px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+      <option value="">Loading your websites...</option>
+    </select>
+
+    <input id="otgProductName" type="text"
+      placeholder="Product name"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+
+    <input id="otgProductPrice" type="text"
+      placeholder="Price e.g. ₦35,000"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+
+    <input id="otgProductCategory" type="text"
+      placeholder="Category e.g. Fashion"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+
+    <label for="otgProductImage" style="display:block;margin-top:8px;font-weight:700;">Product image URL (optional)</label>
+    <input id="otgProductImage" type="url"
+      placeholder="Paste an image URL (https://...)"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+
+    <label for="otgProductImageFile" style="display:block;margin-top:8px;font-weight:700;">Or upload a product image</label>
+    <input id="otgProductImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif"
+      style="display:block;width:100%;padding:12px;margin:8px 0;border:1px dashed #94a3b8;border-radius:8px;box-sizing:border-box;background:#f8fafc;">
+    <small style="display:block;margin:0 0 12px;color:#64748b;line-height:1.5;">JPG, PNG, WebP or GIF · Maximum 5 MB. Uploading a file replaces the image URL above.</small>
+
+    <input id="otgProductWhatsApp" type="text"
+      placeholder="WhatsApp number e.g. 2348012345678"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+
+    <textarea id="otgProductDescription"
+      placeholder="Product description" rows="4"
+      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;resize:vertical;"></textarea>
+
+    <button id="otgProductSaveButton" type="button"
+      style="width:100%;padding:13px;margin-top:10px;border:0;border-radius:8px;cursor:pointer;font-weight:bold;">
+      ➕ Add Product
+    </button>
+
+    <button id="otgProductCancelButton" type="button"
+      style="display:none;width:100%;padding:13px;margin-top:8px;border:0;border-radius:8px;cursor:pointer;">
+      Cancel Edit
+    </button>
+
+    <p id="otgProductMessage" role="status" aria-live="polite"></p>
+
+  </div>
+
+  <div style="background:#fff;padding:20px;border-radius:16px;margin-top:20px;box-shadow:0 4px 18px rgba(0,0,0,0.08);">
+
+    <h3>Your Products</h3>
+
+    <div id="otgProductsContainer">
+      Select a website above to see its products.
+    </div>
+
+  </div>
+
+</section>
+
+
+
+
 <section class="section">
 
   <div class="section-heading">
@@ -3509,81 +3588,7 @@ html{scroll-behavior:auto}
 
 
 
- <!-- OTG PRODUCT MANAGEMENT START -->
 
-<section class="section" id="products">
-
-  <div class="section-heading">
-    <h2>My Products</h2>
-    <p>Add and manage products for your saved websites.</p>
-  </div>
-
-  <div style="background:#fff;padding:20px;border-radius:16px;margin-top:20px;box-shadow:0 4px 18px rgba(0,0,0,0.08);">
-
-    <h3 id="otgProductFormTitle">Add Product</h3>
-
-    <label for="otgProductProject">Choose Website</label>
-
-    <select id="otgProductProject"
-      style="width:100%;padding:12px;margin:8px 0 15px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
-      <option value="">Loading your websites...</option>
-    </select>
-
-    <input id="otgProductName" type="text"
-      placeholder="Product name"
-      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
-
-    <input id="otgProductPrice" type="text"
-      placeholder="Price e.g. ₦35,000"
-      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
-
-    <input id="otgProductCategory" type="text"
-      placeholder="Category e.g. Fashion"
-      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
-
-    <label for="otgProductImage" style="display:block;margin-top:8px;font-weight:700;">Product image URL (optional)</label>
-    <input id="otgProductImage" type="url"
-      placeholder="Paste an image URL (https://...)"
-      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
-
-    <label for="otgProductImageFile" style="display:block;margin-top:8px;font-weight:700;">Or upload a product image</label>
-    <input id="otgProductImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif"
-      style="display:block;width:100%;padding:12px;margin:8px 0;border:1px dashed #94a3b8;border-radius:8px;box-sizing:border-box;background:#f8fafc;">
-    <small style="display:block;margin:0 0 12px;color:#64748b;line-height:1.5;">JPG, PNG, WebP or GIF · Maximum 5 MB. Uploading a file replaces the image URL above.</small>
-
-    <input id="otgProductWhatsApp" type="text"
-      placeholder="WhatsApp number e.g. 2348012345678"
-      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
-
-    <textarea id="otgProductDescription"
-      placeholder="Product description" rows="4"
-      style="width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;resize:vertical;"></textarea>
-
-    <button id="otgProductSaveButton" type="button"
-      style="width:100%;padding:13px;margin-top:10px;border:0;border-radius:8px;cursor:pointer;font-weight:bold;">
-      ➕ Add Product
-    </button>
-
-    <button id="otgProductCancelButton" type="button"
-      style="display:none;width:100%;padding:13px;margin-top:8px;border:0;border-radius:8px;cursor:pointer;">
-      Cancel Edit
-    </button>
-
-    <p id="otgProductMessage" role="status" aria-live="polite"></p>
-
-  </div>
-
-  <div style="background:#fff;padding:20px;border-radius:16px;margin-top:20px;box-shadow:0 4px 18px rgba(0,0,0,0.08);">
-
-    <h3>Your Products</h3>
-
-    <div id="otgProductsContainer">
-      Select a website above to see its products.
-    </div>
-
-  </div>
-
-</section>
 
 <script>
 (function () {
