@@ -2998,6 +2998,60 @@ html{scroll-behavior:auto}
 
     </div>
 
+    <div class="form-group" style="margin-top:18px;padding:18px;border:1px solid #dbe4f0;border-radius:14px;background:#f8fafc;">
+      <h3 style="margin:0 0 6px;color:#17336b;font-size:19px;">🎨 Colour & Brand Style</h3>
+      <p style="margin:0 0 14px;color:#64748b;font-size:14px;line-height:1.6;">Choose colours that suit the products you sell. OTG will use these colours when designing your website.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;">
+        <div>
+          <label for="otgBusinessCategory" style="display:block;font-weight:700;margin-bottom:6px;">Business category</label>
+          <select id="otgBusinessCategory" onchange="otgUpdateColourControls(true)" style="width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;">
+            <option value="menswear">Fashion — Men's Wear</option>
+            <option value="womenswear">Fashion — Ladies' Wear</option>
+            <option value="unisex-fashion">Fashion — Unisex</option>
+            <option value="beauty">Beauty & Skincare</option>
+            <option value="technology">Technology & Electronics</option>
+            <option value="food">Food & Restaurant</option>
+            <option value="general">General Product Store</option>
+            <option value="portfolio">Graphic Design / Creative Portfolio</option>
+          </select>
+        </div>
+        <div>
+          <label for="otgColourPreset" style="display:block;font-weight:700;margin-bottom:6px;">Professional colour palette</label>
+          <select id="otgColourPreset" onchange="otgUpdateColourControls(false)" style="width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;">
+            <option value="auto">Recommend colours for my category</option>
+            <option value="navy-gold">Midnight Navy & Gold</option>
+            <option value="black-gold">Black & Gold</option>
+            <option value="burgundy-ivory">Burgundy & Ivory</option>
+            <option value="blush-charcoal">Blush & Charcoal</option>
+            <option value="emerald-cream">Emerald & Cream</option>
+            <option value="royal-blue">Royal Blue & White</option>
+            <option value="terracotta">Terracotta & Sand</option>
+            <option value="black-white">Black & White</option>
+            <option value="custom">Custom colours</option>
+          </select>
+        </div>
+        <div>
+          <label for="otgPrimaryColour" style="display:block;font-weight:700;margin-bottom:6px;">Main brand colour</label>
+          <input id="otgPrimaryColour" type="color" value="#14213d" oninput="otgMarkCustomColours()" style="width:100%;height:44px;padding:4px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;">
+        </div>
+        <div>
+          <label for="otgAccentColour" style="display:block;font-weight:700;margin-bottom:6px;">Button / highlight colour</label>
+          <input id="otgAccentColour" type="color" value="#c9a227" oninput="otgMarkCustomColours()" style="width:100%;height:44px;padding:4px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;">
+        </div>
+        <div>
+          <label for="otgBackgroundColour" style="display:block;font-weight:700;margin-bottom:6px;">Page background colour</label>
+          <input id="otgBackgroundColour" type="color" value="#f8fafc" oninput="otgMarkCustomColours()" style="width:100%;height:44px;padding:4px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;">
+        </div>
+      </div>
+      <div id="otgColourPreview" aria-live="polite" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:13px;padding:10px;border:1px solid #e2e8f0;border-radius:10px;background:#fff;">
+        <strong style="font-size:13px;color:#334155;">Your palette:</strong>
+        <span id="otgPrimarySwatch" style="width:25px;height:25px;border-radius:7px;background:#14213d;border:1px solid #cbd5e1;"></span>
+        <span id="otgAccentSwatch" style="width:25px;height:25px;border-radius:7px;background:#c9a227;border:1px solid #cbd5e1;"></span>
+        <span id="otgBackgroundSwatch" style="width:25px;height:25px;border-radius:7px;background:#f8fafc;border:1px solid #cbd5e1;"></span>
+        <span id="otgColourLabel" style="font-size:13px;color:#475569;">Midnight Navy & Gold</span>
+      </div>
+    </div>
+
     <button
       class="generate-btn"
       id="generateBtn"
@@ -5584,7 +5638,91 @@ function useTemplate(name){
   loadTemplate(name);
 }
 
+const otgColourPalettes = {
+  "navy-gold":{label:"Midnight Navy & Gold",primary:"#14213d",accent:"#c9a227",background:"#f8fafc"},
+  "black-gold":{label:"Black & Gold",primary:"#18181b",accent:"#b8860b",background:"#fffdf7"},
+  "burgundy-ivory":{label:"Burgundy & Ivory",primary:"#7f1d3f",accent:"#b8860b",background:"#fffaf2"},
+  "blush-charcoal":{label:"Blush & Charcoal",primary:"#7c334f",accent:"#d99bb5",background:"#fff7fa"},
+  "emerald-cream":{label:"Emerald & Cream",primary:"#14532d",accent:"#b08d35",background:"#fbf8ef"},
+  "royal-blue":{label:"Royal Blue & White",primary:"#1d4ed8",accent:"#0f766e",background:"#f8fbff"},
+  "terracotta":{label:"Terracotta & Sand",primary:"#9a3412",accent:"#c08457",background:"#fff7ed"},
+  "black-white":{label:"Black & White",primary:"#18181b",accent:"#52525b",background:"#ffffff"}
+};
+const otgCategoryPalettes = {
+  menswear:{label:"Men's Wear — Midnight Navy & Gold",primary:"#14213d",accent:"#c9a227",background:"#f8fafc"},
+  womenswear:{label:"Ladies' Wear — Burgundy & Blush",primary:"#7f1d3f",accent:"#c08497",background:"#fff7fa"},
+  "unisex-fashion":{label:"Unisex Fashion — Black & Gold",primary:"#18181b",accent:"#b8860b",background:"#fffdf7"},
+  beauty:{label:"Beauty & Skincare — Blush & Charcoal",primary:"#7c334f",accent:"#d99bb5",background:"#fff7fa"},
+  technology:{label:"Technology — Royal Blue & White",primary:"#1d4ed8",accent:"#0f766e",background:"#f8fbff"},
+  food:{label:"Food & Restaurant — Terracotta & Cream",primary:"#9a3412",accent:"#c08457",background:"#fff7ed"},
+  general:{label:"Product Store — Emerald & Cream",primary:"#14532d",accent:"#b08d35",background:"#fbf8ef"},
+  portfolio:{label:"Creative Portfolio — Black & Gold",primary:"#18181b",accent:"#b8860b",background:"#fffdf7"}
+};
+function otgGetColourPalette(){
+  const category=(document.getElementById("otgBusinessCategory")||{}).value||"general";
+  const preset=(document.getElementById("otgColourPreset")||{}).value||"auto";
+  let base=preset==="auto"?(otgCategoryPalettes[category]||otgCategoryPalettes.general):(otgColourPalettes[preset]||otgCategoryPalettes[category]||otgCategoryPalettes.general);
+  const primary=(document.getElementById("otgPrimaryColour")||{}).value||base.primary;
+  const accent=(document.getElementById("otgAccentColour")||{}).value||base.accent;
+  const background=(document.getElementById("otgBackgroundColour")||{}).value||base.background;
+  return {label:base.label,primary:primary,accent:accent,background:background,category:category};
+}
+function otgUpdateColourControls(categoryChanged){
+  const category=document.getElementById("otgBusinessCategory");
+  const preset=document.getElementById("otgColourPreset");
+  if(!category||!preset)return;
+  if(categoryChanged&&preset.value!=="auto")return;
+  if(categoryChanged)preset.value="auto";
+  const base=preset.value==="auto"?(otgCategoryPalettes[category.value]||otgCategoryPalettes.general):(otgColourPalettes[preset.value]||otgCategoryPalettes[category.value]||otgCategoryPalettes.general);
+  ["otgPrimaryColour","otgAccentColour","otgBackgroundColour"].forEach((id,index)=>{
+    const input=document.getElementById(id);
+    if(input)input.value=[base.primary,base.accent,base.background][index];
+  });
+  otgRefreshColourPreview();
+}
+function otgMarkCustomColours(){
+  const preset=document.getElementById("otgColourPreset");
+  if(preset)preset.value="custom";
+  otgRefreshColourPreview();
+}
+function otgRefreshColourPreview(){
+  const theme=otgGetColourPalette();
+  const p=document.getElementById("otgPrimarySwatch"),a=document.getElementById("otgAccentSwatch"),b=document.getElementById("otgBackgroundSwatch"),label=document.getElementById("otgColourLabel");
+  if(p)p.style.background=theme.primary;
+  if(a)a.style.background=theme.accent;
+  if(b)b.style.background=theme.background;
+  if(label)label.textContent=theme.label+" · "+theme.primary+" / "+theme.accent;
+}
+function otgApplyColourTheme(css,theme){
+  if(!theme)return css||"";
+  const p=/^#[0-9a-f]{6}$/i.test(theme.primary)?theme.primary:"#14213d";
+  const a=/^#[0-9a-f]{6}$/i.test(theme.accent)?theme.accent:"#c9a227";
+  const b=/^#[0-9a-f]{6}$/i.test(theme.background)?theme.background:"#f8fafc";
+  const overlay="\n/* OTG selected brand colours */\n:root{--otg-primary:"+p+";--otg-accent:"+a+";--otg-page-background:"+b+"}\nbody{background-color:"+b+"!important}\nsection:first-of-type,.hero{background:linear-gradient(135deg,"+p+" 0%,"+a+" 100%)!important;color:#fff!important}\nsection:first-of-type h1,section:first-of-type p,.hero h1,.hero p{color:#fff!important}\nbutton,.btn,.button,.primary-btn,input[type=submit]{background-color:"+a+"!important;border-color:"+a+"!important;color:#fff!important}\n";
+  return (css||"")+"\n"+overlay;
+}
+
 function loadExample(type){
+
+  const category=document.getElementById("otgBusinessCategory");
+  const palette=document.getElementById("otgColourPreset");
+  if(type==="fashion"){
+    if(category)category.value="menswear";
+    if(palette)palette.value="auto";
+    otgUpdateColourControls(true);
+  }else if(type==="store"){
+    if(category)category.value="general";
+    if(palette)palette.value="auto";
+    otgUpdateColourControls(true);
+  }else if(type==="portfolio"){
+    if(category)category.value="portfolio";
+    if(palette)palette.value="auto";
+    otgUpdateColourControls(true);
+  }else if(type==="restaurant"){
+    if(category)category.value="food";
+    if(palette)palette.value="auto";
+    otgUpdateColourControls(true);
+  }
 
   const prompts = {
 
@@ -5668,6 +5806,9 @@ async function generateWithAI(){
   const whatsapp =
     getWhatsAppNumber();
 
+  const colourTheme = otgGetColourPalette();
+  const businessCategory = (document.getElementById("otgBusinessCategory")||{}).value || "general";
+
   if(!prompt){
 
     showToast(
@@ -5702,7 +5843,9 @@ async function generateWithAI(){
           body:JSON.stringify({
             prompt,
             style,
-            whatsappNumber:whatsapp
+            whatsappNumber:whatsapp,
+            businessCategory,
+            colorTheme:colourTheme
           })
         }
       );
@@ -5720,7 +5863,7 @@ async function generateWithAI(){
 
     website = {
       html:data.html || "",
-      css:data.css || "",
+      css:otgApplyColourTheme(data.css || "",colourTheme),
       js:data.js || ""
     };
 
@@ -5805,7 +5948,7 @@ async function generateWithAI(){
 
     website = {
       html:template.html || "",
-      css:template.css || "",
+      css:otgApplyColourTheme(template.css || "",colourTheme),
       js:template.js || ""
     };
 
