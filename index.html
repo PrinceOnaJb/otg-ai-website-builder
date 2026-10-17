@@ -8422,7 +8422,7 @@ async function handleAuthSubmit(event){
       showConfirmationHelp(email, "Your email address has not been confirmed. Request a new confirmation message below, then try logging in again.");
       showToast("Please confirm your email before logging in.");
     } else {
-      showToast(authErrorMessage);
+      showToast("Something went wrong. Please try again later.");
     }
 
   }finally{
@@ -8476,6 +8476,47 @@ function hideAllAccessScreens(){
   $("app").classList.add("hidden");
 }
 
+let otgApprovalWatchChannel = null;
+let otgApprovalWatchUserId = null;
+let otgApprovalWatchTimer = null;
+
+async function lockRejectedStudentAccess(){
+  try{if(otgApprovalWatchChannel){await supabaseClient.removeChannel(otgApprovalWatchChannel);}}catch(e){}
+  otgApprovalWatchChannel=null;
+  otgApprovalWatchUserId=null;
+  if(otgApprovalWatchTimer){clearInterval(otgApprovalWatchTimer);otgApprovalWatchTimer=null;}
+  try{await supabaseClient.auth.signOut();}catch(e){console.warn("OTG rejected-account sign-out:",e);}
+  currentUser=null;
+  currentProfile=null;
+  window.otgAcademyIsAdmin=false;
+  hideAllAccessScreens();
+  $("authScreen").classList.remove("hidden");
+  showToast("Something went wrong. Please try again later.");
+}
+
+function ensureApprovalStatusWatch(){
+  if(!currentUser||!currentProfile||String(currentProfile.approval_status||"").toLowerCase()!=="approved")return;
+  const watchedId=currentUser.id;
+  if(otgApprovalWatchUserId!==watchedId){
+    try{if(otgApprovalWatchChannel)supabaseClient.removeChannel(otgApprovalWatchChannel);}catch(e){}
+    otgApprovalWatchUserId=watchedId;
+    otgApprovalWatchChannel=supabaseClient.channel("otg-approval-watch-"+watchedId)
+      .on("postgres_changes",{event:"UPDATE",schema:"public",table:"profiles",filter:"id=eq."+watchedId},payload=>{
+        const next=payload&&payload.new;
+        if(next&&String(next.approval_status||"").toLowerCase()!=="approved")lockRejectedStudentAccess();
+      }).subscribe();
+  }
+  if(!otgApprovalWatchTimer){
+    otgApprovalWatchTimer=setInterval(async()=>{
+      if(!currentUser||!currentProfile||String(currentProfile.approval_status||"").toLowerCase()!=="approved")return;
+      try{
+        const {data,error}=await supabaseClient.from("profiles").select("role,approval_status").eq("id",currentUser.id).maybeSingle();
+        if(!error&&(!data||String(data.approval_status||"").toLowerCase()!=="approved"||!["student","admin"].includes(String(data.role||"").toLowerCase())))lockRejectedStudentAccess();
+      }catch(e){console.warn("OTG approval status refresh:",e);}
+    },30000);
+  }
+}
+
 async function refreshApprovalStatus(){
   if(!currentUser) return;
   if(approvalCheckPromise) return approvalCheckPromise;
@@ -8504,6 +8545,7 @@ async function refreshApprovalStatus(){
     const status = String(profile.approval_status || "").toLowerCase();
 
     if((role === "admin" || role === "student") && status === "approved"){
+      ensureApprovalStatusWatch();
       hideAllAccessScreens();
       try{
         await showApp(true);
@@ -8519,11 +8561,15 @@ async function refreshApprovalStatus(){
       return;
     }
 
+    if(status === "rejected"){
+      await lockRejectedStudentAccess();
+      return;
+    }
     hideAllAccessScreens();
     $("approvalScreen").classList.remove("hidden");
     if(message){
       if(status === "rejected"){
-        message.textContent = "Your account request was not approved. Please contact the OTG administrator for assistance.";
+        message.textContent = "Something went wrong. Please try again later.";
       }else{
         message.textContent = "Your free account has been created successfully. Please wait while the OTG administrator reviews and approves your account. Your dashboard will remain locked until approval.";
       }
