@@ -4967,6 +4967,38 @@ function whatsappLink(number){
 
 }
 
+function otgInjectShoppingCart(html){
+  if(!html||typeof html!=="string"||!/<\/body\s*>/i.test(html)||/id=["']otgStoreCartRuntime["']/i.test(html))return html;
+  const runtime=String.raw\`<script id="otgStoreCartRuntime">
+(function(){
+if(window.__otgStoreCartStarted)return;window.__otgStoreCartStarted=true;
+var KEY="otg-store-cart-v1",cart=[];try{cart=JSON.parse(localStorage.getItem(KEY)||"[]");if(!Array.isArray(cart))cart=[];}catch(e){cart=[];}
+function money(n){return "₦"+Number(n||0).toLocaleString("en-NG",{maximumFractionDigits:2});}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(cart));}catch(e){}}
+function txt(e){return e?(e.textContent||"").trim():"";}
+function price(card){var e=card.querySelector("[data-product-price],.price,.product-price,[class*=price]");var t=txt(e)||card.getAttribute("data-price")||"";var m=t.replace(/,/g,"").match(/(?:₦|NGN|N)?\\s*(\\d+(?:\\.\\d{1,2})?)/i);return m?Number(m[1]):0;}
+function name(card){return txt(card.querySelector("[data-product-name],h2,h3,h4,.product-title,.product-name,.title")).slice(0,140)||"Product";}
+function image(card){var e=card.querySelector("img");return e?(e.currentSrc||e.src||""):"";}
+function ui(){
+if(document.getElementById("otgCartToggle"))return;
+var st=document.createElement("style");st.textContent="#otgCartToggle{position:fixed;right:16px;bottom:16px;z-index:2147483000;border:0;border-radius:999px;background:#14213d;color:#fff;padding:13px 17px;font-weight:800;box-shadow:0 6px 24px #0003;cursor:pointer}#otgCartPanel{position:fixed;z-index:2147483001;right:0;top:0;height:100dvh;width:min(410px,100vw);background:#fff;color:#172033;box-shadow:-8px 0 32px #0002;transform:translateX(105%);transition:transform .2s;display:flex;flex-direction:column;font:14px Arial,sans-serif}#otgCartPanel.open{transform:translateX(0)}#otgCartItems{overflow:auto;flex:1;padding:14px}#otgCartPanel .otgLine{display:grid;grid-template-columns:58px 1fr auto;gap:9px;padding:12px 0;border-bottom:1px solid #e5e7eb;align-items:center}#otgCartPanel img{width:58px;height:58px;object-fit:cover;border-radius:7px}#otgCartPanel input{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:7px;box-sizing:border-box}#otgCartPanel button{cursor:pointer}";document.head.appendChild(st);
+var b=document.createElement("button");b.id="otgCartToggle";b.type="button";b.textContent="🛒 Cart (0)";b.onclick=function(){document.getElementById("otgCartPanel").classList.add("open");};
+var p=document.createElement("aside");p.id="otgCartPanel";p.setAttribute("aria-label","Shopping cart");p.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;padding:16px;border-bottom:1px solid #e5e7eb"><strong style="font-size:20px">Your cart</strong><button id="otgCartClose" type="button">✕</button></div><div id="otgCartItems"></div><div style="padding:15px;border-top:1px solid #e5e7eb;display:grid;gap:9px"><strong id="otgCartTotal">Total: ₦0</strong><label>Your name (optional)<input id="otgBuyerName" maxlength="80" placeholder="Your name"></label><label>Delivery / size note (optional)<input id="otgBuyerNote" maxlength="300" placeholder="Location, size or colour"></label><button id="otgCartCheckout" type="button" style="border:0;border-radius:8px;padding:12px;background:#14213d;color:#fff;font-weight:800">Send order on WhatsApp</button><small style="color:#64748b;line-height:1.5">The seller confirms your order and payment separately.</small></div>';
+document.body.append(b,p);document.getElementById("otgCartClose").onclick=function(){p.classList.remove("open");};document.getElementById("otgCartCheckout").onclick=checkout;
+}
+function render(){ui();var count=cart.reduce(function(n,x){return n+Number(x.qty||1);},0);document.getElementById("otgCartToggle").textContent="🛒 Cart ("+count+")";var box=document.getElementById("otgCartItems");box.replaceChildren();if(!cart.length){var e=document.createElement("p");e.textContent="Your cart is empty. Add your favourite items to get started.";e.style.cssText="padding:16px;color:#64748b;line-height:1.5";box.appendChild(e);}
+cart.forEach(function(x,i){var row=document.createElement("div");row.className="otgLine";if(x.image){var im=document.createElement("img");im.src=x.image;im.alt=x.name;row.appendChild(im);}else{var im=document.createElement("span");im.textContent="🛍️";row.appendChild(im);}var info=document.createElement("div"),nm=document.createElement("strong"),pr=document.createElement("div"),qty=document.createElement("div");nm.textContent=x.name;pr.textContent=x.price?money(x.price):"Price on request";pr.style.margin="5px 0";var minus=document.createElement("button");minus.textContent="−";minus.onclick=function(){x.qty=Number(x.qty||1)-1;if(x.qty<=0)cart.splice(i,1);save();render();};var q=document.createElement("span");q.textContent=" "+(x.qty||1)+" ";var plus=document.createElement("button");plus.textContent="+";plus.onclick=function(){x.qty=Number(x.qty||1)+1;save();render();};qty.append(minus,q,plus);info.append(nm,pr,qty);row.appendChild(info);var rm=document.createElement("button");rm.textContent="Remove";rm.onclick=function(){cart.splice(i,1);save();render();};row.appendChild(rm);box.appendChild(row);});
+document.getElementById("otgCartTotal").textContent="Total: "+money(cart.reduce(function(n,x){return n+(Number(x.price)||0)*Number(x.qty||1);},0));}
+function add(x){var f=cart.find(function(y){return y.name===x.name&&Number(y.price)===Number(x.price);});if(f)f.qty=Number(f.qty||1)+1;else cart.push({...x,qty:1});save();render();}
+function scan(){var sel="[data-product-card],.product-card,.product-item,.shop-item,.product-grid article,.products-grid article,.product-list article,.product-grid .product,.products-grid .product,article.product";document.querySelectorAll(sel).forEach(function(c){if(c.closest("#otgCartPanel")||c.dataset.otgCartBound==="1")return;var n=name(c);if(n==="Product")return;c.dataset.otgCartBound="1";var b=document.createElement("button");b.type="button";b.textContent="🛒 Add to Cart";b.style.cssText="margin:8px 4px;padding:10px 14px;border:0;border-radius:8px;background:#14213d;color:#fff;font-weight:800;cursor:pointer";b.onclick=function(){add({name:n,price:price(c),image:image(c)});b.textContent="✓ Added";};c.appendChild(b);});}
+function checkout(){if(!cart.length){alert("Your cart is empty.");return;}var a=document.querySelector('a[href*="wa.me/"]'),phone=a?(a.href.match(/wa\\.me\\/(\\d+)/)||[])[1]:"";if(!phone){alert("The seller has not added a WhatsApp number to this website yet.");return;}var lines=["Hello, I would like to order:",""];cart.forEach(function(x){lines.push("• "+x.name+" × "+x.qty+" — "+(x.price?money(x.price):"Price on request"));});lines.push("","Total: "+money(cart.reduce(function(n,x){return n+(Number(x.price)||0)*Number(x.qty||1);},0)));var buyer=(document.getElementById("otgBuyerName").value||"").trim(),note=(document.getElementById("otgBuyerNote").value||"").trim();if(buyer)lines.push("Customer: "+buyer);if(note)lines.push("Delivery / size note: "+note);window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(lines.join("\\n")),"_blank");}
+function start(){render();scan();new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start);else start();
+})();
+<\/script>\`;
+  return html.replace(/<\/body\s*>/i,runtime+"\n</body>");
+}
+
 function injectWhatsAppButton(html,number){
 
   const normalized =
@@ -5868,10 +5900,10 @@ async function generateWithAI(){
     };
 
     website.html =
-      injectWhatsAppButton(
+      otgInjectShoppingCart(injectWhatsAppButton(
         website.html,
         whatsapp
-      );
+      ));
 
     websiteWhatsApp =
       whatsapp;
@@ -5953,10 +5985,10 @@ async function generateWithAI(){
     };
 
     website.html =
-      injectWhatsAppButton(
+      otgInjectShoppingCart(injectWhatsAppButton(
         website.html,
         whatsapp
-      );
+      ));
 
     websiteWhatsApp =
       whatsapp;
