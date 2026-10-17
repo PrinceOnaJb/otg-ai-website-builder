@@ -9264,6 +9264,20 @@ supabaseClient
       renderFallback(key,button);
     }
   };
+  // Reliable capture-phase navigation: this still responds if an inline button
+  // handler is blocked or stale, and avoids running the same click twice.
+  document.addEventListener("click",function(event){
+    var button=event.target&&event.target.closest?event.target.closest(".academy-nav"):null;
+    if(!button)return;
+    var source=button.getAttribute("onclick")||"";
+    var match=source.match(/openAcademyPanel\\(\\s*['"]([^'"]+)['"]/);
+    var key=match?match[1]:"";
+    if(!key&&source.indexOf("submission-review")!==-1)key=window.otgAcademyIsAdmin===true?"submission-review":"assignments";
+    if(!key)return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    window.openAcademyPanel(key,button);
+  },true);
 })();
 </script>
 
