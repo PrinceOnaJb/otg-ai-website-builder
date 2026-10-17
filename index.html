@@ -1678,6 +1678,11 @@ async function loadAcademyPanelData(key,content){
   }
 }
 
+// Publish the existing panel loader explicitly so the independent navigation
+// recovery script can call it reliably across script scopes.
+window.loadAcademyPanelData = loadAcademyPanelData;
+window.openAcademyPanel = openAcademyPanel;
+
 </script>
 
 <style>
@@ -9241,8 +9246,8 @@ supabaseClient
           else note.textContent="Student navigation is unavailable. Refresh the Student Hub and try again.";
         });
         content.appendChild(connectButton);
-        if(typeof loadAcademyPanelData==="function"){
-          loadAcademyPanelData(key,content).then(function(){note.remove();}).catch(function(error){
+        if(typeof window.loadAcademyPanelData==="function"){
+          window.loadAcademyPanelData(key,content).then(function(){note.remove();}).catch(function(error){
             note.textContent="The call centre could not finish loading: "+(error&&error.message?error.message:"Please refresh the Student Hub and try again.");
             note.style.background="#fff7ed";note.style.color="#9a3412";
           });
@@ -9250,7 +9255,7 @@ supabaseClient
           note.textContent="The call-centre script did not load. Refresh the Student Hub and try again.";
           note.style.background="#fff7ed";note.style.color="#9a3412";
         }
-      }else if(typeof loadAcademyPanelData==="function"){
+      }else if(typeof window.loadAcademyPanelData==="function"){
         // If normal panel navigation fails, still run the real data loader instead of
         // leaving students/admins on the static empty fallback card.
         note.textContent="Loading your existing Student Hub data…";
