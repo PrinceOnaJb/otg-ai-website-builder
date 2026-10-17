@@ -175,6 +175,13 @@ Apply this style deliberately to the layout, typography, spacing, components, an
 
 ${colourInstruction}
 
+PRODUCT STORE AND SHOPPING CART RULES:
+- If the user asks for a shop, fashion store, product catalogue, clothing shop, tailor, boutique, or products for sale, create a clear responsive product grid with each product inside an article using class="product-card" and data-product-card="true".
+- Give every product card a real, descriptive h3 product name and a visible price using class="product-price" (include the currency the user requested; if none is given, use ₦ for a Nigerian store).
+- Use attractive product photos when appropriate, and do not invent a seller's real stock, sizes, or prices as confirmed facts. Sample products must be clearly editable examples.
+- Leave enough space below each product for the OTG shopping-cart button, and do not create fake payment forms or claim payment was collected. The OTG cart lets shoppers change quantities and sends an order request to the seller through WhatsApp.
+- For clothing, include size/colour details or a note that customers can confirm availability with the seller. Keep the product layout mobile-friendly.
+
 IMPORTANT WHATSAPP RULES:
 
 - Never invent a WhatsApp number.
