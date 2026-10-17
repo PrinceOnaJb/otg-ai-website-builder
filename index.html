@@ -262,10 +262,13 @@ async function otgShowLatestAnnouncementPopup(db,userId){
 async function loadAcademyPanelData(key,content){
  const db=supabaseClient;
  let admin=window.otgAcademyIsAdmin===true;
- const authResult=await db.auth.getUser();
+ let authResult=null;
+ try{authResult=await db.auth.getUser();}catch(authLookupError){console.warn("OTG Academy session lookup; using existing signed-in session:",authLookupError);}
  const activeUser=(authResult&&authResult.data&&authResult.data.user)||currentUser||null;
  const userId=(activeUser&&activeUser.id)||window.otgAcademyUserId||(currentUser&&currentUser.id)||null;
- if(activeUser&&typeof window.otgInitCallNotifications==="function"){window.otgInitCallNotifications(activeUser);}
+ if(activeUser&&typeof window.otgInitCallNotifications==="function"){
+  try{window.otgInitCallNotifications(activeUser);}catch(notificationInitError){console.warn("OTG call notifications could not initialize; continuing Student Hub loading:",notificationInitError);}
+ }
  if(activeUser){
   try{
    const {data:roleProfile,error:roleProfileError}=await db.from("profiles").select("role,approval_status").eq("id",activeUser.id).maybeSingle();
