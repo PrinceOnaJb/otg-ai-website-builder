@@ -7663,11 +7663,16 @@ function renderPublicSite(data, products){
     return match?Number(match[1]):0;
   }
   if(!productList.length && !content.querySelector('[data-product-card],.product-card,.product-item,.shop-item,.product-grid article,.products-grid article,.product-list article')){
-    return;
-  }
-  if(!productList.length){
-    // Even AI-generated product cards get the cart toggle; remove the catalogue's hidden empty area.
+    cartToggle.style.display="none";
+    panel.remove();
+  }else{
     cartToggle.style.display="block";
+  }
+
+  if(data.js){
+    const script=document.createElement("script");
+    script.textContent=data.js;
+    document.body.appendChild(script);
   }
 }
 
