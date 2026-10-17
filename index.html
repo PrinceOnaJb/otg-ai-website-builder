@@ -9265,7 +9265,7 @@ supabaseClient
     }else failed=true;
     var currentTitle=document.getElementById("academyPanelTitle");
     var currentContent=document.getElementById("academyPanelContent");
-    if(failed||!currentTitle||!currentContent||(currentTitle.textContent===beforeTitle&&currentContent.innerHTML===beforeContent)){
+    if(failed||!currentTitle||!currentContent){
       renderFallback(key,button);
     }
   };
