@@ -2799,24 +2799,8 @@ html{scroll-behavior:auto}
 
 <!-- OTG ACADEMY STUDENT DASHBOARD START -->
 <section class="section" id="academyDashboard">
-  <style id="otg-live-news-static-style">
-    @keyframes otgNewsTickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-    #otgLiveNewspaperTicker .otg-news-track{display:flex;width:max-content;animation:otgNewsTickerScroll 75s linear infinite;will-change:transform}
-    #otgLiveNewspaperTicker:hover .otg-news-track{animation-play-state:paused}
-     #otgLiveNewspaperTicker:focus-within .otg-news-track{animation-play-state:paused}
-    @media(prefers-reduced-motion:reduce){#otgLiveNewspaperTicker .otg-news-track{animation-duration:150s!important}}
-  </style>
-  <div id="otgLiveNewspaperTicker" aria-label="Live newspaper headlines" style="display:block!important;visibility:visible!important;position:relative;z-index:5;margin:0 auto 18px;padding:12px 0;border:1px solid #dbeafe;border-radius:12px;background:#fff;overflow:hidden;box-shadow:0 3px 14px rgba(15,23,42,.06);max-width:1200px;color:#172554">
-    <div style="display:flex;align-items:center;gap:9px;padding:0 14px 9px;flex-wrap:wrap">
-      <span style="flex:none;background:#123b78;color:#fff;border-radius:4px;padding:5px 8px;font-size:11px;font-weight:900;letter-spacing:.5px">🔴 LIVE NEWS</span>
-      <strong style="color:#172554;font-size:13px;line-height:1.5">Punch · AIT · ARISE News · BBC · Technology</strong>
-      <button id="otgLiveNewsPause" type="button" aria-pressed="false" style="margin-left:auto;border:1px solid #cbd5e1;border-radius:7px;background:#fff;padding:5px 9px;color:#334155;font-size:11px;font-weight:800;cursor:pointer">Pause</button>
-    </div>
-    <div tabindex="0" aria-label="Scrolling news headlines; focus to pause" style="display:block;overflow:hidden;white-space:nowrap;border-top:1px solid #dbeafe;border-bottom:1px solid #dbeafe;background:#f8fbff;padding:11px 0">
-      <div id="otgLiveNewsTrack" class="otg-news-track" style="display:flex;width:max-content;align-items:center;gap:34px;will-change:transform"><span style="padding:0 16px;color:#64748b;font-size:13px">Connecting to live headlines…</span></div>
-    </div>
-    <p id="otgLiveNewsStatus" role="status" style="margin:8px 14px 0;color:#64748b;font-size:11px;line-height:1.5">Connecting to live newspaper headlines…</p>
-  </div>
+  
+  
 
   <div class="section-heading" style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
     <div>
@@ -2878,6 +2862,33 @@ html{scroll-behavior:auto}
   </div>
 </section>
 <!-- OTG ACADEMY STUDENT DASHBOARD END -->
+
+
+
+<section class="section" id="otgAcademyNewsSection" aria-labelledby="otgAcademyNewsHeading" style="max-width:1240px;margin:22px auto;padding:0 16px;box-sizing:border-box;">
+  <style id="otg-live-news-static-style">
+    @keyframes otgNewsTickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    #otgLiveNewspaperTicker .otg-news-track{display:flex;width:max-content;animation:otgNewsTickerScroll 75s linear infinite;will-change:transform}
+    #otgLiveNewspaperTicker:hover .otg-news-track{animation-play-state:paused}
+     #otgLiveNewspaperTicker:focus-within .otg-news-track{animation-play-state:paused}
+    @media(prefers-reduced-motion:reduce){#otgLiveNewspaperTicker .otg-news-track{animation-duration:150s!important}}
+  </style>
+  <div class="section-heading" style="max-width:1200px;margin:0 auto 12px;padding:0 2px;">
+    <h2 id="otgAcademyNewsHeading" style="margin:0 0 6px;color:#123b78;font-size:clamp(22px,3vw,30px);">OTG News &amp; Updates</h2>
+    <p style="margin:0;color:#64748b;line-height:1.6;">Live headlines and important updates, separate from your Student Academy dashboard.</p>
+  </div>
+  <div id="otgLiveNewspaperTicker" aria-label="Live newspaper headlines" style="display:block!important;visibility:visible!important;position:relative;z-index:5;margin:0 auto 18px;padding:12px 0;border:1px solid #dbeafe;border-radius:12px;background:#fff;overflow:hidden;box-shadow:0 3px 14px rgba(15,23,42,.06);max-width:1200px;color:#172554">
+      <div style="display:flex;align-items:center;gap:9px;padding:0 14px 9px;flex-wrap:wrap">
+        <span style="flex:none;background:#123b78;color:#fff;border-radius:4px;padding:5px 8px;font-size:11px;font-weight:900;letter-spacing:.5px">🔴 LIVE NEWS</span>
+        <strong style="color:#172554;font-size:13px;line-height:1.5">Punch · AIT · ARISE News · BBC · Technology</strong>
+        <button id="otgLiveNewsPause" type="button" aria-pressed="false" style="margin-left:auto;border:1px solid #cbd5e1;border-radius:7px;background:#fff;padding:5px 9px;color:#334155;font-size:11px;font-weight:800;cursor:pointer">Pause</button>
+      </div>
+      <div tabindex="0" aria-label="Scrolling news headlines; focus to pause" style="display:block;overflow:hidden;white-space:nowrap;border-top:1px solid #dbeafe;border-bottom:1px solid #dbeafe;background:#f8fbff;padding:11px 0">
+        <div id="otgLiveNewsTrack" class="otg-news-track" style="display:flex;width:max-content;align-items:center;gap:34px;will-change:transform"><span style="padding:0 16px;color:#64748b;font-size:13px">Connecting to live headlines…</span></div>
+      </div>
+      <p id="otgLiveNewsStatus" role="status" style="margin:8px 14px 0;color:#64748b;font-size:11px;line-height:1.5">Connecting to live newspaper headlines…</p>
+    </div>
+</section>
 
 <section class="hero">
 
@@ -3195,6 +3206,91 @@ html{scroll-behavior:auto}
     <div id="otgProductsContainer">
       Select a website above to see its products.
     </div>
+
+  </div>
+
+</section>
+
+<section
+  class="section"
+  id="editorSection"
+>
+
+  <div class="section-heading">
+
+    <h2>
+      Website Editor
+    </h2>
+
+    <p>
+      Edit your generated website, then check Mobile, Tablet and Desktop before saving or publishing.
+    </p>
+
+  </div>
+
+  <div class="editor-wrap">
+
+    <div class="editor-toolbar">
+
+      <div class="editor-tabs">
+
+        <button
+          id="htmlTab"
+          class="active"
+          onclick="switchEditor('html')"
+        >
+          HTML
+        </button>
+
+        <button
+          id="cssTab"
+          onclick="switchEditor('css')"
+        >
+          CSS
+        </button>
+
+        <button
+          id="jsTab"
+          onclick="switchEditor('js')"
+        >
+          JavaScript
+        </button>
+
+      </div>
+
+      <div class="editor-actions">
+
+        <button
+          class="preview"
+          onclick="previewWebsite()"
+        >
+          Preview
+        </button>
+
+        <button
+          type="button"
+          class="preview"
+          onclick="openResponsivePreview()"
+          style="background:#172b52;color:#fff;"
+        >
+          Device Preview
+        </button>
+
+        <button
+          class="save"
+          onclick="openSaveModal()"
+        >
+          Save Project
+        </button>
+
+      </div>
+
+    </div>
+
+    <textarea
+      id="codeEditor"
+      spellcheck="false"
+    ></textarea>
 
   </div>
 
@@ -3541,90 +3637,7 @@ html{scroll-behavior:auto}
 </section>
 
 
-<section
-  class="section"
-  id="editorSection"
->
 
-  <div class="section-heading">
-
-    <h2>
-      Website Editor
-    </h2>
-
-    <p>
-      Edit your generated website before saving or publishing.
-    </p>
-
-  </div>
-
-  <div class="editor-wrap">
-
-    <div class="editor-toolbar">
-
-      <div class="editor-tabs">
-
-        <button
-          id="htmlTab"
-          class="active"
-          onclick="switchEditor('html')"
-        >
-          HTML
-        </button>
-
-        <button
-          id="cssTab"
-          onclick="switchEditor('css')"
-        >
-          CSS
-        </button>
-
-        <button
-          id="jsTab"
-          onclick="switchEditor('js')"
-        >
-          JavaScript
-        </button>
-
-      </div>
-
-      <div class="editor-actions">
-
-        <button
-          class="preview"
-          onclick="previewWebsite()"
-        >
-          Preview
-        </button>
-
-        <button
-          type="button"
-          class="preview"
-          onclick="openResponsivePreview()"
-          style="background:#172b52;color:#fff;"
-        >
-          Device Preview
-        </button>
-
-        <button
-          class="save"
-          onclick="openSaveModal()"
-        >
-          Save Project
-        </button>
-
-      </div>
-
-    </div>
-
-    <textarea
-      id="codeEditor"
-      spellcheck="false"
-    ></textarea>
-
-  </div>
-
-</section>
 
 
 
