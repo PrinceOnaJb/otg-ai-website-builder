@@ -4969,7 +4969,7 @@ function whatsappLink(number){
 
 function otgInjectShoppingCart(html){
   if(!html||typeof html!=="string"||!/<\/body\s*>/i.test(html)||/id=["']otgStoreCartRuntime["']/i.test(html))return html;
-  const runtime=String.raw\`<script id="otgStoreCartRuntime">
+  const runtime=String.raw`<script id="otgStoreCartRuntime">
 (function(){
 if(window.__otgStoreCartStarted)return;window.__otgStoreCartStarted=true;
 var KEY="otg-store-cart-v1",cart=[];try{cart=JSON.parse(localStorage.getItem(KEY)||"[]");if(!Array.isArray(cart))cart=[];}catch(e){cart=[];}
@@ -4995,7 +4995,7 @@ function checkout(){if(!cart.length){alert("Your cart is empty.");return;}var a=
 function start(){render();scan();new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start);else start();
 })();
-<\/script>\`;
+<\/script>`;
   return html.replace(/<\/body\s*>/i,runtime+"\n</body>");
 }
 
