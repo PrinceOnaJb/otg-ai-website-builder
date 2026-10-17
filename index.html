@@ -271,7 +271,12 @@ async function loadAcademyPanelData(key,content){
  }
  if(activeUser){
   try{
-   const {data:roleProfile,error:roleProfileError}=await db.from("profiles").select("role,approval_status").eq("id",activeUser.id).maybeSingle();
+   const roleLookup=await Promise.race([
+    db.from("profiles").select("role,approval_status").eq("id",activeUser.id).maybeSingle(),
+    new Promise(resolve=>setTimeout(()=>resolve({data:null,error:{message:"Profile lookup timed out"}}),5000))
+   ]);
+   const roleProfile=roleLookup&&roleLookup.data;
+   const roleProfileError=roleLookup&&roleLookup.error;
    if(!roleProfileError&&roleProfile){
     admin=String(roleProfile.role||"").toLowerCase()==="admin" && String(roleProfile.approval_status||"").toLowerCase()==="approved";
     window.otgAcademyIsAdmin=admin;
@@ -292,7 +297,7 @@ async function loadAcademyPanelData(key,content){
  const appendLessonInline=(parent,value)=>{const text=String(value==null?"":value);const pattern=/\*\*[^*]+\*\*|\*[^*]+\*/g;let cursor=0,match;while((match=pattern.exec(text))){if(match.index>cursor)parent.appendChild(document.createTextNode(text.slice(cursor,match.index)));const token=match[0];const node=document.createElement(token.startsWith("**")?"strong":"em");node.textContent=token.startsWith("**")?token.slice(2,-2):token.slice(1,-1);parent.appendChild(node);cursor=pattern.lastIndex;}if(cursor<text.length)parent.appendChild(document.createTextNode(text.slice(cursor)));};
  content.querySelectorAll(".otg-academy-data-area").forEach(el=>el.remove());
  const cleanLessonText=v=>String(v==null?"":v).replace(/^\s*(?:lesson\s*title|title|course\s*name|course|short\s*description|description|lesson\s*notes|notes)\s*:\s*/i,"").trim();
- const area=document.createElement("div");area.className="otg-academy-data-area";area.style.cssText="margin-top:24px;padding-top:20px;border-top:1px solid #e2e8f0";content.appendChild(area);
+ const area=document.createElement("div");area.className="otg-academy-data-area";area.style.cssText="margin-top:24px;padding-top:20px;border-top:1px solid #e2e8f0;min-height:48px";area.setAttribute("aria-live","polite");area.innerHTML='<p style="padding:12px;border-radius:10px;background:#f8fafc;color:#475569">Loading your OTG learning data…</p>';content.appendChild(area);
 
  if(key==="portfolio"){
   if(!activeUser){area.textContent="Please log in to manage your portfolio.";return;}
