@@ -5665,7 +5665,7 @@ function otgGetColourPalette(){
   const primary=(document.getElementById("otgPrimaryColour")||{}).value||base.primary;
   const accent=(document.getElementById("otgAccentColour")||{}).value||base.accent;
   const background=(document.getElementById("otgBackgroundColour")||{}).value||base.background;
-  return {label:base.label,primary:primary,accent:accent,background:background,category:category};
+  return {label:preset==="custom"?"Custom colours":base.label,primary:primary,accent:accent,background:background,category:category};
 }
 function otgUpdateColourControls(categoryChanged){
   const category=document.getElementById("otgBusinessCategory");
