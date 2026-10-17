@@ -1116,6 +1116,35 @@ async function loadAcademyPanelData(key,content){
     area.appendChild(grid);
    }
   }
+
+  if(userId){
+   const ordersTitle=document.createElement("h3");ordersTitle.textContent="Store Orders";ordersTitle.style.cssText="margin:28px 0 8px;color:#172554";area.appendChild(ordersTitle);
+   const ordersIntro=document.createElement("p");ordersIntro.textContent="Orders customers place directly on your published websites appear here. Confirm delivery and payment with each customer.";ordersIntro.style.cssText="margin:0 0 14px;color:#64748b;line-height:1.6";area.appendChild(ordersIntro);
+   const ordersBox=document.createElement("div");ordersBox.style.cssText="display:grid;gap:12px";area.appendChild(ordersBox);
+   const {data:storeOrders,error:storeOrdersError}=await db.from("store_orders").select("id,project_id,buyer_name,buyer_phone,delivery_address,items,total,status,created_at").eq("seller_id",userId).order("created_at",{ascending:false}).limit(50);
+   if(storeOrdersError){const p=document.createElement("p");p.textContent="Store orders could not load: "+storeOrdersError.message;ordersBox.appendChild(p);}
+   else if(!storeOrders||!storeOrders.length){const p=document.createElement("p");p.textContent="No website orders yet. Orders from your published store checkout will appear here.";p.style.cssText="padding:16px;border:1px dashed #cbd5e1;border-radius:10px;color:#64748b";ordersBox.appendChild(p);}
+   else storeOrders.forEach(order=>{
+    const card=document.createElement("article");card.style.cssText="padding:16px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;display:grid;gap:8px";
+    const top=document.createElement("div");top.style.cssText="display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;align-items:center";
+    const buyer=document.createElement("strong");buyer.textContent=order.buyer_name+" · "+order.buyer_phone;
+    const status=document.createElement("span");status.textContent=String(order.status||"new").toUpperCase();status.style.cssText="font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px;background:#eff6ff;color:#1d4ed8";
+    top.append(buyer,status);card.appendChild(top);
+    const address=document.createElement("p");address.textContent="Delivery / notes: "+order.delivery_address;address.style.cssText="margin:0;color:#475569;line-height:1.5";card.appendChild(address);
+    const items=document.createElement("div");items.style.cssText="font-size:13px;line-height:1.7;color:#334155";
+    (Array.isArray(order.items)?order.items:[]).forEach(item=>{const line=document.createElement("div");line.textContent="• "+String(item.name||"Product")+" × "+Number(item.quantity||1)+" — ₦"+Number(item.unit_price||0).toLocaleString("en-NG");items.appendChild(line);});
+    card.appendChild(items);
+    const total=document.createElement("strong");total.textContent="Customer estimate: ₦"+Number(order.total||0).toLocaleString("en-NG",{maximumFractionDigits:2});card.appendChild(total);
+    const date=document.createElement("small");date.textContent=order.created_at?new Date(order.created_at).toLocaleString():"";date.style.color="#64748b";card.appendChild(date);
+    const actions=document.createElement("div");actions.style.cssText="display:flex;gap:8px;align-items:center;flex-wrap:wrap";
+    const select=document.createElement("select");select.style.cssText="padding:9px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#172554";
+    [["new","New order"],["confirmed","Confirmed"],["processing","Processing"],["shipped","Shipped"],["completed","Completed"],["cancelled","Cancelled"]].forEach(pair=>{const opt=document.createElement("option");opt.value=pair[0];opt.textContent=pair[1];select.appendChild(opt);});
+    select.value=order.status||"new";
+    const update=document.createElement("button");update.type="button";update.textContent="Update status";update.style.cssText="padding:9px 12px;border:0;border-radius:8px;background:#123b78;color:#fff;font-weight:800;cursor:pointer";
+    update.onclick=async()=>{update.disabled=true;update.textContent="Saving…";const {error}=await db.from("store_orders").update({status:select.value}).eq("id",order.id).eq("seller_id",userId);if(error){window.alert("Order status could not be updated: "+error.message);update.disabled=false;update.textContent="Update status";}else{status.textContent=select.options[select.selectedIndex].text.toUpperCase();update.textContent="Saved ✓";update.disabled=false;}};
+    actions.append(select,update);card.appendChild(actions);ordersBox.appendChild(card);
+   });
+  }
  }else if(key==="analytics"){
   const heading=document.createElement("h3");heading.textContent="Your website and learning analytics";heading.style.cssText="margin:0 0 8px;color:#172554";area.appendChild(heading);
   const intro=document.createElement("p");intro.textContent="These figures come from your saved OTG Academy activity and recorded visits to your published websites.";intro.style.cssText="margin:0 0 16px;color:#64748b;line-height:1.7";area.appendChild(intro);
@@ -7598,25 +7627,70 @@ function renderPublicSite(data, products){
   panel.id="otgPublicCartPanel";
   panel.setAttribute("aria-label","Shopping cart");
   panel.style.cssText="position:fixed;z-index:2147483001;right:0;top:0;height:100dvh;width:min(420px,100vw);box-sizing:border-box;background:#fff;color:#202124;box-shadow:-8px 0 32px rgba(0,0,0,.2);transform:translateX(105%);transition:transform .22s;display:flex;flex-direction:column;font:14px Arial,Helvetica,sans-serif";
-  panel.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;padding:17px;border-bottom:1px solid #e5e7eb"><strong style="font-size:20px">Your shopping cart</strong><button type="button" id="otgPublicCartClose" aria-label="Close cart" style="border:0;background:#f3f4f6;border-radius:50%;width:34px;height:34px;font-size:18px;cursor:pointer">×</button></div><div id="otgPublicCartItems" style="overflow:auto;flex:1;padding:14px"></div><div style="padding:15px;border-top:1px solid #e5e7eb;display:grid;gap:10px"><label style="display:grid;gap:5px;font-size:12px;color:#6b7280">Your name (optional)<input id="otgPublicBuyerName" maxlength="80" placeholder="Enter your name" style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #d1d5db;border-radius:7px"></label><label style="display:grid;gap:5px;font-size:12px;color:#6b7280">Delivery address, size or colour (optional)<input id="otgPublicBuyerNote" maxlength="300" placeholder="Add order details" style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #d1d5db;border-radius:7px"></label><div id="otgPublicCartTotal" style="font-size:18px;font-weight:900">Total: ₦0</div><button id="otgPublicCheckout" type="button" style="border:0;border-radius:7px;padding:13px;background:#f68b1e;color:#fff;font-weight:900;font-size:14px;cursor:pointer">Continue to WhatsApp</button><small style="color:#6b7280;line-height:1.5">Your order request will be sent to the seller. Payment and delivery are confirmed directly with the seller.</small></div>';
+  panel.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;padding:17px;border-bottom:1px solid #e5e7eb"><strong style="font-size:20px">Your shopping cart</strong><button type="button" id="otgPublicCartClose" aria-label="Close cart" style="border:0;background:#f3f4f6;border-radius:50%;width:34px;height:34px;font-size:18px;cursor:pointer">×</button></div><div id="otgPublicCartItems" style="overflow:auto;flex:1;padding:14px"></div><div style="padding:15px;border-top:1px solid #e5e7eb;display:grid;gap:10px"><label style="display:grid;gap:5px;font-size:12px;color:#6b7280">Your full name<input id="otgPublicBuyerName" maxlength="100" required placeholder="Enter your full name" style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #d1d5db;border-radius:7px"></label><label style="display:grid;gap:5px;font-size:12px;color:#6b7280">Phone number<input id="otgPublicBuyerPhone" type="tel" maxlength="30" required placeholder="Your phone number" style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #d1d5db;border-radius:7px"></label><label style="display:grid;gap:5px;font-size:12px;color:#6b7280">Delivery address / order notes<textarea id="otgPublicBuyerNote" maxlength="500" required placeholder="Enter delivery address and any size or colour details" style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #d1d5db;border-radius:7px;min-height:70px;resize:vertical"></textarea></label><div id="otgPublicCartTotal" style="font-size:18px;font-weight:900">Estimated total: ₦0</div><button id="otgPublicCheckout" type="button" style="border:0;border-radius:7px;padding:13px;background:#15803d;color:#fff;font-weight:900;font-size:14px;cursor:pointer">Place Order on Website</button><button id="otgPublicWhatsAppCheckout" type="button" style="border:1px solid #15803d;border-radius:7px;padding:12px;background:#fff;color:#15803d;font-weight:800;font-size:13px;cursor:pointer">Order via WhatsApp instead</button><small style="color:#6b7280;line-height:1.5">This places an order request on the website. The seller will confirm availability, final total, delivery and payment. Online card payments are not enabled yet.</small></div>';
   document.body.append(cartToggle,panel);
   cartToggle.onclick=function(){panel.style.transform="translateX(0)";};
   panel.querySelector("#otgPublicCartClose").onclick=function(){panel.style.transform="translateX(105%)";};
-  panel.querySelector("#otgPublicCheckout").onclick=function(){
+  async function sendOrderToWhatsApp(){
     if(!cart.length){window.alert("Your cart is empty. Add a product first.");return;}
     const phoneNumbers=Array.from(new Set(cart.map(function(item){return getPhone(item.phone)||sitePhone;}).filter(Boolean)));
-    if(!phoneNumbers.length){window.alert("The seller has not added a WhatsApp number yet. Please contact the seller using the contact details on this website.");return;}
-    if(phoneNumbers.length>1){window.alert("Your cart contains products with different seller WhatsApp numbers. Please remove items from other sellers and check out one seller at a time.");return;}
-    const phone=phoneNumbers[0];
-    const buyer=panel.querySelector("#otgPublicBuyerName").value.trim();
-    const note=panel.querySelector("#otgPublicBuyerNote").value.trim();
-    let message="Hello, I would like to place an order from "+String(data.title||"your store")+":\n\n";
+    if(!phoneNumbers.length){window.alert("The seller has not added a WhatsApp number yet. Please use the website order option or contact the seller directly.");return;}
+    if(phoneNumbers.length>1){window.alert("Your cart contains products with different seller WhatsApp numbers. Please check out one seller at a time.");return;}
+    const phone=phoneNumbers[0],buyer=panel.querySelector("#otgPublicBuyerName").value.trim(),note=panel.querySelector("#otgPublicBuyerNote").value.trim(),buyerPhone=panel.querySelector("#otgPublicBuyerPhone").value.trim();
+    let message="Hello, I would like to order from "+String(data.title||"your store")+":\n\n";
     cart.forEach(function(item){message+="• "+item.name+" × "+Number(item.qty||1)+" — "+(item.price?money(item.price*Number(item.qty||1)):(item.priceText||"Price on request"))+"\n";});
     message+="\nEstimated total: "+money(cartTotal());
     if(buyer)message+="\nCustomer: "+buyer;
-    if(note)message+="\nDelivery / size / colour: "+note;
+    if(buyerPhone)message+="\nPhone: "+buyerPhone;
+    if(note)message+="\nDelivery / order details: "+note;
     message+="\n\nPlease confirm availability, delivery and payment details.";
     window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(message),"_blank","noopener,noreferrer");
+  }
+  panel.querySelector("#otgPublicWhatsAppCheckout").onclick=sendOrderToWhatsApp;
+  panel.querySelector("#otgPublicCheckout").onclick=async function(){
+    if(!cart.length){window.alert("Your cart is empty. Add a product first.");return;}
+    const buyer=panel.querySelector("#otgPublicBuyerName").value.trim();
+    const buyerPhone=panel.querySelector("#otgPublicBuyerPhone").value.trim();
+    const note=panel.querySelector("#otgPublicBuyerNote").value.trim();
+    if(buyer.length<2){window.alert("Please enter your full name.");return;}
+    if(buyerPhone.replace(/\D/g,"").length<7){window.alert("Please enter a valid phone number.");return;}
+    if(note.length<5){window.alert("Please enter your delivery address or order details.");return;}
+    if(!data.user_id){window.alert("This store owner could not be verified. Please contact the seller.");return;}
+    const button=panel.querySelector("#otgPublicCheckout");
+    button.disabled=true;button.textContent="Placing your order…";
+    try{
+      const orderItems=cart.map(function(item){return {product_id:String(item.id||""),name:String(item.name||"Product").slice(0,140),quantity:Math.max(1,Math.min(99,Number(item.qty)||1)),unit_price:Number(item.price)||0,price_text:String(item.priceText||"").slice(0,80)};});
+      const {error}=await supabaseClient.from("store_orders").insert({
+        project_id:data.id,
+        seller_id:data.user_id,
+        buyer_name:buyer,
+        buyer_phone:buyerPhone,
+        delivery_address:note,
+        items:orderItems,
+        total:Number(cartTotal().toFixed(2))
+      });
+      if(error)throw error;
+      cart=[];
+      saveCart();
+      renderCart();
+      panel.querySelector("#otgPublicBuyerName").value="";
+      panel.querySelector("#otgPublicBuyerPhone").value="";
+      panel.querySelector("#otgPublicBuyerNote").value="";
+      const itemsBox=panel.querySelector("#otgPublicCartItems");
+      itemsBox.replaceChildren();
+      const success=document.createElement("div");
+      success.style.cssText="margin:12px;padding:18px;border:1px solid #bbf7d0;border-radius:10px;background:#f0fdf4;color:#166534;line-height:1.6";
+      const title=document.createElement("strong");title.textContent="Order placed successfully!";
+      const message=document.createElement("p");message.textContent="Your order request has been sent to the seller's OTG store inbox. The seller will contact you to confirm the order, final price, delivery and payment.";
+      message.style.margin="8px 0 0";
+      success.append(title,message);itemsBox.appendChild(success);
+      panel.querySelector("#otgPublicCartTotal").textContent="Order submitted";
+      button.textContent="Order placed ✓";
+    }catch(error){
+      console.error("OTG website checkout failed:",error);
+      window.alert("We could not save your order. Please try again. "+(error&&error.message?error.message:""));
+      button.disabled=false;button.textContent="Place Order on Website";
+    }
   };
   function money(value){return "₦"+Number(value||0).toLocaleString("en-NG",{maximumFractionDigits:2});}
   function renderCart(){
@@ -7704,7 +7778,7 @@ async function checkPublicSite(){
     await supabaseClient
       .from("projects")
       .select(
-        "id,title,slug,html,css,js,is_published"
+        "id,user_id,title,slug,html,css,js,is_published"
       )
       .eq(
         "slug",
