@@ -12,7 +12,9 @@ export default async function handler(req, res) {
       html = "",
       css = "",
       js = "",
-      whatsappNumber = ""
+      whatsappNumber = "",
+      businessCategory = "general",
+      colorTheme = {}
     } = req.body || {};
 
     if (!prompt || !prompt.trim()) {
@@ -103,6 +105,28 @@ export default async function handler(req, res) {
     const normalizedWhatsApp =
       normalizeWhatsApp(whatsappNumber);
 
+    function safeHex(value, fallback) {
+      return /^#[0-9a-f]{6}$/i.test(String(value || "")) ? String(value) : fallback;
+    }
+
+    const selectedTheme = {
+      primary: safeHex(colorTheme && colorTheme.primary, "#14213d"),
+      accent: safeHex(colorTheme && colorTheme.accent, "#c9a227"),
+      background: safeHex(colorTheme && colorTheme.background, "#f8fafc"),
+      label: String(colorTheme && colorTheme.label || "Professional colour palette").slice(0, 100),
+      category: String(businessCategory || "general").slice(0, 80)
+    };
+
+    const colourInstruction = `
+BUSINESS CATEGORY: ${selectedTheme.category}
+SELECTED COLOUR PALETTE: ${selectedTheme.label}
+EXACT COLOURS TO USE:
+- Main brand colour: ${selectedTheme.primary}
+- Buttons and highlights: ${selectedTheme.accent}
+- Page background: ${selectedTheme.background}
+Use these exact colours consistently across the website. Keep text readable with strong contrast. The first hero section, headings, buttons, links, product cards, badges, and mobile layout should feel coordinated. Do not substitute a different palette. The business category is context for the design, not permission to stereotype customers; keep the design professional and appropriate to the products.
+`;
+
     const systemInstruction = `
 You are OTG AI Website Assistant.
 
@@ -149,6 +173,8 @@ HTML RULES:
 Selected design style: ${style}.
 Apply this style deliberately to the layout, typography, spacing, components, and colours.
 
+${colourInstruction}
+
 IMPORTANT WHATSAPP RULES:
 
 - Never invent a WhatsApp number.
@@ -167,6 +193,10 @@ ${prompt}
 Selected design style:
 
 ${style}
+
+Business category and required brand colours:
+
+${colourInstruction}
 
 Current HTML:
 
