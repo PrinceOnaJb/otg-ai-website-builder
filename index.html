@@ -6108,6 +6108,8 @@ async function previewWebsite(){
 
     products.forEach(function(product){
       const card=doc.createElement("article");
+      card.className="product-card";
+      card.setAttribute("data-product-card","true");
       card.style.cssText="min-width:0;overflow:hidden;border:1px solid #e2e8f0;border-radius:14px;background:#fff;box-shadow:0 6px 20px rgba(15,23,42,.07)";
 
       const imageURL=String(product.image_url||"");
@@ -6141,6 +6143,8 @@ async function previewWebsite(){
 
       if(product.price){
         const price=doc.createElement("p");
+        price.className="product-price";
+        price.setAttribute("data-product-price","true");
         price.textContent=String(product.price);
         price.style.cssText="margin:0;font-size:17px;font-weight:850;color:#075b24";
         details.appendChild(price);
