@@ -9270,7 +9270,7 @@ supabaseClient
     var button=event.target&&event.target.closest?event.target.closest(".academy-nav"):null;
     if(!button)return;
     var source=button.getAttribute("onclick")||"";
-    var match=source.match(/openAcademyPanel\\(\\s*['"]([^'"]+)['"]/);
+    var match=source.match(/openAcademyPanel\(\s*['"]([^'"]+)['"]/);
     var key=match?match[1]:"";
     if(!key&&source.indexOf("submission-review")!==-1)key=window.otgAcademyIsAdmin===true?"submission-review":"assignments";
     if(!key)return;
