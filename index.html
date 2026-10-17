@@ -8461,10 +8461,10 @@ function ensureAdminPanel(){
       '#otgAdminApprovalPanel .otg-ap-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:15px 20px;border-bottom:1px solid #e9e4d7;background:#fffdf8}' +
       '#otgAdminApprovalPanel .otg-ap-count{font-size:13px;line-height:1.7;color:#345443;font-weight:800}' +
       '#otgAdminApprovalPanel #otgRefreshApprovals{margin:0!important;padding:10px 15px!important;border:1px solid #c5a044!important;border-radius:10px!important;background:#e2c267!important;color:#173b2a!important;font-size:13px;font-weight:850;cursor:pointer;box-shadow:0 3px 8px rgba(18,59,40,.08)}' +
-      '#otgAdminApprovalPanel #otgApprovalList{padding:8px 16px 16px}' +
-      '#otgAdminApprovalPanel .otg-ap-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px;padding:16px 4px;border-bottom:1px solid #edf1f6}' +
-      '#otgAdminApprovalPanel .otg-ap-row:last-child{border-bottom:0}' +
-      '#otgAdminApprovalPanel .otg-ap-email{display:block;min-width:0;font-size:14px;line-height:1.5;font-weight:750;color:#1e293b;overflow-wrap:anywhere;word-break:break-word}' +
+      '#otgAdminApprovalPanel #otgApprovalList{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));align-items:stretch;gap:12px;padding:14px 16px 18px}' +
+      '#otgAdminApprovalPanel .otg-ap-row{display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:12px;padding:16px;border:1px solid #e3e9df;border-radius:14px;background:#fff;box-shadow:0 3px 10px rgba(18,59,40,.04);min-width:0}' +
+      '#otgAdminApprovalPanel .otg-ap-row:last-child{border-bottom:1px solid #e3e9df}' +
+      '#otgAdminApprovalPanel .otg-ap-name{display:block;min-width:0;font-size:15px;line-height:1.45;font-weight:850;color:#1e293b;overflow-wrap:anywhere;word-break:break-word}' + '#otgAdminApprovalPanel .otg-ap-email{display:block;min-width:0;margin-top:4px;font-size:12px;line-height:1.45;font-weight:500;color:#64748b;overflow-wrap:anywhere;word-break:break-word}' +
       '#otgAdminApprovalPanel .otg-ap-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:7px}' +
       '#otgAdminApprovalPanel .otg-ap-status{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;font-size:11px;line-height:1.2;font-weight:800;text-transform:capitalize}' +
       '#otgAdminApprovalPanel .otg-ap-status.approved{background:#dff4e5;color:#17613b}' +
@@ -8476,7 +8476,7 @@ function ensureAdminPanel(){
       '#otgAdminApprovalPanel .otg-ap-approve{background:#17613b;color:#fff}' +
       '#otgAdminApprovalPanel .otg-ap-reject{background:#fff;color:#b4232c;border-color:#f1c4c7}' +
       '#otgAdminApprovalPanel .otg-ap-empty{padding:28px 12px;text-align:center;color:#617568;font-size:14px;line-height:1.7}' +
-      '@media(max-width:560px){#otgAdminApprovalPanel{width:calc(100% - 16px);margin:12px auto 20px;border-radius:14px!important}#otgAdminApprovalPanel .otg-ap-head{padding:18px 16px 15px}#otgAdminApprovalPanel .otg-ap-tools{padding:12px 14px}#otgAdminApprovalPanel #otgApprovalList{padding:4px 12px 12px}#otgAdminApprovalPanel .otg-ap-row{grid-template-columns:minmax(0,1fr);gap:11px;padding:15px 2px}#otgAdminApprovalPanel .otg-ap-actions{justify-content:flex-start}#otgAdminApprovalPanel .otg-ap-action{min-height:36px;padding:9px 13px}}' +
+      '@media(max-width:560px){#otgAdminApprovalPanel{width:calc(100% - 16px);margin:12px auto 20px;border-radius:14px!important}#otgAdminApprovalPanel .otg-ap-head{padding:18px 16px 15px}#otgAdminApprovalPanel .otg-ap-tools{padding:12px 14px}#otgAdminApprovalPanel #otgApprovalList{grid-template-columns:minmax(0,1fr);padding:10px 12px 14px;gap:10px}#otgAdminApprovalPanel .otg-ap-row{gap:11px;padding:14px}#otgAdminApprovalPanel .otg-ap-actions{justify-content:flex-start}#otgAdminApprovalPanel .otg-ap-action{min-height:36px;padding:9px 13px}}' +
       '</style><header class="otg-ap-head"><p class="otg-ap-kicker">OTG GRAPHIC ACADEMY · ADMIN CONTROL CENTRE</p><h2>Student account approvals</h2><p class="otg-ap-desc">Review new registrations, manage student access and keep the Student Hub secure. Only approved students can enter the learning workspace.</p></header><div class="otg-ap-tools"><span id="otgApprovalCount" class="otg-ap-count">Loading student accounts…</span><button type="button" id="otgRefreshApprovals">↻ Refresh list</button></div><div id="otgApprovalList" aria-live="polite"><div class="otg-ap-empty">Loading student accounts…</div></div>';
     const app = $("app");
     const academyDashboard = $("academyDashboard");
@@ -8510,6 +8510,11 @@ async function loadAdminApprovals(){
     list.innerHTML = '<div class="otg-ap-empty">No student accounts have registered yet.</div>';
     return;
   }
+  const studentNames = new Map();
+  try{
+    const {data: identityRows,error: identityError} = await supabaseClient.from("academy_student_profiles").select("user_id,display_name").in("user_id",data.map(profile => profile.id));
+    if(!identityError) (identityRows || []).forEach(identity => { const displayName = String(identity.display_name || "").trim(); if(displayName) studentNames.set(identity.user_id,displayName); });
+  }catch(identityError){ console.warn("OTG admin student names could not load; showing email addresses instead:",identityError); }
   const approvedCount = data.filter(p => String(p.approval_status || "").toLowerCase() === "approved").length;
   const pendingCount = data.filter(p => String(p.approval_status || "").toLowerCase() !== "approved" && String(p.approval_status || "").toLowerCase() !== "rejected").length;
   const rejectedCount = data.filter(p => String(p.approval_status || "").toLowerCase() === "rejected").length;
@@ -8520,7 +8525,10 @@ async function loadAdminApprovals(){
     row.className = "otg-ap-row";
     const info = document.createElement("div");
     info.style.minWidth = "0";
-    const email = document.createElement("strong");
+    const studentName = document.createElement("strong");
+    studentName.className = "otg-ap-name";
+    studentName.textContent = studentNames.get(profile.id) || (profile.email ? profile.email.split("@")[0].replace(/[._-]+/g," ") : "Student name unavailable");
+    const email = document.createElement("span");
     email.className = "otg-ap-email";
     email.textContent = profile.email || "Student email unavailable";
     const meta = document.createElement("div");
@@ -8539,7 +8547,7 @@ async function loadAdminApprovals(){
         meta.appendChild(joined);
       }
     }
-    info.append(email,meta);
+    info.append(studentName,email,meta);
     const actions = document.createElement("div");
     actions.className = "otg-ap-actions";
     if(rawStatus !== "approved"){
