@@ -184,6 +184,81 @@ function initOtgAcademyQuickFind(){
 
 if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",initOtgAcademyQuickFind,{once:true});}else{initOtgAcademyQuickFind();}
 
+/* OTG resume protection: remember the active panel, scroll, and unfinished form values
+   when a mobile browser backgrounds or suspends the app. This is session-only. */
+(function(){
+ const STATE_KEY="otgAcademyResumeState:v1";
+ function currentPanelKey(){
+  const active=document.querySelector(".academy-nav.active");
+  const onclick=active&&(active.getAttribute("onclick")||"");
+  const match=onclick&&onclick.match(/openAcademyPanel\(['"]([^'"]+)['"]/);
+  return match?match[1]:"";
+ }
+ function getFieldKey(el,index){
+  if(el.id)return "id:"+el.id;
+  if(el.name)return "name:"+el.name+"#"+index;
+  return "field:"+index;
+ }
+ function saveState(){
+  try{
+   const fields=[];
+   document.querySelectorAll("#academyPanelContent input, #academyPanelContent textarea, #academyPanelContent select").forEach(function(el,index){
+    const type=(el.type||"").toLowerCase();
+    if(["password","file","button","submit","reset"].includes(type)||el.disabled)return;
+    const form=el.closest("form");
+    if(form&&form.dataset&&form.dataset.submitted==="true")return;
+    fields.push({key:getFieldKey(el,index),tag:el.tagName,type:type,value:(type==="checkbox"||type==="radio")?!!el.checked:el.value});
+   });
+   sessionStorage.setItem(STATE_KEY,JSON.stringify({
+    path:location.pathname+location.search,
+    panel:currentPanelKey(),
+    scrollY:window.scrollY||window.pageYOffset||0,
+    fields:fields,
+    savedAt:Date.now()
+   }));
+  }catch(e){/* Storage can be unavailable in private/restricted browsing. */}
+ }
+ function restoreFields(state){
+  if(!state||!Array.isArray(state.fields))return;
+  const elements=Array.from(document.querySelectorAll("#academyPanelContent input, #academyPanelContent textarea, #academyPanelContent select"));
+  elements.forEach(function(el,index){
+   const key=getFieldKey(el,index),saved=state.fields.find(function(item){return item.key===key;});
+   if(!saved||el.disabled)return;
+   const type=(el.type||"").toLowerCase();
+   if(["password","file","button","submit","reset"].includes(type))return;
+   const form=el.closest("form");
+   if(form&&form.dataset&&form.dataset.submitted==="true")return;
+   if((type==="checkbox"||type==="radio")){
+    if(!el.checked)el.checked=!!saved.value;
+   }else if(!el.value && saved.value!==undefined){
+    el.value=saved.value;
+    el.dispatchEvent(new Event("input",{bubbles:true}));
+    el.dispatchEvent(new Event("change",{bubbles:true}));
+   }
+  });
+ }
+ function restoreState(){
+  let state;
+  try{state=JSON.parse(sessionStorage.getItem(STATE_KEY)||"null");}catch(e){return;}
+  if(!state||state.path!==location.pathname+location.search)return;
+  if(state.panel&&typeof window.openAcademyPanel==="function"){
+   const nav=Array.from(document.querySelectorAll(".academy-nav")).find(function(el){
+    return (el.getAttribute("onclick")||"").includes("openAcademyPanel('"+state.panel+"'")||
+      (el.getAttribute("onclick")||"").includes('openAcademyPanel("'+state.panel+'"');
+   });
+   window.openAcademyPanel(state.panel,nav||null);
+  }
+  /* Panel content is loaded asynchronously, so restore drafts after it is rebuilt. */
+  window.setTimeout(function(){restoreFields(state);},700);
+  window.setTimeout(function(){restoreFields(state);window.scrollTo(0,Math.max(0,Number(state.scrollY)||0));},1600);
+ }
+ document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")saveState();});
+ window.addEventListener("pagehide",saveState);
+ window.addEventListener("beforeunload",saveState);
+ window.addEventListener("load",function(){window.setTimeout(restoreState,250);},{once:true});
+ window.otgSaveResumeState=saveState;
+})(); 
+
 function openAcademyPanel(key,button){
  const panel=academyPanels[key]||academyPanels.home;
  if(typeof window.otgLogAcademyActivity==="function"){
