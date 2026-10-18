@@ -1,4 +1,4 @@
-const CACHE_NAME = "otg-academy-v41";
+const CACHE_NAME = "otg-academy-v42";
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
@@ -8,13 +8,19 @@ const FILES_TO_CACHE = [
   "/otg-app-icon-512.png"
 ];
 
+self.addEventListener("message", event => {
+  if (event.data && event.data.type === "OTG_SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(FILES_TO_CACHE))
       .catch(() => Promise.resolve())
   );
-  self.skipWaiting();
+  // Wait for the user to choose Update in the Student Hub before activating a new version.
 });
 
 self.addEventListener("activate", event => {
