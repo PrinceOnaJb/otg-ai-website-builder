@@ -1024,6 +1024,48 @@ async function loadAcademyPanelData(key,content){
     applyReviewFilters();
    }
   }
+  if(admin&&key==="submission-review"){
+   const verificationPanel=document.createElement("section");verificationPanel.style.cssText="margin-top:28px;padding-top:20px;border-top:2px solid #c7d2fe";
+   const verificationTitle=document.createElement("h3");verificationTitle.textContent="AI verification tracking by student and question";verificationTitle.style.cssText="color:#312e81;margin:0 0 8px";
+   const verificationHint=document.createElement("p");verificationHint.textContent="Record whether each required question has been checked. These records are separate from the existing submission marks and feedback.";verificationHint.style.cssText="color:#64748b;line-height:1.6";
+   const verificationList=document.createElement("div");verificationList.style.cssText="display:grid;gap:12px";
+   verificationPanel.append(verificationTitle,verificationHint,verificationList);area.appendChild(verificationPanel);
+   const {data:verificationSubs,error:verificationSubsError}=await db.from("academy_submissions").select("id,assignment_id,student_id,submission_text,submitted_at").order("submitted_at",{ascending:false});
+   if(verificationSubsError){verificationList.textContent="Verification records could not load: "+verificationSubsError.message;}
+   else if(!verificationSubs||!verificationSubs.length){verificationList.textContent="Student submissions will appear here when received.";}
+   else{
+    const vAssignmentIds=[...new Set(verificationSubs.map(item=>item.assignment_id))],vSubmissionIds=verificationSubs.map(item=>item.id),vStudentIds=[...new Set(verificationSubs.map(item=>item.student_id))];
+    const [{data:vPolicies,error:vPoliciesError},{data:vRecords,error:vRecordsError},{data:vProfiles},{data:vAssignments}]=await Promise.all([
+     db.from("academy_assignment_question_policies").select("assignment_id,question_number,verification_enabled,verification_method,require_explanation,required_evidence").in("assignment_id",vAssignmentIds),
+     db.from("academy_submission_question_verifications").select("id,submission_id,question_number,status,evidence_reviewed,reviewer_notes,reviewed_at").in("submission_id",vSubmissionIds),
+     db.from("profiles").select("id,email").in("id",vStudentIds),
+     db.from("academy_assignments").select("id,title").in("id",vAssignmentIds)
+    ]);
+    if(vPoliciesError||vRecordsError){verificationList.textContent="Tracking tables are not ready. Run both question-verification SQL migrations in the Supabase SQL Editor. "+((vPoliciesError||vRecordsError).message||"");}
+    else{
+     const vPolicyMap=new Map();(vPolicies||[]).filter(p=>p.verification_enabled||p.require_explanation||(p.required_evidence||[]).length).forEach(p=>{const id=String(p.assignment_id);if(!vPolicyMap.has(id))vPolicyMap.set(id,[]);vPolicyMap.get(id).push(p);});
+     const vRecordMap=new Map((vRecords||[]).map(r=>[String(r.submission_id)+":"+r.question_number,r]));
+     const vProfileMap=new Map((vProfiles||[]).map(p=>[String(p.id),p.email||"Student"])),vAssignmentMap=new Map((vAssignments||[]).map(a=>[String(a.id),a.title||"Assignment"]));
+     let rendered=0;
+     verificationSubs.forEach(sub=>{const policies=vPolicyMap.get(String(sub.assignment_id))||[];if(!policies.length)return;rendered++;
+      const card=document.createElement("article");card.style.cssText="padding:14px;border:1px solid #c7d2fe;border-radius:12px;background:#fff;display:grid;gap:10px";
+      const title=document.createElement("strong");title.textContent=(vProfileMap.get(String(sub.student_id))||"Student")+" · "+(vAssignmentMap.get(String(sub.assignment_id))||"Assignment");title.style.cssText="color:#1e1b4b;font-size:14px";card.appendChild(title);
+      policies.sort((a,b)=>Number(a.question_number)-Number(b.question_number)).forEach(policy=>{const key=String(sub.id)+":"+policy.question_number,record=vRecordMap.get(key)||{},row=document.createElement("div");row.style.cssText="display:grid;gap:7px;padding:10px;border:1px solid #e2e8f0;border-radius:9px;background:#f8fafc";
+       const qtitle=document.createElement("strong");qtitle.textContent="Question "+policy.question_number+(policy.verification_enabled?" · Verification required":" · Explanation/evidence required");qtitle.style.cssText="font-size:13px;color:#334155";
+       const controls=document.createElement("div");controls.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px";
+       const status=document.createElement("select");status.style.cssText="padding:9px;border:1px solid #cbd5e1;border-radius:8px;background:#fff";[["pending","Pending review"],["verified","Verified"],["needs_followup","Follow-up required"]].forEach(([value,label])=>{const o=document.createElement("option");o.value=value;o.textContent=label;status.appendChild(o);});status.value=record.status||"pending";
+       const evidenceLabel=document.createElement("label");evidenceLabel.style.cssText="display:flex;gap:7px;align-items:center;font-size:12px;color:#334155";const evidence=document.createElement("input");evidence.type="checkbox";evidence.checked=!!record.evidence_reviewed;evidenceLabel.append(evidence,document.createTextNode("Required evidence reviewed"));
+       const notes=document.createElement("textarea");notes.rows=2;notes.value=record.reviewer_notes||"";notes.placeholder="Lecturer notes for this question (optional)";notes.style.cssText="width:100%;box-sizing:border-box;padding:9px;border:1px solid #cbd5e1;border-radius:8px";
+       const save=document.createElement("button");save.type="button";save.textContent="Save verification";save.style.cssText="justify-self:start;padding:9px 12px;border:0;border-radius:8px;background:#3730a3;color:#fff;font-weight:800;cursor:pointer";
+       const result=document.createElement("span");result.setAttribute("role","status");result.style.cssText="font-size:12px;color:#64748b";
+       save.addEventListener("click",async()=>{save.disabled=true;result.textContent="Saving…";const now=new Date().toISOString();const payload={submission_id:sub.id,assignment_id:sub.assignment_id,student_id:sub.student_id,question_number:Number(policy.question_number),status:status.value,evidence_reviewed:evidence.checked,reviewer_notes:notes.value.trim(),reviewed_by:userId,reviewed_at:status.value==="pending"?null:now,updated_at:now};const {error:saveVerificationError}=await db.from("academy_submission_question_verifications").upsert(payload,{onConflict:"submission_id,question_number"});if(saveVerificationError){result.textContent="Could not save: "+saveVerificationError.message;result.style.color="#b91c1c";}else{result.textContent="Saved · "+new Date().toLocaleTimeString();result.style.color="#166534";}save.disabled=false;});
+       controls.append(status,evidenceLabel);row.append(qtitle,controls,notes,save,result);card.appendChild(row);
+      });verificationList.appendChild(card);
+     });
+     if(!rendered)verificationList.textContent="No submissions currently match an assignment with question verification, explanation, or evidence requirements.";
+    }
+   }
+  }
   if(key==="submission-review")return;
   if(admin&&key==="assignments"){const studentPicker=area.querySelector("#otgAssignmentStudent");const studentPickerMsg=area.querySelector("#otgAssignmentStudentMsg");const {data:approvedStudents,error:studentsError}=await db.from("profiles").select("id,email").eq("role","student").eq("approval_status","approved").order("email");if(studentsError){studentPickerMsg.textContent="Student list could not load: "+studentsError.message;studentPickerMsg.style.color="#b91c1c";}else (approvedStudents||[]).forEach(student=>{const option=document.createElement("option");option.value=student.id;option.textContent=student.email||"Approved student";studentPicker.appendChild(option);});}
   if(admin&&key==="assignments"){
