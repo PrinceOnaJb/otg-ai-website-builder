@@ -50,7 +50,6 @@ begin
         and exists (
           select 1 from public.academy_assignments a
           where a.id = assignment_id and a.is_published = true
-            and (a.assigned_to is null or a.assigned_to = (select auth.uid()))
         )
       );
   end if;
