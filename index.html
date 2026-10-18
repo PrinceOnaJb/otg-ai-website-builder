@@ -2831,6 +2831,23 @@ html{scroll-behavior:auto}
     </div>
   </section>
 
+  <!-- OTG LIVE NEWSPAPER TICKER MARKUP RESTORED -->
+  <section id="otgLiveNewspaperTicker" aria-labelledby="otgLiveNewsHeading" style="box-sizing:border-box;width:min(1200px,calc(100% - 32px));margin:18px auto;padding:16px 18px;border:1px solid #dbe5ef;border-radius:16px;background:linear-gradient(135deg,#f8fbff,#eef5fb);color:#102b46;box-shadow:0 8px 24px rgba(16,43,70,.08);">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+      <div>
+        <p style="margin:0 0 4px;font-size:11px;font-weight:800;letter-spacing:1.5px;color:#176b67;">OTG ACADEMY • LIVE UPDATES</p>
+        <h2 id="otgLiveNewsHeading" style="margin:0;font-size:clamp(18px,2.5vw,23px);line-height:1.25;color:#102b46;">Live News &amp; Announcements</h2>
+      </div>
+      <button id="otgLiveNewsPause" type="button" aria-pressed="false" style="min-height:40px;padding:9px 14px;border:1px solid #c5d5e5;border-radius:10px;background:#fff;color:#173b5e;font-weight:750;cursor:pointer;">Pause headlines</button>
+    </div>
+    <div style="overflow:hidden;position:relative;min-height:48px;border:1px solid #dce7f1;border-radius:10px;background:#fff;">
+      <div id="otgLiveNewsTrack" aria-live="polite" aria-atomic="false" style="display:flex;align-items:center;gap:24px;min-height:48px;padding:10px 14px;color:#173b5e;font-size:14px;line-height:1.5;">
+        <span>Loading the latest OTG Academy updates…</span>
+      </div>
+    </div>
+    <p id="otgLiveNewsStatus" role="status" aria-live="polite" style="margin:9px 2px 0;color:#52677c;font-size:12px;line-height:1.5;">Connecting to OTG Academy news…</p>
+  </section>
+
 </div>
 
 <div id="passwordResetScreen" class="hidden" style="position:fixed;inset:0;z-index:99999;overflow:auto;background:#f3f6fb;padding:24px;box-sizing:border-box;font-family:Arial,sans-serif;">
@@ -9358,23 +9375,13 @@ supabaseClient
 </script>
 
 
-<!-- OTG LIVE NEWSPAPER TICKER MARKUP RESTORED -->
-<section id="otgLiveNewspaperTicker" aria-labelledby="otgLiveNewsHeading" style="box-sizing:border-box;width:min(1200px,calc(100% - 32px));margin:18px auto;padding:16px 18px;border:1px solid #dbe5ef;border-radius:16px;background:linear-gradient(135deg,#f8fbff,#eef5fb);color:#102b46;box-shadow:0 8px 24px rgba(16,43,70,.08);">
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
-    <div>
-      <p style="margin:0 0 4px;font-size:11px;font-weight:800;letter-spacing:1.5px;color:#176b67;">OTG ACADEMY • LIVE UPDATES</p>
-      <h2 id="otgLiveNewsHeading" style="margin:0;font-size:clamp(18px,2.5vw,23px);line-height:1.25;color:#102b46;">Live News &amp; Announcements</h2>
-    </div>
-    <button id="otgLiveNewsPause" type="button" aria-pressed="false" style="min-height:40px;padding:9px 14px;border:1px solid #c5d5e5;border-radius:10px;background:#fff;color:#173b5e;font-weight:750;cursor:pointer;">Pause headlines</button>
-  </div>
-  <div style="overflow:hidden;position:relative;min-height:48px;border:1px solid #dce7f1;border-radius:10px;background:#fff;">
-    <div id="otgLiveNewsTrack" aria-live="polite" aria-atomic="false" style="display:flex;align-items:center;gap:24px;min-height:48px;padding:10px 14px;color:#173b5e;font-size:14px;line-height:1.5;">
-      <span>Loading the latest OTG Academy updates…</span>
-    </div>
-  </div>
-  <p id="otgLiveNewsStatus" role="status" aria-live="polite" style="margin:9px 2px 0;color:#52677c;font-size:12px;line-height:1.5;">Connecting to OTG Academy news…</p>
-</section>
-
+<!-- OTG LIVE NEWS TICKER MOTION -->
+<style id="otg-live-news-ticker-style">
+@keyframes otgNewsTickerScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+#otgLiveNewsTrack { will-change: transform; }
+#otgLiveNewspaperTicker button:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { #otgLiveNewsTrack { animation: none !important; transform: none !important; } }
+</style>
 <!-- OTG LIVE NEWSPAPER TICKER START -->
 <script id="otg-live-newspaper-ticker">
 (function(){
