@@ -184,7 +184,139 @@ function initOtgAcademyQuickFind(){
 
 if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",initOtgAcademyQuickFind,{once:true});}else{initOtgAcademyQuickFind();}
 
+/* OTG resume protection v2: preserve active panel, scroll and unfinished form fields
+   across backgrounding, browser suspension, and page restoration. */
+(function(){
+ const STATE_KEY="otgAcademyResumeState:v2";
+ let restoring=false;
+ function panelKey(){
+  /* Prefer the real panel key used by the renderer. A student's assignment button
+     can still have a legacy inline key of "submission-review" even though the
+     click router correctly opens the "assignments" panel. */
+  const actual=String(window.otgActiveAcademyPanelKey||"");
+  if(actual)return actual;
+  const active=document.querySelector(".academy-nav.active");
+  const source=active&&(active.getAttribute("onclick")||"");
+  const match=source&&source.match(/openAcademyPanel\(['"]([^'"]+)['"]/);
+  let key=match?match[1]:"";
+  if(key==="submission-review"&&window.otgAcademyIsAdmin!==true)key="assignments";
+  return key;
+ }
+ function fieldKey(el,index){return el.id?"id:"+el.id:(el.name?"name:"+el.name+"#"+index:"field:"+index);}
+ function snapshot(){
+  const fields=[];
+  document.querySelectorAll("#academyPanelContent input, #academyPanelContent textarea, #academyPanelContent select").forEach(function(el,index){
+   const type=(el.type||"").toLowerCase();
+   if(["password","file","button","submit","reset"].includes(type)||el.disabled)return;
+   const form=el.closest("form");
+   if(form&&form.dataset&&form.dataset.submitted==="true")return;
+   fields.push({key:fieldKey(el,index),type:type,value:(type==="checkbox"||type==="radio")?!!el.checked:el.value});
+  });
+  return {path:location.pathname+location.search,panel:panelKey(),scrollY:window.scrollY||window.pageYOffset||0,fields:fields,savedAt:Date.now()};
+ }
+ function saveState(){
+  try{
+   const state=snapshot();
+   if(!state.panel){
+    try{const old=JSON.parse(sessionStorage.getItem(STATE_KEY)||"null");if(old&&old.path===state.path)state.panel=old.panel||"";}catch(e){}
+   }
+   state.restorePending=true;
+   sessionStorage.setItem(STATE_KEY,JSON.stringify(state));
+  }catch(e){}
+ }
+ function restoreFields(state){
+  if(!state||!Array.isArray(state.fields))return;
+  const elements=Array.from(document.querySelectorAll("#academyPanelContent input, #academyPanelContent textarea, #academyPanelContent select"));
+  elements.forEach(function(el,index){
+   const saved=state.fields.find(function(item){return item.key===fieldKey(el,index);});
+   if(!saved||el.disabled)return;
+   const type=(el.type||"").toLowerCase();
+   if(["password","file","button","submit","reset"].includes(type))return;
+   const form=el.closest("form");
+   if(form&&form.dataset&&form.dataset.submitted==="true")return;
+   if(type==="checkbox"||type==="radio"){
+    if(!el.checked)el.checked=!!saved.value;
+   }else if(!el.value&&saved.value!==undefined&&saved.value!==null){
+    el.value=saved.value;
+    el.dispatchEvent(new Event("input",{bubbles:true}));
+    el.dispatchEvent(new Event("change",{bubbles:true}));
+   }
+  });
+ }
+ function readState(){
+  try{
+   const state=JSON.parse(sessionStorage.getItem(STATE_KEY)||"null");
+   return state&&state.path===location.pathname+location.search?state:null;
+  }catch(e){return null;}
+ }
+ function restoreState(forcePanel){
+  const state=readState();
+  if(!state)return;
+  const shouldRestorePanel=!!(forcePanel&&state.restorePending&&state.panel);
+  if(shouldRestorePanel&&typeof window.openAcademyPanel==="function"&&panelKey()!==state.panel){
+   const nav=Array.from(document.querySelectorAll(".academy-nav")).find(function(el){
+    const source=el.getAttribute("onclick")||"";
+    return source.includes("openAcademyPanel('"+state.panel+"'")||source.includes('openAcademyPanel("'+state.panel+'"');
+   });
+   restoring=true;
+   try{window.openAcademyPanel(state.panel,nav||null);}catch(e){console.warn("OTG resume panel restore:",e);}
+   restoring=false;
+  }
+  /* The data loader rebuilds panel content asynchronously; retry after it settles. */
+  window.setTimeout(function(){restoreFields(state);},900);
+  window.setTimeout(function(){
+   restoreFields(state);
+   window.scrollTo(0,Math.max(0,Number(state.scrollY)||0));
+   if(forcePanel&&state.restorePending){
+    state.restorePending=false;
+    try{sessionStorage.setItem(STATE_KEY,JSON.stringify(state));}catch(e){}
+   }
+  },1900);
+ }
+ document.addEventListener("click",function(event){
+  const nav=event.target&&event.target.closest?event.target.closest(".academy-nav"):null;
+  if(nav){
+   window.setTimeout(function(){
+    try{const state=snapshot();state.restorePending=false;sessionStorage.setItem(STATE_KEY,JSON.stringify(state));}catch(e){}
+   },80);
+  }
+ },true);
+ window.addEventListener("scroll",function(){
+  if(restoring)return;
+  if(window.otgResumeScrollSaveTimer)return;
+  window.otgResumeScrollSaveTimer=window.setTimeout(function(){
+   window.otgResumeScrollSaveTimer=null;
+   try{
+    const old=readState()||snapshot();
+    old.scrollY=window.scrollY||window.pageYOffset||0;
+    old.savedAt=Date.now();
+    sessionStorage.setItem(STATE_KEY,JSON.stringify(old));
+   }catch(e){}
+  },250);
+ },{passive:true});
+ document.addEventListener("visibilitychange",function(){
+  if(document.visibilityState==="hidden")saveState();
+  else if(document.visibilityState==="visible")restoreState(false);
+ });
+ window.addEventListener("pagehide",saveState);
+ window.addEventListener("beforeunload",saveState);
+ window.addEventListener("pageshow",function(event){
+  /* pageshow also fires when Android restores a discarded/suspended page. */
+  restoreState(!!event.persisted||!!(readState()&&readState().restorePending));
+ });
+ if(document.readyState==="complete"){
+  window.setTimeout(function(){restoreState(!!(readState()&&readState().restorePending));},500);
+ }else{
+  window.addEventListener("load",function(){
+   window.setTimeout(function(){restoreState(!!(readState()&&readState().restorePending));},900);
+   window.setTimeout(function(){restoreState(!!(readState()&&readState().restorePending));},2600);
+  },{once:true});
+ }
+ window.otgSaveResumeState=saveState;
+})(); 
+
 function openAcademyPanel(key,button){
+ window.otgActiveAcademyPanelKey=String(key||"home");
  const panel=academyPanels[key]||academyPanels.home;
  if(typeof window.otgLogAcademyActivity==="function"){
   if(key==="learn"||key==="watch")window.otgLogAcademyActivity("lesson_area_opened",key==="watch"?"Watch & Learn":"Learn");
@@ -925,7 +1057,7 @@ async function loadAcademyPanelData(key,content){
   area.appendChild(progressWrap);
   area.appendChild(list);
  }else if(key==="assignments"||key==="submission-review"){
-  if(admin&&key==="assignments")area.innerHTML='<h3>Create an assignment</h3><form id="otgAssignmentForm" style="display:grid;gap:8px;margin:12px 0"><input name="title" required placeholder="Assignment title" style="padding:10px"><input name="course" placeholder="Course name" style="padding:10px"><label style="display:grid;gap:5px;font-size:13px">Assign to <select name="assigned_to" id="otgAssignmentStudent" style="padding:10px"><option value="">All approved students</option></select></label><small id="otgAssignmentStudentMsg" style="color:#64748b">Choose one student for private questions, or leave the default for everyone.</small><textarea name="instructions" required rows="5" placeholder="Assignment instructions. Put each question on a new line, e.g. Question 1: What is colour theory?&#10;Question 2: Name three design principles." style="padding:10px;line-height:1.6"></textarea><label style="display:grid;gap:5px;font-size:13px;font-weight:700">Answer key for automatic marking (optional)<textarea name="answer_key" rows="4" placeholder="One answer per line:&#10;1: colour theory&#10;2: contrast | balance | alignment" style="padding:10px;line-height:1.6;font-weight:400"></textarea><small style="font-weight:400;color:#64748b;line-height:1.5">Only questions with an answer key are marked automatically. Use | between accepted alternatives. Written/design questions without a key remain for your manual review.</small></label><label>Due date (optional) <input name="due_at" type="date"></label><label>Timed exam duration in minutes (optional) <input name="duration_minutes" type="number" min="1" max="600" placeholder="e.g. 120"></label><label><input name="published" type="checkbox"> Publish for approved students</label><button class="primary-btn">Save assignment</button><span id="otgAssignmentMsg"></span></form>';
+  if(admin&&key==="assignments")area.innerHTML='<h3>Create an assignment</h3><form id="otgAssignmentForm" style="display:grid;gap:8px;margin:12px 0"><input name="title" required placeholder="Assignment title" style="padding:10px"><input name="course" placeholder="Course name" style="padding:10px"><label style="display:grid;gap:5px;font-size:13px">Assign to <select name="assigned_to" id="otgAssignmentStudent" style="padding:10px"><option value="">All approved students</option></select></label><small id="otgAssignmentStudentMsg" style="color:#64748b">Choose one student for private questions, or leave the default for everyone.</small><textarea name="instructions" id="otgAssignmentInstructions" required rows="5" placeholder="Assignment instructions. Put each question on a new line, e.g. Question 1: What is colour theory?&#10;Question 2: Name three design principles." style="padding:10px;line-height:1.6"></textarea><section id="otgQuestionVerificationSettings" style="display:grid;gap:10px;padding:14px;border:1px solid #bfdbfe;border-radius:12px;background:#f8fbff"><h4 style="margin:0;color:#1e3a8a">Question-by-question AI verification</h4><p style="margin:0;color:#475569;font-size:12px;line-height:1.6">Choose AI-use rules and verification requirements separately for each numbered question. Settings are saved with this assignment only.</p><div id="otgQuestionVerificationRows" style="display:grid;gap:10px"><p style="margin:0;color:#64748b;font-size:13px">Add numbered questions above to configure each one.</p></div></section><label style="display:grid;gap:5px;font-size:13px;font-weight:700">Answer key for automatic marking (optional)<textarea name="answer_key" rows="4" placeholder="One answer per line:&#10;1: colour theory&#10;2: contrast | balance | alignment" style="padding:10px;line-height:1.6;font-weight:400"></textarea><small style="font-weight:400;color:#64748b;line-height:1.5">Only questions with an answer key are marked automatically. Use | between accepted alternatives. Written/design questions without a key remain for your manual review.</small></label><label>Due date (optional) <input name="due_at" type="date"></label><label>Timed exam duration in minutes (optional) <input name="duration_minutes" type="number" min="1" max="600" placeholder="e.g. 120"></label><label><input name="published" type="checkbox"> Publish for approved students</label><button class="primary-btn">Save assignment</button><span id="otgAssignmentMsg"></span></form>';
   if(admin&&key==="submission-review"){
    const reviewSection=document.createElement("section");reviewSection.style.cssText="margin-top:28px;padding-top:20px;border-top:1px solid #cbd5e1";
    const reviewTitle=document.createElement("h3");reviewTitle.textContent="Review student submissions";reviewTitle.style.cssText="color:#172554;margin:0 0 12px";
@@ -1024,12 +1156,61 @@ async function loadAcademyPanelData(key,content){
     applyReviewFilters();
    }
   }
+  if(admin&&key==="submission-review"){
+   const verificationPanel=document.createElement("section");verificationPanel.style.cssText="margin-top:28px;padding-top:20px;border-top:2px solid #c7d2fe";
+   const verificationTitle=document.createElement("h3");verificationTitle.textContent="AI verification tracking by student and question";verificationTitle.style.cssText="color:#312e81;margin:0 0 8px";
+   const verificationHint=document.createElement("p");verificationHint.textContent="Record whether each required question has been checked. These records are separate from the existing submission marks and feedback.";verificationHint.style.cssText="color:#64748b;line-height:1.6";
+   const verificationList=document.createElement("div");verificationList.style.cssText="display:grid;gap:12px";
+   verificationPanel.append(verificationTitle,verificationHint,verificationList);area.appendChild(verificationPanel);
+   const {data:verificationSubs,error:verificationSubsError}=await db.from("academy_submissions").select("id,assignment_id,student_id,submission_text,submitted_at").order("submitted_at",{ascending:false});
+   if(verificationSubsError){verificationList.textContent="Verification records could not load: "+verificationSubsError.message;}
+   else if(!verificationSubs||!verificationSubs.length){verificationList.textContent="Student submissions will appear here when received.";}
+   else{
+    const vAssignmentIds=[...new Set(verificationSubs.map(item=>item.assignment_id))],vSubmissionIds=verificationSubs.map(item=>item.id),vStudentIds=[...new Set(verificationSubs.map(item=>item.student_id))];
+    const [{data:vPolicies,error:vPoliciesError},{data:vRecords,error:vRecordsError},{data:vProfiles},{data:vAssignments}]=await Promise.all([
+     db.from("academy_assignment_question_policies").select("assignment_id,question_number,verification_enabled,verification_method,require_explanation,required_evidence").in("assignment_id",vAssignmentIds),
+     db.from("academy_submission_question_verifications").select("id,submission_id,question_number,status,evidence_reviewed,reviewer_notes,reviewed_at").in("submission_id",vSubmissionIds),
+     db.from("profiles").select("id,email").in("id",vStudentIds),
+     db.from("academy_assignments").select("id,title").in("id",vAssignmentIds)
+    ]);
+    if(vPoliciesError||vRecordsError){verificationList.textContent="Tracking tables are not ready. Run both question-verification SQL migrations in the Supabase SQL Editor. "+((vPoliciesError||vRecordsError).message||"");}
+    else{
+     const vPolicyMap=new Map();(vPolicies||[]).filter(p=>p.verification_enabled||p.require_explanation||(p.required_evidence||[]).length).forEach(p=>{const id=String(p.assignment_id);if(!vPolicyMap.has(id))vPolicyMap.set(id,[]);vPolicyMap.get(id).push(p);});
+     const vRecordMap=new Map((vRecords||[]).map(r=>[String(r.submission_id)+":"+r.question_number,r]));
+     const vProfileMap=new Map((vProfiles||[]).map(p=>[String(p.id),p.email||"Student"])),vAssignmentMap=new Map((vAssignments||[]).map(a=>[String(a.id),a.title||"Assignment"]));
+     let rendered=0;
+     verificationSubs.forEach(sub=>{const policies=vPolicyMap.get(String(sub.assignment_id))||[];if(!policies.length)return;rendered++;
+      const card=document.createElement("article");card.style.cssText="padding:14px;border:1px solid #c7d2fe;border-radius:12px;background:#fff;display:grid;gap:10px";
+      const title=document.createElement("strong");title.textContent=(vProfileMap.get(String(sub.student_id))||"Student")+" · "+(vAssignmentMap.get(String(sub.assignment_id))||"Assignment");title.style.cssText="color:#1e1b4b;font-size:14px";card.appendChild(title);
+      policies.sort((a,b)=>Number(a.question_number)-Number(b.question_number)).forEach(policy=>{const key=String(sub.id)+":"+policy.question_number,record=vRecordMap.get(key)||{},row=document.createElement("div");row.style.cssText="display:grid;gap:7px;padding:10px;border:1px solid #e2e8f0;border-radius:9px;background:#f8fafc";
+       const qtitle=document.createElement("strong");qtitle.textContent="Question "+policy.question_number+(policy.verification_enabled?" · Verification required":" · Explanation/evidence required");qtitle.style.cssText="font-size:13px;color:#334155";
+       const controls=document.createElement("div");controls.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px";
+       const status=document.createElement("select");status.style.cssText="padding:9px;border:1px solid #cbd5e1;border-radius:8px;background:#fff";[["pending","Pending review"],["verified","Verified"],["needs_followup","Follow-up required"]].forEach(([value,label])=>{const o=document.createElement("option");o.value=value;o.textContent=label;status.appendChild(o);});status.value=record.status||"pending";
+       const evidenceLabel=document.createElement("label");evidenceLabel.style.cssText="display:flex;gap:7px;align-items:center;font-size:12px;color:#334155";const evidence=document.createElement("input");evidence.type="checkbox";evidence.checked=!!record.evidence_reviewed;evidenceLabel.append(evidence,document.createTextNode("Required evidence reviewed"));
+       const notes=document.createElement("textarea");notes.rows=2;notes.value=record.reviewer_notes||"";notes.placeholder="Lecturer notes for this question (optional)";notes.style.cssText="width:100%;box-sizing:border-box;padding:9px;border:1px solid #cbd5e1;border-radius:8px";
+       const save=document.createElement("button");save.type="button";save.textContent="Save verification";save.style.cssText="justify-self:start;padding:9px 12px;border:0;border-radius:8px;background:#3730a3;color:#fff;font-weight:800;cursor:pointer";
+       const result=document.createElement("span");result.setAttribute("role","status");result.style.cssText="font-size:12px;color:#64748b";
+       save.addEventListener("click",async()=>{save.disabled=true;result.textContent="Saving…";const now=new Date().toISOString();const payload={submission_id:sub.id,assignment_id:sub.assignment_id,student_id:sub.student_id,question_number:Number(policy.question_number),status:status.value,evidence_reviewed:evidence.checked,reviewer_notes:notes.value.trim(),reviewed_by:userId,reviewed_at:status.value==="pending"?null:now,updated_at:now};const {error:saveVerificationError}=await db.from("academy_submission_question_verifications").upsert(payload,{onConflict:"submission_id,question_number"});if(saveVerificationError){result.textContent="Could not save: "+saveVerificationError.message;result.style.color="#b91c1c";}else{result.textContent="Saved · "+new Date().toLocaleTimeString();result.style.color="#166534";}save.disabled=false;});
+       controls.append(status,evidenceLabel);row.append(qtitle,controls,notes,save,result);card.appendChild(row);
+      });verificationList.appendChild(card);
+     });
+     if(!rendered)verificationList.textContent="No submissions currently match an assignment with question verification, explanation, or evidence requirements.";
+    }
+   }
+  }
   if(key==="submission-review")return;
   if(admin&&key==="assignments"){const studentPicker=area.querySelector("#otgAssignmentStudent");const studentPickerMsg=area.querySelector("#otgAssignmentStudentMsg");const {data:approvedStudents,error:studentsError}=await db.from("profiles").select("id,email").eq("role","student").eq("approval_status","approved").order("email");if(studentsError){studentPickerMsg.textContent="Student list could not load: "+studentsError.message;studentPickerMsg.style.color="#b91c1c";}else (approvedStudents||[]).forEach(student=>{const option=document.createElement("option");option.value=student.id;option.textContent=student.email||"Approved student";studentPicker.appendChild(option);});}
-  if(admin&&key==="assignments")area.querySelector("#otgAssignmentForm").addEventListener("submit",async e=>{e.preventDefault();const f=e.currentTarget,d=new FormData(f),status=f.querySelector("#otgAssignmentMsg");const parsedKey={};String(d.get("answer_key")||"").split(/\r?\n/).forEach(line=>{const match=line.trim().match(/^(\d+)\s*[:.)-]\s*(.+)$/);if(match){const alternatives=match[2].split("|").map(value=>value.trim()).filter(Boolean);if(alternatives.length)parsedKey[String(Number(match[1]))]=alternatives;}});const {data:savedAssignment,error}=await db.from("academy_assignments").insert({title:d.get("title"),course:d.get("course")||"Getting Started",instructions:d.get("instructions"),due_at:d.get("due_at")?new Date(d.get("due_at")+"T23:59:00").toISOString():null,is_published:d.get("published")==="on",duration_minutes:d.get("duration_minutes")?Number(d.get("duration_minutes")):null,assigned_to:d.get("assigned_to")||null,created_by:userId}).select("id").single();if(error){status.textContent="Save failed: "+error.message;return;}if(Object.keys(parsedKey).length){const {error:keyError}=await db.from("academy_assignment_answer_keys").upsert({assignment_id:savedAssignment.id,answer_key:parsedKey,updated_by:userId,updated_at:new Date().toISOString()},{onConflict:"assignment_id"});if(keyError){status.textContent="Assignment saved, but its answer key could not be saved: "+keyError.message+" Please review this assignment before creating another.";return;}}status.textContent="Assignment saved"+(Object.keys(parsedKey).length?" with "+Object.keys(parsedKey).length+" auto-marked question(s).":"; questions will require manual review unless an answer key is added.");f.reset();loadAcademyPanelData(key,content);});
+  if(admin&&key==="assignments"){
+   const instructionsInput=area.querySelector("#otgAssignmentInstructions"),policyRows=area.querySelector("#otgQuestionVerificationRows");
+   const readQuestionLines=()=>{const found=[];String(instructionsInput.value||"").split(/\r?\n/).forEach(line=>{const m=line.trim().match(/^(?:question\s*(\d+)|q\s*(\d+))\s*[:.)-]\s*(.*)$/i);if(m)found.push({number:Number(m[1]||m[2]),text:(m[3]||"").trim()});});return found;};
+   const renderQuestionPolicies=()=>{const questions=readQuestionLines(),previous=new Map(Array.from(policyRows.querySelectorAll("[data-question-number]")).map(row=>[row.dataset.questionNumber,{ai:row.querySelector("[data-ai-policy]")?.value||"allow",enabled:row.querySelector("[data-verify-enabled]")?.checked||false,method:row.querySelector("[data-verify-method]")?.value||"lecturer_review",explain:row.querySelector("[data-require-explanation]")?.checked||false,evidence:Array.from(row.querySelectorAll("[data-evidence]:checked")).map(el=>el.value)}]));policyRows.replaceChildren();if(!questions.length){const note=document.createElement("p");note.textContent="Add questions on separate lines beginning with “Question 1:”, “Question 2:” and so on.";note.style.cssText="margin:0;color:#64748b;font-size:13px";policyRows.appendChild(note);return;}questions.forEach(q=>{const saved=previous.get(String(q.number))||{},row=document.createElement("article");row.dataset.questionNumber=String(q.number);row.style.cssText="display:grid;gap:8px;padding:12px;border:1px solid #dbeafe;border-radius:10px;background:#fff";const heading=document.createElement("strong");heading.textContent="Question "+q.number+": "+(q.text||"(question text continues below)");heading.style.cssText="color:#172554;line-height:1.5";const controls=document.createElement("div");controls.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px";const selectField=(label,attr,options,value)=>{const l=document.createElement("label");l.textContent=label;l.style.cssText="display:grid;gap:5px;font-size:12px;font-weight:800;color:#334155";const s=document.createElement("select");s.setAttribute("data-"+attr,"true");s.style.cssText="width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:8px;background:#fff";options.forEach(([v,t])=>{const o=document.createElement("option");o.value=v;o.textContent=t;s.appendChild(o);});s.value=value;l.appendChild(s);return l;};controls.append(selectField("AI-use policy","ai-policy",[["allow","Allow AI assistance"],["restrict","Restrict AI use"],["prohibit","Prohibit AI use"]],saved.ai||"allow"),selectField("Verification method","verify-method",[["lecturer_review","Lecturer review"],["practical_task","Practical task"],["oral_explanation","Oral explanation"]],saved.method||"lecturer_review"));const verifyLabel=document.createElement("label");verifyLabel.style.cssText="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:#334155";const verify=document.createElement("input");verify.type="checkbox";verify.dataset.verifyEnabled="true";verify.checked=!!saved.enabled;verifyLabel.append(verify,document.createTextNode("Enable verification for this question"));controls.appendChild(verifyLabel);const explainLabel=document.createElement("label");explainLabel.style.cssText="display:flex;align-items:center;gap:8px;font-size:13px;color:#334155";const explain=document.createElement("input");explain.type="checkbox";explain.dataset.requireExplanation="true";explain.checked=!!saved.explain;explainLabel.append(explain,document.createTextNode("Require student explanation"));row.append(heading,controls,explainLabel);const evidenceWrap=document.createElement("div");evidenceWrap.style.cssText="display:flex;gap:10px;flex-wrap:wrap";const evidenceTitle=document.createElement("span");evidenceTitle.textContent="Evidence required:";evidenceTitle.style.cssText="font-size:12px;font-weight:800;color:#334155";evidenceWrap.appendChild(evidenceTitle);[["drafts","Drafts / sketches"],["source_files","Editable source files"],["screenshots","Screenshots / process evidence"]].forEach(([v,label])=>{const l=document.createElement("label");l.style.cssText="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#475569";const c=document.createElement("input");c.type="checkbox";c.dataset.evidence="true";c.value=v;c.checked=(saved.evidence||[]).includes(v);l.append(c,document.createTextNode(label));evidenceWrap.appendChild(l);});row.appendChild(evidenceWrap);policyRows.appendChild(row);});};
+   instructionsInput.addEventListener("input",renderQuestionPolicies);renderQuestionPolicies();
+  }
+  if(admin&&key==="assignments")area.querySelector("#otgAssignmentForm").addEventListener("submit",async e=>{e.preventDefault();const f=e.currentTarget,d=new FormData(f),status=f.querySelector("#otgAssignmentMsg");const parsedKey={};String(d.get("answer_key")||"").split(/\r?\n/).forEach(line=>{const match=line.trim().match(/^(\d+)\s*[:.)-]\s*(.+)$/);if(match){const alternatives=match[2].split("|").map(value=>value.trim()).filter(Boolean);if(alternatives.length)parsedKey[String(Number(match[1]))]=alternatives;}});const {data:savedAssignment,error}=await db.from("academy_assignments").insert({title:d.get("title"),course:d.get("course")||"Getting Started",instructions:d.get("instructions"),due_at:d.get("due_at")?new Date(d.get("due_at")+"T23:59:00").toISOString():null,is_published:d.get("published")==="on",duration_minutes:d.get("duration_minutes")?Number(d.get("duration_minutes")):null,assigned_to:d.get("assigned_to")||null,created_by:userId}).select("id").single();if(error){status.textContent="Save failed: "+error.message;return;}if(Object.keys(parsedKey).length){const {error:keyError}=await db.from("academy_assignment_answer_keys").upsert({assignment_id:savedAssignment.id,answer_key:parsedKey,updated_by:userId,updated_at:new Date().toISOString()},{onConflict:"assignment_id"});if(keyError){status.textContent="Assignment saved, but its answer key could not be saved: "+keyError.message+" Please review this assignment before creating another.";return;}}const policyPayload=Array.from(area.querySelectorAll("#otgQuestionVerificationRows [data-question-number]")).map(row=>({assignment_id:savedAssignment.id,question_number:Number(row.dataset.questionNumber),ai_use_policy:row.querySelector("[data-ai-policy]").value,verification_enabled:row.querySelector("[data-verify-enabled]").checked,verification_method:row.querySelector("[data-verify-method]").value,require_explanation:row.querySelector("[data-require-explanation]").checked,required_evidence:Array.from(row.querySelectorAll("[data-evidence]:checked")).map(el=>el.value),created_by:userId,updated_at:new Date().toISOString()}));if(policyPayload.length){const {error:policyError}=await db.from("academy_assignment_question_policies").upsert(policyPayload,{onConflict:"assignment_id,question_number"});if(policyError){status.textContent="Assignment saved, but question verification settings could not be saved. Run supabase/otg_assignment_question_ai_verification.sql in Supabase, then configure the settings again. "+policyError.message;return;}}status.textContent="Assignment saved"+(Object.keys(parsedKey).length?" with "+Object.keys(parsedKey).length+" auto-marked question(s).":"; questions will require manual review unless an answer key is added.")+(policyPayload.length?" "+policyPayload.length+" question verification setting(s) saved.":"");f.reset();loadAcademyPanelData(key,content);});
   let assignmentsQuery=db.from("academy_assignments").select("id,title,course,instructions,due_at,is_published,assigned_to,duration_minutes").order("created_at",{ascending:false});
   if(!admin)assignmentsQuery=assignmentsQuery.eq("is_published",true);
   const {data,error}=await assignmentsQuery;
+  const policyAssignmentIds=(data||[]).map(item=>item.id);const {data:questionPolicyRows,error:questionPolicyError}=policyAssignmentIds.length?await db.from("academy_assignment_question_policies").select("assignment_id,question_number,ai_use_policy,verification_enabled,verification_method,require_explanation,required_evidence,lecturer_notes").in("assignment_id",policyAssignmentIds):{data:[],error:null};const questionPoliciesByAssignment=new Map();(questionPolicyRows||[]).forEach(row=>{const id=String(row.assignment_id);if(!questionPoliciesByAssignment.has(id))questionPoliciesByAssignment.set(id,[]);questionPoliciesByAssignment.get(id).push(row);});
   const {data:mySubmissionRows,error:mySubmissionError}=userId?await db.from("academy_submissions").select("id,assignment_id,submission_text,file_url,status,coach_feedback,submitted_at,score").eq("student_id",userId).order("submitted_at",{ascending:false}):{data:[],error:null};
   const mySubmissionByAssignment=new Map();(mySubmissionRows||[]).forEach(row=>{const assignmentKey=String(row.assignment_id);if(!mySubmissionByAssignment.has(assignmentKey))mySubmissionByAssignment.set(assignmentKey,row);});
   const mySubmissionIds=(mySubmissionRows||[]).map(row=>row.id).filter(id=>id!==null&&id!==undefined);
@@ -1103,13 +1284,22 @@ async function loadAcademyPanelData(key,content){
    });
    if(!instructionLines.length){const p=document.createElement("p");p.textContent="No additional instructions provided.";instructions.appendChild(p);}
    c.append(title,course,instructions);
+   const questionPolicies=questionPoliciesByAssignment.get(String(x.id))||[];if(!admin&&questionPolicies.length){const policyNotice=document.createElement("section");policyNotice.style.cssText="display:grid;gap:8px;margin:12px 0;padding:13px;border:1px solid #c7d2fe;border-radius:11px;background:#eef2ff";const policyHeading=document.createElement("strong");policyHeading.textContent="Question-specific academic-integrity rules";policyHeading.style.cssText="color:#3730a3;font-size:14px";policyNotice.appendChild(policyHeading);questionPolicies.sort((a,b)=>Number(a.question_number)-Number(b.question_number)).forEach(policy=>{const row=document.createElement("div");row.style.cssText="padding:10px;border-radius:8px;background:#fff;border:1px solid #e0e7ff";const label=document.createElement("strong");label.textContent="Question "+policy.question_number;label.style.cssText="display:block;color:#1e1b4b;font-size:13px";const aiLabels={allow:"AI assistance allowed",restrict:"AI use restricted",prohibit:"AI use prohibited"};const methodLabels={lecturer_review:"Lecturer review",practical_task:"Practical task",oral_explanation:"Oral explanation"};const details=document.createElement("p");details.style.cssText="margin:5px 0 0;color:#334155;font-size:12px;line-height:1.6";details.textContent=(aiLabels[policy.ai_use_policy]||"Academic-integrity expectations apply")+(policy.require_explanation?" · Student explanation required":"")+((policy.required_evidence||[]).length?" · Evidence: "+policy.required_evidence.map(v=>({drafts:"drafts/sketches",source_files:"editable source files",screenshots:"screenshots/process evidence"}[v]||v)).join(", "):"");row.append(label,details);policyNotice.appendChild(row);});c.appendChild(policyNotice);}if(questionPolicyError){const policyWarning=document.createElement("p");policyWarning.textContent="Question verification rules could not be loaded. Please ask your lecturer if any special evidence is required.";policyWarning.style.cssText="margin:8px 0;color:#92400e;font-size:12px;line-height:1.5";c.appendChild(policyWarning);}
    if(x.due_at){const due=document.createElement("small");due.textContent="Due: "+new Date(x.due_at).toLocaleDateString();due.style.cssText="color:#64748b";c.appendChild(due);}
    if(admin){
     const state=document.createElement("p");state.textContent="Status: "+(x.is_published?"Published to students":"Draft — not visible to students");state.style.cssText="margin:10px 0 0;color:"+(x.is_published?"#166534":"#92400e")+";font-size:13px;font-weight:700";c.appendChild(state);const answerKeyButton=document.createElement("button");answerKeyButton.type="button";answerKeyButton.textContent="Add / edit answer key";answerKeyButton.style.cssText="margin-top:10px;padding:9px 12px;border:1px solid #bfdbfe;border-radius:8px;background:#eff6ff;color:#1d4ed8;font-weight:800;cursor:pointer";answerKeyButton.addEventListener("click",async()=>{answerKeyButton.disabled=true;const {data:keyRow,error:keyLoadError}=await db.from("academy_assignment_answer_keys").select("answer_key").eq("assignment_id",x.id).maybeSingle();if(keyLoadError){window.alert("Could not load the answer key: "+keyLoadError.message);answerKeyButton.disabled=false;return;}const current=keyRow&&keyRow.answer_key&&typeof keyRow.answer_key==="object"?keyRow.answer_key:{};const initial=Object.keys(current).sort((a,b)=>Number(a)-Number(b)).map(number=>number+": "+(Array.isArray(current[number])?current[number].join(" | "):String(current[number]))).join("\n");const entered=window.prompt("Enter answer keys by question number. Objective answers can use exact answers; THEORY answers can use required keywords joined by &. Use | for alternative answers/groups. Examples:\n1: B\n2: visual hierarchy & contrast\n3: colour theory | colour principles\nFor theory, every keyword joined by & must appear in the student answer (word/phrase match). This is an automatic guide; review meaning and context before releasing marks. Leave blank to remove automatic marking.",initial);if(entered===null){answerKeyButton.disabled=false;return;}const parsed={};let invalidLine=false;String(entered).split(/\r?\n/).forEach(line=>{if(!line.trim())return;const match=line.trim().match(/^(\d+)\s*[:.)-]\s*(.+)$/);if(!match){invalidLine=true;return;}const alternatives=match[2].split("|").map(value=>value.trim()).filter(Boolean);if(!alternatives.length||Number(match[1])<1){invalidLine=true;return;}parsed[String(Number(match[1]))]=alternatives;});if(invalidLine){window.alert("Please use the format 1: correct answer, one question per line. Use | to separate accepted alternatives.");answerKeyButton.disabled=false;return;}let saveError=null;if(!Object.keys(parsed).length){const result=await db.from("academy_assignment_answer_keys").delete().eq("assignment_id",x.id);saveError=result.error;}else{const result=await db.from("academy_assignment_answer_keys").upsert({assignment_id:x.id,answer_key:parsed,updated_by:userId,updated_at:new Date().toISOString()},{onConflict:"assignment_id"});saveError=result.error;}if(saveError){window.alert("Answer key could not be saved: "+saveError.message);answerKeyButton.disabled=false;return;}window.alert(Object.keys(parsed).length?"Answer key saved. Objective answers will be checked when you review student submissions.":"Answer key removed. Questions will require manual review.");loadAcademyPanelData(key,content);});c.appendChild(answerKeyButton);
    }else{
     let examGate=null;
     if(timedDuration>0){examGate=document.createElement("section");examGate.style.cssText="margin-top:12px;padding:14px;border:1px solid #bfdbfe;border-radius:12px;background:#eff6ff;color:#1e3a8a;line-height:1.6";if(!examAttempt&&!existingSubmission){const gateTitle=document.createElement("strong");gateTitle.textContent="Quarterly Assessment · "+timedDuration+" minutes";const gateText=document.createElement("p");gateText.textContent="Read the instructions above, then select Start Quarterly Assessment. Your countdown begins once and continues if you refresh this page. You may submit your answers at any time; any answers saved when time expires will be submitted automatically.";gateText.style.cssText="margin:6px 0 12px;font-size:13px";const startButton=document.createElement("button");startButton.type="button";startButton.className="primary-btn";startButton.textContent="Start Quarterly Assessment";const startStatus=document.createElement("p");startStatus.setAttribute("role","status");startStatus.style.cssText="margin:8px 0 0;color:#b91c1c;font-size:13px;line-height:1.5";startButton.addEventListener("click",async()=>{if(startButton.disabled)return;startButton.disabled=true;startButton.textContent="Starting assessment…";startStatus.textContent="";try{const {error:startError}=await db.from("academy_assignment_attempts").insert({assignment_id:x.id,student_id:userId});if(startError&&!/duplicate key|unique constraint/i.test(startError.message))throw startError;await loadAcademyPanelData(key,content);startStatus.style.color="#166534";startStatus.textContent="Assessment started. You can now submit your answers when ready.";}catch(startError){startStatus.style.color="#b91c1c";startStatus.textContent="Could not start the assessment: "+(startError&&startError.message?startError.message:"Please check your connection and try again.");startButton.disabled=false;startButton.textContent="Start Quarterly Assessment";}});examGate.append(gateTitle,gateText,startButton,startStatus);}else if(examAttempt&&examAttempt.submitted_at){examGate.textContent="This Quarterly Assessment has already been submitted. You cannot change answers after submission.";}else if(existingSubmission){examGate.textContent="Your submission is saved. The Quarterly Assessment is closed."; }else{const timerDisplay=document.createElement("p");timerDisplay.dataset.examTimerFor=String(x.id);timerDisplay.style.cssText="margin:0;font-size:16px;font-weight:800;color:#1d4ed8";timerDisplay.textContent="Time remaining: calculating…";examGate.appendChild(timerDisplay);}const firstQuestionCard=instructions.querySelector("section");if(firstQuestionCard)instructions.insertBefore(examGate,firstQuestionCard);else instructions.appendChild(examGate);}
-    const form=document.createElement("form");form.className="otgSubmitForm";form.dataset.id=x.id;form.dataset.assignmentTitle=x.title||"";form.style.cssText="display:grid;gap:12px;margin-top:14px;padding:12px;border:1px solid #dbeafe;border-radius:11px;background:#f8fbff";if(timedDuration>0){form.dataset.timed="true";if(examAttempt&&!examAttempt.submitted_at&&!existingSubmission)form.dataset.expiresAt=examAttempt.expires_at;else if(timedAttemptSubmitted||existingSubmission)form.hidden=true;}
+    const form=document.createElement("form");form.className="otgSubmitForm";form.dataset.id=x.id;form.dataset.assignmentTitle=x.title||"";form.style.cssText="display:grid;gap:12px;margin-top:14px;padding:12px;border:1px solid #dbeafe;border-radius:11px;background:#f8fbff";form.dataset.copyProtection="enabled";
+    const integrityNotice=document.createElement("div");integrityNotice.setAttribute("role","note");integrityNotice.style.cssText="padding:10px 12px;border:1px solid #fde68a;border-radius:9px;background:#fffbeb;color:#92400e;font-size:12px;line-height:1.55";integrityNotice.textContent="Academic integrity notice: copying question text and pasting text into answer fields are disabled in this assignment. Please write your own answers. This browser protection is a deterrent and does not replace fair review.";form.appendChild(integrityNotice);
+    const isProtectedQuestionTarget=target=>{const node=target&&target.nodeType===3?target.parentElement:target;if(node&&node.closest&&node.closest(".otg-assessment-question-prompt"))return true;const selection=window.getSelection&&window.getSelection();const anchor=selection&&selection.anchorNode;const anchorElement=anchor&&(anchor.nodeType===3?anchor.parentElement:anchor);return !!(anchorElement&&anchorElement.closest&&anchorElement.closest(".otg-assessment-question-prompt"));};
+    form.addEventListener("copy",event=>{if(isProtectedQuestionTarget(event.target)){event.preventDefault();}});
+    form.addEventListener("cut",event=>{if(isProtectedQuestionTarget(event.target)){event.preventDefault();}});
+    form.addEventListener("contextmenu",event=>{if(isProtectedQuestionTarget(event.target)){event.preventDefault();}});
+    form.addEventListener("paste",event=>{if(event.target&&event.target.matches&&event.target.matches('textarea[name="answer"]')){event.preventDefault();}});
+    form.addEventListener("drop",event=>{if(event.target&&event.target.matches&&event.target.matches('textarea[name="answer"]')){event.preventDefault();}});
+    form.addEventListener("keydown",event=>{if((event.ctrlKey||event.metaKey)&&String(event.key||"").toLowerCase()==="v"&&event.target&&event.target.matches&&event.target.matches('textarea[name="answer"]'))event.preventDefault();});if(timedDuration>0){form.dataset.timed="true";if(examAttempt&&!examAttempt.submitted_at&&!existingSubmission)form.dataset.expiresAt=examAttempt.expires_at;else if(timedAttemptSubmitted||existingSubmission)form.hidden=true;}
     const savedText=existingSubmission&&existingSubmission.submission_text||"";
     const savedAnswers={};
     if(/^Answer 1:/m.test(savedText)){
@@ -1185,6 +1375,7 @@ async function loadAcademyPanelData(key,content){
   const {error:saveError}=await db.from("academy_submissions").upsert({assignment_id:Number(f.dataset.id),student_id:userId,submission_text:answer,file_url:filePath,status:"submitted",score:null,coach_feedback:"",reviewed_at:null,reviewed_by:null},{onConflict:"assignment_id,student_id"});
   if(saveError)throw new Error("Submission failed: "+saveError.message);
   submissionSucceeded=true;
+  if(f.dataset.timed==="true")f.dataset.submitted="true";
   span.style.color="#166534";
   span.textContent="Work submitted successfully. Your answer is saved"+(filePath?". Your design image is attached.":".");
   if(f.dataset.timed==="true"){
@@ -1203,7 +1394,7 @@ async function loadAcademyPanelData(key,content){
  }finally{
   if(!submissionSucceeded)submitButton.disabled=false;
  }
-};f.addEventListener("submit",handleAssignmentSubmission);const submitControl=f.querySelector('button[type="submit"]');if(submitControl)submitControl.addEventListener("click",e=>{e.preventDefault();handleAssignmentSubmission(e);});});list.querySelectorAll(".otgSubmitForm[data-expires-at]").forEach(form=>{let timer=null;const tick=()=>{const remaining=Date.parse(form.dataset.expiresAt)-Date.now();const article=form.closest("article");const display=article&&article.querySelector("[data-exam-timer-for='"+form.dataset.id+"']");if(display){if(remaining>0){const totalSeconds=Math.ceil(remaining/1000);const hours=Math.floor(totalSeconds/3600);const minutes=Math.floor((totalSeconds%3600)/60);const seconds=totalSeconds%60;display.textContent="Time remaining: "+String(hours).padStart(2,"0")+":"+String(minutes).padStart(2,"0")+":"+String(seconds).padStart(2,"0");display.style.color=remaining<5*60*1000?"#b91c1c":"#1d4ed8";}else display.textContent="Time expired — submitting your answers automatically…";}if(remaining<=0&&!form.dataset.expiryTriggered){form.dataset.expiryTriggered="true";if(timer)window.clearInterval(timer);form.dataset.autoSubmitting="true";const submitButton=form.querySelector('button[type="submit"]');if(submitButton&&!submitButton.disabled)form.requestSubmit();}};timer=window.setInterval(tick,1000);tick();});area.appendChild(list);
+};f.addEventListener("submit",handleAssignmentSubmission);const submitControl=f.querySelector('button[type="submit"]');if(submitControl)submitControl.addEventListener("click",e=>{e.preventDefault();handleAssignmentSubmission(e);});});list.querySelectorAll(".otgSubmitForm[data-expires-at]").forEach(form=>{let timer=null;const tick=()=>{const article=form.closest("article");const display=article&&article.querySelector("[data-exam-timer-for='"+form.dataset.id+"']");if(form.dataset.submitted==="true"){if(timer)window.clearInterval(timer);if(display){display.textContent="Assessment submitted — timer stopped.";display.style.color="#166534";}return;}const remaining=Date.parse(form.dataset.expiresAt)-Date.now();if(display){if(remaining>0){const totalSeconds=Math.ceil(remaining/1000);const hours=Math.floor(totalSeconds/3600);const minutes=Math.floor((totalSeconds%3600)/60);const seconds=totalSeconds%60;display.textContent="Time remaining: "+String(hours).padStart(2,"0")+":"+String(minutes).padStart(2,"0")+":"+String(seconds).padStart(2,"0");display.style.color=remaining<5*60*1000?"#b91c1c":"#1d4ed8";}else display.textContent="Time expired — submitting your answers automatically…";}if(remaining<=0&&!form.dataset.expiryTriggered){form.dataset.expiryTriggered="true";if(timer)window.clearInterval(timer);form.dataset.autoSubmitting="true";const submitButton=form.querySelector('button[type="submit"]');if(submitButton&&!submitButton.disabled)form.requestSubmit();}};timer=window.setInterval(tick,1000);tick();});area.appendChild(list);
   if(!admin){const timeline=document.createElement("section");timeline.style.cssText="margin-top:24px;padding-top:18px;border-top:1px solid #e2e8f0";const timelineTitle=document.createElement("h3");timelineTitle.textContent="My Assignment Timeline";timelineTitle.style.cssText="margin:0 0 12px;color:#172554";const timelineList=document.createElement("div");timelineList.style.cssText="display:grid;gap:10px";timeline.append(timelineTitle,timelineList);const visibleAssignmentIds=new Set((data||[]).map(item=>String(item.id)));const timelineRows=(mySubmissionRows||[]).filter(row=>visibleAssignmentIds.has(String(row.assignment_id))).sort((a,b)=>new Date(b.submitted_at||0)-new Date(a.submitted_at||0));if(!timelineRows.length){const empty=document.createElement("p");empty.textContent="Your submitted assignments and coach reviews will appear here.";empty.style.cssText="color:#64748b;font-size:13px;line-height:1.6";timelineList.appendChild(empty);}timelineRows.forEach(row=>{const item=document.createElement("article");item.style.cssText="padding:13px;border:1px solid #e2e8f0;border-radius:10px;background:#fff";const assignment=(data||[]).find(entry=>String(entry.id)===String(row.assignment_id));const heading=document.createElement("h4");heading.textContent=assignment?assignment.title:"Assignment";heading.style.cssText="margin:0 0 6px;color:#1e3a8a;font-size:15px";const meta=document.createElement("p");meta.textContent="Status: "+(row.status||"submitted")+" · Score: "+(row.score!==null&&row.score!==undefined?row.score+"%":"Awaiting score")+(row.submitted_at?" · Submitted "+new Date(row.submitted_at).toLocaleDateString():"");meta.style.cssText="margin:0 0 7px;color:#475569;font-size:12px;line-height:1.6";item.append(heading,meta);if(row.coach_feedback){const feedbackText=document.createElement("p");feedbackText.textContent="Coach feedback: "+row.coach_feedback;feedbackText.style.cssText="margin:0;color:#334155;font-size:13px;line-height:1.6;white-space:pre-wrap";item.appendChild(feedbackText);}timelineList.appendChild(item);});area.appendChild(timeline);}
 
  }else if(key==="earn"){
