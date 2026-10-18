@@ -9525,7 +9525,21 @@ supabaseClient
           console.error("OTG fallback data loading failed:",error);
         });
       }else{
-        note.textContent="The Student Hub data loader did not start. Please refresh and try again.";
+        // Retry once with a fresh document URL if the installed app loaded a stale shell.
+        var retryKey="otgHubLoaderRetry";
+        var alreadyRetried=false;
+        try{alreadyRetried=sessionStorage.getItem(retryKey)==="1";}catch(_){}
+        if(!alreadyRetried){
+          try{sessionStorage.setItem(retryKey,"1");}catch(_){}
+          note.textContent="Refreshing the Student Hub to restore its data loader…";
+          note.style.background="#eff6ff";note.style.color="#1e3a8a";
+          var retryUrl=new URL(window.location.href);
+          retryUrl.searchParams.set("otgRefreshHub",String(Date.now()));
+          window.location.replace(retryUrl.href);
+          return;
+        }
+        try{sessionStorage.removeItem(retryKey);}catch(_){}
+        note.textContent="The Student Hub could not initialize. Please check your connection and tap Refresh. If this continues, contact the OTG administrator.";
         note.style.background="#fff7ed";note.style.color="#9a3412";
       }
     }
