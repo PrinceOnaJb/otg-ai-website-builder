@@ -190,10 +190,17 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
  const STATE_KEY="otgAcademyResumeState:v2";
  let restoring=false;
  function panelKey(){
+  /* Prefer the real panel key used by the renderer. A student's assignment button
+     can still have a legacy inline key of "submission-review" even though the
+     click router correctly opens the "assignments" panel. */
+  const actual=String(window.otgActiveAcademyPanelKey||"");
+  if(actual)return actual;
   const active=document.querySelector(".academy-nav.active");
   const source=active&&(active.getAttribute("onclick")||"");
   const match=source&&source.match(/openAcademyPanel\(['"]([^'"]+)['"]/);
-  return match?match[1]:"";
+  let key=match?match[1]:"";
+  if(key==="submission-review"&&window.otgAcademyIsAdmin!==true)key="assignments";
+  return key;
  }
  function fieldKey(el,index){return el.id?"id:"+el.id:(el.name?"name:"+el.name+"#"+index:"field:"+index);}
  function snapshot(){
@@ -309,6 +316,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
 })(); 
 
 function openAcademyPanel(key,button){
+ window.otgActiveAcademyPanelKey=String(key||"home");
  const panel=academyPanels[key]||academyPanels.home;
  if(typeof window.otgLogAcademyActivity==="function"){
   if(key==="learn"||key==="watch")window.otgLogAcademyActivity("lesson_area_opened",key==="watch"?"Watch & Learn":"Learn");
