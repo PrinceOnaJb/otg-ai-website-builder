@@ -2980,6 +2980,9 @@ html{scroll-behavior:auto}
       <button class="academy-nav" id="otgCustomerServiceNav" onclick="openAcademyPanel('support',this)">🎧 Customer Service</button>
       <button class="academy-nav" id="otgStudentActivityNav" hidden style="display:none" onclick="openAcademyPanel('student-activity',this)">📊 Student Activity</button>
        <button class="academy-nav" onclick="openAcademyPanel('settings',this)">⚙ Profile &amp; Settings</button>
+      <button class="academy-nav" id="otgAppUpdateButton" type="button" onclick="window.otgApplyAppUpdate()" aria-live="polite">↻ Check for app updates</button>
+      <button class="academy-nav" id="otgAppUninstallButton" type="button" onclick="window.otgShowUninstallHelp()">📱 Uninstall OTG Academy</button>
+      <p id="otgAppUpdateStatus" role="status" aria-live="polite" style="margin:4px 6px 8px;color:#cbd5e1;font-size:11px;line-height:1.5">You can check for the latest app version here.</p>
     </aside>
     <div class="academy-main">
       <div class="academy-welcome">
@@ -9032,20 +9035,161 @@ supabaseClient
 <script id="otg-pwa-install-setup">
 (function(){
   var deferredPrompt = null;
+  var appRegistration = null;
+  var reloadAfterUpdate = false;
+  var updateCheckInProgress = false;
+
   function isRunningAsInstalledApp(){
     return window.matchMedia('(display-mode: standalone)').matches ||
       window.matchMedia('(display-mode: fullscreen)').matches ||
       navigator.standalone === true;
   }
-  if ('serviceWorker' in navigator && location.protocol === 'https:') {
-    window.addEventListener('load', function(){
-      navigator.serviceWorker.register('/sw.js', {updateViaCache:'none'}).then(function(registration){
-        if(registration && registration.update) registration.update().catch(function(){});
-      }).catch(function(err){
-        console.warn('OTG Academy app setup:', err);
-      });
-    }, {once:true});
+
+  function setUpdateStatus(message){
+    var status=document.getElementById('otgAppUpdateStatus');
+    if(status) status.textContent=message;
   }
+
+  function setUpdateAvailable(available){
+    var button=document.getElementById('otgAppUpdateButton');
+    if(!button) return;
+    button.textContent=available?'⬆ Update app now':'↻ Check for app updates';
+    button.setAttribute('aria-label',available?'Update OTG GRAPHIC Academy app':'Check for OTG GRAPHIC Academy app updates');
+    button.dataset.updateAvailable=available?'true':'false';
+    if(available) setUpdateStatus('A newer version of OTG Academy is ready to install.');
+  }
+
+  function inspectRegistration(registration){
+    appRegistration=registration;
+    if(registration.waiting && navigator.serviceWorker.controller){
+      setUpdateAvailable(true);
+      return;
+    }
+    if(!registration.installing) setUpdateAvailable(false);
+    registration.addEventListener('updatefound',function(){
+      var installing=registration.installing;
+      if(!installing) return;
+      installing.addEventListener('statechange',function(){
+        if(installing.state==='installed' && navigator.serviceWorker.controller){
+          setUpdateAvailable(true);
+        }
+      });
+    });
+  }
+
+  async function checkForAppUpdate(showResult){
+    if(!('serviceWorker' in navigator) || location.protocol!=='https:'){
+      setUpdateStatus('App updates are not available in this browser session.');
+      return;
+    }
+    if(updateCheckInProgress) return;
+    updateCheckInProgress=true;
+    var button=document.getElementById('otgAppUpdateButton');
+    if(button && button.dataset.updateAvailable!=='true') button.disabled=true;
+    setUpdateStatus('Checking for app updates…');
+    try{
+      var registration=appRegistration || await navigator.serviceWorker.getRegistration('/');
+      if(!registration){
+        registration=await navigator.serviceWorker.register('/sw.js',{scope:'/',updateViaCache:'none'});
+      }
+      inspectRegistration(registration);
+      await registration.update();
+      if(registration.waiting && navigator.serviceWorker.controller){
+        setUpdateAvailable(true);
+      }else if(showResult && !registration.installing){
+        setUpdateAvailable(false);
+        setUpdateStatus('You are using the latest available app version.');
+      }else if(registration.installing){
+        setUpdateStatus('A new version is being downloaded. This button will change when it is ready.');
+      }else if(showResult){
+        setUpdateStatus('You are using the latest available app version.');
+      }
+    }catch(error){
+      console.warn('OTG app update check:',error);
+      setUpdateStatus('Could not check for updates. Please try again when you have a connection.');
+    }finally{
+      updateCheckInProgress=false;
+      if(button) button.disabled=false;
+    }
+  }
+
+  window.otgApplyAppUpdate=async function(){
+    var button=document.getElementById('otgAppUpdateButton');
+    if(button && button.dataset.updateAvailable==='true' && appRegistration && appRegistration.waiting){
+      reloadAfterUpdate=true;
+      button.disabled=true;
+      button.textContent='Installing update…';
+      setUpdateStatus('Installing the latest OTG Academy version…');
+      appRegistration.waiting.postMessage({type:'OTG_SKIP_WAITING'});
+      return;
+    }
+    await checkForAppUpdate(true);
+  };
+
+  window.otgShowUninstallHelp=function(){
+    var existing=document.getElementById('otgUninstallHelpOverlay');
+    if(existing) existing.remove();
+    var isAndroid=/Android/i.test(navigator.userAgent);
+    var isApple=/iPhone|iPad|iPod/i.test(navigator.userAgent);
+    var isDesktop=!isAndroid&&!isApple&&!/Mobile/i.test(navigator.userAgent);
+    var instructions=isAndroid
+      ? 'Android: close OTG Academy, then press and hold its icon on your phone and choose App info or Uninstall. If that option is not shown, open Chrome, visit this website, tap the three-dot menu (⋮), and look for Uninstall app or Manage app.'
+      : isApple
+        ? 'iPhone/iPad: return to your Home Screen, press and hold the OTG Academy icon, choose Remove Bookmark or Delete Bookmark, then confirm. This removes the Home Screen app shortcut.'
+        : isDesktop
+          ? 'Computer: open the browser you used to install OTG Academy. In Chrome, open the browser menu, choose Apps → Manage apps, open OTG Academy, and select Uninstall. The exact wording may differ by browser.'
+          : 'Open the browser or device settings where OTG Academy was installed, find the app or Home Screen shortcut, and choose its remove or uninstall option.';
+    var overlay=document.createElement('div');
+    overlay.id='otgUninstallHelpOverlay';
+    overlay.setAttribute('role','dialog');
+    overlay.setAttribute('aria-modal','true');
+    overlay.setAttribute('aria-labelledby','otgUninstallHelpTitle');
+    overlay.style.cssText='position:fixed;inset:0;z-index:100600;display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;background:rgba(8,18,38,.72)';
+    var card=document.createElement('section');
+    card.style.cssText='width:min(100%,520px);max-height:85vh;overflow:auto;box-sizing:border-box;padding:23px;border-radius:18px;background:#fff;color:#172033;box-shadow:0 24px 80px rgba(0,0,0,.3)';
+    var title=document.createElement('h2');
+    title.id='otgUninstallHelpTitle';
+    title.textContent='Uninstall OTG Academy';
+    title.style.cssText='margin:0 0 12px;color:#123b78;font-size:22px;line-height:1.3';
+    var note=document.createElement('p');
+    note.textContent='Your browser and device control app removal, so this website cannot uninstall itself directly. Follow the steps for your device below.';
+    note.style.cssText='margin:0 0 12px;color:#475569;line-height:1.65';
+    var steps=document.createElement('p');
+    steps.textContent=instructions;
+    steps.style.cssText='margin:0;padding:14px;border-radius:12px;background:#f1f5f9;color:#172033;line-height:1.7;white-space:pre-wrap';
+    var close=document.createElement('button');
+    close.type='button';
+    close.textContent='Close';
+    close.style.cssText='display:block;margin:18px 0 0 auto;padding:11px 18px;border:0;border-radius:9px;background:#123b78;color:#fff;font-weight:800;cursor:pointer';
+    close.addEventListener('click',function(){overlay.remove();});
+    overlay.addEventListener('click',function(event){if(event.target===overlay)overlay.remove();});
+    card.append(title,note,steps,close);
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+    close.focus();
+  };
+
+  if('serviceWorker' in navigator && location.protocol==='https:'){
+    window.addEventListener('load',function(){
+      navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'}).then(function(registration){
+        inspectRegistration(registration);
+        if(registration.update) registration.update().catch(function(){});
+      }).catch(function(error){
+        console.warn('OTG Academy app setup:',error);
+        setUpdateStatus('App update checking is not available right now.');
+      });
+    },{once:true});
+    navigator.serviceWorker.addEventListener('controllerchange',function(){
+      if(reloadAfterUpdate) location.reload();
+    });
+    window.addEventListener('focus',function(){
+      if(appRegistration) appRegistration.update().catch(function(){});
+    });
+    window.addEventListener('online',function(){
+      if(appRegistration) appRegistration.update().catch(function(){});
+    });
+  }
+
   function addInstallButton(){
     var btn=document.getElementById('otgInstallAppButton');
     if(!btn){
@@ -9055,7 +9199,7 @@ supabaseClient
       btn.textContent='Install OTG Academy';
       btn.setAttribute('aria-label','Install OTG GRAPHIC Academy on this device');
       document.body.appendChild(btn);
-      btn.addEventListener('click', async function(){
+      btn.addEventListener('click',async function(){
         if(deferredPrompt){
           try{
             deferredPrompt.prompt();
@@ -9074,6 +9218,7 @@ supabaseClient
     }
     btn.hidden=false;
   }
+
   function showInstallHelp(){
     var isAndroid=/Android/i.test(navigator.userAgent);
     var instructions=isAndroid
@@ -9081,6 +9226,7 @@ supabaseClient
       : 'Open this website in your browser menu and choose “Install app” or “Add to Home screen” if available. On iPhone/iPad, open in Safari, tap Share, then “Add to Home Screen”.';
     alert(instructions);
   }
+
   window.addEventListener('beforeinstallprompt',function(event){
     event.preventDefault();
     deferredPrompt=event;
@@ -9091,6 +9237,7 @@ supabaseClient
     var btn=document.getElementById('otgInstallAppButton');
     if(btn) btn.hidden=true;
   });
+
   function setupConnectionNotice(){
     var notice=document.getElementById('otgConnectionNotice');
     if(!notice){
@@ -9112,8 +9259,12 @@ supabaseClient
     window.addEventListener('online',refreshConnectionNotice);
     refreshConnectionNotice();
   }
+
   if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',function(){addInstallButton();setupConnectionNotice();},{once:true});
+    document.addEventListener('DOMContentLoaded',function(){
+      addInstallButton();
+      setupConnectionNotice();
+    },{once:true});
   }else{
     addInstallButton();
     setupConnectionNotice();
