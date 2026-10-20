@@ -4677,15 +4677,25 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
    if(state.rtcPeers[peerId])return state.rtcPeers[peerId];
    const pc=new RTCPeerConnection({iceServers:state.iceServers||[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun.cloudflare.com:3478"}]});
    const tile=document.createElement("div");tile.style.cssText="position:relative;min-height:150px;aspect-ratio:4/3;overflow:hidden;border-radius:14px;background:#13263e;border:1px solid #29415f";
-   const video=document.createElement("video");video.autoplay=true;video.playsInline=true;video.style.cssText="width:100%;height:100%;object-fit:cover;display:block";
-   const label=document.createElement("span");label.textContent=peerDisplayName||"OTG student";label.style.cssText="position:absolute;left:10px;bottom:10px;padding:5px 8px;border-radius:7px;background:#071426cc;color:#fff;font-size:12px;font-weight:700";
+   const video=document.createElement("video");video.autoplay=true;video.playsInline=true;video.muted=false;video.volume=1;video.style.cssText="width:100%;height:100%;object-fit:cover;display:block";
+   const label=document.createElement("span");label.textContent=(peerDisplayName||"OTG student")+" · connecting…";label.style.cssText="position:absolute;left:10px;bottom:10px;padding:5px 8px;border-radius:7px;background:#071426cc;color:#fff;font-size:12px;font-weight:700;z-index:2";
    tile.append(video,label);grid.appendChild(tile);
-   const entry={pc:pc,tile:tile,video:video,displayName:peerDisplayName||"OTG student",candidateQueue:[],offerSent:false};
+   const entry={pc:pc,tile:tile,video:video,displayName:peerDisplayName||"OTG student",candidateQueue:[],offerSent:false,remoteStream:null};
    state.rtcPeers[peerId]=entry;
    state.localMedia.getTracks().forEach(track=>pc.addTrack(track,state.localMedia));
-   pc.ontrack=function(ev){if(ev.streams&&ev.streams[0])video.srcObject=ev.streams[0];};
+   pc.ontrack=function(ev){
+    let stream=ev.streams&&ev.streams[0];
+    if(!stream){if(!entry.remoteStream)entry.remoteStream=new MediaStream();entry.remoteStream.addTrack(ev.track);stream=entry.remoteStream;}
+    video.srcObject=stream;video.muted=false;video.volume=1;
+    label.textContent=entry.displayName+" · connected";
+    video.play().then(()=>{const prompt=tile.querySelector(".otg-call-playback");if(prompt)prompt.remove();}).catch(()=>{
+     if(tile.querySelector(".otg-call-playback"))return;
+     const playButton=makeButton("Tap to enable audio/video","#0f766e",()=>{video.muted=false;video.volume=1;video.play().then(()=>playButton.remove()).catch(()=>{playButton.textContent="Tap again to enable sound";});});
+     playButton.className="otg-call-playback";playButton.style.cssText+=";position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);z-index:3;max-width:90%";tile.appendChild(playButton);
+    });
+   };
    pc.oniceconnectionstatechange=function(){if(["failed","disconnected","closed"].includes(pc.iceConnectionState)){label.textContent=(entry.displayName||"OTG student")+" · "+pc.iceConnectionState;if(pc.iceConnectionState==="failed"&&status){status.textContent=state.turnConfigured?"The internet connection could not be established. Please check both networks and rejoin.":"This network needs a TURN relay for long-distance calls. The relay service is not configured yet; please try another network for now.";}else if(pc.iceConnectionState==="disconnected"&&status){status.textContent="Reconnecting to "+(entry.displayName||"the other student")+"…";}}};
-   pc.onconnectionstatechange=function(){if(pc.connectionState==="connected"){label.textContent=(entry.displayName||"OTG student")+" · connected";if(status)status.textContent="Secure in-app connection established with "+(entry.displayName||"the other student")+".";}else if(pc.connectionState==="failed"&&status&&!state.turnConfigured){status.textContent="Connection failed because some networks require a TURN relay. OTG relay credentials still need to be configured.";}};
+   pc.onconnectionstatechange=function(){if(pc.connectionState==="connected"){label.textContent=(entry.displayName||"OTG student")+" · connected";if(status)status.textContent="Secure in-app connection established with "+(entry.displayName||"the other student")+". If you cannot hear them, tap the audio/video button on their tile.";}else if(pc.connectionState==="failed"&&status&&!state.turnConfigured){status.textContent="Connection failed because some networks require a TURN relay. OTG relay credentials still need to be configured.";}};
    pc.onicecandidate=function(ev){if(ev.candidate)sendSignal({to:peerId,type:"candidate",candidate:ev.candidate});};
    if(String(state.userId)<String(peerId)){
     try{
