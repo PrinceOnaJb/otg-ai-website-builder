@@ -380,8 +380,13 @@ async function loadAcademyPanelData(key,content){
   const userMetadata=activeUser&&activeUser.user_metadata?activeUser.user_metadata:{};
   let academyDisplayName="";
   if(!admin&&userId){
+   // Bound this lookup so the Home panel still renders if profile retrieval stalls.
    try{
-    const {data:studentIdentity}=await db.from("academy_student_profiles").select("display_name").eq("user_id",userId).maybeSingle();
+    const identityResult=await Promise.race([
+     db.from("academy_student_profiles").select("display_name").eq("user_id",userId).maybeSingle(),
+     new Promise(resolve=>setTimeout(()=>resolve({data:null,error:{message:"Display-name lookup timed out"}}),1800))
+    ]);
+    const studentIdentity=identityResult&&identityResult.data;
     academyDisplayName=studentIdentity&&studentIdentity.display_name?String(studentIdentity.display_name).trim():"";
    }catch(identityError){console.warn("OTG student welcome name lookup:",identityError);}
   }
@@ -8889,43 +8894,43 @@ async function showApp(approvalAlreadyChecked){
     .remove("hidden");
 
   if(currentUser){
-    let academyDisplayName = "";
-    try{
-      const {data:studentIdentity} = await supabaseClient
-        .from("academy_student_profiles")
-        .select("display_name")
-        .eq("user_id", currentUser.id)
-        .maybeSingle();
-      academyDisplayName = studentIdentity && studentIdentity.display_name
-        ? String(studentIdentity.display_name).trim()
-        : "";
-    }catch(identityError){
-      console.warn("OTG welcome name lookup:", identityError);
-    }
-
+    // Render the welcome message immediately. A slow profile query must never
+    // block dashboard navigation or student assignment access.
     const metadata = currentUser.user_metadata || {};
-    const profileName = academyDisplayName ||
-      metadata.first_name ||
-      metadata.full_name ||
-      metadata.name ||
-      metadata.display_name ||
-      metadata.nickname ||
-      "";
+    const metadataName = metadata.first_name || metadata.full_name ||
+      metadata.name || metadata.display_name || metadata.nickname || "";
     const emailName = currentUser.email
       ? String(currentUser.email).split("@")[0].replace(/[._-]+/g, " ").trim()
       : "";
-    const firstName = String(profileName || emailName || "Student").trim().split(/\s+/)[0];
+    const firstName = String(metadataName || emailName || "Student").trim().split(/\s+/)[0];
     const shortName = firstName
       ? firstName.charAt(0).toLocaleUpperCase() + firstName.slice(1)
       : "Student";
     const isAdmin = currentProfile &&
       String(currentProfile.role || "").toLowerCase() === "admin";
+    const welcomeUserId = currentUser.id;
+    if($("welcomeText")) $("welcomeText").textContent = isAdmin
+      ? "Welcome back, Coach."
+      : "Welcome back, " + shortName + "! 👋";
 
-    if($("welcomeText")){
-      $("welcomeText").textContent = isAdmin
-        ? "Welcome back, Coach."
-        : "Welcome back, " + shortName + "! 👋";
-    }
+    // Update with the saved display name in the background; never await it.
+    supabaseClient.from("academy_student_profiles")
+      .select("display_name")
+      .eq("user_id", welcomeUserId)
+      .maybeSingle()
+      .then(function(result){
+        const savedName = result && result.data && result.data.display_name
+          ? String(result.data.display_name).trim() : "";
+        if(!savedName) return;
+        const savedFirst = savedName.split(/\s+/)[0];
+        const savedShort = savedFirst.charAt(0).toLocaleUpperCase() + savedFirst.slice(1);
+        if($("welcomeText") && currentUser && currentUser.id === welcomeUserId) {
+          $("welcomeText").textContent = isAdmin
+            ? "Welcome back, Coach."
+            : "Welcome back, " + savedShort + "! 👋";
+        }
+      })
+      .catch(function(identityError){ console.warn("OTG welcome name lookup:", identityError); });
   }
 
   const activityNav=document.getElementById("otgStudentActivityNav");if(activityNav){const isAdmin=currentProfile&&String(currentProfile.role||"").toLowerCase()==="admin"&&String(currentProfile.approval_status||"").toLowerCase()==="approved";activityNav.hidden=!isAdmin;activityNav.style.display=isAdmin?"flex":"none";}
