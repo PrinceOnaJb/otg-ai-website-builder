@@ -6286,6 +6286,99 @@ ${html}
 ${js}
 <\/script>
 
+
+<!-- OTG STUDENT HUB PERSONAL THEMES: isolated styling only; no lesson or database changes. -->
+<style id="otg-student-personal-themes">
+#academyDashboard{--otg-theme-primary:#1d4ed8;--otg-theme-dark:#142448;--otg-theme-accent:#f2c76b;--otg-theme-soft:#eff6ff;--otg-theme-border:#dbe5f4;--otg-theme-text:#172554;--otg-theme-muted:#64748b}
+#academyDashboard .academy-sidebar{background:linear-gradient(180deg,var(--otg-theme-dark),var(--otg-theme-primary))!important;border-color:var(--otg-theme-primary)!important}
+#academyDashboard .academy-brand>span{background:var(--otg-theme-accent)!important}
+#academyDashboard .academy-nav[aria-current="page"],#academyDashboard .academy-nav.active,#academyDashboard .academy-nav[aria-pressed="true"]{background:var(--otg-theme-primary)!important}
+#academyDashboard .academy-welcome{border-color:var(--otg-theme-border)!important;background:linear-gradient(120deg,#fff 0%,var(--otg-theme-soft) 100%)!important}
+#academyDashboard .academy-welcome h3,#academyDashboard .otg-home-hero h3,#academyDashboard .otg-home-section-title{color:var(--otg-theme-dark)!important}
+#academyDashboard .otg-home-hero{border-color:var(--otg-theme-border)!important;background:radial-gradient(circle at 92% 10%,var(--otg-theme-soft),transparent 38%),linear-gradient(125deg,#fff,var(--otg-theme-soft))!important}
+#academyDashboard .otg-home-eyebrow,#academyDashboard .otg-home-shortcut-arrow{color:var(--otg-theme-primary)!important}
+#academyDashboard .otg-home-mark{border-color:var(--otg-theme-border)!important}
+#academyDashboard .otg-home-shortcut{border-color:var(--otg-theme-border)!important}
+#academyDashboard .otg-home-shortcut:hover,#academyDashboard .otg-home-shortcut:focus-visible{border-color:var(--otg-theme-primary)!important}
+#academyDashboard .otg-home-shortcut-number{background:var(--otg-theme-soft)!important;color:var(--otg-theme-primary)!important}
+#academyDashboard .academy-stat strong,#academyDashboard .academy-content-card a{color:var(--otg-theme-primary)}
+#academyDashboard .otg-academy-data-area button:not([data-otg-theme-control]){--otg-theme-button:var(--otg-theme-primary)}
+#academyDashboard .otg-academy-data-area button:not([data-otg-theme-control]):hover{filter:brightness(.96)}
+#academyDashboard .otg-theme-note{display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:6px 10px;border:1px solid var(--otg-theme-border);border-radius:999px;background:var(--otg-theme-soft);color:var(--otg-theme-dark);font-size:11px;font-weight:800}
+#academyDashboard.otg-coach-theme{--otg-theme-primary:#126b43;--otg-theme-dark:#102a43;--otg-theme-accent:#e8bd57;--otg-theme-soft:#edf7ef;--otg-theme-border:#d7c27a;--otg-theme-text:#102a43;--otg-theme-muted:#526b61}
+#academyDashboard.otg-coach-theme .academy-sidebar{background:linear-gradient(160deg,#0b172b 0%,#104b37 52%,#126b43 100%)!important;border-color:#d6b95e!important;box-shadow:0 16px 36px rgba(8,35,28,.22)!important}
+#academyDashboard.otg-coach-theme .academy-brand>span{background:linear-gradient(135deg,#f8e4a0,#d9aa38)!important;color:#102a43!important}
+#academyDashboard.otg-coach-theme .academy-welcome,#academyDashboard.otg-coach-theme .otg-home-hero{background:radial-gradient(circle at 92% 8%,rgba(232,189,87,.24),transparent 36%),linear-gradient(125deg,#fffdf4 0%,#f4f7e9 55%,#eaf5ed 100%)!important;border-color:#d7c27a!important}
+#academyDashboard.otg-coach-theme .otg-home-eyebrow,#academyDashboard.otg-coach-theme .otg-home-shortcut-arrow{color:#126b43!important}
+#academyDashboard.otg-coach-theme .otg-home-mark{border-color:#e8bd57!important;box-shadow:0 10px 28px rgba(18,107,67,.13)!important}
+</style>
+<script id="otg-student-personal-themes-script">
+(function(){
+ "use strict";
+ var adminEmail="perfectpairs2021@gmail.com";
+ var themes=[
+  {name:"Royal Blue",primary:"#2459c4",dark:"#142448",accent:"#f2c76b",soft:"#eff5ff",border:"#cbdcf8"},
+  {name:"Emerald",primary:"#087f5b",dark:"#104235",accent:"#f2c76b",soft:"#edf9f2",border:"#c5e8d4"},
+  {name:"Purple",primary:"#7650c8",dark:"#39205f",accent:"#e8d8ff",soft:"#f5f0ff",border:"#ddd0fa"},
+  {name:"Teal",primary:"#087e8b",dark:"#123b4a",accent:"#7ee7df",soft:"#ecfbfb",border:"#c5eceb"},
+  {name:"Sunset",primary:"#c45135",dark:"#57271f",accent:"#ffd4a8",soft:"#fff3ec",border:"#f5d2c3"},
+  {name:"Midnight",primary:"#334155",dark:"#111827",accent:"#93c5fd",soft:"#f1f5f9",border:"#cbd5e1"}
+ ];
+ function apply(user,profile){
+  var root=document.getElementById("academyDashboard");
+  if(!root||!user)return;
+  var email=String(user.email||"").trim().toLowerCase();
+  var role=String((profile&&profile.role)||user.app_metadata&&user.app_metadata.role||"").toLowerCase();
+  var isCoach=email===adminEmail||role==="admin"||role==="coach";
+  var theme;
+  if(isCoach){theme={name:"Coach Signature — Emerald, Midnight & Gold",primary:"#126b43",dark:"#102a43",accent:"#e8bd57",soft:"#edf7ef",border:"#d7c27a"};root.classList.add("otg-coach-theme");}
+  else{
+   root.classList.remove("otg-coach-theme");
+   var key=String(user.id||email||"student");
+   var hash=0;for(var i=0;i<key.length;i++)hash=((hash<<5)-hash+key.charCodeAt(i))|0;
+   theme=themes[Math.abs(hash)%themes.length];
+  }
+  root.dataset.otgTheme=theme.name;
+  root.style.setProperty("--otg-theme-primary",theme.primary);
+  root.style.setProperty("--otg-theme-dark",theme.dark);
+  root.style.setProperty("--otg-theme-accent",theme.accent);
+  root.style.setProperty("--otg-theme-soft",theme.soft);
+  root.style.setProperty("--otg-theme-border",theme.border);
+  var welcome=root.querySelector(".academy-welcome");
+  if(welcome&&!root.querySelector(".otg-theme-note")){
+   var note=document.createElement("span");note.className="otg-theme-note";note.textContent=isCoach?"✦ Coach Signature Theme":"✦ "+theme.name+" Theme";
+   welcome.appendChild(note);
+  }else if(welcome){
+   var existing=root.querySelector(".otg-theme-note");if(existing)existing.textContent=isCoach?"✦ Coach Signature Theme":"✦ "+theme.name+" Theme";
+  }
+ }
+ async function start(){
+  var tries=0;
+  var timer=window.setInterval(async function(){
+   tries++;
+   var db=window.supabaseClient||window.supabase;
+   var root=document.getElementById("academyDashboard");
+   if(!root){if(tries>40)clearInterval(timer);return;}
+   if(typeof supabaseClient!=="undefined"&&supabaseClient&&supabaseClient.auth){
+    clearInterval(timer);
+    try{
+     var result=await supabaseClient.auth.getUser();
+     var user=result&&result.data&&result.data.user;
+     if(!user)return;
+     var profile=window.currentProfile||null;
+     if(!profile){
+      try{var p=await supabaseClient.from("profiles").select("role").eq("id",user.id).maybeSingle();if(p&&!p.error)profile=p.data;}catch(_){}
+     }
+     apply(user,profile);
+     document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")apply(user,profile);});
+    }catch(error){console.warn("OTG personal theme could not be applied:",error);}
+   }else if(tries>40)clearInterval(timer);
+  },250);
+ }
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
+})();
+</script>
+
 </body>
 </html>
 `;
