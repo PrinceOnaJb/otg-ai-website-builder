@@ -9898,7 +9898,9 @@ header .otg-sticky-welcome{
 <script id="otg-student-hub-real-resume-guard">
 (function(){
   "use strict";
-  var key="otgStudentHubResumeStateV2",restoring=false;
+  // Resume state is a safety net, not a navigation command. Never reopen a
+  // different panel merely because the app became visible again.
+  var key="otgStudentHubResumeStateV3",saveTimer=null,restoreTimer=null;
   function userId(){try{if(window.currentUser&&window.currentUser.id)return String(window.currentUser.id);if(typeof currentUser!=="undefined"&&currentUser&&currentUser.id)return String(currentUser.id);}catch(_){}return "";}
   function activePanelKey(){var active=document.querySelector(".academy-nav.active"),source=active&&active.getAttribute("onclick")||"",match=source.match(/openAcademyPanel\(\s*['"]([^'"]+)['"]/);return match?match[1]:"";}
   function save(){
@@ -9911,30 +9913,34 @@ header .otg-sticky-welcome{
       if(draftKey){var answers=Array.from(form.querySelectorAll('textarea[name="answer"]')).map(function(field){return field.value;});localStorage.setItem(draftKey,JSON.stringify({answers:answers,savedAt:new Date().toISOString()}));}
     }catch(_){}});
   }
-  function restoreScroll(state){window.setTimeout(function(){try{var content=document.getElementById("academyPanelContent");if(content&&Number.isFinite(Number(state.panelScrollTop)))content.scrollTop=Number(state.panelScrollTop);window.scrollTo(0,Math.max(0,Number(state.scrollY)||0));}catch(_){}},80);}
-  function restoreIfNeeded(){
-    if(restoring)return;var state;try{state=JSON.parse(localStorage.getItem(key)||"null");}catch(_){return;}
+  function scheduleSave(){if(saveTimer)clearTimeout(saveTimer);saveTimer=setTimeout(function(){saveTimer=null;save();},120);}
+  function restoreScroll(state){
+    // Restore only when the app is already on the same panel. A stale saved
+    // panel must never force the user out of the page they are currently using.
+    if(activePanelKey()!==state.panelKey)return;
+    var content=document.getElementById("academyPanelContent");
+    if(content&&Number.isFinite(Number(state.panelScrollTop)))content.scrollTop=Number(state.panelScrollTop);
+    window.scrollTo(0,Math.max(0,Number(state.scrollY)||0));
+  }
+  function restoreScrollIfSamePanel(){
+    var state;try{state=JSON.parse(localStorage.getItem(key)||"null");}catch(_){return;}
     var uid=userId();if(!state||!uid||String(state.userId)!==uid||!state.panelKey)return;
     if(document.getElementById("authScreen")&&!document.getElementById("authScreen").classList.contains("hidden"))return;
     if(!document.getElementById("app")||document.getElementById("app").classList.contains("hidden"))return;
-    // Do not rerender an already-open assessment when the app resumes.
-    if(activePanelKey()!==state.panelKey&&typeof window.openAcademyPanel==="function"){
-      var button=Array.from(document.querySelectorAll(".academy-nav")).find(function(b){var source=b.getAttribute("onclick")||"";return source.indexOf("openAcademyPanel('"+state.panelKey+"'")!==-1||source.indexOf('openAcademyPanel("'+state.panelKey+'"')!==-1;})||null;
-      restoring=true;try{window.openAcademyPanel(state.panelKey,button);}catch(e){console.warn("Student Hub resume:",e);}
-      window.setTimeout(function(){restoring=false;restoreScroll(state);},250);return;
-    }
+    if(activePanelKey()!==state.panelKey)return;
     restoreScroll(state);
   }
-  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")save();});
+  document.addEventListener("scroll",scheduleSave,true);
+  document.addEventListener("input",function(event){if(event.target&&event.target.matches&&event.target.matches('.otgSubmitForm textarea[name="answer"]'))scheduleSave();},true);
+  document.addEventListener("change",function(event){if(event.target&&event.target.matches&&event.target.matches('.otgSubmitForm textarea[name="answer"]'))scheduleSave();},true);
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")save();else if(document.visibilityState==="visible"){if(restoreTimer)clearTimeout(restoreTimer);restoreTimer=setTimeout(function(){restoreTimer=null;restoreScrollIfSamePanel();},180);}});
   window.addEventListener("pagehide",save);window.addEventListener("beforeunload",save);
-  window.addEventListener("pageshow",function(event){if(event&&event.persisted)return;window.setTimeout(restoreIfNeeded,500);});
-  document.addEventListener("input",function(event){if(event.target&&event.target.matches&&event.target.matches('.otgSubmitForm textarea[name="answer"]'))save();},true);
-  document.addEventListener("change",function(event){if(event.target&&event.target.matches&&event.target.matches('.otgSubmitForm textarea[name="answer"]'))save();},true);
+  window.addEventListener("pageshow",function(event){if(event&&event.persisted)return;setTimeout(restoreScrollIfSamePanel,500);});
   var attempts=0,timer=window.setInterval(function(){
     attempts++;if(typeof window.openAcademyPanel==="function"&&!window.openAcademyPanel.__otgResumeWrapped){
-      var original=window.openAcademyPanel;var wrapped=function(panelKey,button){var result=original.apply(this,arguments);window.setTimeout(save,0);return result;};
+      var original=window.openAcademyPanel;var wrapped=function(panelKey,button){var result=original.apply(this,arguments);setTimeout(scheduleSave,0);return result;};
       wrapped.__otgResumeWrapped=true;window.openAcademyPanel=wrapped;window.clearInterval(timer);
-    }else if(attempts>=40)window.clearInterval(timer);
+    }else if(attempts>=80)window.clearInterval(timer);
   },250);
 })();
 </script>
