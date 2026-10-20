@@ -729,9 +729,17 @@ async function loadAcademyPanelData(key,content){
     if(!document.getElementById("app")||document.getElementById("app").classList.contains("hidden"))return false;
     if(typeof window.openAcademyPanel!=="function")return false;
     var key=String(state.panelKey);
-    var button=findButton(key);
-    restoring=true;
-    try{window.openAcademyPanel(key,button);}catch(error){console.warn("Could not restore Student Hub section:",error);}
+    var active=document.querySelector(".academy-nav.active");
+    var activeSource=active&&active.getAttribute("onclick")||"";
+    var activeMatch=activeSource.match(/openAcademyPanel\(\s*['"]([^'"]+)['"]/);
+    var currentKey=activeMatch?activeMatch[1]:"";
+    // If the same panel is already open (normal minimize/restore), never rerender it:
+    // doing so could interrupt an active assessment or replace answer fields.
+    if(currentKey!==key){
+      var button=findButton(key);
+      restoring=true;
+      try{window.openAcademyPanel(key,button);}catch(error){console.warn("Could not restore Student Hub section:",error);}
+    }
     window.setTimeout(function(){
       try{
         var content=document.getElementById("academyPanelContent");
