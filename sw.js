@@ -62,8 +62,7 @@ self.addEventListener("push", event => {
       callId,
       callerName,
       callType,
-      url: isAssessmentResult ? (typeof payload.url === "string" ? payload.url : "/?otgAssessmentResults=1") : "/?otgIncomingCall=" + encodeURIComponent(callId) +
-        "&otgCallType=" + encodeURIComponent(callType)
+      url: typeof payload.url === "string" ? payload.url : (isAssessmentResult ? "/?otgAssessmentResults=1" : "/?otgIncomingCall=" + encodeURIComponent(callId) + "&otgCallType=" + encodeURIComponent(callType))
     },
     actions: (isTest || isAssessmentResult) ? [{ action: "dismiss", title: "Dismiss" }] : [
       { action: "open-call", title: "Open call" },
