@@ -4691,7 +4691,7 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
     label.textContent=entry.displayName+" · connected";
     entry.audio.play().then(()=>{const prompt=tile.querySelector(".otg-call-playback");if(prompt)prompt.remove();}).catch(()=>{
      if(tile.querySelector(".otg-call-playback"))return;
-     const playButton=makeButton("Tap to enable audio/video","#0f766e",()=>{video.muted=false;video.volume=1;video.play().then(()=>playButton.remove()).catch(()=>{playButton.textContent="Tap again to enable sound";});});
+     const playButton=makeButton("Tap to enable audio/video","#0f766e",async()=>{try{video.muted=true;entry.audio.muted=false;entry.audio.volume=1;await entry.audio.play();video.play().catch(()=>{});playButton.remove();}catch(_){playButton.textContent="Tap again to enable sound";}});
      playButton.className="otg-call-playback";playButton.style.cssText+=";position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);z-index:3;max-width:90%";tile.appendChild(playButton);
     });
    };
