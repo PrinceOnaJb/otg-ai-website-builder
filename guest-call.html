@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#123b78">
+<title>Join OTG Class Call</title>
+<link rel="icon" href="/otg-app-icon.svg">
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#071426;color:#fff;font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;display:grid;place-items:center;padding:16px}.card{width:min(100%,620px);padding:clamp(20px,5vw,34px);border:1px solid #29415f;border-radius:24px;background:#0b2341;box-shadow:0 22px 70px #0005}.brand{font-weight:900;letter-spacing:.06em;color:#8bd6ff;font-size:13px}.logo{width:54px;height:54px;border-radius:16px;background:#123b78;display:grid;place-items:center;font-weight:950;font-size:22px;margin-bottom:18px}.muted{color:#bfd0e5}.status{padding:12px;border-radius:12px;background:#102b4b;margin:16px 0}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}button{border:0;border-radius:12px;padding:13px 17px;font:800 15px system-ui;cursor:pointer}.primary{background:#13a879;color:white}.secondary{background:#334155;color:white}button:disabled{opacity:.5;cursor:wait}#stage{display:none}#videos{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px;margin-top:14px}.tile{min-height:160px;aspect-ratio:4/3;border-radius:14px;background:#020817;overflow:hidden;position:relative}.tile video{width:100%;height:100%;object-fit:cover}.tile span{position:absolute;bottom:8px;left:8px;background:#071426d9;padding:4px 8px;border-radius:7px;font-size:12px}.warning{color:#fed7aa;font-size:13px}a{color:#8bd6ff}
+</style>
+</head>
+<body>
+<main class="card">
+<div class="logo">OTG</div><div class="brand">OTG GRAPHIC ACADEMY</div>
+<section id="intro">
+<h1 style="margin:8px 0 4px">Join your class call</h1>
+<p class="muted">You can join this call without signing in to the Student Hub. This secure invitation is for the person who received it and expires shortly.</p>
+<div id="status" class="status" role="status">Checking your invitation…</div>
+<div class="actions"><button id="join" class="primary" disabled>Join class</button><button id="cancel" class="secondary" type="button">Cancel</button></div>
+<p class="warning">Your browser may ask for microphone or camera permission. Use a trusted device and only join a class you expect.</p>
+</section>
+<section id="stage">
+<h1 id="callTitle">OTG class call</h1><p id="callInfo" class="muted">Connecting securely…</p>
+<div id="videos"></div>
+<div class="actions"><button id="mute" class="secondary" type="button">Mute mic</button><button id="camera" class="secondary" type="button" hidden>Turn camera off</button><button id="end" class="primary" type="button">Leave call</button></div>
+</section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+"use strict";
+const SUPABASE_URL="https://actwvvokfdemobgsfctx.supabase.co";
+const SUPABASE_KEY="sb_publishable_5ays9IaAaJNqu02LAbJVGw_B5B5G5";
+const FUNCTION_URL=SUPABASE_URL+"/functions/v1/otg-call-push";
+const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+const params=new URLSearchParams(location.search);const guestToken=params.get("token")||"";
+const statusEl=document.getElementById("status"),joinBtn=document.getElementById("join"),intro=document.getElementById("intro"),stage=document.getElementById("stage");
+let invite=null,localStream=null,channel=null,closed=false,peers={};
+function say(message){statusEl.textContent=message;}
+async function api(action){
+ const response=await fetch(FUNCTION_URL,{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_KEY},body:JSON.stringify({action,guestToken})});
+ const data=await response.json().catch(()=>({error:"The call service returned an unreadable response."}));
+ if(!response.ok||data.error)throw new Error(data.error||"Could not contact the call service.");
+ return data;
+}
+function safeRoom(value){return String(value||"").replace(/[^A-Za-z0-9_-]/g,"-").slice(0,180);}
+async function startCall(){
+ joinBtn.disabled=true;say("Accepting invitation and requesting device permission…");
+ try{
+  const accepted=await api("guest-accept");invite=accepted;
+  const isVideo=invite.call.callType==="video";
+  localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:isVideo?{facingMode:"user"}:false});
+  intro.style.display="none";stage.style.display="block";
+  document.getElementById("callTitle").textContent=isVideo?"OTG Video Class":"OTG Voice Class";
+  document.getElementById("callInfo").textContent="You joined as a guest. Keep this page open while the class is in progress.";
+  const videos=document.getElementById("videos");
+  const localTile=document.createElement("div");localTile.className="tile";const localVideo=document.createElement("video");localVideo.autoplay=true;localVideo.playsInline=true;localVideo.muted=true;localVideo.srcObject=localStream;const localLabel=document.createElement("span");localLabel.textContent="You";localTile.append(localVideo,localLabel);videos.appendChild(localTile);
+  document.getElementById("camera").hidden=!isVideo;
+  const guestId=invite.guest.id;
+  const channelName="otg-webrtc-"+safeRoom(invite.call.roomName||invite.call.id);
+  const sendSignal=async payload=>{if(channel)try{await channel.send({type:"broadcast",event:"signal",payload:Object.assign({from:guestId,room:invite.call.roomName},payload)});}catch(e){console.warn("Guest signal failed",e);}};
+  async function makePeer(peerId,displayName){
+   if(!peerId||peerId===guestId||!localStream||!channel)return null;
+   if(peers[peerId])return peers[peerId];
+   const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun.cloudflare.com:3478"}]});
+   const tile=document.createElement("div");tile.className="tile";const video=document.createElement("video");video.autoplay=true;video.playsInline=true;video.muted=false;video.volume=1;const label=document.createElement("span");label.textContent=(displayName||invite.callerName)+" · connecting";tile.append(video,label);videos.appendChild(tile);
+   const entry={pc,tile,video,label,candidateQueue:[]};peers[peerId]=entry;localStream.getTracks().forEach(track=>pc.addTrack(track,localStream));
+   pc.ontrack=ev=>{let stream=ev.streams&&ev.streams[0];if(!stream){if(!entry.remoteStream)entry.remoteStream=new MediaStream();entry.remoteStream.addTrack(ev.track);stream=entry.remoteStream;}video.srcObject=stream;video.play().catch(()=>{label.textContent="Tap video to enable audio";video.addEventListener("click",()=>video.play().catch(()=>{}),{once:true});});label.textContent=(displayName||invite.callerName)+" · connected";};
+   pc.onicecandidate=ev=>{if(ev.candidate)sendSignal({to:peerId,type:"candidate",candidate:ev.candidate});};
+   pc.onconnectionstatechange=()=>{if(pc.connectionState==="connected")label.textContent=(displayName||invite.callerName)+" · connected";};
+   if(String(guestId)<String(peerId)){const offer=await pc.createOffer();await pc.setLocalDescription(offer);await sendSignal({to:peerId,type:"offer",description:pc.localDescription});}
+   return entry;
+  }
+  async function handleSignal(payload){
+   if(!payload||payload.to!==guestId||payload.from===guestId||payload.room!==invite.call.roomName)return;
+   try{
+    let entry=peers[payload.from];if(!entry)entry=await makePeer(payload.from,invite.callerName);if(!entry)return;const pc=entry.pc;
+    if(payload.type==="offer"){if(pc.signalingState!=="stable")return;await pc.setRemoteDescription(new RTCSessionDescription(payload.description));while(entry.candidateQueue.length){try{await pc.addIceCandidate(new RTCIceCandidate(entry.candidateQueue.shift()));}catch(_){}}const answer=await pc.createAnswer();await pc.setLocalDescription(answer);await sendSignal({to:payload.from,type:"answer",description:pc.localDescription});}
+    else if(payload.type==="answer"){if(pc.signalingState==="have-local-offer"){await pc.setRemoteDescription(new RTCSessionDescription(payload.description));while(entry.candidateQueue.length){try{await pc.addIceCandidate(new RTCIceCandidate(entry.candidateQueue.shift()));}catch(_){}}}}
+    else if(payload.type==="candidate"&&payload.candidate){if(pc.remoteDescription)await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));else entry.candidateQueue.push(payload.candidate);}
+   }catch(e){console.warn("Guest call negotiation:",e);document.getElementById("callInfo").textContent="Still connecting. Check your network and keep this page open.";}
+  }
+  channel=client.channel(channelName,{config:{broadcast:{self:false},presence:{key:guestId}}})
+   .on("broadcast",{event:"signal"},({payload})=>handleSignal(payload))
+   .on("presence",{event:"sync"},()=>{const presence=channel?channel.presenceState():{};const peersFound=new Map();Object.values(presence||{}).flat().forEach(p=>{if(p&&p.user_id&&p.user_id!==guestId)peersFound.set(p.user_id,p.display_name||invite.callerName);});peersFound.forEach((name,id)=>makePeer(id,name));})
+   .subscribe(async state=>{if(state==="SUBSCRIBED"){await channel.track({user_id:guestId,display_name:"OTG class guest",joined_at:new Date().toISOString()});document.getElementById("callInfo").textContent="Connected to the OTG call room. Waiting for your Coach…";}else if(state==="CHANNEL_ERROR"||state==="TIMED_OUT"){document.getElementById("callInfo").textContent="Call connection interrupted. Check your data connection and retry if the call is still active.";}}); 
+ }catch(error){joinBtn.disabled=false;say(error&&error.name==="NotAllowedError"?"Microphone/camera permission was denied. Allow access in your browser, then tap Join class again.":(error.message||"Could not join this call."));}
+}
+async function leaveCall(){if(closed)return;closed=true;try{await api("guest-end");}catch(_){}try{if(channel)await client.removeChannel(channel);}catch(_){}if(localStream)localStream.getTracks().forEach(t=>t.stop());Object.values(peers).forEach(p=>{try{p.pc.close();}catch(_){}});document.getElementById("callInfo").textContent="You left the call. You may close this page.";document.getElementById("end").disabled=true;}
+joinBtn.addEventListener("click",startCall);
+document.getElementById("cancel").addEventListener("click",()=>{location.href="/";});
+document.getElementById("end").addEventListener("click",leaveCall);
+document.getElementById("mute").addEventListener("click",()=>{const track=localStream&&localStream.getAudioTracks()[0];if(track){track.enabled=!track.enabled;document.getElementById("mute").textContent=track.enabled?"Mute mic":"Unmute mic";}});
+document.getElementById("camera").addEventListener("click",()=>{const track=localStream&&localStream.getVideoTracks()[0];if(track){track.enabled=!track.enabled;document.getElementById("camera").textContent=track.enabled?"Turn camera off":"Turn camera on";}});
+if(!guestToken){say("This invitation link is missing its secure token. Ask your Coach to start the call again.");}
+else{api("guest-validate").then(data=>{invite=data;document.getElementById("callTitle").textContent=data.call.callType==="video"?"OTG Video Class":"OTG Voice Class";say(data.callerName+" is inviting you to an OTG class. Tap Join class when you are ready.");joinBtn.disabled=false;}).catch(error=>say(error.message||"This invitation could not be verified."));}
+window.addEventListener("pagehide",()=>{if(localStream)localStream.getTracks().forEach(t=>t.stop());try{if(channel)client.removeChannel(channel);}catch(_){}});
+})();
+</script>
+</body>
+</html>
