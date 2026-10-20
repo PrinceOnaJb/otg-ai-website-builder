@@ -4975,7 +4975,7 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
    return true;
   }catch(error){console.warn("OTG background call notifications could not be enabled:",error);return false;}
  }
- window.otgEnableBackgroundCallNotifications=function(){return ensureOtgBackgroundPush({id:state.userId},true);};
+ window.otgEnableBackgroundCallNotifications=async function(user){try{let userId=user&&user.id?String(user.id):String(state.userId||"");if(!userId){const authResult=await client.auth.getUser();if(authResult.error||!authResult.data||!authResult.data.user)return false;userId=authResult.data.user.id;}state.userId=userId;return await ensureOtgBackgroundPush({id:userId},true);}catch(error){console.warn("OTG notification setup could not resolve the signed-in user:",error);return false;}};
  document.addEventListener("pointerdown",function(){if(state.userId&&"Notification" in window&&Notification.permission==="granted"){ensureOtgBackgroundPush({id:state.userId},false);}}, {passive:true});
  function showOtgPushSetupPrompt(user,force){
   if(!user||!user.id||!document.body)return;
