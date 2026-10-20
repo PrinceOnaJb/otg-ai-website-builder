@@ -4637,7 +4637,7 @@ const supabaseClient =
  async function loadOtgIceServers(){if(state.iceServers)return state.iceServers;const fallback=[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun.cloudflare.com:3478"}];try{const response=await fetch("/api/ice-servers",{cache:"no-store",credentials:"same-origin"});if(response.ok){const data=await response.json();if(Array.isArray(data.iceServers)&&data.iceServers.length){state.iceServers=data.iceServers;state.turnConfigured=!!data.turnConfigured;return state.iceServers;}}}catch(error){console.warn("OTG relay configuration unavailable; using STUN fallback.",error);}state.iceServers=fallback;state.turnConfigured=false;return fallback;}
  function closeOverlay(){
  
-  if(state.rtcPeers){Object.values(state.rtcPeers).forEach(function(entry){try{entry.pc.close();}catch(_){}if(entry.tile)entry.tile.remove();});state.rtcPeers={};}
+  if(state.rtcPeers){Object.values(state.rtcPeers).forEach(function(entry){try{entry.pc.close();}catch(_){}if(entry.tile)entry.tile.remove();if(entry.audio)entry.audio.remove();});state.rtcPeers={};}
   if(state.rtcChannel){try{client.removeChannel(state.rtcChannel);}catch(_){}state.rtcChannel=null;}
   if(state.localMedia){state.localMedia.getTracks().forEach(function(track){try{track.stop();}catch(_){}});state.localMedia=null;}
   const el=document.getElementById("otgCallOverlay");if(el)el.remove();state.overlay=null;
@@ -4680,15 +4680,16 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
    const video=document.createElement("video");video.autoplay=true;video.playsInline=true;video.muted=false;video.volume=1;video.style.cssText="width:100%;height:100%;object-fit:cover;display:block";
    const label=document.createElement("span");label.textContent=(peerDisplayName||"OTG student")+" · connecting…";label.style.cssText="position:absolute;left:10px;bottom:10px;padding:5px 8px;border-radius:7px;background:#071426cc;color:#fff;font-size:12px;font-weight:700;z-index:2";
    tile.append(video,label);grid.appendChild(tile);
-   const entry={pc:pc,tile:tile,video:video,displayName:peerDisplayName||"OTG student",candidateQueue:[],offerSent:false,remoteStream:null};
+   const audio=document.createElement("audio");audio.autoplay=true;audio.playsInline=true;audio.controls=false;audio.style.display="none";document.body.appendChild(audio);
+   const entry={pc:pc,tile:tile,video:video,audio:audio,displayName:peerDisplayName||"OTG student",candidateQueue:[],offerSent:false,remoteStream:null};
    state.rtcPeers[peerId]=entry;
    state.localMedia.getTracks().forEach(track=>pc.addTrack(track,state.localMedia));
    pc.ontrack=function(ev){
     let stream=ev.streams&&ev.streams[0];
     if(!stream){if(!entry.remoteStream)entry.remoteStream=new MediaStream();entry.remoteStream.addTrack(ev.track);stream=entry.remoteStream;}
-    video.srcObject=stream;video.muted=false;video.volume=1;
+    video.srcObject=stream;video.muted=true;video.volume=1;video.play().catch(()=>{});entry.audio.srcObject=stream;entry.audio.muted=false;entry.audio.volume=1;
     label.textContent=entry.displayName+" · connected";
-    video.play().then(()=>{const prompt=tile.querySelector(".otg-call-playback");if(prompt)prompt.remove();}).catch(()=>{
+    entry.audio.play().then(()=>{const prompt=tile.querySelector(".otg-call-playback");if(prompt)prompt.remove();}).catch(()=>{
      if(tile.querySelector(".otg-call-playback"))return;
      const playButton=makeButton("Tap to enable audio/video","#0f766e",()=>{video.muted=false;video.volume=1;video.play().then(()=>playButton.remove()).catch(()=>{playButton.textContent="Tap again to enable sound";});});
      playButton.className="otg-call-playback";playButton.style.cssText+=";position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);z-index:3;max-width:90%";tile.appendChild(playButton);
