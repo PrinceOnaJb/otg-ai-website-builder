@@ -8875,8 +8875,16 @@ async function showApp(approvalAlreadyChecked){
 
   const activityNav=document.getElementById("otgStudentActivityNav");if(activityNav){const isAdmin=currentProfile&&String(currentProfile.role||"").toLowerCase()==="admin"&&String(currentProfile.approval_status||"").toLowerCase()==="approved";activityNav.hidden=!isAdmin;activityNav.style.display=isAdmin?"flex":"none";}
   if(currentProfile&&String(currentProfile.role||"").toLowerCase()==="student"&&typeof window.otgLogAcademyActivity==="function")window.otgLogAcademyActivity("visit","Student Hub opened");
-  renderProjects();
-  ensureAdminPanel();
+  // Secondary dashboard widgets must never block an approved student from entering the Hub.
+  try {
+    const projectsLoad = renderProjects();
+    if (projectsLoad && typeof projectsLoad.catch === "function") projectsLoad.catch(function(error){ console.error("OTG projects panel could not load; keeping Student Hub available:", error); });
+  } catch (projectsStartupError) {
+    console.error("OTG projects panel startup failed; keeping Student Hub available:", projectsStartupError);
+  }
+  try { ensureAdminPanel(); } catch (adminPanelStartupError) {
+    console.error("OTG admin panel startup failed; keeping Student Hub available:", adminPanelStartupError);
+  }
 
   // On a genuine page re-entry, resume the last section for this same account.
   // This matters when Android/browser discards the page while the app is minimized.
@@ -8896,7 +8904,10 @@ async function showApp(approvalAlreadyChecked){
       }) || null;
       window.openAcademyPanel(resumeState.panelKey, resumeButton || undefined);
     }else{
-      window.openAcademyPanel("home", document.querySelector('.academy-nav[onclick*="openAcademyPanel(\'home\'"]'));
+      const homeButton = Array.from(document.querySelectorAll(".academy-nav")).find(function(button){
+        return (button.getAttribute("onclick") || "").indexOf("openAcademyPanel('home'") !== -1;
+      }) || null;
+      window.openAcademyPanel("home", homeButton);
     }
   }
 
