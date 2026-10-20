@@ -704,87 +704,7 @@ async function loadAcademyPanelData(key,content){
   const status=document.createElement("p");status.setAttribute("role","status");status.setAttribute("aria-live","polite");status.style.cssText="margin:10px 0 0;color:#475569;font-size:13px";
   const makeButton=(label,primary,fn)=>{const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:10px 15px;border-radius:9px;border:1px solid "+(primary?"#1d4ed8":"#cbd5e1")+";background:"+(primary?"#1d4ed8":"#fff")+";color:"+(primary?"#fff":"#1e293b")+";font-weight:800;cursor:pointer";b.addEventListener("click",fn);controls.appendChild(b);return b;};
   const preview=document.createElement("iframe");preview.title="Code Lab live preview";preview.setAttribute("sandbox","allow-scripts");preview.setAttribute("referrerpolicy","no-referrer");preview.style.cssText="display:block;width:100%;height:340px;border:1px solid #cbd5e1;border-radius:12px;background:#fff";
-  const runCode=()=>{const css=cssEditor.value;const js=jsEditor.value.replace(/<\/script/gi,"<\\/script");preview.srcdoc="<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><base href='https://otg-ai-website-builder.vercel.app/'><style>"+css+"</style></head><body>"+htmlEditor.value+"<script>"+js+"<\/script>
-<style id="otg-inbox-message-alert-styles">
-#otgStudentInboxNav{position:relative!important;padding-right:48px!important}
-#otgInboxUnreadBadge{display:none;align-items:center;justify-content:center;min-width:21px;height:21px;padding:0 6px;box-sizing:border-box;border-radius:999px;background:#ef4444;color:#fff;font-size:11px;font-weight:900;line-height:1;position:absolute;right:12px;top:50%;transform:translateY(-50%);box-shadow:0 0 0 2px #142448}
-#otgInboxMessageToast{position:fixed;z-index:2147483000;right:16px;top:16px;width:min(360px,calc(100vw - 32px));display:none;gap:12px;align-items:flex-start;padding:15px;border:1px solid #c7d9f5;border-radius:16px;background:#fff;color:#172b4d;box-shadow:0 16px 50px rgba(15,23,42,.25);font:inherit}
-#otgInboxMessageToast.otg-show{display:flex;animation:otgInboxToastIn .22s ease-out}
-#otgInboxMessageToast .otg-inbox-toast-icon{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;border-radius:13px;background:#e7f0ff;font-size:22px}
-#otgInboxMessageToast .otg-inbox-toast-title{font-weight:900;font-size:14px;margin:0 0 4px;color:#123b78}
-#otgInboxMessageToast .otg-inbox-toast-copy{font-size:13px;line-height:1.45;margin:0;color:#475569;overflow-wrap:anywhere}
-#otgInboxMessageToast .otg-inbox-toast-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-#otgInboxMessageToast button{border:0;border-radius:8px;padding:8px 10px;font-weight:800;font-size:12px;cursor:pointer}
-#otgInboxMessageToast .otg-inbox-open{background:#123b78;color:#fff}
-#otgInboxMessageToast .otg-inbox-dismiss{background:#eef2f7;color:#334155}
-@keyframes otgInboxToastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:600px){#otgInboxMessageToast{right:10px;top:10px;width:calc(100vw - 20px);box-sizing:border-box}}
-</style>
-<script id="otg-inbox-live-message-alerts">
-(function(){
- "use strict";
- var channel=null,activeId=null,profileRole=null,toastTimer=null,lastSeenIncoming=null;
- function getDb(){try{return typeof supabaseClient!=="undefined"?supabaseClient:(window.supabaseClient||null);}catch(_){return window.supabaseClient||null;}}
- function getInboxButton(){return document.getElementById("otgStudentInboxNav");}
- function setBadge(count){
-  var button=getInboxButton();if(!button)return;
-  var badge=document.getElementById("otgInboxUnreadBadge");
-  if(!badge){badge=document.createElement("span");badge.id="otgInboxUnreadBadge";badge.setAttribute("aria-label","Unread messages");button.appendChild(badge);}
-  var n=Number(count)||0;badge.textContent=n>99?"99+":String(n);badge.style.display=n>0?"inline-flex":"none";
-  button.setAttribute("aria-label",n>0?"My Inbox, "+n+" unread message"+(n===1?"":"s"):"My Inbox");
- }
- async function updateCount(){
-  var db=getDb();if(!db||!activeId||profileRole!=="student")return;
-  try{var r=await db.from("academy_direct_messages").select("id",{count:"exact",head:true}).eq("recipient_id",activeId).is("read_at",null);if(!r.error)setBadge(r.count||0);}catch(e){console.warn("OTG inbox unread count:",e);}
- }
- function ensureToast(){
-  var node=document.getElementById("otgInboxMessageToast");if(node)return node;
-  node=document.createElement("div");node.id="otgInboxMessageToast";node.setAttribute("role","status");node.setAttribute("aria-live","polite");
-  node.innerHTML='<div class="otg-inbox-toast-icon" aria-hidden="true">✉️</div><div style="min-width:0;flex:1"><p class="otg-inbox-toast-title">New message from Coach</p><p class="otg-inbox-toast-copy" id="otgInboxToastCopy">You have a new private message in OTG.</p><div class="otg-inbox-toast-actions"><button type="button" class="otg-inbox-open" id="otgInboxToastOpen">Open inbox</button><button type="button" class="otg-inbox-dismiss" id="otgInboxToastDismiss">Dismiss</button><button type="button" class="otg-inbox-dismiss" id="otgInboxToastEnable">Enable alerts</button></div></div>';
-  document.body.appendChild(node);
-  node.querySelector("#otgInboxToastOpen").addEventListener("click",function(){hideToast();if(typeof window.openAcademyPanel==="function")window.openAcademyPanel("inbox",getInboxButton());});
-  node.querySelector("#otgInboxToastDismiss").addEventListener("click",hideToast);
-  node.querySelector("#otgInboxToastEnable").addEventListener("click",async function(){if(!("Notification" in window)){this.textContent="Not supported";return;}try{var p=await Notification.requestPermission();this.textContent=p==="granted"?"Alerts enabled":p==="denied"?"Blocked in browser":"Not enabled";}catch(_){this.textContent="Try browser settings";}});
-  return node;
- }
- function hideToast(){var n=document.getElementById("otgInboxMessageToast");if(n)n.classList.remove("otg-show");if(toastTimer)clearTimeout(toastTimer);}
- function showToast(body){
-  var n=ensureToast(),copy=n.querySelector("#otgInboxToastCopy");
-  copy.textContent=body?String(body).slice(0,180):"You have a new private message in OTG.";
-  var enable=n.querySelector("#otgInboxToastEnable");enable.style.display=("Notification" in window&&Notification.permission==="granted")?"none":"inline-block";
-  n.classList.add("otg-show");if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(hideToast,12000);
-  if(document.visibilityState!=="visible"&&"Notification" in window&&Notification.permission==="granted"){
-   try{var notice=new Notification("New message from Coach",{body:copy.textContent,tag:"otg-coach-message"});notice.onclick=function(){window.focus();if(typeof window.openAcademyPanel==="function")window.openAcademyPanel("inbox",getInboxButton());notice.close();};}catch(e){console.warn("OTG browser message alert:",e);}
-  }
- }
- function stop(){if(channel){try{var db=getDb();if(db)db.removeChannel(channel);}catch(_){}channel=null;}activeId=null;profileRole=null;setBadge(0);}
- async function start(user){
-  var db=getDb();if(!db||!user||!user.id)return;
-  if(activeId===user.id&&channel){await updateCount();return;}
-  stop();
-  try{
-   var p=await db.from("profiles").select("role,approval_status").eq("id",user.id).maybeSingle();
-   if(p.error||!p.data||p.data.approval_status!=="approved"||p.data.role!=="student"){setBadge(0);return;}
-   activeId=user.id;profileRole=p.data.role;await updateCount();
-   channel=db.channel("otg-inbox-alerts-"+activeId).on("postgres_changes",{event:"INSERT",schema:"public",table:"academy_direct_messages",filter:"recipient_id=eq."+activeId},function(payload){
-    var m=payload&&payload.new;if(!m||m.recipient_id!==activeId||m.sender_id===activeId)return;
-    lastSeenIncoming=m.id;updateCount();
-    var body=String(m.body||"").trim();showToast(body);
-   }).on("postgres_changes",{event:"UPDATE",schema:"public",table:"academy_direct_messages",filter:"recipient_id=eq."+activeId},function(){updateCount();}).subscribe();
-  }catch(e){console.warn("OTG live inbox alerts could not start:",e);}
- }
- function init(){
-  var db=getDb();if(!db||!db.auth)return;
-  db.auth.getSession().then(function(r){if(r&&r.data&&r.data.session&&r.data.session.user)start(r.data.session.user);});
-  db.auth.onAuthStateChange(function(event,session){window.setTimeout(function(){if(session&&session.user)start(session.user);else if(event==="SIGNED_OUT")stop();},0);});
-  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")updateCount();});
-  document.addEventListener("click",function(e){var b=e.target&&e.target.closest?e.target.closest("#otgStudentInboxNav"):null;if(b)window.setTimeout(updateCount,900);});
- }
- if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
-})();
-</script>
-
-</body></html>";status.textContent="Preview updated. Your code has not been published.";};
+  const runCode=()=>{const css=cssEditor.value;const js=jsEditor.value.replace(/<\/script/gi,"<\\/script");preview.srcdoc="<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><base href='https://otg-ai-website-builder.vercel.app/'><style>"+css+"</style></head><body>"+htmlEditor.value+"<script>"+js+"<\/script></body></html>";status.textContent="Preview updated. Your code has not been published.";};
   makeButton("▶ Run code",true,runCode);
   makeButton("Save draft on this device",false,()=>{try{localStorage.setItem("otgAcademyCodeLabDraft",JSON.stringify({html:htmlEditor.value,css:cssEditor.value,js:jsEditor.value}));status.textContent="Draft saved on this device only.";}catch(e){status.textContent="This browser did not allow a local draft to be saved.";}}); 
   makeButton("Load saved draft",false,()=>{try{const raw=localStorage.getItem("otgAcademyCodeLabDraft");if(!raw){status.textContent="No saved draft was found on this device.";return;}const d=JSON.parse(raw);htmlEditor.value=d.html||"";cssEditor.value=d.css||"";jsEditor.value=d.js||"";runCode();status.textContent="Saved draft loaded from this device.";}catch(e){status.textContent="Could not load the saved draft.";}}); 
@@ -10184,5 +10104,83 @@ header .otg-sticky-welcome{
 })();
 </script>
 
+<style id="otg-inbox-message-alert-styles">
+#otgStudentInboxNav{position:relative!important;padding-right:48px!important}
+#otgInboxUnreadBadge{display:none;align-items:center;justify-content:center;min-width:21px;height:21px;padding:0 6px;box-sizing:border-box;border-radius:999px;background:#ef4444;color:#fff;font-size:11px;font-weight:900;line-height:1;position:absolute;right:12px;top:50%;transform:translateY(-50%);box-shadow:0 0 0 2px #142448}
+#otgInboxMessageToast{position:fixed;z-index:2147483000;right:16px;top:16px;width:min(360px,calc(100vw - 32px));display:none;gap:12px;align-items:flex-start;padding:15px;border:1px solid #c7d9f5;border-radius:16px;background:#fff;color:#172b4d;box-shadow:0 16px 50px rgba(15,23,42,.25);font:inherit}
+#otgInboxMessageToast.otg-show{display:flex;animation:otgInboxToastIn .22s ease-out}
+#otgInboxMessageToast .otg-inbox-toast-icon{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;border-radius:13px;background:#e7f0ff;font-size:22px}
+#otgInboxMessageToast .otg-inbox-toast-title{font-weight:900;font-size:14px;margin:0 0 4px;color:#123b78}
+#otgInboxMessageToast .otg-inbox-toast-copy{font-size:13px;line-height:1.45;margin:0;color:#475569;overflow-wrap:anywhere}
+#otgInboxMessageToast .otg-inbox-toast-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+#otgInboxMessageToast button{border:0;border-radius:8px;padding:8px 10px;font-weight:800;font-size:12px;cursor:pointer}
+#otgInboxMessageToast .otg-inbox-open{background:#123b78;color:#fff}
+#otgInboxMessageToast .otg-inbox-dismiss{background:#eef2f7;color:#334155}
+@keyframes otgInboxToastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){#otgInboxMessageToast{right:10px;top:10px;width:calc(100vw - 20px);box-sizing:border-box}}
+</style>
+<script id="otg-inbox-live-message-alerts">
+(function(){
+ "use strict";
+ var channel=null,activeId=null,profileRole=null,toastTimer=null,lastSeenIncoming=null;
+ function getDb(){try{return typeof supabaseClient!=="undefined"?supabaseClient:(window.supabaseClient||null);}catch(_){return window.supabaseClient||null;}}
+ function getInboxButton(){return document.getElementById("otgStudentInboxNav");}
+ function setBadge(count){
+  var button=getInboxButton();if(!button)return;
+  var badge=document.getElementById("otgInboxUnreadBadge");
+  if(!badge){badge=document.createElement("span");badge.id="otgInboxUnreadBadge";badge.setAttribute("aria-label","Unread messages");button.appendChild(badge);}
+  var n=Number(count)||0;badge.textContent=n>99?"99+":String(n);badge.style.display=n>0?"inline-flex":"none";
+  button.setAttribute("aria-label",n>0?"My Inbox, "+n+" unread message"+(n===1?"":"s"):"My Inbox");
+ }
+ async function updateCount(){
+  var db=getDb();if(!db||!activeId||profileRole!=="student")return;
+  try{var r=await db.from("academy_direct_messages").select("id",{count:"exact",head:true}).eq("recipient_id",activeId).is("read_at",null);if(!r.error)setBadge(r.count||0);}catch(e){console.warn("OTG inbox unread count:",e);}
+ }
+ function ensureToast(){
+  var node=document.getElementById("otgInboxMessageToast");if(node)return node;
+  node=document.createElement("div");node.id="otgInboxMessageToast";node.setAttribute("role","status");node.setAttribute("aria-live","polite");
+  node.innerHTML='<div class="otg-inbox-toast-icon" aria-hidden="true">✉️</div><div style="min-width:0;flex:1"><p class="otg-inbox-toast-title">New message from Coach</p><p class="otg-inbox-toast-copy" id="otgInboxToastCopy">You have a new private message in OTG.</p><div class="otg-inbox-toast-actions"><button type="button" class="otg-inbox-open" id="otgInboxToastOpen">Open inbox</button><button type="button" class="otg-inbox-dismiss" id="otgInboxToastDismiss">Dismiss</button><button type="button" class="otg-inbox-dismiss" id="otgInboxToastEnable">Enable alerts</button></div></div>';
+  document.body.appendChild(node);
+  node.querySelector("#otgInboxToastOpen").addEventListener("click",function(){hideToast();if(typeof window.openAcademyPanel==="function")window.openAcademyPanel("inbox",getInboxButton());});
+  node.querySelector("#otgInboxToastDismiss").addEventListener("click",hideToast);
+  node.querySelector("#otgInboxToastEnable").addEventListener("click",async function(){if(!("Notification" in window)){this.textContent="Not supported";return;}try{var p=await Notification.requestPermission();this.textContent=p==="granted"?"Alerts enabled":p==="denied"?"Blocked in browser":"Not enabled";}catch(_){this.textContent="Try browser settings";}});
+  return node;
+ }
+ function hideToast(){var n=document.getElementById("otgInboxMessageToast");if(n)n.classList.remove("otg-show");if(toastTimer)clearTimeout(toastTimer);}
+ function showToast(body){
+  var n=ensureToast(),copy=n.querySelector("#otgInboxToastCopy");
+  copy.textContent=body?String(body).slice(0,180):"You have a new private message in OTG.";
+  var enable=n.querySelector("#otgInboxToastEnable");enable.style.display=("Notification" in window&&Notification.permission==="granted")?"none":"inline-block";
+  n.classList.add("otg-show");if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(hideToast,12000);
+  if(document.visibilityState!=="visible"&&"Notification" in window&&Notification.permission==="granted"){
+   try{var notice=new Notification("New message from Coach",{body:copy.textContent,tag:"otg-coach-message"});notice.onclick=function(){window.focus();if(typeof window.openAcademyPanel==="function")window.openAcademyPanel("inbox",getInboxButton());notice.close();};}catch(e){console.warn("OTG browser message alert:",e);}
+  }
+ }
+ function stop(){if(channel){try{var db=getDb();if(db)db.removeChannel(channel);}catch(_){}channel=null;}activeId=null;profileRole=null;setBadge(0);}
+ async function start(user){
+  var db=getDb();if(!db||!user||!user.id)return;
+  if(activeId===user.id&&channel){await updateCount();return;}
+  stop();
+  try{
+   var p=await db.from("profiles").select("role,approval_status").eq("id",user.id).maybeSingle();
+   if(p.error||!p.data||p.data.approval_status!=="approved"||p.data.role!=="student"){setBadge(0);return;}
+   activeId=user.id;profileRole=p.data.role;await updateCount();
+   channel=db.channel("otg-inbox-alerts-"+activeId).on("postgres_changes",{event:"INSERT",schema:"public",table:"academy_direct_messages",filter:"recipient_id=eq."+activeId},function(payload){
+    var m=payload&&payload.new;if(!m||m.recipient_id!==activeId||m.sender_id===activeId)return;
+    lastSeenIncoming=m.id;updateCount();
+    var body=String(m.body||"").trim();showToast(body);
+   }).on("postgres_changes",{event:"UPDATE",schema:"public",table:"academy_direct_messages",filter:"recipient_id=eq."+activeId},function(){updateCount();}).subscribe();
+  }catch(e){console.warn("OTG live inbox alerts could not start:",e);}
+ }
+ function init(){
+  var db=getDb();if(!db||!db.auth)return;
+  db.auth.getSession().then(function(r){if(r&&r.data&&r.data.session&&r.data.session.user)start(r.data.session.user);});
+  db.auth.onAuthStateChange(function(event,session){window.setTimeout(function(){if(session&&session.user)start(session.user);else if(event==="SIGNED_OUT")stop();},0);});
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")updateCount();});
+  document.addEventListener("click",function(e){var b=e.target&&e.target.closest?e.target.closest("#otgStudentInboxNav"):null;if(b)window.setTimeout(updateCount,900);});
+ }
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
+})();
+</script>
 </body>
 </html>
