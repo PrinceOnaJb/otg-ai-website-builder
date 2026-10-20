@@ -23,7 +23,7 @@
 <section id="stage">
 <h1 id="callTitle">OTG class call</h1><p id="callInfo" class="muted">Connecting securely…</p>
 <div id="videos"></div>
-<div class="actions"><button id="mute" class="secondary" type="button">Mute mic</button><button id="camera" class="secondary" type="button" hidden>Turn camera off</button><button id="end" class="primary" type="button">Leave call</button></div>
+<div class="actions"><button id="enableAudio" class="primary" type="button" hidden>Enable audio</button><button id="mute" class="secondary" type="button">Mute mic</button><button id="camera" class="secondary" type="button" hidden>Turn camera off</button><button id="end" class="primary" type="button">Leave call</button></div>
 </section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -36,7 +36,8 @@ const FUNCTION_URL=SUPABASE_URL+"/functions/v1/otg-call-push";
 const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
 const params=new URLSearchParams(location.search);const guestToken=params.get("token")||"";
 const statusEl=document.getElementById("status"),joinBtn=document.getElementById("join"),intro=document.getElementById("intro"),stage=document.getElementById("stage");
-let invite=null,localStream=null,channel=null,closed=false,peers={};
+let invite=null,localStream=null,channel=null,closed=false,peers={},iceServers=[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun.cloudflare.com:3478"}];
+async function loadIceServers(){try{const response=await fetch("/api/ice-servers",{cache:"no-store"});if(response.ok){const data=await response.json();if(Array.isArray(data.iceServers)&&data.iceServers.length)iceServers=data.iceServers;}}catch(error){console.warn("OTG guest ICE server lookup failed; using STUN fallback",error);}}
 function say(message){statusEl.textContent=message;}
 async function api(action){
  const response=await fetch(FUNCTION_URL,{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_KEY},body:JSON.stringify({action,guestToken})});
@@ -49,6 +50,7 @@ async function startCall(){
  joinBtn.disabled=true;say("Accepting invitation and requesting device permission…");
  try{
   const accepted=await api("guest-accept");invite=accepted;
+  await loadIceServers();
   const isVideo=invite.call.callType==="video";
   localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:isVideo?{facingMode:"user"}:false});
   intro.style.display="none";stage.style.display="block";
@@ -63,10 +65,10 @@ async function startCall(){
   async function makePeer(peerId,displayName){
    if(!peerId||peerId===guestId||!localStream||!channel)return null;
    if(peers[peerId])return peers[peerId];
-   const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun.cloudflare.com:3478"}]});
+   const pc=new RTCPeerConnection({iceServers});
    const tile=document.createElement("div");tile.className="tile";const video=document.createElement("video");video.autoplay=true;video.playsInline=true;video.muted=false;video.volume=1;const label=document.createElement("span");label.textContent=(displayName||invite.callerName)+" · connecting";tile.append(video,label);videos.appendChild(tile);
-   const entry={pc,tile,video,label,candidateQueue:[]};peers[peerId]=entry;localStream.getTracks().forEach(track=>pc.addTrack(track,localStream));
-   pc.ontrack=ev=>{let stream=ev.streams&&ev.streams[0];if(!stream){if(!entry.remoteStream)entry.remoteStream=new MediaStream();entry.remoteStream.addTrack(ev.track);stream=entry.remoteStream;}video.srcObject=stream;video.play().catch(()=>{label.textContent="Tap video to enable audio";video.addEventListener("click",()=>video.play().catch(()=>{}),{once:true});});label.textContent=(displayName||invite.callerName)+" · connected";};
+   const audio=document.createElement("audio");audio.autoplay=true;audio.playsInline=true;audio.controls=false;audio.style.display="none";document.body.appendChild(audio);const entry={pc,tile,video,audio,label,candidateQueue:[]};peers[peerId]=entry;localStream.getTracks().forEach(track=>pc.addTrack(track,localStream));
+   pc.ontrack=ev=>{let stream=ev.streams&&ev.streams[0];if(!stream){if(!entry.remoteStream)entry.remoteStream=new MediaStream();if(!entry.remoteStream.getTracks().some(t=>t.id===ev.track.id))entry.remoteStream.addTrack(ev.track);stream=entry.remoteStream;}video.srcObject=stream;video.muted=true;video.play().catch(()=>{});entry.audio.srcObject=stream;entry.audio.muted=false;entry.audio.volume=1;entry.audio.play().catch(()=>{label.textContent="Tap Enable audio to hear "+(displayName||invite.callerName);document.getElementById("enableAudio").hidden=false;});label.textContent=(displayName||invite.callerName)+" · connected";};
    pc.onicecandidate=ev=>{if(ev.candidate)sendSignal({to:peerId,type:"candidate",candidate:ev.candidate});};
    pc.onconnectionstatechange=()=>{if(pc.connectionState==="connected")label.textContent=(displayName||invite.callerName)+" · connected";};
    if(String(guestId)<String(peerId)){const offer=await pc.createOffer();await pc.setLocalDescription(offer);await sendSignal({to:peerId,type:"offer",description:pc.localDescription});}
@@ -87,10 +89,11 @@ async function startCall(){
    .subscribe(async state=>{if(state==="SUBSCRIBED"){await channel.track({user_id:guestId,display_name:"OTG class guest",joined_at:new Date().toISOString()});document.getElementById("callInfo").textContent="Connected to the OTG call room. Waiting for your Coach…";}else if(state==="CHANNEL_ERROR"||state==="TIMED_OUT"){document.getElementById("callInfo").textContent="Call connection interrupted. Check your data connection and retry if the call is still active.";}}); 
  }catch(error){joinBtn.disabled=false;say(error&&error.name==="NotAllowedError"?"Microphone/camera permission was denied. Allow access in your browser, then tap Join class again.":(error.message||"Could not join this call."));}
 }
-async function leaveCall(){if(closed)return;closed=true;try{await api("guest-end");}catch(_){}try{if(channel)await client.removeChannel(channel);}catch(_){}if(localStream)localStream.getTracks().forEach(t=>t.stop());Object.values(peers).forEach(p=>{try{p.pc.close();}catch(_){}});document.getElementById("callInfo").textContent="You left the call. You may close this page.";document.getElementById("end").disabled=true;}
+async function leaveCall(){if(closed)return;closed=true;try{await api("guest-end");}catch(_){}try{if(channel)await client.removeChannel(channel);}catch(_){}if(localStream)localStream.getTracks().forEach(t=>t.stop());Object.values(peers).forEach(p=>{try{p.pc.close();}catch(_){}try{p.audio.remove();}catch(_){}});document.getElementById("callInfo").textContent="You left the call. You may close this page.";document.getElementById("end").disabled=true;}
 joinBtn.addEventListener("click",startCall);
 document.getElementById("cancel").addEventListener("click",()=>{location.href="/";});
 document.getElementById("end").addEventListener("click",leaveCall);
+document.getElementById("enableAudio").addEventListener("click",async()=>{let ok=true;for(const entry of Object.values(peers)){try{entry.audio.muted=false;entry.audio.volume=1;await entry.audio.play();}catch(_){ok=false;}}if(ok)document.getElementById("enableAudio").hidden=true;});
 document.getElementById("mute").addEventListener("click",()=>{const track=localStream&&localStream.getAudioTracks()[0];if(track){track.enabled=!track.enabled;document.getElementById("mute").textContent=track.enabled?"Mute mic":"Unmute mic";}});
 document.getElementById("camera").addEventListener("click",()=>{const track=localStream&&localStream.getVideoTracks()[0];if(track){track.enabled=!track.enabled;document.getElementById("camera").textContent=track.enabled?"Turn camera off":"Turn camera on";}});
 if(!guestToken){say("This invitation link is missing its secure token. Ask your Coach to start the call again.");}
