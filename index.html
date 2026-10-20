@@ -4960,9 +4960,9 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
  }
  window.otgEnableBackgroundCallNotifications=function(){return ensureOtgBackgroundPush({id:state.userId},true);};
  document.addEventListener("pointerdown",function(){if(state.userId&&"Notification" in window&&Notification.permission==="granted"){ensureOtgBackgroundPush({id:state.userId},false);}}, {passive:true});
- function showOtgPushSetupPrompt(user){
+ function showOtgPushSetupPrompt(user,force){
   if(!user||!user.id||!document.body)return;
-  try{if(localStorage.getItem("otg-call-push-setup:"+user.id)==="1"||localStorage.getItem("otg-call-push-prompt-hidden:"+user.id)==="1")return;}catch(_){}
+  try{if(!force&&(localStorage.getItem("otg-call-push-setup:"+user.id)==="1"||localStorage.getItem("otg-call-push-prompt-hidden:"+user.id)==="1"))return;}catch(_){}
   if(document.getElementById("otgGlobalPushSetupPrompt"))return;
   if(!("Notification" in window)||!("serviceWorker" in navigator)||!("PushManager" in window))return;
   const banner=document.createElement("section");
@@ -5039,10 +5039,10 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
  }
  window.otgInitCallNotifications=function(user){
   if(!user||!user.id)return;
-  showOtgPushSetupPrompt(user);
-  if(state.userId===user.id&&state.channel&&state.lobbyChannel)return;
+  const reconcilePush=()=>{ensureOtgBackgroundPush(user,false).then(ok=>{const existing=document.getElementById("otgGlobalPushSetupPrompt");if(ok){if(existing)existing.remove();}else{showOtgPushSetupPrompt(user,true);}}).catch(()=>showOtgPushSetupPrompt(user,true));};
+  if(state.userId===user.id&&state.channel&&state.lobbyChannel){reconcilePush();return;}
   window.otgStopCallNotifications(true);state.userId=user.id;
-  ensureOtgBackgroundPush(user,false);
+  reconcilePush();
   state.channel=client.channel("otg-student-calls-"+user.id)
    .on("postgres_changes",{event:"INSERT",schema:"public",table:"otg_student_calls",filter:"callee_id=eq."+user.id},p=>handleRow(p.new,user.id))
    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"otg_student_calls",filter:"callee_id=eq."+user.id},p=>handleRow(p.new,user.id))
