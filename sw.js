@@ -1,4 +1,4 @@
-const CACHE_NAME = "otg-academy-v47";
+const CACHE_NAME = "otg-academy-v48";
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
@@ -16,12 +16,14 @@ self.addEventListener("message", event => {
 });
 
 self.addEventListener("install", event => {
+  // Activate new notification routing without requiring the user to sign in
+  // and press the Student Hub update button first.
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(FILES_TO_CACHE))
       .catch(() => Promise.resolve())
+      .then(() => self.skipWaiting())
   );
-  // Wait for the user to choose Update in the Student Hub before activating a new version.
 });
 
 self.addEventListener("activate", event => {
