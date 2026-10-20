@@ -1,4 +1,4 @@
-const CACHE_NAME = "otg-academy-v48";
+const CACHE_NAME = "otg-academy-v49";
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
@@ -73,7 +73,22 @@ self.addEventListener("push", event => {
     ]
   };
 
-  event.waitUntil(self.registration.showNotification(title, options));
+  // Keep push handling observable: if the OS rejects the notification,
+  // record the failure and notify any open OTG page for diagnostics.
+  event.waitUntil(
+    self.registration.showNotification(title, options).catch(async error => {
+      console.error("OTG_PUSH_SHOW_NOTIFICATION_FAILED", String(error && error.message || error));
+      try {
+        const clients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+        for (const client of clients) {
+          client.postMessage({
+            type: "OTG_PUSH_DISPLAY_FAILED",
+            message: String(error && error.message || "The operating system rejected the notification.")
+          });
+        }
+      } catch (_) {}
+    })
+  );
 });
 
 self.addEventListener("notificationclick", event => {
