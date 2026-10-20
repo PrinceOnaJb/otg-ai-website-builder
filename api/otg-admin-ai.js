@@ -17,8 +17,8 @@ module.exports = async function handler(req, res) {
 
   const supabaseUrl = process.env.SUPABASE_URL;
   const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY;
-  const aiKey = process.env.OPENAI_API_KEY;
-  if (!supabaseUrl || !publishableKey || !aiKey) {
+  const hasAiProvider = Boolean(process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY);
+  if (!supabaseUrl || !publishableKey || !hasAiProvider) {
     return reply(res, 503, {
       error: "The assistant is not configured yet. An administrator must configure the server-side AI and Supabase environment variables."
     });
