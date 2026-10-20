@@ -1,7 +1,7 @@
 (function(){ "use strict";
 if(window.otgAiAssistantLoaded)return; window.otgAiAssistantLoaded=true;
 const css=document.createElement("style");css.textContent=`
-#otgAiAssistantButton{display:none;width:100%;margin:8px 0;padding:12px;border:0;border-radius:12px;background:linear-gradient(120deg,#102c60,#2459c4);color:#fff;font-weight:700;text-align:left;cursor:pointer}
+#otgAiAssistantButton{display:block;width:100%;margin:8px 0;padding:12px;border:0;border-radius:12px;background:linear-gradient(120deg,#102c60,#2459c4);color:#fff;font-weight:700;text-align:left;cursor:pointer}
 #otgAiAssistantOverlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:12px;background:#07152dcc}
 #otgAiAssistantDialog{display:flex;flex-direction:column;width:min(740px,100%);height:min(760px,94dvh);background:#f7f9fd;color:#17233c;border-radius:18px;overflow:hidden;box-shadow:0 24px 80px #0005;font-family:system-ui,sans-serif}
 .otg-ai-head{display:flex;align-items:center;gap:12px;padding:16px;background:linear-gradient(120deg,#102c60,#2459c4);color:white}.otg-ai-title{font-size:16px;font-weight:800}.otg-ai-sub{font-size:12px;opacity:.82;margin-top:3px}#otgAiAssistantClose{margin-left:auto;border:0;border-radius:9px;background:#ffffff22;color:white;font-size:23px;width:38px;height:38px}
