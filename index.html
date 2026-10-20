@@ -5025,19 +5025,19 @@ function makeButton(label,color,fn){const b=document.createElement("button");b.t
   const test=document.createElement("button");
   test.type="button";test.textContent="Test alert";test.style.cssText=buttonStyle;
   test.addEventListener("click",async()=>{
-   test.disabled=true;test.textContent="Testing…";
+   test.disabled=true;test.textContent="Sending real push…";
    const ready=await ensureOtgBackgroundPush(user,true);
    if(!ready){message.textContent="Test not sent: this phone is not registered yet. Use Retry setup first.";test.disabled=false;test.textContent="Test alert";return;}
    try{
-    const registration=await navigator.serviceWorker.ready;
-    if(typeof registration.showNotification!=="function")throw new Error("This browser cannot display service-worker notifications");
-    await registration.showNotification("OTG phone notification check",{body:"This phone can display OTG notifications.",icon:"/otg-app-icon-192.png",badge:"/otg-app-icon-192.png",tag:"otg-local-display-check",requireInteraction:true});
+    // Do not show a local notification here: that would make this test pass
+    // even when Web Push delivery is broken. Only the server push may alert.
     const result=await client.functions.invoke("otg-call-push",{body:{action:"test-push"}});
     if(result.error)throw result.error;
     const data=result.data||{},push=data.push||{};
-    message.textContent=push.sent>0?"Phone display check triggered; the push server accepted "+push.sent+" background test message(s).":"Phone display check triggered, but background push was not accepted. Registered: "+(push.subscriptions||0)+", failed: "+(push.failed||0)+". "+(data.error||"Retry setup.");
-    status.textContent=push.sent>0?"Background push test accepted":"Push test needs attention";
-   }catch(error){message.textContent="Notification test failed: "+(error&&error.message?error.message:"browser or push error");status.textContent="Test failed";}
+    if(data.error)throw new Error(data.error);
+    message.textContent=push.sent>0?"Real background push submitted to "+push.sent+" subscription(s). Check whether this phone shows the OTG test notification, including with Student Hub closed. Server acceptance alone does not confirm the phone displayed it.":"No background push was accepted. Registered: "+(push.subscriptions||0)+", failed: "+(push.failed||0)+", expired removed: "+(push.removedExpired||0)+". Retry setup and check phone notification settings.";
+    status.textContent=push.sent>0?"Real push submitted — verify phone alert":"Background push failed";
+   }catch(error){message.textContent="Background push test failed: "+(error&&error.message?error.message:"browser or push error");status.textContent="Test failed";}
    test.disabled=false;test.textContent="Test alert";
   });
   const close=document.createElement("button");
