@@ -16,9 +16,9 @@ module.exports = async function handler(req, res) {
   }
 
   const supabaseUrl = process.env.SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY;
   const aiKey = process.env.OPENAI_API_KEY;
-  if (!supabaseUrl || !serviceKey || !aiKey) {
+  if (!supabaseUrl || !publishableKey || !aiKey) {
     return reply(res, 503, {
       error: "The assistant is not configured yet. An administrator must configure the server-side AI and Supabase environment variables."
     });
@@ -31,17 +31,17 @@ module.exports = async function handler(req, res) {
   try {
     // Validate the caller's access token with Supabase Auth, not client-supplied user IDs.
     const userResponse = await fetch(supabaseUrl.replace(/\/$/, "") + "/auth/v1/user", {
-      headers: { apikey: serviceKey, Authorization: "Bearer " + match[1] }
+      headers: { apikey: publishableKey, Authorization: "Bearer " + match[1] }
     });
     if (!userResponse.ok) return reply(res, 401, { error: "Your session is invalid or expired. Please sign in again." });
     const user = await userResponse.json();
     if (!user || !user.id) return reply(res, 401, { error: "Please sign in again." });
 
-    // Read the authoritative role and approval state using the service key on the server.
+    // Read the caller's own authoritative role and approval state using their session token and Supabase row-level security.
     const profileUrl = supabaseUrl.replace(/\/$/, "") + "/rest/v1/profiles?id=eq." +
       encodeURIComponent(user.id) + "&select=role,approval_status&limit=1";
     const profileResponse = await fetch(profileUrl, {
-      headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey }
+      headers: { apikey: publishableKey, Authorization: "Bearer " + match[1] }
     });
     if (!profileResponse.ok) return reply(res, 503, { error: "Could not verify administrator access." });
     const profiles = await profileResponse.json();
