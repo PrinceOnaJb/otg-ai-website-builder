@@ -90,6 +90,8 @@ const academyPanels = {
  achievements:{title:"Achievements",intro:"Celebrate milestones in your learning journey.",icon:"🏆",heading:"Your milestones",body:"Track completed lessons, saved projects, published websites and builder points from your real account activity.",action:"View achievements",next:"achievements"},
  notifications:{title:"Notifications & Call Alerts",intro:"Manage academy updates and configure background voice/video call alerts on this device.",icon:"🔔",heading:"Academy Updates & Call Alerts",body:"Enable and test background call notifications here. You do not need to open the student list to configure this device.",action:"Manage Call Alerts",next:"notifications"},
  support:{title:"Customer Service",intro:"Get help from OTG Graphic Academy and track your support requests.",icon:"🎧",heading:"OTG Customer Service",body:"Send a private support request, follow its status and read replies from the academy team. You can also contact us directly by WhatsApp, phone or email.",action:"Open Customer Service",next:"support"},
+ "direct-messages":{title:"Message Students",intro:"Send private messages to approved students.",icon:"✉️",heading:"Coach Direct Messages",body:"Choose one student and send a private message to their OTG inbox.",action:"Open messages",next:"direct-messages"},
+ inbox:{title:"My Inbox",intro:"Private messages from your Coach.",icon:"📥",heading:"Your OTG Inbox",body:"Read personal messages sent to you by your Coach.",action:"Refresh inbox",next:"inbox"},
  "student-activity":{title:"Student Activity",intro:"Review daily visits and learning engagement for approved students.",icon:"📊",heading:"Student Activity & Daily Attendance",body:"See how often students visit, which students have learning activity recorded, and who has not visited during the selected day.",action:"Refresh report",next:"student-activity"},
  settings:{title:"Profile & Settings",intro:"Manage your profile and preferences.",icon:"⚙️",heading:"Profile and preferences",body:"Set your display name, country, introduction and learning interests. You can also choose whether other approved students can discover your profile.",action:"Edit profile",next:"settings"}
 };
@@ -292,6 +294,8 @@ async function loadAcademyPanelData(key,content){
  }
  if(activeUser&&!admin){otgShowLatestAnnouncementPopup(db,activeUser.id);}
  const publishNav=document.getElementById("otgPublishAssignmentNav");if(publishNav){publishNav.hidden=!admin;publishNav.style.display=admin?"flex":"none";}
+ const dmAdmin=document.getElementById("otgAdminDirectMessagesNav");if(dmAdmin){dmAdmin.hidden=!admin;dmAdmin.style.display=admin?"flex":"none";}
+ const dmStudent=document.getElementById("otgStudentInboxNav");if(dmStudent){dmStudent.hidden=admin;dmStudent.style.display=admin?"none":"flex";}
  if(key==="submission-review"&&!admin){openAcademyPanel("home");return;}
  const assessmentResultsNav=document.getElementById("otgAssessmentResultsNav");if(assessmentResultsNav){assessmentResultsNav.hidden=admin;assessmentResultsNav.style.display=admin?"none":"flex";}
  const esc=v=>String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
@@ -3027,6 +3031,8 @@ html{scroll-behavior:auto}
       <button class="academy-nav" onclick="openAcademyPanel('achievements',this)">🏆 Achievements</button>
       <button class="academy-nav" onclick="openAcademyPanel('notifications',this)">🔔 Notifications</button>
       <button class="academy-nav" id="otgCustomerServiceNav" onclick="openAcademyPanel('support',this)">🎧 Customer Service</button>
+      <button class="academy-nav" id="otgAdminDirectMessagesNav" hidden style="display:none" onclick="openAcademyPanel(&quot;direct-messages&quot;,this)">✉️ Message Students</button>
+      <button class="academy-nav" id="otgStudentInboxNav" hidden style="display:none" onclick="openAcademyPanel(&quot;inbox&quot;,this)">📥 My Inbox</button>
       <button class="academy-nav" id="otgStudentActivityNav" hidden style="display:none" onclick="openAcademyPanel('student-activity',this)">📊 Student Activity</button>
        <button class="academy-nav" onclick="openAcademyPanel('settings',this)">⚙ Profile &amp; Settings</button>
       <button class="academy-nav" id="otgAppUpdateButton" type="button" onclick="window.otgApplyAppUpdate()" aria-live="polite">↻ Check for app updates</button>
