@@ -1,7 +1,8 @@
-const CACHE_NAME = "otg-academy-v45";
+const CACHE_NAME = "otg-academy-v46";
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
+  "/guest-call.html",
   "/manifest.json",
   "/otg-app-icon.svg",
   "/otg-app-icon-192.png",
