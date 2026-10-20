@@ -8779,6 +8779,11 @@ async function setStudentApproval(studentId, status){
 }
 
 async function showApp(approvalAlreadyChecked){
+  // Preserve the current Student Hub section when the app is shown again after
+  // backgrounding/resume. Only the first successful entry should default to Home.
+  const appElementAtEntry = $("app");
+  const appWasAlreadyVisible = !!(appElementAtEntry && !appElementAtEntry.classList.contains("hidden"));
+  const activePanelAtEntry = document.querySelector(".academy-nav.active");
   if(!approvalAlreadyChecked && currentUser){
     await refreshApprovalStatus();
     return;
@@ -8842,10 +8847,12 @@ async function showApp(approvalAlreadyChecked){
   renderProjects();
   ensureAdminPanel();
 
-  // Load the Home panel immediately after approved login so the personalized
-  // welcome hero and panel title are rendered without requiring a Home click.
-  if(typeof window.openAcademyPanel === "function"){
-    window.openAcademyPanel("home", document.querySelector('.academy-nav[onclick*="openAcademyPanel(\'home\'"]'));
+  // Open Home only on the initial entry. If showApp runs again while the
+  // dashboard is already visible, never replace the section the user is working in.
+  if(!appWasAlreadyVisible || !activePanelAtEntry){
+    if(typeof window.openAcademyPanel === "function"){
+      window.openAcademyPanel("home", document.querySelector('.academy-nav[onclick*="openAcademyPanel(\'home\'"]'));
+    }
   }
 
 }
