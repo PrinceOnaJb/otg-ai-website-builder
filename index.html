@@ -8847,10 +8847,24 @@ async function showApp(approvalAlreadyChecked){
   renderProjects();
   ensureAdminPanel();
 
-  // Open Home only on the initial entry. If showApp runs again while the
-  // dashboard is already visible, never replace the section the user is working in.
-  if(!appWasAlreadyVisible || !activePanelAtEntry){
-    if(typeof window.openAcademyPanel === "function"){
+  // On a genuine page re-entry, resume the last section for this same account.
+  // This matters when Android/browser discards the page while the app is minimized.
+  // Do not reset an already-visible dashboard or use another user's saved state.
+  if(!appWasAlreadyVisible && typeof window.openAcademyPanel === "function"){
+    let resumeState = null;
+    try { resumeState = JSON.parse(localStorage.getItem("otgStudentHubResumeStateV3") || "null"); } catch (_) {}
+    const resumeAge = resumeState && Number(resumeState.savedAt) ? Date.now() - Number(resumeState.savedAt) : Infinity;
+    const canResume = resumeState && currentUser && String(resumeState.userId) === String(currentUser.id) &&
+      resumeState.panelKey && resumeAge >= 0 && resumeAge < 24 * 60 * 60 * 1000 &&
+      (academyPanels[resumeState.panelKey] || resumeState.panelKey === "submission-review");
+    if(canResume){
+      let resumeButton = null;
+      if(resumeState.panelKey === "submission-review") resumeButton = document.getElementById("otgStudentAssignmentsNav");
+      else resumeButton = Array.from(document.querySelectorAll(".academy-nav")).find(function(button){
+        return (button.getAttribute("onclick") || "").indexOf("openAcademyPanel('" + resumeState.panelKey + "'") !== -1;
+      }) || null;
+      window.openAcademyPanel(resumeState.panelKey, resumeButton || undefined);
+    }else{
       window.openAcademyPanel("home", document.querySelector('.academy-nav[onclick*="openAcademyPanel(\'home\'"]'));
     }
   }
@@ -9909,7 +9923,20 @@ header .otg-sticky-welcome{
   // different panel merely because the app became visible again.
   var key="otgStudentHubResumeStateV3",saveTimer=null,restoreTimer=null;
   function userId(){try{if(window.currentUser&&window.currentUser.id)return String(window.currentUser.id);if(typeof currentUser!=="undefined"&&currentUser&&currentUser.id)return String(currentUser.id);}catch(_){}return "";}
-  function activePanelKey(){var active=document.querySelector(".academy-nav.active"),source=active&&active.getAttribute("onclick")||"",match=source.match(/openAcademyPanel\(\s*['"]([^'"]+)['"]/);return match?match[1]:"";}
+  function activePanelKey(){
+    var active=document.querySelector(".academy-nav.active");
+    if(!active)return "";
+    // Assignment review uses a conditional onclick, so resolve its actual panel.
+    if(active.id==="otgStudentAssignmentsNav"){
+      var admin=window.otgAcademyIsAdmin===true;
+      try{if(typeof currentProfile!=="undefined"&&currentProfile&&String(currentProfile.role||"").toLowerCase()==="admin")admin=true;}catch(_){}
+      return admin?"submission-review":"assignments";
+    }
+    var source=active.getAttribute("onclick")||"",match=source.match(/openAcademyPanel\(\s*['"]([^'"]+)['"]/);
+    if(match)return match[1];
+    if(active.id==="otgPublishAssignmentNav")return "assignments";
+    return "";
+  }
   function save(){
     var uid=userId();if(!uid)return;
     var content=document.getElementById("academyPanelContent");
@@ -9937,12 +9964,16 @@ header .otg-sticky-welcome{
     if(activePanelKey()!==state.panelKey)return;
     restoreScroll(state);
   }
+  // Assessment data loads asynchronously; reapply the saved position after render.
+  function restoreScrollSeveralTimes(){
+    [350,900,1600,2600,4200].forEach(function(delay){setTimeout(restoreScrollIfSamePanel,delay);});
+  }
   document.addEventListener("scroll",scheduleSave,true);
   document.addEventListener("input",function(event){if(event.target&&event.target.matches&&event.target.matches('.otgSubmitForm textarea[name="answer"]'))scheduleSave();},true);
   document.addEventListener("change",function(event){if(event.target&&event.target.matches&&event.target.matches('.otgSubmitForm textarea[name="answer"]'))scheduleSave();},true);
-  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")save();else if(document.visibilityState==="visible"){if(restoreTimer)clearTimeout(restoreTimer);restoreTimer=setTimeout(function(){restoreTimer=null;restoreScrollIfSamePanel();},180);}});
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")save();else if(document.visibilityState==="visible"){if(restoreTimer)clearTimeout(restoreTimer);restoreTimer=setTimeout(function(){restoreTimer=null;restoreScrollSeveralTimes();},180);}});
   window.addEventListener("pagehide",save);window.addEventListener("beforeunload",save);
-  window.addEventListener("pageshow",function(event){if(event&&event.persisted)return;setTimeout(restoreScrollIfSamePanel,500);});
+  window.addEventListener("pageshow",function(event){restoreScrollSeveralTimes();});
   var attempts=0,timer=window.setInterval(function(){
     attempts++;if(typeof window.openAcademyPanel==="function"&&!window.openAcademyPanel.__otgResumeWrapped){
       var original=window.openAcademyPanel;var wrapped=function(panelKey,button){var result=original.apply(this,arguments);setTimeout(scheduleSave,0);return result;};
