@@ -67,28 +67,67 @@ module.exports = async function handler(req, res) {
       return reply(res, 400, { error: "The latest message must be a user message." });
     }
 
-    const aiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: "Bearer " + aiKey, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: process.env.OTG_AI_MODEL || "gpt-4o-mini",
-        messages: [
-          { role: "system", content: "You are the OTG GRAPHIC Academy internal admin assistant. Help the authorized academy administrator plan and troubleshoot academy operations, lessons, assignments, student support, and website features. Be accurate, concise, and security-conscious. Do not claim to have changed the live website, database, student records, or deployments unless a tool actually performed that action. Never request passwords, API keys, or student secrets." },
-          ...messages
-        ],
-        temperature: 0.3,
-        max_tokens: 1200
-      })
-    });
-    const result = await aiResponse.json().catch(() => ({}));
-    if (!aiResponse.ok) {
-      const status = aiResponse.status === 429 ? 429 : 502;
-      return reply(res, status, { error: aiResponse.status === 429
-        ? "The AI service is busy or its usage limit was reached. Please try again shortly."
-        : "The AI service could not complete the request. Check the server-side API key and provider settings." });
+    const systemPrompt = "You are the OTG GRAPHIC Academy internal admin assistant. Help the authorized academy administrator plan and troubleshoot academy operations, lessons, assignments, student support, and website features. Be accurate, concise, and security-conscious. Do not claim to have changed the live website, database, student records, or deployments unless a tool actually performed that action. Never request passwords, API keys, or student secrets.";
+    const geminiKey = process.env.GEMINI_API_KEY;
+    const openaiKey = process.env.OPENAI_API_KEY;
+    let answer = "";
+
+    // Prefer Gemini when configured so the admin can use an eligible free-tier text model.
+    // Keep OpenAI as a backward-compatible fallback. API keys remain server-side.
+    if (geminiKey) {
+      const geminiResponse = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/" +
+          encodeURIComponent(process.env.OTG_GEMINI_MODEL || "gemini-2.5-flash-lite") +
+          ":generateContent?key=" + encodeURIComponent(geminiKey),
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            contents: messages.map(item => ({
+              role: item.role === "assistant" ? "model" : "user",
+              parts: [{ text: item.content }]
+            })),
+            generationConfig: { temperature: 0.3, maxOutputTokens: 1200 }
+          })
+        }
+      );
+      const result = await geminiResponse.json().catch(() => ({}));
+      if (!geminiResponse.ok) {
+        const status = geminiResponse.status === 429 ? 429 : 502;
+        return reply(res, status, { error: geminiResponse.status === 429
+          ? "The AI service is busy or its free-tier usage limit was reached. Please try again later."
+          : "Gemini could not complete the request. Check the server-side Gemini API key and model settings." });
+      }
+      answer = result && result.candidates && result.candidates[0] &&
+        result.candidates[0].content && Array.isArray(result.candidates[0].content.parts)
+        ? result.candidates[0].content.parts.map(part => typeof part.text === "string" ? part.text : "").join("").trim()
+        : "";
+    } else if (openaiKey) {
+      const aiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + openaiKey, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: process.env.OTG_AI_MODEL || "gpt-4o-mini",
+          messages: [{ role: "system", content: systemPrompt }, ...messages],
+          temperature: 0.3,
+          max_tokens: 1200
+        })
+      });
+      const result = await aiResponse.json().catch(() => ({}));
+      if (!aiResponse.ok) {
+        const status = aiResponse.status === 429 ? 429 : 502;
+        return reply(res, status, { error: aiResponse.status === 429
+          ? "The AI service is busy or its usage limit was reached. Please try again shortly."
+          : "The AI service could not complete the request. Check the server-side API key and provider settings." });
+      }
+      answer = result && result.choices && result.choices[0] && result.choices[0].message &&
+        result.choices[0].message.content;
+      if (typeof answer === "string") answer = answer.trim();
+    } else {
+      return reply(res, 503, { error: "The assistant is not configured yet. Add GEMINI_API_KEY (recommended for eligible free-tier text usage) or OPENAI_API_KEY to the server environment." });
     }
-    const answer = result && result.choices && result.choices[0] && result.choices[0].message &&
-      result.choices[0].message.content;
+
     if (typeof answer !== "string" || !answer.trim()) return reply(res, 502, { error: "The AI returned an empty response. Please try again." });
     return reply(res, 200, { answer: answer.trim() });
   } catch (error) {
