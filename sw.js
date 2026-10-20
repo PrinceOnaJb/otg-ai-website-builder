@@ -1,4 +1,4 @@
-const CACHE_NAME = "otg-academy-v46";
+const CACHE_NAME = "otg-academy-v47";
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
@@ -86,6 +86,13 @@ self.addEventListener("notificationclick", event => {
   if (targetUrl.origin !== self.location.origin) targetUrl.href = self.location.origin + "/";
 
   event.waitUntil((async () => {
+    // Guest invitations must open as a standalone public call page. Do not
+    // route them through an existing Student Hub window, where auth state or
+    // app navigation can interfere with joining while signed out.
+    if (data.type === "call" && targetUrl.pathname === "/guest-call.html") {
+      await self.clients.openWindow(targetUrl.href);
+      return;
+    }
     const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
     for (const client of windows) {
       if (new URL(client.url).origin === self.location.origin) {
