@@ -1192,16 +1192,16 @@ async function loadAcademyPanelData(key,content){
    // Preserve all published instructions: the previous filter hid the actual prompts,
    // section headings and submission requirements whenever they did not start with Question N.
    const instructionLines=String(x.instructions||"").split(/\r?\n/).map(line=>line.trim()).filter(Boolean).map(line=>line.replace(/examination/gi,match=>match===match.toUpperCase()?"QUARTERLY ASSIGNMENT":match[0]===match[0].toUpperCase()?"Quarterly Assignment":"quarterly assignment"));
-   const isAssessment003=/ASSESSMENT 003/i.test(x.title||"");const isAssessment005=/ASSESSMENT 005/i.test(x.title||"");const displayQuestionNumber=number=>isAssessment003&&number>50?number-50:number;const questionPattern=/^(?:question\s*(\d+)|q\s*(\d+))\s*[:.)-]\s*(.*)$/i;
+   const isAssessment003=/ASSESSMENT 003/i.test(x.title||"");const isAssessment005=/ASSESSMENT 005/i.test(x.title||"");const isAssessment006=/ASSESSMENT 006/i.test(x.title||"");const displayQuestionNumber=number=>isAssessment003&&number>50?number-50:number;const questionPattern=/^(?:question\s*(\d+)|q\s*(\d+))(?:\s*\(\s*\d+\s*marks?\s*\))?\s*[:.)-]\s*(.*)$/i;
    const questionBlocks=[];const introBlocks=[];let currentQuestion=null;let inSubmissionRequirements=false;
    instructionLines.forEach(line=>{
     const match=line.match(questionPattern);
     if(match){
-     const parsedNumber=Number(match[1]||match[2]);currentQuestion={number:parsedNumber,displayNumber:displayQuestionNumber(parsedNumber),text:(match[3]||"").trim(),title:"Question "+displayQuestionNumber(parsedNumber)+": "+(match[3]||"").trim(),details:[]};
+     const parsedNumber=Number(match[1]||match[2]);const isTheoryQuestion=isAssessment006&&currentSection==="B";const internalNumber=isTheoryQuestion?50+parsedNumber:parsedNumber;const visibleNumber=isTheoryQuestion?parsedNumber:displayQuestionNumber(internalNumber);const questionText=(match[3]||"").trim();currentQuestion={number:internalNumber,displayNumber:visibleNumber,text:questionText,title:isTheoryQuestion?"Theory Question "+parsedNumber+" (25 marks): "+questionText:"Question "+visibleNumber+": "+questionText,details:[]};
      questionBlocks.push(currentQuestion);inSubmissionRequirements=false;return;
     }
     if(/^(?:SECTION\s+[A-Z]|SUBMISSION REQUIREMENTS|INSTRUCTIONS TO STUDENTS|QUARTERLY ASSIGNMENT|OTG GRAPHIC ACADEMY|GRAPHIC DESIGN BASICS)/i.test(line)){
-     currentQuestion=null;inSubmissionRequirements=/^SUBMISSION REQUIREMENTS/i.test(line);
+     currentQuestion=null;if(/^SECTION\s+B\b/i.test(line))currentSection="B";else if(/^SECTION\s+A\b/i.test(line))currentSection="A";inSubmissionRequirements=/^SUBMISSION REQUIREMENTS/i.test(line);
      introBlocks.push({text:line,heading:true});return;
     }
     if(currentQuestion&&!inSubmissionRequirements){currentQuestion.details.push(line);}
