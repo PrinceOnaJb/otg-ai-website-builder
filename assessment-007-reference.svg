@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#10102b"/><stop offset="1" stop-color="#006f73"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="8"/></filter></defs>
+<rect width="1080" height="1350" fill="url(#bg)"/>
+<circle cx="900" cy="170" r="150" fill="#ffcb05" opacity=".18"/><path d="M0 950L1080 820V1350H0Z" fill="#ff2d55" opacity=".45"/>
+<!-- Intentionally defective assessment reference: typography, contrast, spacing, hierarchy and alignment errors are deliberate. -->
+<rect x="52" y="54" width="975" height="1240" rx="8" fill="#f4f0e8" opacity=".96"/>
+<text x="95" y="112" font-family="Arial" font-size="25" fill="#fff" stroke="#fff" stroke-width="1">OTG GRAPHIC ACADEMY</text>
+<text x="70" y="235" font-family="Impact, Arial Black, sans-serif" font-size="94" font-weight="900" fill="#b6ff00" transform="rotate(-5 70 235)">PIXELLAB</text>
+<text x="560" y="202" font-family="Arial" font-size="66" font-weight="900" fill="#fb0c24">MASTER</text>
+<text x="410" y="275" font-family="Arial" font-size="58" font-weight="900" fill="#111">CLASS!!!</text>
+<rect x="105" y="305" width="860" height="300" fill="#ffe600" opacity=".8"/>
+<text x="95" y="366" font-family="Arial" font-size="39" font-weight="900" fill="#fff">DESIGN LIKE A PRO</text>
+<text x="120" y="423" font-family="Arial" font-size="30" fill="#c60022">Flyers • Logos • Branding</text>
+<text x="78" y="482" font-family="Arial" font-size="32" fill="#171717">LEARN ALL THE SKILLS IN ONE DAY</text>
+<text x="420" y="540" font-family="Arial" font-size="48" font-weight="900" fill="#0a3a99" transform="rotate(7 420 540)">100% FREE!!!</text>
+<g transform="translate(110 635)"><rect width="380" height="145" fill="#15254d"/><text x="20" y="48" font-family="Arial" font-size="26" font-weight="bold" fill="#fff">DATE: OCTOBER 25</text><text x="20" y="95" font-family="Arial" font-size="26" fill="#fff">TIME: 8:00 PM</text><text x="20" y="128" font-family="Arial" font-size="21" fill="#fff">VENUE: ONLINE</text></g>
+<g transform="translate(520 620)"><rect width="420" height="185" fill="#e8e8e8" stroke="#fff" stroke-width="12"/><text x="20" y="58" font-family="Arial" font-size="35" font-weight="900" fill="#eee">REGISTER NOW</text><text x="20" y="112" font-family="Arial" font-size="24" fill="#fff">CALL 0800-000-0000</text><text x="20" y="153" font-family="Arial" font-size="22" fill="#222">LIMITED SPACE</text></g>
+<text x="80" y="875" font-family="Georgia" font-size="64" font-style="italic" font-weight="bold" fill="#0d0d0d">Become A Great</text>
+<text x="260" y="930" font-family="Arial" font-size="75" font-weight="900" fill="#f20b32">DESIGNER</text>
+<text x="85" y="1000" font-family="Arial" font-size="30" fill="#fff">No experience needed - just come and learn!</text>
+<rect x="75" y="1040" width="910" height="150" fill="#1c1c1c"/>
+<text x="95" y="1098" font-family="Arial" font-size="30" font-weight="bold" fill="#ffe600">CONTACT US NOW:</text>
+<text x="95" y="1150" font-family="Arial" font-size="28" fill="#ffe600">otgacademy@email.com</text>
+<text x="96" y="1220" font-family="Arial" font-size="26" fill="#ff2d55">DESIGN BY OTG GRAPHIC ACADEMY</text>
+<text x="105" y="1272" font-family="Arial" font-size="20" fill="#333">Learn • Create • Succeed</text>
+</svg>
