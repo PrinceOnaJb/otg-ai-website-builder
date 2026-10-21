@@ -479,12 +479,23 @@ async function loadAcademyPanelData(key,content){
   const greetingName=String(profileName||emailName||"").trim().split(/\s+/)[0];
   const shortName=greetingName?greetingName.charAt(0).toLocaleUpperCase()+greetingName.slice(1):"Student";
   heroTitle.textContent=admin?"Welcome back, Coach":("Welcome back, "+shortName+"! 👋");
+  // Show a fresh visit timestamp whenever the Home dashboard is opened.
+  const visitTimestamp=document.createElement("div");
+  visitTimestamp.className="otg-home-visit-timestamp";
+  visitTimestamp.setAttribute("aria-label","Dashboard visit date and time");
+  try{
+   const visitNow=new Date();
+   const visitDate=new Intl.DateTimeFormat("en-NG",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(visitNow);
+   const visitTime=new Intl.DateTimeFormat("en-NG",{hour:"numeric",minute:"2-digit",hour12:true}).format(visitNow);
+   visitTimestamp.textContent="📅 "+visitDate+"  •  🕒 "+visitTime;
+  }catch(visitTimeError){visitTimestamp.textContent="Dashboard visit: "+new Date().toLocaleString();}
+  visitTimestamp.style.cssText="display:inline-flex;align-items:center;flex-wrap:wrap;gap:6px;margin:10px 0 12px;padding:8px 12px;border:1px solid rgba(148,163,184,.35);border-radius:999px;background:rgba(148,163,184,.10);font-size:12px;font-weight:800;line-height:1.5;color:inherit";
   const dashboardWelcomeTitle=document.getElementById("academyPanelTitle");
   if(key==="home"&&dashboardWelcomeTitle){dashboardWelcomeTitle.textContent=admin?"Welcome back, Coach":("Welcome back, "+shortName+"! 👋");}
   const heroText=document.createElement("p");
   heroText.textContent=admin?"Your academy overview brings student approvals, learning content and assignment reviews together in one place.":"This is your personal learning space. Continue a lesson, submit your work, and track your progress as you build practical digital skills.";
   const heroMeta=document.createElement("div");heroMeta.className="otg-home-meta";heroMeta.textContent=admin?"OTG GRAPHIC ACADEMY  •  COACH WORKSPACE":"OTG GRAPHIC ACADEMY  •  LEARN  •  PRACTISE  •  GROW";
-  heroCopy.append(heroEyebrow,heroTitle,heroText,heroMeta);
+  heroCopy.append(heroEyebrow,heroTitle,visitTimestamp,heroText,heroMeta);
   const heroMark=document.createElement("div");heroMark.className="otg-home-mark";
   const logo=document.createElement("img");logo.src="/otg-app-icon.svg?v=8";logo.alt="OTG Graphic Academy";logo.width=74;logo.height=74;logo.loading="lazy";heroMark.appendChild(logo);
   homeHero.append(heroCopy,heroMark);area.appendChild(homeHero);
