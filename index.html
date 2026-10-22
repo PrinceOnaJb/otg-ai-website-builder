@@ -2482,6 +2482,139 @@ header{
 }
 
 
+
+/* OTG landing hero — premium emerald, teal and champagne; visual-only overrides */
+.hero{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  padding:clamp(52px,7vw,92px) clamp(20px,4vw,52px);
+  background:
+    radial-gradient(ellipse at 88% 10%,rgba(245,215,125,.28),transparent 30%),
+    radial-gradient(ellipse at 65% 100%,rgba(31,190,167,.24),transparent 38%),
+    linear-gradient(118deg,#062f2b 0%,#07594b 42%,#087e78 72%,#163e56 100%);
+  color:#f8fffd;
+}
+.hero::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  width:min(48vw,600px);
+  aspect-ratio:1;
+  right:-12%;
+  top:-42%;
+  border:1px solid rgba(255,239,184,.22);
+  border-radius:50%;
+  box-shadow:0 0 0 38px rgba(255,239,184,.035),0 0 0 78px rgba(255,239,184,.025);
+  pointer-events:none;
+}
+.hero-inner{
+  width:100%;
+  max-width:1320px;
+  gap:clamp(30px,5vw,76px);
+}
+.hero h1{
+  max-width:850px;
+  margin:0 0 22px;
+  color:#fff;
+  font-size:clamp(38px,5.3vw,72px);
+  font-weight:850;
+  letter-spacing:clamp(-2px,-.12vw,-.5px);
+  line-height:1.02;
+  text-wrap:balance;
+}
+.hero p{
+  max-width:650px;
+  color:rgba(248,255,253,.88);
+  font-size:clamp(16px,1.35vw,20px);
+  line-height:1.8;
+}
+.hero-actions{gap:14px;margin-top:30px}
+.hero-actions .primary-btn,
+.hero-actions .secondary-btn{
+  min-height:52px;
+  padding:15px 23px;
+  border-radius:13px;
+  font-size:15px;
+  transition:transform .2s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease;
+}
+.hero-actions .primary-btn{
+  background:linear-gradient(135deg,#fffdf4,#f2e4b4);
+  color:#073f38;
+  border:1px solid rgba(255,255,255,.72);
+  box-shadow:0 10px 26px rgba(0,0,0,.16);
+}
+.hero-actions .primary-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 30px rgba(0,0,0,.22);
+}
+.hero-actions .secondary-btn{
+  background:rgba(255,255,255,.075);
+  color:#fff;
+  border:1px solid rgba(228,247,239,.42);
+  backdrop-filter:blur(8px);
+}
+.hero-actions .secondary-btn:hover{
+  background:rgba(255,255,255,.15);
+  border-color:rgba(255,239,184,.8);
+  transform:translateY(-2px);
+}
+.hero-card{
+  position:relative;
+  padding:clamp(25px,3vw,38px);
+  border:1px solid rgba(240,222,157,.58);
+  border-radius:24px;
+  background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.055));
+  box-shadow:0 24px 65px rgba(0,20,25,.2),inset 0 1px 0 rgba(255,255,255,.16);
+  backdrop-filter:blur(18px);
+}
+.hero-card::before{
+  content:"OTG AI WEBSITE BUILDER";
+  display:inline-flex;
+  align-items:center;
+  margin-bottom:19px;
+  padding:7px 11px;
+  border:1px solid rgba(240,222,157,.42);
+  border-radius:999px;
+  color:#ffedb5;
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:1.6px;
+}
+.hero-card h3{
+  margin:0 0 12px;
+  color:#fff;
+  font-size:clamp(22px,2.1vw,30px);
+  font-weight:800;
+  letter-spacing:-.4px;
+}
+.hero-card p{
+  margin:0;
+  color:rgba(248,255,253,.86);
+  font-size:clamp(16px,1.4vw,19px);
+  line-height:1.85;
+}
+.hero :is(button,a):focus-visible{
+  outline:3px solid #ffe8a3;
+  outline-offset:4px;
+}
+@media(max-width:760px){
+  .hero{padding:48px 20px 54px}
+  .hero-inner{grid-template-columns:1fr;gap:30px}
+  .hero h1{max-width:680px;font-size:clamp(38px,9vw,58px)}
+  .hero-card{max-width:620px}
+}
+@media(max-width:480px){
+  .hero{padding:40px 16px 44px}
+  .hero-actions{display:grid;grid-template-columns:1fr}
+  .hero-actions .primary-btn,.hero-actions .secondary-btn{width:100%}
+  .hero-card{padding:23px;border-radius:19px}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-actions .primary-btn,.hero-actions .secondary-btn{transition:none}
+  .hero-actions .primary-btn:hover,.hero-actions .secondary-btn:hover{transform:none}
+}
+
 /* OTG Professional Templates — visual polish only; template actions and data flow remain unchanged */
 #templates{
   position:relative;
