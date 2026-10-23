@@ -10605,6 +10605,7 @@ header .otg-sticky-welcome{
 .otg-knowledge-count{font-size:11px;font-weight:900;color:#64748b}
 .otg-knowledge-name{font-size:14px;line-height:1.4;font-weight:900;color:#172b46}
 .otg-knowledge-desc{font-size:12px;line-height:1.65;color:#64748b}
+.otg-igede-history-banner{display:none;margin:0 0 16px;overflow:hidden;border:1px solid #d6b65d;border-radius:18px;background:#061c38;box-shadow:0 10px 24px rgba(15,35,65,.12)}.otg-igede-history-banner img{display:block;width:100%;height:auto;max-height:420px;object-fit:cover}.otg-igede-history-banner[hidden]{display:none!important}
 .otg-knowledge-empty{margin-top:14px;padding:20px;border:1px dashed #b8c7d8;border-radius:16px;background:#fff;text-align:center;color:#64748b;font-size:13px;line-height:1.7}
 .otg-knowledge-empty strong{display:block;margin-bottom:6px;color:#173653;font-size:16px}
 .otg-lesson-card[hidden],.otg-learning-module[hidden]{display:none!important}
@@ -10646,6 +10647,7 @@ title.className="otg-knowledge-title";title.textContent="Explore Learning Segmen
 intro.className="otg-knowledge-intro";intro.textContent="Choose a subject area to learn. Each segment is ready for future lessons, and only lessons already published will appear.";
 summary.style.cssText="padding:7px 11px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;color:#475569;font-size:11px;font-weight:800;white-space:nowrap";
 copy.append(eyebrow,title,intro);head.append(copy,summary);
+var heritageBanner=document.createElement("div");heritageBanner.className="otg-igede-history-banner";heritageBanner.hidden=true;var heritageImage=document.createElement("img");heritageImage.src="/igede-history-banner.svg";heritageImage.alt="History of the Igede People: origin, Ora War, migration, settlement and cultural identity";heritageImage.loading="lazy";heritageImage.decoding="async";heritageBanner.appendChild(heritageImage);
 var grid=document.createElement("div");grid.className="otg-knowledge-grid";
 var status=document.createElement("p");status.setAttribute("role","status");status.setAttribute("aria-live","polite");status.style.cssText="margin:16px 0 0;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid #e2e8f0;color:#52617a;font-size:13px;line-height:1.65";
 var empty=document.createElement("div");empty.className="otg-knowledge-empty";empty.hidden=true;var emptyTitle=document.createElement("strong"),emptyText=document.createElement("span");empty.append(emptyTitle,emptyText);
@@ -10653,6 +10655,7 @@ var controls=[],activeSegment=segments[0];
 function cards(){return Array.from(list.querySelectorAll(".otg-lesson-card"));}
 function selectSegment(seg){
 activeSegment=seg;
+heritageBanner.hidden=seg.id!=="igede";
 var all=cards(),visible=0,matching=0;
 all.forEach(function(card){var ok=seg.id==="all"||classify(card)===seg.id;card.hidden=!ok;if(ok)visible++;if(seg.id==="all"||classify(card)===seg.id)matching++;});
 list.querySelectorAll(".otg-learning-module").forEach(function(group){group.hidden=!group.querySelector(".otg-lesson-card:not([hidden])");});
@@ -10672,7 +10675,7 @@ var name=document.createElement("span");name.className="otg-knowledge-name";name
 var desc=document.createElement("span");desc.className="otg-knowledge-desc";desc.textContent=seg.desc;
 button.append(top,name,desc);button.addEventListener("click",function(){selectSegment(seg);});grid.append(button);controls.push({button:button,segment:seg,count:count});
 });
-panel.append(head,grid,status,empty);
+panel.append(head,heritageBanner,grid,status,empty);
 area.insertBefore(panel,list);
 selectSegment(segments[0]);
 new MutationObserver(function(){selectSegment(activeSegment);}).observe(list,{childList:true,subtree:true});
