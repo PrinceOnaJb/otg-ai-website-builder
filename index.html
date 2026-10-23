@@ -10655,7 +10655,7 @@ var controls=[],activeSegment=segments[0];
 function cards(){return Array.from(list.querySelectorAll(".otg-lesson-card"));}
 function selectSegment(seg){
 activeSegment=seg;
-heritageBanner.hidden=false;
+heritageBanner.hidden=seg.id!=="igede";
 var all=cards(),visible=0,matching=0;
 all.forEach(function(card){var ok=seg.id==="all"||classify(card)===seg.id;card.hidden=!ok;if(ok)visible++;if(seg.id==="all"||classify(card)===seg.id)matching++;});
 list.querySelectorAll(".otg-learning-module").forEach(function(group){group.hidden=!group.querySelector(".otg-lesson-card:not([hidden])");});
