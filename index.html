@@ -10646,5 +10646,132 @@ header .otg-sticky-welcome{
 
 
 
+
+<style id="otg-professional-learning-segments-style">
+.otg-knowledge-hub{box-sizing:border-box;max-width:1100px;margin:20px auto 24px;padding:clamp(16px,3vw,26px);border:1px solid #dbe5ef;border-radius:22px;background:linear-gradient(145deg,#f8fbff,#f3f8f7);box-shadow:0 12px 32px rgba(15,35,65,.07)}
+.otg-knowledge-hub *{box-sizing:border-box}
+.otg-knowledge-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.otg-knowledge-eyebrow{font-size:10px;letter-spacing:1.7px;font-weight:900;color:#0f766e;margin-bottom:7px}
+.otg-knowledge-title{margin:0;color:#142b46;font-size:clamp(22px,3vw,29px);line-height:1.25}
+.otg-knowledge-intro{margin:8px 0 0;color:#607087;font-size:13px;line-height:1.7;max-width:680px}
+.otg-knowledge-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}
+.otg-knowledge-segment{display:flex;flex-direction:column;align-items:flex-start;gap:9px;min-height:158px;padding:16px;border:1px solid #d9e3ed;border-radius:16px;background:#fff;color:#172033;text-align:left;cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .15s}
+.otg-knowledge-segment:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(15,35,65,.09)}
+.otg-knowledge-segment[aria-pressed=true]{box-shadow:0 0 0 2px #1d4ed820,0 8px 18px rgba(15,35,65,.08)}
+.otg-knowledge-segment-top{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}
+.otg-knowledge-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;font-size:22px}
+.otg-knowledge-count{font-size:11px;font-weight:900;color:#64748b}
+.otg-knowledge-name{font-size:14px;line-height:1.4;font-weight:900;color:#172b46}
+.otg-knowledge-desc{font-size:12px;line-height:1.65;color:#64748b}
+.otg-knowledge-empty{margin-top:14px;padding:20px;border:1px dashed #b8c7d8;border-radius:16px;background:#fff;text-align:center;color:#64748b;font-size:13px;line-height:1.7}
+.otg-knowledge-empty strong{display:block;margin-bottom:6px;color:#173653;font-size:16px}
+.otg-lesson-card[hidden],.otg-learning-module[hidden]{display:none!important}
+@media(max-width:600px){.otg-knowledge-hub{border-radius:15px;padding:15px}.otg-knowledge-segment{min-height:136px;padding:14px}}
+</style>
+<script id="otg-professional-learning-segments">
+(function(){
+"use strict";
+var segments=[
+{id:"all",icon:"📚",name:"All Learning",desc:"Explore every available lesson.",color:"#17436b"},
+{id:"graphic",icon:"🎨",name:"Graphic Design",desc:"PixelLab, design principles, flyers, logos and visual creativity.",color:"#4f46e5"},
+{id:"health",icon:"🩺",name:"Health Education",desc:"General health awareness, prevention and healthy living.",color:"#0f766e"},
+{id:"relationships",icon:"🤝",name:"Relationships",desc:"Communication, respect, boundaries and healthy connections.",color:"#be185d"},
+{id:"igede",icon:"🌿",name:"Igede Culture & Heritage",desc:"Language, traditions, history, values and cultural knowledge.",color:"#a16207"},
+{id:"business",icon:"📈",name:"Business & Entrepreneurship",desc:"Business planning, customer service, marketing and money skills.",color:"#166534"},
+{id:"website",icon:"🌐",name:"Website Creation & AI",desc:"Website design, AI tools, online stores and publishing.",color:"#0369a1"},
+{id:"other",icon:"✨",name:"Other Topics",desc:"Special topics and future learning areas.",color:"#64748b"}
+];
+function classify(card){
+var hero=card.querySelector(".otg-lesson-hero"),title=hero&&hero.querySelector("h2"),course=hero&&hero.querySelector("span");
+var t=((title?title.textContent:"")+" "+(course?course.textContent:"")).toLowerCase();
+if(/health education|wellness|nutrition|first aid|disease|medical|hygiene/.test(t))return "health";
+if(/relationship|marriage|dating|communication|family life/.test(t))return "relationships";
+if(/igede|heritage|culture|tradition|language|folklore/.test(t))return "igede";
+if(/business|entrepreneur|marketing|sales|customer service|finance|commerce/.test(t))return "business";
+if(/website|web design|website generator|ai website|html|css|javascript|online store|e-commerce|ecommerce/.test(t))return "website";
+if(/graphic design|pixellab|pixel lab|flyer|logo|colour|color|background|typography|branding|mockup|module\s*\d+/.test(t))return "graphic";
+return "other";
+}
+function setupLibrary(list){
+if(!list||list.dataset.otgKnowledgeHubReady==="1")return;
+var area=list.parentElement;if(!area)return;
+list.dataset.otgKnowledgeHubReady="1";
+var panel=document.createElement("section");panel.className="otg-knowledge-hub";panel.setAttribute("aria-label","OTG Knowledge Hub learning segments");
+var head=document.createElement("div");head.className="otg-knowledge-head";
+var copy=document.createElement("div"),eyebrow=document.createElement("div"),title=document.createElement("h2"),intro=document.createElement("p"),summary=document.createElement("span");
+eyebrow.className="otg-knowledge-eyebrow";eyebrow.textContent="OTG KNOWLEDGE HUB";
+title.className="otg-knowledge-title";title.textContent="Explore Learning Segments";
+intro.className="otg-knowledge-intro";intro.textContent="Choose a subject area to learn. Each segment is ready for future lessons, and only lessons already published will appear.";
+summary.style.cssText="padding:7px 11px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;color:#475569;font-size:11px;font-weight:800;white-space:nowrap";
+copy.append(eyebrow,title,intro);head.append(copy,summary);
+var grid=document.createElement("div");grid.className="otg-knowledge-grid";
+var status=document.createElement("p");status.setAttribute("role","status");status.setAttribute("aria-live","polite");status.style.cssText="margin:16px 0 0;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid #e2e8f0;color:#52617a;font-size:13px;line-height:1.65";
+var empty=document.createElement("div");empty.className="otg-knowledge-empty";empty.hidden=true;var emptyTitle=document.createElement("strong"),emptyText=document.createElement("span");empty.append(emptyTitle,emptyText);
+var controls=[],activeSegment=segments[0];
+function cards(){return Array.from(list.querySelectorAll(".otg-lesson-card"));}
+function selectSegment(seg){
+activeSegment=seg;
+var all=cards(),visible=0,matching=0;
+all.forEach(function(card){var ok=seg.id==="all"||classify(card)===seg.id;card.hidden=!ok;if(ok)visible++;if(seg.id==="all"||classify(card)===seg.id)matching++;});
+list.querySelectorAll(".otg-learning-module").forEach(function(group){group.hidden=!group.querySelector(".otg-lesson-card:not([hidden])");});
+controls.forEach(function(item){var active=item.segment.id===seg.id;item.button.setAttribute("aria-pressed",String(active));item.button.style.borderColor=active?item.segment.color:"#d9e3ed";item.button.style.boxShadow=active?"0 0 0 2px "+item.segment.color+"20,0 8px 18px rgba(15,35,65,.08)":"none";item.count.textContent=all.filter(function(card){return item.segment.id==="all"||classify(card)===item.segment.id;}).length+" published";});
+summary.textContent=all.length+" published lesson"+(all.length===1?"":"s");
+status.textContent=visible?(seg.id==="all"?"Showing all published lessons.":"Showing "+visible+" published lesson"+(visible===1?"":"s")+" in "+seg.name+"."):seg.name+" is ready for future lessons. No lessons have been published in this segment yet.";
+empty.hidden=visible>0;
+emptyTitle.textContent=seg.name+" — Ready for Content";
+emptyText.textContent="This learning area is set up and waiting for your lessons. No new lessons have been created or published by this enhancement.";
+}
+segments.forEach(function(seg){
+var button=document.createElement("button");button.type="button";button.className="otg-knowledge-segment";button.setAttribute("aria-pressed","false");
+var top=document.createElement("span");top.className="otg-knowledge-segment-top";
+var icon=document.createElement("span");icon.className="otg-knowledge-icon";icon.style.background=seg.color+"18";icon.style.color=seg.color;icon.textContent=seg.icon;
+var count=document.createElement("span");count.className="otg-knowledge-count";top.append(icon,count);
+var name=document.createElement("span");name.className="otg-knowledge-name";name.textContent=seg.name;
+var desc=document.createElement("span");desc.className="otg-knowledge-desc";desc.textContent=seg.desc;
+button.append(top,name,desc);button.addEventListener("click",function(){selectSegment(seg);});grid.append(button);controls.push({button:button,segment:seg,count:count});
+});
+panel.append(head,grid,status,empty);
+area.insertBefore(panel,list);
+selectSegment(segments[0]);
+new MutationObserver(function(){selectSegment(activeSegment);}).observe(list,{childList:true,subtree:true});
+}
+function addAdminCategory(){
+var form=document.getElementById("otgLessonForm");
+if(!form||form.dataset.otgCategoryReady==="1")return;
+var course=form.elements.course;if(!course||!course.parentElement)return;
+form.dataset.otgCategoryReady="1";
+var label=document.createElement("label");label.style.cssText="display:grid;gap:5px;font-weight:700";
+label.appendChild(document.createTextNode("Learning segment"));
+var select=document.createElement("select");select.name="otg_category";select.setAttribute("aria-label","Learning segment");
+select.style.cssText="padding:10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#172033";
+[{v:"graphic",t:"Graphic Design"},{v:"health",t:"Health Education"},{v:"relationships",t:"Relationships"},{v:"igede",t:"Igede Culture & Heritage"},{v:"business",t:"Business & Entrepreneurship"},{v:"website",t:"Website Creation & AI"},{v:"other",t:"Other Topics"}].forEach(function(x){var o=document.createElement("option");o.value=x.v;o.textContent=x.t;select.appendChild(o);});
+label.appendChild(select);course.parentElement.insertAdjacentElement("afterend",label);
+var courseNames={health:"Health Education",relationships:"Relationships",igede:"Igede Culture & Heritage",business:"Business & Entrepreneurship",website:"Website Creation & AI",other:"Other Topics"};
+form.addEventListener("submit",function(){
+var raw=String(course.value||"").trim();
+raw=raw.replace(/^(Health Education|Relationships|Igede Culture & Heritage|Business & Entrepreneurship|Website Creation & AI|Other Topics)\s*[—-]\s*/i,"");
+if(select.value==="graphic"){course.value=raw||"Getting Started";}
+else{course.value=courseNames[select.value]+" — "+(raw||courseNames[select.value]);}
+},true);
+document.addEventListener("click",function(event){
+var btn=event.target&&event.target.closest?event.target.closest("button"):null;
+if(!btn||!(/edit lesson/i.test(btn.textContent||"")))return;
+Promise.resolve().then(function(){
+var raw=String(course.value||"").trim(),match=raw.match(/^(Health Education|Relationships|Igede Culture & Heritage|Business & Entrepreneurship|Website Creation & AI|Other Topics)\s*[—-]/i);
+var value="graphic";
+if(match){var n=match[1].toLowerCase();value=n.indexOf("health")===0?"health":n==="relationships"?"relationships":n.indexOf("igede")===0?"igede":n.indexOf("business")===0?"business":n.indexOf("website")===0?"website":"other";}
+select.value=value;
+});
+});
+}
+function scan(){
+document.querySelectorAll("#academyPanelContent .otg-lesson-library").forEach(setupLibrary);
+addAdminCategory();
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",scan,{once:true});else scan();
+new MutationObserver(scan).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body>
 </html>
