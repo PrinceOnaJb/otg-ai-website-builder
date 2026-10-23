@@ -806,7 +806,7 @@ var S=[
 {id:"igede",i:"🌿",n:"Igede Culture & Heritage",d:"Language, traditions, history, values and cultural knowledge.",c:"#a16207"},
 {id:"business",i:"📈",n:"Business & Entrepreneurship",d:"Business planning, customer service, marketing and money skills.",c:"#166534"},
 {id:"website",i:"🌐",n:"Website Creation & AI",d:"AI website generation, web design, products and publishing.",c:"#0369a1"}];
-function cat(card){var t=(card.innerText||"").toLowerCase();
+function cat(card){var title=card.querySelector(".otg-lesson-hero h2"),course=card.querySelector(".otg-lesson-hero span");var t=((title?title.textContent:"")+" "+(course?course.textContent:"")).toLowerCase();
 if(/health|wellness|nutrition|first aid|disease|medical|hygiene/.test(t))return"health";
 if(/relationship|marriage|dating|communication|family life/.test(t))return"relationships";
 if(/igede|heritage|culture|tradition|language|folklore/.test(t))return"igede";
