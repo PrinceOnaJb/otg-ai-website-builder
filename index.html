@@ -795,64 +795,7 @@ async function loadAcademyPanelData(key,content){
   const status=document.createElement("p");status.setAttribute("role","status");status.setAttribute("aria-live","polite");status.style.cssText="margin:10px 0 0;color:#475569;font-size:13px";
   const makeButton=(label,primary,fn)=>{const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="padding:10px 15px;border-radius:9px;border:1px solid "+(primary?"#1d4ed8":"#cbd5e1")+";background:"+(primary?"#1d4ed8":"#fff")+";color:"+(primary?"#fff":"#1e293b")+";font-weight:800;cursor:pointer";b.addEventListener("click",fn);controls.appendChild(b);return b;};
   const preview=document.createElement("iframe");preview.title="Code Lab live preview";preview.setAttribute("sandbox","allow-scripts");preview.setAttribute("referrerpolicy","no-referrer");preview.style.cssText="display:block;width:100%;height:340px;border:1px solid #cbd5e1;border-radius:12px;background:#fff";
-  const runCode=()=>{const css=cssEditor.value;const js=jsEditor.value.replace(/<\/script/gi,"<\\/script");preview.srcdoc="<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><base href='https://otg-ai-website-builder.vercel.app/'><style>"+css+"</style></head><body>"+htmlEditor.value+"<script>"+js+"<\/script><script id="otg-learning-segment-enhancement">
-(function(){
-"use strict";
-var S=[
-{id:"all",i:"📚",n:"All Learning",d:"Explore every available lesson.",c:"#17436b"},
-{id:"graphic",i:"🎨",n:"Graphic Design",d:"PixelLab, design principles, flyers, logos and visual creativity.",c:"#4f46e5"},
-{id:"health",i:"🩺",n:"Health Education",d:"General health awareness, prevention and healthy living.",c:"#0f766e"},
-{id:"relationships",i:"🤝",n:"Relationships",d:"Communication, respect, boundaries and healthy connections.",c:"#be185d"},
-{id:"igede",i:"🌿",n:"Igede Culture & Heritage",d:"Language, traditions, history, values and cultural knowledge.",c:"#a16207"},
-{id:"business",i:"📈",n:"Business & Entrepreneurship",d:"Business planning, customer service, marketing and money skills.",c:"#166534"},
-{id:"website",i:"🌐",n:"Website Creation & AI",d:"AI website generation, web design, products and publishing.",c:"#0369a1"}];
-function cat(card){var title=card.querySelector(".otg-lesson-hero h2"),course=card.querySelector(".otg-lesson-hero span");var t=((title?title.textContent:"")+" "+(course?course.textContent:"")).toLowerCase();
-if(/health|wellness|nutrition|first aid|disease|medical|hygiene/.test(t))return"health";
-if(/relationship|marriage|dating|communication|family life/.test(t))return"relationships";
-if(/igede|heritage|culture|tradition|language|folklore/.test(t))return"igede";
-if(/business|entrepreneur|marketing|sales|customer service|finance|commerce/.test(t))return"business";
-if(/website|web design|website generator|ai website|html|css|javascript|online store|e-commerce|ecommerce/.test(t))return"website";
-if(/graphic|design|pixellab|pixel lab|flyer|logo|colour|color|background|typography|branding|mockup|module\s*\d+/.test(t))return"graphic";
-return"other";}
-function build(list){if(!list||list.dataset.otgSegmentsReady)return;list.dataset.otgSegmentsReady="1";
-var p=list.parentElement;if(!p)return;
-var w=document.createElement("section");w.className="otg-learning-segments";w.setAttribute("aria-label","Learning topic segments");
-w.style.cssText="margin:18px 0 24px;padding:clamp(16px,3vw,24px);border:1px solid #dbe5ef;border-radius:22px;background:linear-gradient(145deg,#f8fbff,#f2f7f7);box-shadow:0 10px 30px #0f23410d;max-width:1100px";
-var head=document.createElement("div");head.style.cssText="display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:18px";
-var copy=document.createElement("div"),ey=document.createElement("div"),h=document.createElement("h2"),sub=document.createElement("p"),total=document.createElement("span");
-ey.textContent="OTG KNOWLEDGE HUB";ey.style.cssText="font-size:10px;letter-spacing:1.7px;font-weight:900;color:#0f766e;margin-bottom:6px";
-h.textContent="Explore Learning Segments";h.style.cssText="margin:0;color:#142b46;font-size:clamp(22px,3vw,29px);line-height:1.2";
-sub.textContent="Choose a subject area to explore. More learning areas are ready for future lessons.";sub.style.cssText="margin:8px 0 0;color:#607087;font-size:13px;line-height:1.7;max-width:650px";
-copy.append(ey,h,sub);total.style.cssText="padding:7px 11px;border:1px solid #cbd5e1;border-radius:999px;background:white;color:#475569;font-size:11px;font-weight:800";head.append(copy,total);
-var grid=document.createElement("div");grid.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,225px),1fr));gap:12px";
-var status=document.createElement("p");status.setAttribute("role","status");status.style.cssText="margin:16px 0 0;padding:12px 14px;border-radius:12px;background:white;border:1px solid #e2e8f0;color:#52617a;font-size:13px;line-height:1.65";
-var empty=document.createElement("div");empty.hidden=true;empty.style.cssText="margin-top:14px;padding:24px;border:1px dashed #b8c7d8;border-radius:16px;background:white;text-align:center";
-var eh=document.createElement("strong"),ep=document.createElement("p");eh.style.cssText="display:block;color:#173653;font-size:16px";ep.style.cssText="margin:8px auto 0;max-width:560px;color:#64748b;font-size:13px;line-height:1.7";empty.append(eh,ep);
-var buttons=[];
-function cards(){return Array.from(list.querySelectorAll(".otg-lesson-card"));}
-function select(seg){var all=cards(),match=all.filter(x=>seg.id==="all"||cat(x)===seg.id);
-buttons.forEach(o=>{var on=o.seg.id===seg.id;o.b.style.borderColor=on?o.seg.c:"#d9e3ed";o.b.style.boxShadow=on?"0 0 0 2px "+o.seg.c+"20,0 8px 18px #0f234112":"0 4px 14px #0f234108";o.b.style.transform=on?"translateY(-1px)":"";o.b.setAttribute("aria-pressed",String(on));});
-all.forEach(x=>x.hidden=!(seg.id==="all"||cat(x)===seg.id));
-list.querySelectorAll(".otg-learning-module").forEach(x=>x.hidden=!x.querySelector(".otg-lesson-card:not([hidden])"));
-total.textContent=all.length+" published lessons";
-status.textContent=match.length?(seg.id==="all"?"Showing all available lessons.":"Showing "+match.length+" lesson"+(match.length===1?"":"s")+" in "+seg.n+"."):seg.n+" is ready for future lessons. No lessons have been published in this segment yet.";
-empty.hidden=match.length>0;if(!match.length){eh.textContent=seg.n+" — Coming soon";ep.textContent="This subject segment is ready. Your Coach can add lessons here later; no lessons have been published in this category yet.";}
-}
-S.forEach(seg=>{var b=document.createElement("button");b.type="button";b.style.cssText="display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-height:154px;padding:16px;text-align:left;border:1px solid #d9e3ed;border-radius:16px;background:white;cursor:pointer;color:#172033";
-var top=document.createElement("div");top.style.cssText="display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%";
-var icon=document.createElement("span");icon.textContent=seg.i;icon.style.cssText="display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:"+seg.c+"18;color:"+seg.c+";font-size:22px";
-var count=document.createElement("span");count.style.cssText="font-size:11px;font-weight:900;color:#64748b";top.append(icon,count);
-var n=document.createElement("strong");n.textContent=seg.n;n.style.cssText="font-size:14px;line-height:1.4;color:#172b46";
-var d=document.createElement("span");d.textContent=seg.d;d.style.cssText="font-size:12px;line-height:1.65;color:#64748b";b.append(top,n,d);b.onclick=()=>select(seg);buttons.push({b,seg,count});grid.append(b);});
-w.append(head,grid,status,empty);
-var prev=list.previousElementSibling;if(prev&&prev.textContent&&prev.textContent.indexOf("Your course progress")>=0)p.insertBefore(w,prev);else p.insertBefore(w,list);
-var all=cards();buttons.forEach(o=>{var n=all.filter(x=>o.seg.id==="all"||cat(x)===o.seg.id).length;o.count.textContent=n+" lesson"+(n===1?"":"s");if(o.seg.id!=="all"&&!n){var badge=document.createElement("span");badge.textContent="READY FOR CONTENT";badge.style.cssText="margin-top:auto;padding:4px 7px;border-radius:999px;background:#f1f5f9;color:#64748b;font-size:9px;font-weight:900;letter-spacing:.7px";o.b.append(badge);}});
-select(S[0]);}
-function scan(){document.querySelectorAll("#academyPanelContent .otg-lesson-library").forEach(build);}
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",scan,{once:true});else scan();
-new MutationObserver(scan).observe(document.documentElement,{childList:true,subtree:true});
-})();
-</script>
+  const runCode=()=>{const css=cssEditor.value;const js=jsEditor.value.replace(/<\/script/gi,"<\\/script");preview.srcdoc="<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><base href='https://otg-ai-website-builder.vercel.app/'><style>"+css+"</style></head><body>"+htmlEditor.value+"<script>"+js+"<\/script>
 </body></html>";status.textContent="Preview updated. Your code has not been published.";};
   makeButton("▶ Run code",true,runCode);
   makeButton("Save draft on this device",false,()=>{try{localStorage.setItem("otgAcademyCodeLabDraft",JSON.stringify({html:htmlEditor.value,css:cssEditor.value,js:jsEditor.value}));status.textContent="Draft saved on this device only.";}catch(e){status.textContent="This browser did not allow a local draft to be saved.";}}); 
