@@ -10707,9 +10707,10 @@ copy.append(eyebrow,title,intro);head.append(copy,summary);
 var grid=document.createElement("div");grid.className="otg-knowledge-grid";
 var status=document.createElement("p");status.setAttribute("role","status");status.setAttribute("aria-live","polite");status.style.cssText="margin:16px 0 0;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid #e2e8f0;color:#52617a;font-size:13px;line-height:1.65";
 var empty=document.createElement("div");empty.className="otg-knowledge-empty";empty.hidden=true;var emptyTitle=document.createElement("strong"),emptyText=document.createElement("span");empty.append(emptyTitle,emptyText);
-var controls=[];
+var controls=[],activeSegment=segments[0];
 function cards(){return Array.from(list.querySelectorAll(".otg-lesson-card"));}
 function selectSegment(seg){
+activeSegment=seg;
 var all=cards(),visible=0,matching=0;
 all.forEach(function(card){var ok=seg.id==="all"||classify(card)===seg.id;card.hidden=!ok;if(ok)visible++;if(seg.id==="all"||classify(card)===seg.id)matching++;});
 list.querySelectorAll(".otg-learning-module").forEach(function(group){group.hidden=!group.querySelector(".otg-lesson-card:not([hidden])");});
@@ -10732,6 +10733,7 @@ button.append(top,name,desc);button.addEventListener("click",function(){selectSe
 panel.append(head,grid,status,empty);
 area.insertBefore(panel,list);
 selectSegment(segments[0]);
+new MutationObserver(function(){selectSegment(activeSegment);}).observe(list,{childList:true,subtree:true});
 }
 function addAdminCategory(){
 var form=document.getElementById("otgLessonForm");
