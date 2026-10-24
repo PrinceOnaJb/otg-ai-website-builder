@@ -905,9 +905,14 @@ async function loadAcademyPanelData(key,content){
   let completedLessonIds=new Set();
   let completionLoadError=null;
   if(userId){
-    const {data:completionRows,error:completionError}=await db.from("academy_lesson_progress").select("lesson_id,completed_at").eq("student_id",userId);
-    if(completionError){completionLoadError=completionError;console.warn("Lesson progress could not load:",completionError.message);}
-    else completedLessonIds=new Set((completionRows||[]).filter(row=>row.completed_at).map(row=>String(row.lesson_id)));
+    try{
+      const {data:completionRows,error:completionError}=await db.from("academy_lesson_progress").select("lesson_id,completed_at").eq("student_id",userId);
+      if(completionError){completionLoadError=completionError;console.warn("Lesson progress could not load:",completionError.message);}
+      else completedLessonIds=new Set((completionRows||[]).filter(row=>row.completed_at).map(row=>String(row.lesson_id)));
+    }catch(progressLoadError){
+      completionLoadError=progressLoadError;
+      console.warn("Lesson progress is unavailable offline; saved lesson reading can continue.");
+    }
   }
   if(data&&data.length){const publishedIds=new Set(data.map(lesson=>String(lesson.id)));completedLessonIds=new Set([...completedLessonIds].filter(id=>publishedIds.has(id)));}
   const progressWrap=document.createElement("section");
