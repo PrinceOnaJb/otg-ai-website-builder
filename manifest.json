@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "OTG GRAPHIC Academy — AI Website Builder",
-  "short_name": "OTG Academy",
-  "description": "OTG Academy — learn, practise, build and publish with OTG AI Website Builder.",
+  "name": "Ohejuwa Timeless (OTG) Website Studio",
+  "short_name": "OTG Website",
+  "description": "Ohejuwa Timeless (OTG) Website Studio — create, build and publish professional websites with AI.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
