@@ -263,6 +263,46 @@ async function otgShowLatestAnnouncementPopup(db,userId){
  }catch(e){console.warn("OTG latest announcement popup:",e);}
 }
 
+
+// Offline cache for published lesson content only. Never stores profiles, progress,
+// submissions, assessments, certificates, projects, or authenticated API responses.
+const OTG_LESSON_CACHE_DB = "otg-published-lessons-v1";
+function otgOpenLessonCacheDb() {
+  return new Promise((resolve, reject) => {
+    if (!("indexedDB" in self)) { reject(new Error("IndexedDB unavailable")); return; }
+    const request = indexedDB.open(OTG_LESSON_CACHE_DB, 1);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains("lessonSets")) db.createObjectStore("lessonSets", { keyPath: "key" });
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error("Could not open lesson cache"));
+  });
+}
+async function otgSavePublishedLessons(key, lessons) {
+  const db = await otgOpenLessonCacheDb();
+  try {
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction("lessonSets", "readwrite");
+      tx.objectStore("lessonSets").put({ key, lessons, savedAt: Date.now() });
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error || new Error("Could not save lessons"));
+      tx.onabort = () => reject(tx.error || new Error("Lesson cache save aborted"));
+    });
+  } finally { db.close(); }
+}
+async function otgReadPublishedLessons(key) {
+  const db = await otgOpenLessonCacheDb();
+  try {
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction("lessonSets", "readonly");
+      const request = tx.objectStore("lessonSets").get(key);
+      request.onsuccess = () => resolve(request.result || null);
+      request.onerror = () => reject(request.error || new Error("Could not read lesson cache"));
+    });
+  } finally { db.close(); }
+}
+
 async function loadAcademyPanelData(key,content){
  const db=supabaseClient;
  let admin=window.otgAcademyIsAdmin===true;
@@ -826,13 +866,53 @@ async function loadAcademyPanelData(key,content){
   let lessonsQuery=db.from("academy_lessons").select("id,title,course,description,content,video_url,created_at,is_published").order("sort_order",{ascending:true}).order("created_at",{ascending:false});
   if(!admin)lessonsQuery=lessonsQuery.eq("is_published",true);
   if(key==="watch")lessonsQuery=lessonsQuery.not("video_url","is",null).neq("video_url","");
-  const {data,error}=await lessonsQuery;
+  let data=null,error=null,usingOfflineLessonCopy=false;
+  try {
+    const lessonResult=await lessonsQuery;
+    data=lessonResult.data||null;
+    error=lessonResult.error||null;
+  } catch (lessonLoadError) {
+    error=lessonLoadError;
+  }
+  // Only student-facing published lesson lists are cached. Admin views always
+  // remain server-backed and unpublished lessons are never written to device storage.
+  if(!admin&&(key==="learn"||key==="watch")){
+    if(!error&&Array.isArray(data)){
+      try {
+        await otgSavePublishedLessons(key,data);
+      } catch(cacheWriteError) {
+        console.warn("OTG published lessons could not be saved for offline reading:",cacheWriteError);
+      }
+    } else if(error){
+      try {
+        let cachedSet=await otgReadPublishedLessons(key);
+        if(!cachedSet&&key==="watch"){
+          const allLessons=await otgReadPublishedLessons("learn");
+          if(allLessons&&Array.isArray(allLessons.lessons)){
+            cachedSet={lessons:allLessons.lessons.filter(lesson=>!!lesson.video_url),savedAt:allLessons.savedAt};
+          }
+        }
+        if(cachedSet&&Array.isArray(cachedSet.lessons)){
+          data=cachedSet.lessons;
+          error=null;
+          usingOfflineLessonCopy=true;
+        }
+      } catch(cacheReadError) {
+        console.warn("OTG offline lesson copy is unavailable:",cacheReadError);
+      }
+    }
+  }
   let completedLessonIds=new Set();
   let completionLoadError=null;
   if(userId){
-    const {data:completionRows,error:completionError}=await db.from("academy_lesson_progress").select("lesson_id,completed_at").eq("student_id",userId);
-    if(completionError){completionLoadError=completionError;console.warn("Lesson progress could not load:",completionError.message);}
-    else completedLessonIds=new Set((completionRows||[]).filter(row=>row.completed_at).map(row=>String(row.lesson_id)));
+    try{
+      const {data:completionRows,error:completionError}=await db.from("academy_lesson_progress").select("lesson_id,completed_at").eq("student_id",userId);
+      if(completionError){completionLoadError=completionError;console.warn("Lesson progress could not load:",completionError.message);}
+      else completedLessonIds=new Set((completionRows||[]).filter(row=>row.completed_at).map(row=>String(row.lesson_id)));
+    }catch(progressLoadError){
+      completionLoadError=progressLoadError;
+      console.warn("Lesson progress is unavailable offline; saved lesson reading can continue.");
+    }
   }
   if(data&&data.length){const publishedIds=new Set(data.map(lesson=>String(lesson.id)));completedLessonIds=new Set([...completedLessonIds].filter(id=>publishedIds.has(id)));}
   const progressWrap=document.createElement("section");
@@ -852,7 +932,7 @@ async function loadAcademyPanelData(key,content){
     progressCount.textContent=done+" of "+total+" lessons completed";
     progressFill.style.width=percent+"%";
     progressTrack.setAttribute("aria-valuenow",String(percent));
-    progressHint.textContent=completionLoadError?"Progress could not be loaded. Please refresh after checking your Supabase migration.":(total?"Your progress is saved to your account when you mark a lesson complete.":"Published lessons will appear here when your coach adds them.");
+    progressHint.textContent=usingOfflineLessonCopy?"Offline reading copy. Lesson progress and other account actions need an internet connection.":(completionLoadError?"Progress could not be loaded. Please refresh after checking your Supabase migration.":(total?"Your progress is saved to your account when you mark a lesson complete.":"Published lessons will appear here when your coach adds them."));
   };
   const list=document.createElement("div");list.className="otg-lesson-library";list.style.cssText="display:grid;grid-template-columns:minmax(0,1fr);gap:22px;margin:20px 0 8px;max-width:920px";
   if(error){const msg=document.createElement("p");msg.textContent="Lessons could not load: "+error.message;msg.style.cssText="padding:16px;border:1px solid #fecaca;border-radius:12px;background:#fff7f7;color:#991b1b";list.appendChild(msg);}
