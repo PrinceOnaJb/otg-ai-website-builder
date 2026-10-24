@@ -9276,28 +9276,25 @@ async function showApp(approvalAlreadyChecked){
     console.error("OTG admin panel startup failed; keeping Student Hub available:", adminPanelStartupError);
   }
 
-  // On a genuine page re-entry, resume the last section for this same account.
-  // This matters when Android/browser discards the page while the app is minimized.
-  // Do not reset an already-visible dashboard or use another user's saved state.
+  // On genuine page re-entry, restore the saved Student Hub panel only when a valid
+  // same-account resume record exists. Never force the student back to Home merely
+  // because an older V3 record is absent; the V4 resume guard owns reading position.
   if(!appWasAlreadyVisible && typeof window.openAcademyPanel === "function"){
     let resumeState = null;
-    try { resumeState = JSON.parse(localStorage.getItem("otgStudentHubResumeStateV3") || "null"); } catch (_) {}
+    try {
+      resumeState = JSON.parse(localStorage.getItem("otgStudentHubResumeStateV4") || "null");
+      if(!resumeState) resumeState = JSON.parse(localStorage.getItem("otgStudentHubResumeStateV3") || "null");
+    } catch (_) {}
     const resumeAge = resumeState && Number(resumeState.savedAt) ? Date.now() - Number(resumeState.savedAt) : Infinity;
-    const canResume = resumeState && currentUser && String(resumeState.userId) === String(currentUser.id) &&
+    const isAssignment = resumeState && (resumeState.panelKey === "assignments" || resumeState.panelKey === "submission-review");
+    const canResume = resumeState && !isAssignment && currentUser && String(resumeState.userId) === String(currentUser.id) &&
       resumeState.panelKey && resumeAge >= 0 && resumeAge < 24 * 60 * 60 * 1000 &&
-      (academyPanels[resumeState.panelKey] || resumeState.panelKey === "submission-review");
+      academyPanels[resumeState.panelKey];
     if(canResume){
-      let resumeButton = null;
-      if(resumeState.panelKey === "submission-review") resumeButton = document.getElementById("otgStudentAssignmentsNav");
-      else resumeButton = Array.from(document.querySelectorAll(".academy-nav")).find(function(button){
+      const resumeButton = Array.from(document.querySelectorAll(".academy-nav")).find(function(button){
         return (button.getAttribute("onclick") || "").indexOf("openAcademyPanel('" + resumeState.panelKey + "'") !== -1;
       }) || null;
       window.openAcademyPanel(resumeState.panelKey, resumeButton || undefined);
-    }else{
-      const homeButton = Array.from(document.querySelectorAll(".academy-nav")).find(function(button){
-        return (button.getAttribute("onclick") || "").indexOf("openAcademyPanel('home'") !== -1;
-      }) || null;
-      window.openAcademyPanel("home", homeButton);
     }
   }
 
@@ -10631,9 +10628,11 @@ var grid=document.createElement("div");grid.className="otg-knowledge-grid";
 var status=document.createElement("p");status.setAttribute("role","status");status.setAttribute("aria-live","polite");status.style.cssText="margin:16px 0 0;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid #e2e8f0;color:#52617a;font-size:13px;line-height:1.65";
 var empty=document.createElement("div");empty.className="otg-knowledge-empty";empty.hidden=true;var emptyTitle=document.createElement("strong"),emptyText=document.createElement("span");empty.append(emptyTitle,emptyText);
 var controls=[],activeSegment=segments[0];
+function segmentStorageKey(){try{var u=window.currentUser||(typeof currentUser!=="undefined"?currentUser:null);return "otgKnowledgeHubSegmentV1:"+(u&&u.id?String(u.id):"guest");}catch(_){return "otgKnowledgeHubSegmentV1:guest";}}
 function cards(){return Array.from(list.querySelectorAll(".otg-lesson-card"));}
 function selectSegment(seg){
 activeSegment=seg;
+try{localStorage.setItem(segmentStorageKey(),seg.id);}catch(_){};
 heritageBanner.hidden=seg.id!=="igede";
 var all=cards(),visible=0,matching=0;
 all.forEach(function(card){var ok=seg.id==="all"||classify(card)===seg.id;card.hidden=!ok;if(ok)visible++;if(seg.id==="all"||classify(card)===seg.id)matching++;});
@@ -10658,6 +10657,8 @@ panel.append(head,heritageBanner,grid,status,empty);
 area.insertBefore(panel,list);
 selectSegment(segments[0]);
 new MutationObserver(function(){selectSegment(activeSegment);}).observe(list,{childList:true,subtree:true});
+try{var savedSegment=localStorage.getItem(segmentStorageKey());var matchSegment=segments.find(function(seg){return seg.id===savedSegment;});if(matchSegment)activeSegment=matchSegment;}catch(_){}
+selectSegment(activeSegment);
 }
 function addAdminCategory(){
 var form=document.getElementById("otgLessonForm");
