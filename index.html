@@ -10662,7 +10662,11 @@ button.append(top,name,desc);button.addEventListener("click",function(){selectSe
 });
 panel.append(head,heritageBanner,grid,status,empty);
 area.insertBefore(panel,list);
-selectSegment(segments[0]);
+// Restore the signed-in learner's last chosen subject instead of resetting to All Learning.
+var savedSegmentId="all";
+try{var savedSegmentValue=localStorage.getItem(segmentStorageKey());if(savedSegmentValue)savedSegmentId=savedSegmentValue;}catch(_){}
+var savedSegment=segments.find(function(seg){return seg.id===savedSegmentId;})||segments[0];
+selectSegment(savedSegment);
 new MutationObserver(function(){selectSegment(activeSegment);}).observe(list,{childList:true,subtree:true});
 try{var savedSegment=localStorage.getItem(segmentStorageKey());var matchSegment=segments.find(function(seg){return seg.id===savedSegment;});if(matchSegment)activeSegment=matchSegment;}catch(_){}
 selectSegment(activeSegment);
