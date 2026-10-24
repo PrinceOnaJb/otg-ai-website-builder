@@ -10347,47 +10347,54 @@ header .otg-sticky-welcome{
 
 <script id="otg-student-hub-real-resume-guard">
 (function(){
-  "use strict";
-  // Preserve the current learning page and reading position on return from background.
-  // Assignment pages are intentionally excluded; never navigate to a saved panel.
-  var key="otgStudentHubResumeStateV4",saveTimer=null,restoreTimers=[];
-  function userId(){try{if(window.currentUser&&window.currentUser.id)return String(window.currentUser.id);if(typeof currentUser!=="undefined"&&currentUser&&currentUser.id)return String(currentUser.id);}catch(_){}return "";}
-  function activePanelKey(){
-    var active=document.querySelector("#academyDashboard .academy-nav.active");if(!active)return "";
-    if(active.id==="otgStudentAssignmentsNav"){var admin=window.otgAcademyIsAdmin===true;try{if(typeof currentProfile!=="undefined"&&currentProfile&&String(currentProfile.role||"").toLowerCase()==="admin")admin=true;}catch(_){}return admin?"submission-review":"assignments";}
-    var source=active.getAttribute("onclick")||"",match=source.match(/openAcademyPanel\(\s*['"]([^'"]+)['"]/);
-    if(match)return match[1];if(active.id==="otgPublishAssignmentNav")return "assignments";return "";
-  }
-  function isAssignmentPanel(panel){return panel==="assignments"||panel==="submission-review";}
-  function save(){
-    var uid=userId(),panel=activePanelKey();if(!uid||!panel)return;
-    if(isAssignmentPanel(panel)){try{localStorage.removeItem(key);}catch(_){}return;}
-    var content=document.getElementById("academyPanelContent");
-    try{localStorage.setItem(key,JSON.stringify({userId:uid,panelKey:panel,scrollY:window.scrollY||window.pageYOffset||0,panelScrollTop:content?content.scrollTop:0,savedAt:Date.now()}));}catch(_){}
-  }
-  function scheduleSave(){if(saveTimer)clearTimeout(saveTimer);saveTimer=setTimeout(function(){saveTimer=null;save();},180);}
-  function restore(){
-    var state;try{state=JSON.parse(localStorage.getItem(key)||"null");}catch(_){return;}
-    var uid=userId(),panel=activePanelKey();if(!state||!uid||String(state.userId)!==uid||!state.panelKey||isAssignmentPanel(panel))return;
-    if(document.getElementById("authScreen")&&!document.getElementById("authScreen").classList.contains("hidden"))return;
-    var app=document.getElementById("app");if(!app||app.classList.contains("hidden"))return;
-    // Restore position only; do not switch the student to a different section.
-    if(panel!==state.panelKey)return;
-    var content=document.getElementById("academyPanelContent");
-    if(content&&Number.isFinite(Number(state.panelScrollTop)))content.scrollTop=Math.max(0,Number(state.panelScrollTop)||0);
-    var y=Math.max(0,Number(state.scrollY)||0);
-    if(Math.abs((window.scrollY||window.pageYOffset||0)-y)>3)window.scrollTo({top:y,left:0,behavior:"auto"});
-  }
-  function restoreAfterResume(){restoreTimers.forEach(clearTimeout);restoreTimers=[];[0,120,300,650,1100,1800,2800,4200,6000].forEach(function(delay){restoreTimers.push(setTimeout(restore,delay));});}
-  document.addEventListener("scroll",scheduleSave,true);
-  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")save();else if(document.visibilityState==="visible")restoreAfterResume();});
-  window.addEventListener("pagehide",save);window.addEventListener("pageshow",restoreAfterResume);window.addEventListener("focus",restoreAfterResume);
-  var attempts=0,timer=setInterval(function(){
-    attempts++;if(typeof window.openAcademyPanel==="function"&&!window.openAcademyPanel.__otgResumeWrapped){
-      var original=window.openAcademyPanel;var wrapped=function(panelKey,button){var result=original.apply(this,arguments);if(isAssignmentPanel(String(panelKey||""))){try{localStorage.removeItem(key);}catch(_){}}else setTimeout(save,180);return result;};
-      wrapped.__otgResumeWrapped=true;window.openAcademyPanel=wrapped;clearInterval(timer);
-    }else if(attempts>=80)clearInterval(timer);
-  },250);
+"use strict";
+var key="otgStudentHubResumeStateV5",saveTimer=null,restoreTimers=[],returningFromBackground=false;
+function userId(){try{var u=window.currentUser||(typeof currentUser!=="undefined"?currentUser:null);return u&&u.id?String(u.id):"";}catch(_){return "";}}
+function activePanelKey(){
+ var active=document.querySelector("#academyDashboard .academy-nav.active");if(!active)return "";
+ if(active.id==="otgStudentAssignmentsNav"){var admin=window.otgAcademyIsAdmin===true;try{if(typeof currentProfile!=="undefined"&&currentProfile&&String(currentProfile.role||"").toLowerCase()==="admin")admin=true;}catch(_){}return admin?"submission-review":"assignments";}
+ var source=active.getAttribute("onclick")||"",m=source.match(/openAcademyPanel\(\s*['"]([^'"]+)['"]/);if(m)return m[1];
+ if(active.id==="otgPublishAssignmentNav")return "assignments";return "";
+}
+function isAssignment(p){return p==="assignments"||p==="submission-review";}
+function read(){try{return JSON.parse(localStorage.getItem(key)||localStorage.getItem("otgStudentHubResumeStateV4")||localStorage.getItem("otgStudentHubResumeStateV3")||"null");}catch(_){return null;}}
+function save(){
+ var uid=userId(),panel=activePanelKey();if(!uid||!panel)return;
+ if(isAssignment(panel)){try{localStorage.removeItem(key);localStorage.removeItem("otgStudentHubResumeStateV4");localStorage.removeItem("otgStudentHubResumeStateV3");}catch(_){}return;}
+ var content=document.getElementById("academyPanelContent"),state={userId:uid,panelKey:panel,scrollY:window.scrollY||window.pageYOffset||0,panelScrollTop:content?content.scrollTop:0,savedAt:Date.now()};
+ var hub=document.querySelector("#academyPanelContent .otg-knowledge-hub");
+ if(hub){try{state.segment=localStorage.getItem("otgKnowledgeHubSegmentV1:"+uid)||"all";}catch(_){}}
+ try{localStorage.setItem(key,JSON.stringify(state));}catch(_){}
+}
+function scheduleSave(){if(saveTimer)clearTimeout(saveTimer);saveTimer=setTimeout(save,100);}
+function findNav(panel){return Array.from(document.querySelectorAll(".academy-nav")).find(function(b){return (b.getAttribute("onclick")||"").indexOf("openAcademyPanel('"+panel+"'")!==-1;})||null;}
+function restore(){
+ var state=read(),uid=userId();if(!state||!uid||String(state.userId)!==uid||!state.panelKey||isAssignment(state.panelKey))return;
+ if(Date.now()-(Number(state.savedAt)||0)>24*60*60*1000)return;
+ var auth=document.getElementById("authScreen"),app=document.getElementById("app");
+ if(auth&&!auth.classList.contains("hidden"))return;if(!app||app.classList.contains("hidden"))return;
+ var panel=activePanelKey();
+ // When Android recreates the page, restore the saved section rather than refusing
+ // restoration because startup defaulted to Home. Never do this while user is actively navigating.
+ if(returningFromBackground&&panel!==state.panelKey&&typeof window.openAcademyPanel==="function"){
+   var nav=findNav(state.panelKey);try{window.openAcademyPanel(state.panelKey,nav||undefined);}catch(_){}
+   panel=activePanelKey();
+ }
+ if(panel!==state.panelKey)return;
+ var content=document.getElementById("academyPanelContent");
+ if(content&&Number.isFinite(Number(state.panelScrollTop)))content.scrollTop=Math.max(0,Number(state.panelScrollTop)||0);
+ var y=Math.max(0,Number(state.scrollY)||0);
+ if(Math.abs((window.scrollY||window.pageYOffset||0)-y)>3)window.scrollTo({top:y,left:0,behavior:"auto"});
+}
+function restoreAfterResume(){returningFromBackground=true;restoreTimers.forEach(clearTimeout);restoreTimers=[];[0,180,450,900,1500,2500,4000,6000].forEach(function(d){restoreTimers.push(setTimeout(restore,d));});setTimeout(function(){returningFromBackground=false;},6500);}
+document.addEventListener("scroll",scheduleSave,true);
+document.addEventListener("click",function(e){if(e.target&&e.target.closest&&e.target.closest(".academy-nav"))setTimeout(save,250);},true);
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")save();else restoreAfterResume();});
+window.addEventListener("pagehide",save);window.addEventListener("beforeunload",save);window.addEventListener("pageshow",restoreAfterResume);window.addEventListener("focus",restoreAfterResume);
+var attempts=0,timer=setInterval(function(){attempts++;if(typeof window.openAcademyPanel==="function"&&!window.openAcademyPanel.__otgResumeWrappedV5){
+ var original=window.openAcademyPanel;var wrapped=function(panelKey,button){var result=original.apply(this,arguments);if(isAssignment(String(panelKey||""))){try{localStorage.removeItem(key);}catch(_){}}else setTimeout(save,250);return result;};
+ wrapped.__otgResumeWrappedV5=true;window.openAcademyPanel=wrapped;clearInterval(timer);
+ }else if(attempts>=80)clearInterval(timer);},250);
 })();
 </script>
 
