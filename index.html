@@ -10351,66 +10351,45 @@ header .otg-sticky-welcome{
 <script id="otg-student-hub-real-resume-guard">
 (function(){
   "use strict";
-  // Resume state is a safety net, not a navigation command. Never reopen a
-  // different panel merely because the app became visible again.
-  var key="otgStudentHubResumeStateV3",saveTimer=null,restoreTimer=null;
+  // Preserve the current learning page and reading position on return from background.
+  // Assignment pages are intentionally excluded; never navigate to a saved panel.
+  var key="otgStudentHubResumeStateV4",saveTimer=null,restoreTimers=[];
   function userId(){try{if(window.currentUser&&window.currentUser.id)return String(window.currentUser.id);if(typeof currentUser!=="undefined"&&currentUser&&currentUser.id)return String(currentUser.id);}catch(_){}return "";}
   function activePanelKey(){
-    var active=document.querySelector(".academy-nav.active");
-    if(!active)return "";
-    // Assignment review uses a conditional onclick, so resolve its actual panel.
-    if(active.id==="otgStudentAssignmentsNav"){
-      var admin=window.otgAcademyIsAdmin===true;
-      try{if(typeof currentProfile!=="undefined"&&currentProfile&&String(currentProfile.role||"").toLowerCase()==="admin")admin=true;}catch(_){}
-      return admin?"submission-review":"assignments";
-    }
+    var active=document.querySelector("#academyDashboard .academy-nav.active");if(!active)return "";
+    if(active.id==="otgStudentAssignmentsNav"){var admin=window.otgAcademyIsAdmin===true;try{if(typeof currentProfile!=="undefined"&&currentProfile&&String(currentProfile.role||"").toLowerCase()==="admin")admin=true;}catch(_){}return admin?"submission-review":"assignments";}
     var source=active.getAttribute("onclick")||"",match=source.match(/openAcademyPanel\(\s*['"]([^'"]+)['"]/);
-    if(match)return match[1];
-    if(active.id==="otgPublishAssignmentNav")return "assignments";
-    return "";
+    if(match)return match[1];if(active.id==="otgPublishAssignmentNav")return "assignments";return "";
   }
+  function isAssignmentPanel(panel){return panel==="assignments"||panel==="submission-review";}
   function save(){
-    var uid=userId();if(!uid)return;
+    var uid=userId(),panel=activePanelKey();if(!uid||!panel)return;
+    if(isAssignmentPanel(panel)){try{localStorage.removeItem(key);}catch(_){}return;}
     var content=document.getElementById("academyPanelContent");
-    try{localStorage.setItem(key,JSON.stringify({userId:uid,panelKey:activePanelKey(),scrollY:window.scrollY||window.pageYOffset||0,panelScrollTop:content?content.scrollTop:0,savedAt:Date.now()}));}catch(_){}
-    document.querySelectorAll(".otgSubmitForm").forEach(function(form){try{
-      var id=form.dataset.id;if(!id)return;var draftKey=null;
-      for(var i=0;i<localStorage.length;i++){var candidate=localStorage.key(i);if(candidate&&candidate.indexOf("otg-assignment-draft-")===0&&candidate.endsWith("-"+id)){draftKey=candidate;break;}}
-      if(draftKey){var answers=Array.from(form.querySelectorAll('textarea[name="answer"]')).map(function(field){return field.value;});localStorage.setItem(draftKey,JSON.stringify({answers:answers,savedAt:new Date().toISOString()}));}
-    }catch(_){}});
+    try{localStorage.setItem(key,JSON.stringify({userId:uid,panelKey:panel,scrollY:window.scrollY||window.pageYOffset||0,panelScrollTop:content?content.scrollTop:0,savedAt:Date.now()}));}catch(_){}
   }
-  function scheduleSave(){if(saveTimer)clearTimeout(saveTimer);saveTimer=setTimeout(function(){saveTimer=null;save();},120);}
-  function restoreScroll(state){
-    // Restore only when the app is already on the same panel. A stale saved
-    // panel must never force the user out of the page they are currently using.
-    if(activePanelKey()!==state.panelKey)return;
-    var content=document.getElementById("academyPanelContent");
-    if(content&&Number.isFinite(Number(state.panelScrollTop)))content.scrollTop=Number(state.panelScrollTop);
-    window.scrollTo(0,Math.max(0,Number(state.scrollY)||0));
-  }
-  function restoreScrollIfSamePanel(){
+  function scheduleSave(){if(saveTimer)clearTimeout(saveTimer);saveTimer=setTimeout(function(){saveTimer=null;save();},180);}
+  function restore(){
     var state;try{state=JSON.parse(localStorage.getItem(key)||"null");}catch(_){return;}
-    var uid=userId();if(!state||!uid||String(state.userId)!==uid||!state.panelKey)return;
+    var uid=userId(),panel=activePanelKey();if(!state||!uid||String(state.userId)!==uid||!state.panelKey||isAssignmentPanel(panel))return;
     if(document.getElementById("authScreen")&&!document.getElementById("authScreen").classList.contains("hidden"))return;
-    if(!document.getElementById("app")||document.getElementById("app").classList.contains("hidden"))return;
-    if(activePanelKey()!==state.panelKey)return;
-    restoreScroll(state);
+    var app=document.getElementById("app");if(!app||app.classList.contains("hidden"))return;
+    // Restore position only; do not switch the student to a different section.
+    if(panel!==state.panelKey)return;
+    var content=document.getElementById("academyPanelContent");
+    if(content&&Number.isFinite(Number(state.panelScrollTop)))content.scrollTop=Math.max(0,Number(state.panelScrollTop)||0);
+    var y=Math.max(0,Number(state.scrollY)||0);
+    if(Math.abs((window.scrollY||window.pageYOffset||0)-y)>3)window.scrollTo({top:y,left:0,behavior:"auto"});
   }
-  // Assessment data loads asynchronously; reapply the saved position after render.
-  function restoreScrollSeveralTimes(){
-    [350,900,1600,2600,4200].forEach(function(delay){setTimeout(restoreScrollIfSamePanel,delay);});
-  }
+  function restoreAfterResume(){restoreTimers.forEach(clearTimeout);restoreTimers=[];[0,120,300,650,1100,1800,2800,4200,6000].forEach(function(delay){restoreTimers.push(setTimeout(restore,delay));});}
   document.addEventListener("scroll",scheduleSave,true);
-  document.addEventListener("input",function(event){if(event.target&&event.target.matches&&event.target.matches('.otgSubmitForm textarea[name="answer"]'))scheduleSave();},true);
-  document.addEventListener("change",function(event){if(event.target&&event.target.matches&&event.target.matches('.otgSubmitForm textarea[name="answer"]'))scheduleSave();},true);
-  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")save();else if(document.visibilityState==="visible"){if(restoreTimer)clearTimeout(restoreTimer);restoreTimer=setTimeout(function(){restoreTimer=null;restoreScrollSeveralTimes();},180);}});
-  window.addEventListener("pagehide",save);window.addEventListener("beforeunload",save);
-  window.addEventListener("pageshow",function(event){restoreScrollSeveralTimes();});
-  var attempts=0,timer=window.setInterval(function(){
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")save();else if(document.visibilityState==="visible")restoreAfterResume();});
+  window.addEventListener("pagehide",save);window.addEventListener("pageshow",restoreAfterResume);window.addEventListener("focus",restoreAfterResume);
+  var attempts=0,timer=setInterval(function(){
     attempts++;if(typeof window.openAcademyPanel==="function"&&!window.openAcademyPanel.__otgResumeWrapped){
-      var original=window.openAcademyPanel;var wrapped=function(panelKey,button){var result=original.apply(this,arguments);setTimeout(scheduleSave,0);return result;};
-      wrapped.__otgResumeWrapped=true;window.openAcademyPanel=wrapped;window.clearInterval(timer);
-    }else if(attempts>=80)window.clearInterval(timer);
+      var original=window.openAcademyPanel;var wrapped=function(panelKey,button){var result=original.apply(this,arguments);if(isAssignmentPanel(String(panelKey||""))){try{localStorage.removeItem(key);}catch(_){}}else setTimeout(save,180);return result;};
+      wrapped.__otgResumeWrapped=true;window.openAcademyPanel=wrapped;clearInterval(timer);
+    }else if(attempts>=80)clearInterval(timer);
   },250);
 })();
 </script>
