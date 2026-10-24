@@ -868,7 +868,12 @@ async function loadAcademyPanelData(key,content){
   if(key==="watch")lessonsQuery=lessonsQuery.not("video_url","is",null).neq("video_url","");
   let data=null,error=null,usingOfflineLessonCopy=false;
   try {
-    const lessonResult=await lessonsQuery;
+    // Supabase requests may remain pending for a long time when the device goes
+    // offline. Bound the wait so the local lesson cache can be used promptly.
+    const lessonResult=await Promise.race([
+      lessonsQuery,
+      new Promise((_,reject)=>setTimeout(()=>reject(new Error("Lesson request timed out; checking the saved offline copy.")),7000))
+    ]);
     data=lessonResult.data||null;
     error=lessonResult.error||null;
   } catch (lessonLoadError) {
@@ -879,13 +884,19 @@ async function loadAcademyPanelData(key,content){
   if(!admin&&(key==="learn"||key==="watch")){
     if(!error&&Array.isArray(data)){
       try {
-        await otgSavePublishedLessons(key,data);
+        await Promise.race([
+          otgSavePublishedLessons(key,data),
+          new Promise((_,reject)=>setTimeout(()=>reject(new Error("Lesson cache write timed out")),3000))
+        ]);
       } catch(cacheWriteError) {
         console.warn("OTG published lessons could not be saved for offline reading:",cacheWriteError);
       }
     } else if(error){
       try {
-        let cachedSet=await otgReadPublishedLessons(key);
+        let cachedSet=await Promise.race([
+          otgReadPublishedLessons(key),
+          new Promise((_,reject)=>setTimeout(()=>reject(new Error("Lesson cache read timed out")),3000))
+        ]);
         if(!cachedSet&&key==="watch"){
           const allLessons=await otgReadPublishedLessons("learn");
           if(allLessons&&Array.isArray(allLessons.lessons)){
