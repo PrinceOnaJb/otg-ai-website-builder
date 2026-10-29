@@ -1403,7 +1403,7 @@ async function loadAcademyPanelData(key,content){
      }
      const label=document.createElement("label");label.style.cssText="display:grid;gap:7px;font-size:13px;font-weight:700;color:#1e3a8a";
      label.textContent=questionBlocks.length?"Select your answer for Question "+(questionBlocks[i]&&questionBlocks[i].displayNumber||i+1):"Your answer";label.style.minWidth="0";label.style.width="100%";label.style.boxSizing="border-box";
-     const input=document.createElement("textarea");input.name="answer";input.dataset.questionNumber=String(questionBlocks[i]&&questionBlocks[i].number||i+1);input.required=false;input.maxLength=20000;input.placeholder=questionBlocks.length?"Write your answer to Question "+(questionBlocks[i]&&questionBlocks[i].displayNumber||i+1)+" here...":"Write your answer here...";input.value=typeof draftAnswers[i]==="string"?draftAnswers[i]:(questionBlocks.length?(savedAnswers[(isAssessment005?Number(questionBlocks[i]&&questionBlocks[i].number||i+1):i+1)-1]||""):(savedText&&!/^Answer \d+:/.test(savedText)?savedText:""));
+     const input=document.createElement("textarea");input.name="answer";input.dataset.questionNumber=String(questionBlocks[i]&&questionBlocks[i].number||i+1);input.required=false;input.maxLength=20000;input.placeholder=questionBlocks.length?"Write your answer to Question "+(questionBlocks[i]&&questionBlocks[i].displayNumber||i+1)+" here...":"Write your answer here...";input.value=typeof draftAnswers[i]==="string"?draftAnswers[i]:(questionBlocks.length?(savedAnswers[((isAssessment005||isAssessment008)?Number(questionBlocks[i]&&questionBlocks[i].number||i+1):i+1)-1]||""):(savedText&&!/^Answer \d+:/.test(savedText)?savedText:""));
      input.disabled=isPreStartLocked;input.addEventListener("input",saveAssignmentDraft);
      input.style.cssText="width:100%;box-sizing:border-box;min-height:110px;padding:12px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:#0f172a;font:inherit;line-height:1.6;resize:vertical";
      const choiceDetails=questionBlocks[i]&&questionBlocks[i].details||[];const choiceOptions=choiceDetails.map(detail=>detail.match(/^([A-E])[.)]\s*(.*)$/i)).filter(Boolean);const isObjectiveChoice=choiceOptions.length>=2&&choiceOptions.length===choiceDetails.length;const isTrueFalseChoice=choiceOptions.length===2&&choiceOptions.every(option=>["TRUE","FALSE"].includes(String(option[2]||"").trim().toUpperCase()));
@@ -1433,7 +1433,7 @@ async function loadAcademyPanelData(key,content){
    const optionalTheoryCount=theoryAnswers.slice(1).filter(field=>field.value.trim()).length;
    if(optionalTheoryCount!==3){span.textContent="Session B: answer Theory Question 1 and exactly THREE questions from Theory Questions 2–5.";span.style.color="#b91c1c";return;}
   }
-  const answer=fields.length>1?fields.map((field,index)=>"Answer "+(f.dataset.assessment005==="true"?(field.dataset.questionNumber||index+1):(index+1))+": "+field.value.trim()).join("\n\n"):fields[0].value.trim();
+  const answer=fields.length>1?fields.map((field,index)=>"Answer "+((f.dataset.assessment005==="true"||/ASSESSMENT 008/i.test(f.dataset.assignmentTitle||""))?(field.dataset.questionNumber||index+1):(index+1))+": "+field.value.trim()).join("\n\n"):fields[0].value.trim();
   const fileInput=f.querySelector('input[name="assignment_image"]');
   const imageFile=fileInput&&fileInput.files?fileInput.files[0]:null;
   if(!answer.trim()&&!imageFile&&!f.dataset.autoSubmitting){span.textContent="Please write an answer or attach your design image.";span.style.color="#b91c1c";return;}
